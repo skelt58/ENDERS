@@ -1,0 +1,30 @@
+.ex-layout{
+	width: 1500px;
+}
+.ex-layout .gnb{
+	padding: 15px;
+	background-color: skyblue;
+}
+.ex-layout .main{
+	background-color: white;
+}
+.ex-layout .main:after{ clear: both; display: block; content: '' }
+
+.ex-layout .main .lnb{
+	float: left;
+	width: 200px;
+	height: 600px;
+	background-color: orange;
+	font-size:10pt;
+	padding:10px;
+}
+.ex-layout .main .content{
+	float: left;
+	width: 1200px;
+}
+.ex-layout .footer{
+	padding: 15px;
+	background-color: #ddd;
+}
+
+.ex-layout .gnb span { padding:20px; cursor:pointer; }

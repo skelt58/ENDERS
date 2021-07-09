@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+		<setting name="jdbcTypeForNull" value="NULL"/>
+	</settings>
+
+	<typeAliases>
+		<typeAlias alias="string"			type="java.lang.String" />
+		<typeAlias alias="map"     			type="java.util.Map" />
+		<typeAlias alias="loginVO"			type="kr.co.enders.ums.lgn.vo.LoginVO" />
+		<typeAlias alias="loginHistVO"		type="kr.co.enders.ums.lgn.vo.LoginHistVO" />
+		<typeAlias alias="userVO"			type="kr.co.enders.ums.ems.sys.vo.UserVO" />
+		<typeAlias alias="userProgVO"		type="kr.co.enders.ums.ems.sys.vo.UserProgVO" />
+		<typeAlias alias="menuVO"			type="kr.co.enders.ums.main.vo.MenuVO" />
+		<typeAlias alias="codeVO"			type="kr.co.enders.ums.com.vo.CodeVO" />
+		<typeAlias alias="deptVO"			type="kr.co.enders.ums.ems.sys.vo.DeptVO" />
+	</typeAliases>
+
+	<mappers>
+		<mapper resource="enders/sqlmap/lgn/LoginSQL-ems-oracle.xml"></mapper>
+		<mapper resource="enders/sqlmap/main/MainSQL-ems-oracle.xml"></mapper>
+		<mapper resource="enders/sqlmap/com/CodeSQL-ems-oracle.xml"></mapper>
+		<mapper resource="enders/sqlmap/ems/sys/SystemSQL-ems-oracle.xml"></mapper>
+	</mappers>
+	
+</configuration>

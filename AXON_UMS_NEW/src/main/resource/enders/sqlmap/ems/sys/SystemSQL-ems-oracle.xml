@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.enders.ums.ems.sys.dao.SystemMapper">
+
+	<!-- 부서 목록 조회 -->
+	<select id="getDeptList" parameterType="deptVO" resultType="deptVO">
+		SELECT *
+		  FROM 	(
+				SELECT A.DEPT_NO
+					 , A.DEPT_NM
+					 , A.DEPT_DESC
+					 , A.STATUS
+					 , A.REG_ID
+					 , A.REG_DT
+					 , B.CD_NM STATUS_NM
+					 , ROW_NUMBER() OVER (ORDER BY A.DEPT_NO DESC) SEQ
+					 , COUNT(1) OVER() TOT_CNT
+				  FROM NEO_DEPT A,
+						(SELECT CD, CD_NM
+						   FROM NEO_CD
+						  WHERE CD_GRP = 'C009'
+						    AND USE_YN = 'Y'
+						    AND UILANG = #{uilang}) B
+				 WHERE A.STATUS = B.CD
+				<if test="searchDeptNm != null and searchDeptNm != ''">
+				   AND A.DEPT_NM LIKE '%' || #{searchDeptNm} || '%'
+				</if>
+				<if test="searchStatus != null and searchStatus != ''">
+				   AND A.STATUS = #{searchStatus}
+				</if>
+				)
+		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
+	</select>
+	
+	<!-- 부서 정보 조회 -->
+	<select id="getDeptInfo" parameterType="deptVO" resultType="deptVO">
+		SELECT DEPT_NO
+			 , DEPT_NM
+			 , DEPT_DESC
+			 , STATUS
+			 , REG_ID
+			 , REG_DT
+			 , UP_ID
+			 , UP_DT
+		  FROM NEO_DEPT
+		 WHERE DEPT_NO = #{deptNo}
+	</select>
+	
+	
+	<!-- 부서 정보 등록 -->
+	<insert id="insertDeptInfo" parameterType="deptVO">
+		INSERT INTO NEO_DEPT (
+			DEPT_NO
+			, DEPT_NM
+			, DEPT_DESC
+			, STATUS
+			, REG_ID
+			, REG_DT
+		)
+		VALUES (
+			NEO_DEPT_SEQ.NEXTVAL
+			, #{deptNm}
+			, #{deptDesc}
+			, #{status}
+			, #{regId}
+			, #{regDt}
+		)
+	</insert>
+	
+	<!-- 부서 정보 수정 -->
+	<update id="updateDeptInfo" parameterType="deptVO">
+		UPDATE NEO_DEPT
+		   SET DEPT_NM = #{deptNm}
+			 , DEPT_DESC = #{deptDesc}
+			 , STATUS = #{status}
+			 , UP_ID = #{upId}
+			 , UP_DT = #{upDt}
+		WHERE DEPT_NO = #{deptNo}
+	</update>
+	
+	<!-- 사용자 목록 조회 -->
+	<select id="getUserList" parameterType="deptVO" resultType="userVO">
+		SELECT *
+		  FROM (
+				SELECT A.USER_ID
+					 , A.DEPT_NO
+					 , A.USER_NM
+					 , A.USER_EM
+					 , A.USER_TEL
+					 , A.STATUS
+					 , A.MAIL_FROM_NM
+					 , A.MAIL_FROM_EM
+					 , A.REPLY_TO_EM
+					 , A.RETURN_EM
+					 , A.CHARSET
+					 , A.TZ_CD
+					 , A.UILANG
+					 , A.REG_ID
+					 , A.REG_DT
+					 , A.UP_ID
+					 , A.UP_DT
+					 , B.DEPT_NM
+					 , C.TZ_NM
+					 , D.CD_NM STATUS_NM
+					 , E.CD_NM CHARSET_NM
+					 , F.CD_NM UILANG_NM
+					 , ROW_NUMBER() OVER (ORDER BY A.USER_ID) SEQ
+					 , COUNT(1) OVER() TOT_CNT
+				  FROM NEO_USER A
+				  	 , NEO_DEPT B
+				  	 , NEO_TIMEZONE C
+				  	 , (
+				  	 	SELECT CD, CD_NM
+						  FROM NEO_CD
+						 WHERE CD_GRP = 'C010'
+						   AND USE_YN = 'Y'
+						  AND UILANG = #{uilang}) D
+					 , (
+					 	SELECT CD, CD_NM
+						  FROM NEO_CD
+						 WHERE CD_GRP = 'C022'
+						   AND USE_YN = 'Y'
+						  AND UILANG = #{uilang}) E
+					 , (
+						SELECT CD, CD_NM
+						  FROM NEO_CD
+						 WHERE CD_GRP = 'C025'
+						   AND USE_YN = 'Y'
+						   AND UILANG = #{uilang}) F
+				 WHERE A.DEPT_NO = B.DEPT_NO
+				   AND A.TZ_CD = C.TZ_CD
+				   AND A.STATUS = D.CD
+				   AND A.CHARSET = E.CD
+				   AND A.UILANG = F.CD
+				   AND A.DEPT_NO = #{deptNo}
+			)
+		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
+	</select>
+	
+	<select id="userIdCheck" parameterType="string" resultType="userVO">
+		SELECT USER_ID
+		FROM NEO_USER
+		WHERE USER_ID = #{userId}
+	</select>
+	
+	<insert id="insertUserInfo" parameterType="userVO">
+		INSERT INTO NEO_USER 
+		(
+			USER_ID
+		  , DEPT_NO
+		  , USER_NM
+		  , USER_PWD
+		  , USER_EM
+		  , USER_TEL
+		  , USER_DESC
+		  , STATUS
+		  , MAIL_FROM_NM
+		  , MAIL_FROM_EM
+		  , REPLY_TO_EM
+		  , RETURN_EM
+		  , CHARSET
+		  , TZ_CD
+		  , UILANG
+		  , REG_ID
+		  , REG_DT
+		)
+		VALUES
+		(
+			#{userId}
+		  , #{deptNo}
+		  , #{userNm}
+		  , #{userPwd}
+		  , #{userEm}
+		  , #{userTel}
+		  , #{UserDesc}
+		  , #{status}
+		  , #{mailFromNm}
+		  , #{mailFromEm}
+		  , #{replyToEm}
+		  , #{returnEm}
+		  , #{charset}
+		  , #{tzCd}
+		  , #{uilang}
+		  , #{regId}
+		  , #{regDt}
+		)
+	</insert>
+	
+</mapper>

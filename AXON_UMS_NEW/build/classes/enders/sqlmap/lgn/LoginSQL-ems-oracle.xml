@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.enders.ums.lgn.dao.LoginMapper">
+
+	<select id="isValidUser" parameterType="loginVO" resultType="userVO">
+		SELECT A.USER_ID
+			 , A.DEPT_NO
+			 , A.USER_NM
+			 , A.TZ_CD
+			 , A.UILANG
+			 , A.STATUS
+			 , B.TZ_TERM
+			 , C.CD_NM CHARSET_NM
+			 , (SELECT FONT FROM NEO_FONT WHERE CHARSET = A.CHARSET) FONT
+		  FROM	NEO_USER A, NEO_TIMEZONE B, NEO_CD C
+		 WHERE A.TZ_CD    = B.TZ_CD
+		   AND A.USER_ID  = #{pUserId}
+		   AND A.USER_PWD = #{pUserPwd}
+		   AND A.CHARSET  = C.CD
+		   AND C.CD_GRP   = 'C022'
+		   AND A.UILANG   = C.UILANG
+	</select>
+	
+	<select id="getUserProgList" parameterType="string" resultType="userProgVO">
+		SELECT A.PROG_ID
+			 , A.PROG_NM
+			 , A.PROG_TARGET
+			 , A.PROG_DOMAIN
+			 , A.PROG_SCRIPT
+		  FROM NEO_PROG A
+			  ,	NEO_USER_PROG B
+		 WHERE A.PROG_ID = B.PROG_ID
+		   AND B.USER_ID = #{userId}
+		   AND A.USE_YN = 'Y'
+		UNION
+		SELECT A.PROG_ID
+			 , A.PROG_NM
+			 , A.PROG_TARGET
+			 , A.PROG_DOMAIN
+			 , A.PROG_SCRIPT
+		  FROM NEO_PROG A
+			 , NEO_USER_AUTH_GRP B
+			 , NEO_AUTH_GRP_PROG C
+			 , NEO_AUTH_GRP D
+		 WHERE A.PROG_ID = C.PROG_ID
+		   AND B.AUTH_GRP_ID = C.AUTH_GRP_ID
+		   AND B.AUTH_GRP_ID = D.AUTH_GRP_ID
+		   AND A.USE_YN = 'Y'
+		   AND D.USE_YN = 'Y'
+		   AND B.USER_ID = #{userId}
+		 ORDER BY PROG_NM ASC
+	</select>
+	
+	<insert id="insertLoginHist" parameterType="loginHistVO">
+		INSERT INTO NEO_LGN_HST
+		(
+			LGN_HST_ID
+			, DEPT_NO
+			, USER_ID
+			, LGN_DT
+			, LGN_IP)
+		VALUES
+		(
+			NEO_LGN_HST_SEQ.NEXTVAL
+			, #{deptNo}
+			, #{userId}
+			, #{lgnDt}
+			, #{lgnIp}
+		)
+	</insert>
+
+</mapper>

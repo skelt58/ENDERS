@@ -1,0 +1,98 @@
+<%--
+	/**********************************************************
+	*	작성자 : 김상진
+	*	작성일시 : 2021.07.07
+	*	설명 : 상단 메뉴 화면
+	**********************************************************/
+--%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/jsp/inc/taglib.jsp" %>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	/*
+	var referer = document.referrer;
+	if(referer.indexOf("lgn.ums") >= 0) {
+		goMenu(<c:out value="${topMenuId}"/>);
+	}
+	*/
+	goMenu(<c:out value="${topMenuId}"/>);
+});
+
+function goMenu(pgmId) {
+	var topMenuExec = $("#topMenuExec")[0];
+	$(topMenuExec.topMenuId).val(pgmId);
+	
+	
+	// 발송대상자관리  
+	if(pgmId == 1) {
+		var str = "<table width=158 border=0 cellpadding=0 cellspacing=0>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/seg/segMainP.ums'/>'>대상자관리</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/seg/segFileAddP.ums'/>'>대상자등록</a></td></tr>";
+		str += "</table>";
+		$("#lnb").html(str);
+		
+		//runMenu('<c:url value="/ems/seg/segMainP.um"/>');
+		
+	// 발송
+	} else if(pgmId == 2) {
+		var str = "<table width=158 border=0 cellpadding=0 cellspacing=0>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/cam/campListP.ums'/>'>캠페인관리</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/tmp/tempListP.ums'/>'>템플릿관리</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/cam/mailMainP.ums'/>'>메일관리</a></td></tr>";
+		str += "</table>";
+		$("#lnb").html(str);
+		
+		//runMenu('<c:url value="/ems/cam/campListP.ums"/>');
+		
+	// 통계/분석
+	} else if(pgmId == 3) {
+		var str = "<table width=158 border=0 cellpadding=0 cellspacing=0>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/ana/mailListP.ums'/>'>메일별분석</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/ana/taskListP.ums'/>'>정기메일분석</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/ana/campListP.ums'/>'>캠페인별분석</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/ana/summMainP.ums'/>'>누적분석</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/ana/pushStatsMainP.ums'/>'>PUSH분석</a></td></tr>";
+		str += "</table>";
+		$("#lnb").html(str);
+		
+		//runMenu('<c:url value="/ems/ana/mailListP.ums"/>');
+		
+	// 월간일정
+	} else if(pgmId == 4) {
+		var str = "<table width=158 border=0 cellpadding=0 cellspacing=0>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/sch/scheMonthP.um'/>'>월간일정</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/sch/scheWeekP.ums'/>'>주간일정</a></td></tr>";
+		str += "</table>";
+		$("#lnb").html(str);
+		
+		//runMenu('<c:url value="/ems/sch/scheMonthP.um"/>');
+
+	// 시스템관리
+	} else if(pgmId == 5) {
+		var str = "<table width=158 border=0 cellpadding=0 cellspacing=0>";
+		str += "<tr><td width=158 height=22><a href='#' onclick=runMenu('<c:url value="/ems/sys/deptMainP.ums"/>')>부서/사용자관리</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='/sys/dbconnMainP.ums'>데이터베이스 연결 관리</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='/sys/lgnhstListP.ums'>사용자 로그인 관리</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='/sys/usercodeMainP.ums?p_cd_grp=C004'>캠페인목적관리</a></td></tr>";
+		str += "</table>";
+		$("#lnb").html(str);
+		
+		//runMenu('<c:url value="/ems/sys/deptMainP.ums"/>');
+	}
+}
+
+function runMenu(url) {
+	$("#topMenuExec").attr("action",url).submit();
+}
+</script>
+
+<c:if test="${fn:length(menuList) > 0}">
+   	<c:forEach items="${menuList}" var="menuVO">
+		<span onclick="goMenu(<c:out value='${menuVO.progId}'/>);"><c:out value="${menuVO.progNm}"/></span>
+	</c:forEach>
+</c:if>
+
+<form id="topMenuExec" name="topMenuExec" method="get">
+<input type="hidden" id="topMenuId" name="topMenuId" value="<c:out value='${topMenuId}'/>"/>
+</form>
