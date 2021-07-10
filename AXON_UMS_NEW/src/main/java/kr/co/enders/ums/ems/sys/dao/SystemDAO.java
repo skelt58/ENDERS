@@ -46,6 +46,16 @@ public class SystemDAO implements SystemMapper {
 	}
 
 	@Override
+	public UserVO getUserInfo(UserVO userVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).getUserInfo(userVO);
+	}
+
+	@Override
+	public List<UserProgVO> getUserProgList(UserVO userVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).getUserProgList(userVO);
+	}
+
+	@Override
 	public List<UserVO> userIdCheck(String userId) throws Exception {
 		return sqlSessionEms.getMapper(SystemMapper.class).userIdCheck(userId);
 	}
@@ -58,6 +68,16 @@ public class SystemDAO implements SystemMapper {
 	@Override
 	public int insertUserProgInfo(UserProgVO userProgVO) throws Exception {
 		return sqlSessionEms.getMapper(SystemMapper.class).insertUserProgInfo(userProgVO);
+	}
+
+	@Override
+	public int updateUserInfo(UserVO userVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).updateUserInfo(userVO);
+	}
+
+	@Override
+	public int deleteUserProgInfo(String userId) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).deleteUserProgInfo(userId);
 	}
 
 }

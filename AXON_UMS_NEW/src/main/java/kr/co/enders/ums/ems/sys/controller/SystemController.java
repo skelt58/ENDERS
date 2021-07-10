@@ -25,9 +25,10 @@ import kr.co.enders.ums.com.service.CodeService;
 import kr.co.enders.ums.com.vo.CodeVO;
 import kr.co.enders.ums.ems.sys.service.SystemService;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
+import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 import kr.co.enders.util.Code;
-import kr.co.enders.util.MessageUtil;
+import kr.co.enders.util.EncryptUtil;
 import kr.co.enders.util.PropertiesUtil;
 import kr.co.enders.util.StringUtil;
 
@@ -42,9 +43,6 @@ public class SystemController {
 	@Autowired
 	private SystemService systemService;
 
-	@Autowired
-	private MessageUtil messageUtil;
-	
 	@Autowired
 	private PropertiesUtil properties;
 
@@ -172,9 +170,9 @@ public class SystemController {
 	 * @return
 	 */
 	@RequestMapping(value = "/deptList")
-	public ModelAndView getDeptListJson(@ModelAttribute DeptVO deptVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		logger.debug("getDeptListJson searchDeptNm = " + deptVO.getSearchDeptNm());
-		logger.debug("getDeptListJson searchStatus = " + deptVO.getSearchStatus());
+	public ModelAndView getDeptList(@ModelAttribute DeptVO deptVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getDeptList searchDeptNm = " + deptVO.getSearchDeptNm());
+		logger.debug("getDeptList searchStatus = " + deptVO.getSearchStatus());
 		
 		// 페이지 설정
 		int page = StringUtil.setNullToInt(deptVO.getPage(), 1);
@@ -224,21 +222,21 @@ public class SystemController {
 	 * @return
 	 */
 	@RequestMapping(value="/deptInfo")
-	public ModelAndView getDeptInfoJson(@ModelAttribute DeptVO deptVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public ModelAndView getDeptInfo(@ModelAttribute DeptVO deptVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		
-		logger.debug("getDeptInfoJson deptNo = " + deptVO.getDeptNo());
-		DeptVO deptInfo = null;
+		logger.debug("getDeptInfo deptNo = " + deptVO.getDeptNo());
+		DeptVO deptInfoVO = null;
 		try {
-			deptInfo = systemService.getDeptInfo(deptVO);
-			deptInfo.setRegDt(StringUtil.getFDate(deptInfo.getRegDt(), Code.DT_FMT2));
-			deptInfo.setUpDt(StringUtil.getFDate(deptInfo.getUpDt(), Code.DT_FMT2));
+			deptInfoVO = systemService.getDeptInfo(deptVO);
+			deptInfoVO.setRegDt(StringUtil.getFDate(deptInfoVO.getRegDt(), Code.DT_FMT2));
+			deptInfoVO.setUpDt(StringUtil.getFDate(deptInfoVO.getUpDt(), Code.DT_FMT2));
 		} catch(Exception e) {
 			logger.error("systemService.getDeptInfo error = " + e);
 		}
 		
 		
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		map.put("deptInfo", deptInfo);
+		map.put("deptInfo", deptInfoVO);
 		ModelAndView modelAndView = new ModelAndView("jsonView", map);
 		
 		return modelAndView;
@@ -254,11 +252,11 @@ public class SystemController {
 	 * @return
 	 */
 	@RequestMapping(value="/deptAdd")
-	public ModelAndView insertDeptInfoJson(@ModelAttribute DeptVO deptVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public ModelAndView insertDeptInfo(@ModelAttribute DeptVO deptVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		
-		logger.debug("insertDeptInfoJson deptNm = " + deptVO.getDeptNm());
-		logger.debug("insertDeptInfoJson status = " + deptVO.getStatus());
-		logger.debug("insertDeptInfoJson deptDesc = " + deptVO.getDeptDesc());
+		logger.debug("insertDeptInfo deptNm = " + deptVO.getDeptNm());
+		logger.debug("insertDeptInfo status = " + deptVO.getStatus());
+		logger.debug("insertDeptInfo deptDesc = " + deptVO.getDeptDesc());
 		
 		deptVO.setRegId((String)session.getAttribute("NEO_USER_ID"));
 		deptVO.setRegDt(StringUtil.getDate(Code.TM_YMDHMS));
@@ -269,15 +267,11 @@ public class SystemController {
 			logger.error("systemService.insertDeptInfo error = " + e);
 		}
 		
-		// 000COMJSALT008=등록 성공
-		// 000COMJSALT009=등록 실패
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		if(result > 0) {
 			map.put("result","Success");
-			map.put("message", messageUtil.getMessage("000COMJSALT008"));
 		} else {
 			map.put("result","Fail");
-			map.put("message", messageUtil.getMessage("000COMJSALT009"));
 		}
 		ModelAndView modelAndView = new ModelAndView("jsonView", map);
 		
@@ -294,11 +288,11 @@ public class SystemController {
 	 * @return
 	 */
 	@RequestMapping(value="/deptUpdate")
-	public ModelAndView updateDeptInfoJson(@ModelAttribute DeptVO deptVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public ModelAndView updateDeptInfo(@ModelAttribute DeptVO deptVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		
-		logger.debug("updateDeptInfoJson deptNm = " + deptVO.getDeptNm());
-		logger.debug("updateDeptInfoJson status = " + deptVO.getStatus());
-		logger.debug("updateDeptInfoJson deptDesc = " + deptVO.getDeptDesc());
+		logger.debug("updateDeptInfo deptNm = " + deptVO.getDeptNm());
+		logger.debug("updateDeptInfo status = " + deptVO.getStatus());
+		logger.debug("updateDeptInfo deptDesc = " + deptVO.getDeptDesc());
 		
 		deptVO.setUpId((String)session.getAttribute("NEO_USER_ID"));
 		deptVO.setUpDt(StringUtil.getDate(Code.TM_YMDHMS));
@@ -315,10 +309,8 @@ public class SystemController {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		if(result > 0) {
 			map.put("result","Success");
-			map.put("message", messageUtil.getMessage("000COMJSALT010"));
 		} else {
 			map.put("result","Fail");
-			map.put("message", messageUtil.getMessage("000COMJSALT011"));
 		}
 		ModelAndView modelAndView = new ModelAndView("jsonView", map);
 		
@@ -335,14 +327,15 @@ public class SystemController {
 	 * @return
 	 */
 	@RequestMapping(value = "/userList")
-	public ModelAndView getUserListJson(@ModelAttribute DeptVO deptVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		logger.debug("getUserListJson deptNo = " + deptVO.getDeptNo());
+	public ModelAndView getUserList(@ModelAttribute DeptVO deptVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getUserList userDeptdeptNo = " + deptVO.getUserDeptNo());
 		
 		// 페이지 설정
 		int page = StringUtil.setNullToInt(deptVO.getPage(), 1);
 		int rows = StringUtil.setNullToInt(deptVO.getRows(), Integer.parseInt(properties.getProperty("UMS.ROW_PER_PAGE")));
 		deptVO.setPage(page);
 		deptVO.setRows(rows);
+		deptVO.setDeptNo(deptVO.getUserDeptNo());
 		
 		// 사용자 목록 조회
 		List<UserVO> userList = null;
@@ -376,6 +369,43 @@ public class SystemController {
 	}
 	
 	/**
+	 * 부서 정보를 조회한다.
+	 * @param deptVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/userInfo")
+	public ModelAndView getUserInfo(@ModelAttribute UserVO userVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		logger.debug("getUserInfo getUserId = " + userVO.getUserId());
+		
+		userVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		
+		UserVO userInfoVO = null;
+		List<UserProgVO> userProgList = null;
+		try {
+			userInfoVO = systemService.getUserInfo(userVO);
+			userInfoVO.setRegDt(StringUtil.getFDate(userInfoVO.getRegDt(), Code.DT_FMT2));
+			userInfoVO.setUpDt(StringUtil.getFDate(userInfoVO.getUpDt(), Code.DT_FMT2));
+			
+			userProgList = systemService.getUserProgList(userVO);
+		} catch(Exception e) {
+			logger.error("systemService.getUserInfo error = " + e);
+		}
+		
+		
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("userInfo", userInfoVO);
+		map.put("userProgList", userProgList);
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	/**
 	 * 사용자 아이디를 체크한다. 아이디 중복을 방지.
 	 * @param userVO
 	 * @param model
@@ -385,8 +415,8 @@ public class SystemController {
 	 * @return
 	 */
 	@RequestMapping(value="/userIdCheck")
-	public ModelAndView userIdCheckJson(@ModelAttribute UserVO userVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		logger.debug("userIdCheckJson userId = " + userVO.getUserId());
+	public ModelAndView userIdCheck(@ModelAttribute UserVO userVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("userIdCheck userId = " + userVO.getUserId());
 		
 
 		boolean result = false;
@@ -414,47 +444,88 @@ public class SystemController {
 		return modelAndView;
 	}
 	
+	/**
+	 * 사용자 정보를 등록한다.
+	 * @param userVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/userAdd")
-	public ModelAndView insertUserInfoJson(@ModelAttribute UserVO userVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public ModelAndView insertUserInfo(@ModelAttribute UserVO userVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		
-		logger.debug("insertUserInfoJson userId = " + userVO.getUserId());
-		logger.debug("insertUserInfoJson userNm = " + userVO.getUserNm());
-		logger.debug("insertUserInfoJson userPwd = " + userVO.getUserPwd());
-		logger.debug("insertUserInfoJson userEm = " + userVO.getUserEm());
-		logger.debug("insertUserInfoJson userTel = " + userVO.getUserTel());
-		logger.debug("insertUserInfoJson status = " + userVO.getUserStatus());
-		logger.debug("insertUserInfoJson deptNo = " + userVO.getSelDeptNo());
-		logger.debug("insertUserInfoJson progId = " + userVO.getProgId());
+		logger.debug("insertUserInfo userId = " + userVO.getUserId());
+		logger.debug("insertUserInfo userNm = " + userVO.getUserNm());
+		logger.debug("insertUserInfo userPwd = " + userVO.getUserPwd());
+		logger.debug("insertUserInfo userEm = " + userVO.getUserEm());
+		logger.debug("insertUserInfo userTel = " + userVO.getUserTel());
+		logger.debug("insertUserInfo status = " + userVO.getUserStatus());
+		logger.debug("insertUserInfo deptNo = " + userVO.getSelDeptNo());
+		logger.debug("insertUserInfo progId = " + userVO.getProgId());
 		
 		userVO.setDeptNo(userVO.getSelDeptNo());
 		userVO.setStatus(userVO.getUserStatus());
+		userVO.setUserPwd(EncryptUtil.getEncryptedSHA256(userVO.getUserPwd()));
 		userVO.setRegId((String)session.getAttribute("NEO_USER_ID"));
 		userVO.setRegDt(StringUtil.getDate(Code.TM_YMDHMS));
 		
 		
 		int result = 0;
 		
-		/*
+		// 사용자 정보를 등록한다.(사용자 정보 + 사용자 프로그램 정보)
 		try {
 			result = systemService.insertUserInfo(userVO);
 		} catch(Exception e) {
 			logger.error("systemService.insertUserInfo error = " + e);
 		}
-		*/
-		// 000COMJSALT010=수정 성공
-		// 000COMJSALT011=수정 실패
+		
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		if(result > 0) {
 			map.put("result","Success");
-			map.put("message", messageUtil.getMessage("000COMJSALT010"));
 		} else {
 			map.put("result","Fail");
-			map.put("message", messageUtil.getMessage("000COMJSALT011"));
 		}
 		ModelAndView modelAndView = new ModelAndView("jsonView", map);
-		
 		return modelAndView;
 	}
 	
+	@RequestMapping(value="/userUpdate")
+	public ModelAndView updateUserInfo(@ModelAttribute UserVO userVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("updateUserInfo userId = " + userVO.getUserId());
+		logger.debug("updateUserInfo userNm = " + userVO.getUserNm());
+		logger.debug("updateUserInfo userPwd = " + userVO.getUserPwd());
+		logger.debug("updateUserInfo userEm = " + userVO.getUserEm());
+		logger.debug("updateUserInfo userTel = " + userVO.getUserTel());
+		logger.debug("updateUserInfo status = " + userVO.getUserStatus());
+		logger.debug("updateUserInfo deptNo = " + userVO.getSelDeptNo());
+		logger.debug("updateUserInfo progId = " + userVO.getProgId());
+		
+		userVO.setDeptNo(userVO.getSelDeptNo());
+		userVO.setStatus(userVO.getUserStatus());
+		if(userVO.getUserPwd() != null && !"".equals(userVO.getUserPwd())) {
+			userVO.setUserPwd(EncryptUtil.getEncryptedSHA256(userVO.getUserPwd()));
+		}
+		userVO.setUpId((String)session.getAttribute("NEO_USER_ID"));
+		userVO.setUpDt(StringUtil.getDate(Code.TM_YMDHMS));
+		int result = 0;
+		
+		// 사용자 정보를 수정한다.(사용자 정보 수정 + 사용자 프로그램 정보 삭제 + 사용자 프로그램 등록)
+		try {
+			result = systemService.updateUserInfo(userVO);
+		} catch(Exception e) {
+			logger.error("systemService.updateUserInfo error = " + e);
+		}
+		
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);		
+		return modelAndView;
+	}
 	
 }

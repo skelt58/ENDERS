@@ -35,6 +35,13 @@ public class LoginController {
 	@Autowired
 	private LoginService loginService;
 	
+	/**
+	 * 로그인 화면을 출력한다.
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value="/lgnP")
 	public String goLogin(Model model, HttpServletRequest request, HttpServletResponse response) {
 		
@@ -43,13 +50,22 @@ public class LoginController {
 		return "/lgn/lgnP";
 	}
 	
+	/**
+	 * 사용자 로그인을 처리한다.
+	 * @param loginVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/lgn")
 	public String loginProcess(@ModelAttribute LoginVO loginVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("## login process Start");
 		
 		// 아이디, 비밀번호 확인
-		logger.debug("p_user_id = " + loginVO.getpUserId());
-		logger.debug("p_user_pwd = " + loginVO.getpUserPwd());
+		logger.debug("loginProcess pUserId = " + loginVO.getpUserId());
+		logger.debug("loginProcess pUserPwd = " + loginVO.getpUserPwd());
 		
 		String encPasswd = EncryptUtil.getEncryptedSHA256(loginVO.getpUserPwd());
 		loginVO.setpUserPwd(encPasswd);
@@ -104,5 +120,14 @@ public class LoginController {
 			model.addAttribute("result","N");
 			return "/lgn/lgnP";
 		}
+	}
+	
+	@RequestMapping(value="/logout")
+	public String goLogout(Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		// 세션정보 초기화
+		session.invalidate();
+		
+		return "/lgn/lgnP";
 	}
 }

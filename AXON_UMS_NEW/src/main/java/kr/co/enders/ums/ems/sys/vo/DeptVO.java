@@ -22,6 +22,7 @@ public class DeptVO extends CommonVO {
 	private String searchDeptNm;	// 검색부서명
 	private String searchStatus;	// 검색상태코드
 	private String uilang;			// 언어권
+	private int userDeptNo;			// 사용자부서번호
 	
 	public int getDeptNo() {
 		return deptNo;
@@ -94,5 +95,11 @@ public class DeptVO extends CommonVO {
 	}
 	public void setUilang(String uilang) {
 		this.uilang = uilang;
+	}
+	public int getUserDeptNo() {
+		return userDeptNo;
+	}
+	public void setUserDeptNo(int userDeptNo) {
+		this.userDeptNo = userDeptNo;
 	}
 }

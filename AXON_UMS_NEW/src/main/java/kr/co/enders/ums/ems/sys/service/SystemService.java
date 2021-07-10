@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
+import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 
 @Service
@@ -56,6 +57,22 @@ public interface SystemService {
 	public List<UserVO> getUserList(DeptVO deptVO) throws Exception;
 	
 	/**
+	 * 사용자 정보 조회
+	 * @param userVO
+	 * @return
+	 * @throws Exception
+	 */
+	public UserVO getUserInfo(UserVO userVO) throws Exception;
+	
+	/**
+	 * 사용자 프로그램 정보 조회
+	 * @param userVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<UserProgVO> getUserProgList(UserVO userVO) throws Exception;
+	
+	/**
 	 * 사용자 아이디를 체크한다. 중복 방지용
 	 * @param userId
 	 * @return
@@ -71,4 +88,13 @@ public interface SystemService {
 	 */
 	@Transactional(value="transactionManagerEms")
 	public int insertUserInfo(UserVO userVO) throws Exception;
+	
+	/**
+	 * 사용자 정보 수정
+	 * @param userVO
+	 * @return
+	 * @throws Exception
+	 */
+	@Transactional(value="transactionManagerEms")
+	public int updateUserInfo(UserVO userVO) throws Exception;
 }

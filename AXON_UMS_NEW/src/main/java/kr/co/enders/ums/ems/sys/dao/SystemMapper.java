@@ -53,6 +53,22 @@ public interface SystemMapper {
 	public List<UserVO> getUserList(DeptVO deptVO) throws Exception;
 	
 	/**
+	 * 사용자 정보 조회
+	 * @param userVO
+	 * @return
+	 * @throws Exception
+	 */
+	public UserVO getUserInfo(UserVO userVO) throws Exception;
+	
+	/**
+	 * 사용자 프로그램 정보 조회
+	 * @param userVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<UserProgVO> getUserProgList(UserVO userVO) throws Exception;
+	
+	/**
 	 * 사용자 아이디를 체크한다. 중복 방지용
 	 * @param userId
 	 * @return
@@ -75,4 +91,20 @@ public interface SystemMapper {
 	 * @throws Exception
 	 */
 	public int insertUserProgInfo(UserProgVO userProgVO) throws Exception;
+	
+	/**
+	 * 사용자 정보 수정
+	 * @param userVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateUserInfo(UserVO userVO) throws Exception;
+	
+	/**
+	 * 사용자 프로그램 정보 삭제
+	 * @param userId
+	 * @return
+	 * @throws Exception
+	 */
+	public int deleteUserProgInfo(String userId) throws Exception;
 }

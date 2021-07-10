@@ -24,14 +24,14 @@
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 <link type="text/css" rel="stylesheet" href="<c:url value='/css/layout.css'/>"></link>
-<link type="text/css" rel="stylesheet" href="<c:url value='/css/jquery-ui.min.css'/>"></link>
+<link type="text/css" rel="stylesheet" href="<c:url value='/css/jquery-ui.css'/>"></link>
 <link type="text/css" rel="stylesheet" href="<c:url value='/css/ui.jqgrid.css'/>"></link>
 <script type="text/javascript" src="<c:url value='/js/jquery-3.6.0.min.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/jquery.jqGrid.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/i18n/grid.locale-kr.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/js/jquery-ui.min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/js/jquery-ui.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/ums.common.js'/>"></script>
 </head>
 
-<body style="background:#efefef;">
+<body style="background-color:#eeeeee;">
 

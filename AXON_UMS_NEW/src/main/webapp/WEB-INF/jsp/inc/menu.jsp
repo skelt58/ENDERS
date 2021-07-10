@@ -85,14 +85,34 @@ function goMenu(pgmId) {
 function runMenu(url) {
 	$("#topMenuExec").attr("action",url).submit();
 }
-</script>
 
+function goLogout() {
+	if(confirm("로그아웃하시겠습니까?")) {
+		document.location.href = "<c:url value='/lgn/logout.ums'/>";
+	}
+}
+</script>
+<!-- 사용자 프로그램 목록과 프로그램 전체 목록 비교 -->
 <c:if test="${fn:length(menuList) > 0}">
    	<c:forEach items="${menuList}" var="menuVO">
-		<span onclick="goMenu(<c:out value='${menuVO.progId}'/>);"><c:out value="${menuVO.progNm}"/></span>
+   		<c:set var="checkId" value="N"/>
+   		<c:if test="${fn:length(USER_PROG_LIST) > 0}">
+   			<c:forEach items="${USER_PROG_LIST}" var="progVO">
+   				<c:if test="${menuVO.progId eq progVO.progId}">
+   					<c:set var="checkId" value="Y"/>
+   				</c:if>
+   			</c:forEach>
+   		</c:if>
+   		<c:if test="${checkId eq 'Y'}">
+			<span onclick="goMenu(<c:out value='${menuVO.progId}'/>);"><b><c:out value="${menuVO.progNm}"/></b></span>
+   		</c:if>
+   		<c:if test="${checkId eq 'N'}">
+			<span style="color:#aaaaaa;"><c:out value="${menuVO.progNm}"/></span>
+   		</c:if>
 	</c:forEach>
 </c:if>
 
+<span style="margin-left:420px;font-size:9pt;" onclick="goLogout();"><b>로그아웃</b></span>
 <form id="topMenuExec" name="topMenuExec" method="get">
 <input type="hidden" id="topMenuId" name="topMenuId" value="<c:out value='${topMenuId}'/>"/>
 </form>

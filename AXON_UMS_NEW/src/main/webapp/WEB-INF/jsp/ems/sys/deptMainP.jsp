@@ -35,7 +35,7 @@ $(document).ready(function() {
 	
 	// 부서 신규등록 버튼 클릭
 	$("#btnPopDeptAdd").click(function(e) {
-		deptInfoDialog= $("#divDeptInfo").dialog({
+		deptInfoDialog = $("#divDeptInfo").dialog({
 			title:"부서 신규 등록",
 			width:800,
 			height:400,
@@ -54,6 +54,8 @@ $(document).ready(function() {
 	
 	// 사용자 신규등록 버튼 클릭
 	$("#btnPopUserAdd").click(function(e) {
+		// 처리모드(등록)
+		$("#procMode").val("I");
 		
 		userInfoDialog= $("#divUserInfo").dialog({
 			title:"사용자 신규 등록",
@@ -61,7 +63,7 @@ $(document).ready(function() {
 			height:500,
 			modal:true,
 			buttons: {
-				"등록": insertUserInfo,
+				"등록": procUserInfo,
 				"취소": function() {
 					userInfoDialog.dialog("close");
 				}
@@ -86,9 +88,9 @@ $(document).ready(function() {
 	});
 	
 	// 사용자입력 Blur
-	$("#userId").blur(function() {
+	$("#userId").blur(function(e) {
 		// 사용자 아이디 중복 체크
-		if($("#userId").val() != "") {
+		if($("#procMode").val() == "I" && $("#userId").val() != "") {
 			checkUserId();
 		}
 	});
@@ -97,24 +99,23 @@ $(document).ready(function() {
 	showDeptGrid();
 });
 
+/********************************************************************************************************************
+ * 부서 정보 처리
+ ********************************************************************************************************************/
 // 부서목록 jqGrid 조회
 function showDeptGrid() {
+	// 부서 목록 초기화
 	$("#deptList").jqGrid("GridUnload");
+	
+	// 사용자 목록 숨김
 	$("#divUserList").hide();
 
-	
-	var paramData = [];
-	paramData.push({name:"searchDeptNm",value:$("#searchDeptNm").val()});
-	paramData.push({name:"searchStatus",value:$("#searchStatus").val()});
-	if($("#deptList").getGridParam("page")) {
-		paramData.push({name:"page",value:$("#deptList").getGridParam("page")});
-	}
-	
+	// Grid 데이터 조회 및 설정
+	var param = $("#searchForm").serialize();
 	$("#deptList").jqGrid({
-		url          :"<c:url value='/ems/sys/deptList.json'/>",
-		mtype        :"GET",
+		url          :"<c:url value='/ems/sys/deptList.json'/>?" + param,
+		mtype        :"POST",
 		datatype     :"json",
-		postData     : paramData,
 		jsonReader   : {
 						page   : "page",
 						total  : "total",
@@ -123,7 +124,7 @@ function showDeptGrid() {
 						repeatitems: false,
 						id     : "id"
 				       },
-		height       : "360",
+		height       : "250",
 		width        : "900",
 		colModel     :[
                         {name:'deptNo'		,index:'deptNo'		,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL017"/>'},	// 그룹번호
@@ -133,7 +134,7 @@ function showDeptGrid() {
                         {name:'regDt'		,index:'regDt'		,width:200	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL022"/>'},	// 등록일
                         {name:'pDeptNo'		,index:'pDeptNo'	,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL024"/>', formatter:userList}	// 사용자보기
 					  ],
-		rowNum       : "15",
+		rowNum       : "10",
 		rownumbers	 : false,
 		autowidth    : false,
 		viewrecords  : true,
@@ -146,14 +147,17 @@ function showDeptGrid() {
 	});
 }
 
+// 부서(그룹) 그리드에서 그룹명 클릭 함수정의
 function deptInfo(cellvalue, options, rowObject) {
 	return '<a href="#" onclick="getDeptInfo(' + options.rowId + '); return false;">' + $.jgrid.htmlEncode(cellvalue) + '</a>';
 }
 
+//부서(그룹) 그리드에서 그룹명 클릭 함수정의
 function userList(cellvalue, options, rowObject) {
 	return '<a href="#" onclick="getUserList(' + options.rowId + '); return false;">사용자보기</a>';
 }
 
+// 부서(그룹) 정보 조회
 function getDeptInfo(rowId) {
 	var deptNo = $("#deptList").jqGrid('getRowData',rowId).deptNo;
 	$.getJSON("<c:url value='/ems/sys/deptInfo.json'/>?deptNo=" + deptNo, function(data) {
@@ -176,7 +180,7 @@ function getDeptInfo(rowId) {
 				}
 			});
 			
-			deptInfoDialog= $("#divDeptInfo").dialog({
+			deptInfoDialog = $("#divDeptInfo").dialog({
 				title:"그룹 정보 수정",
 				width:800,
 				height:400,
@@ -197,24 +201,107 @@ function getDeptInfo(rowId) {
 	});
 }
 
-function getUserList(rowId) {
-	$("#divUserList").show();
+//부서(그룹) 정보 등록
+function insertDeptInfo() {
+	var frm = $("#deptInfoForm")[0];
+	var errflag = false;
+	var errstr = "";
+	if($(frm.deptNm).val() == "") {
+		errflag = true;
+		errstr += " [<spring:message code='000SYSTBLTL018'/>] "; // 그룹명
+	}
+
+	if($("#status option:selected").val() == "") {
+		errflag = true;
+		errstr += " [<spring:message code='000SYSTBLTL028'/>] "; // 상태
+	}
+
+	if(errflag) {
+		alert("<spring:message code='000COMJSALT016'/>\n" + errstr); // 다음 정보를 확인하세요.
+		return;
+	}
 	
+	var param = $("#deptInfoForm").serialize();
+	$.getJSON("<c:url value='/ems/sys/deptAdd.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='000COMJSALT008'/>");
+			deptInfoDialog.dialog("close");
+			
+			// jqGrid 새로고침
+			showDeptGrid();
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='000COMJSALT009'/>");
+		}
+	});
+}
+
+// 부서(그룹) 정보 수정
+function updateDeptInfo() {
+	var frm = $("#deptInfoForm")[0];
+	var errflag = false;
+	var errstr = "";
+	if($(frm.deptNm).val() == "") {
+		errflag = true;
+		errstr += " [<spring:message code='000SYSTBLTL018'/>] "; // 그룹명
+	}
+
+	if($("#status option:selected").val() == "") {
+		errflag = true;
+		errstr += " [<spring:message code='000SYSTBLTL028'/>] "; // 상태
+	}
+
+	if(errflag) {
+		alert("<spring:message code='000COMJSALT016'/>\n" + errstr); // 다음 정보를 확인하세요.
+		return;
+	}
+	
+	var param = $("#deptInfoForm").serialize();
+	$.getJSON("<c:url value='/ems/sys/deptUpdate.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='000COMJSALT010'/>");
+			deptInfoDialog.dialog("close");
+			
+			// jqGrid 새로고침
+			showDeptGrid();
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='000COMJSALT011'/>");
+		}
+	});
+}
+
+
+/********************************************************************************************************************
+ * 사용자 정보 처리
+ ********************************************************************************************************************/
+// 사용자 그리드 
+function getUserList(rowId) {
 	var deptNo = $("#deptList").jqGrid('getRowData',rowId).deptNo;
+	getUserListGrid(deptNo);
+}
+
+//사용자목록 jqGrid 조회
+function getUserListGrid(deptNo) {
+	$("#divUserList").show();
 	
 	$("#userList").jqGrid("GridUnload");
 	
+	$("#userDeptNo").val(deptNo);
+	
+	// 입력값 설정
 	var paramData = [];
 	paramData.push({name:"deptNo",value:deptNo});
 	if($("#userList").getGridParam("page")) {
 		paramData.push({name:"page",value:$("#userList").getGridParam("page")});
 	}
 	
+	var param = $("#userInfoForm").serialize();
+	
+	// Grid 데이터 조회 및 설정
 	$("#userList").jqGrid({
-		url          :"<c:url value='/ems/sys/userList.json'/>",
-		mtype        :"GET",
+		url          :"<c:url value='/ems/sys/userList.json'/>?" + param,
+		mtype        :"POST",
 		datatype     :"json",
-		postData     : paramData,
+		//postData     : paramData,
 		jsonReader   : {
 						page   : "page",
 						total  : "total",
@@ -223,10 +310,10 @@ function getUserList(rowId) {
 						repeatitems: false,
 						id     : "id"
 				       },
-		height       : "360",
+		height       : "250",
 		width        : "900",
 		colModel     :[
-                        {name:'userId'		,index:'userId'		,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL025"/>', formatter:userInfo},	// 사용자ID
+                        {name:'userId'		,index:'userId'		,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL025"/>'},	// 사용자ID
                         {name:'userNm'		,index:'userNm'		,width:300	,align:'left'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL026"/>', formatter:userInfo},	// 사용자명
                         {name:'statusNm'	,index:'statusNm'	,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL027"/>'},	// 사용자상태
                         {name:'uilangNm'	,index:'uilangNm'	,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL029"/>'},	// UI언어권
@@ -234,7 +321,7 @@ function getUserList(rowId) {
                         {name:'regId'		,index:'regId'		,width:200	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL021"/>'},	// 등록자
                         {name:'regDt'		,index:'regDt'		,width:200	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL022"/>'}	// 등록일
 					  ],
-		rowNum       : "15",
+		rowNum       : "10",
 		rownumbers	 : false,
 		autowidth    : false,
 		viewrecords  : true,
@@ -245,49 +332,117 @@ function getUserList(rowId) {
 		autoencode   : true,
 		cellEdit     : false
 	});
-	
-	$("#userDeptNo").val(deptNo);
 }
-	
+
+// 사용자 그리드에서 사용자명 클릭 함수정의
 function userInfo(cellvalue, options, rowObject) {
 	return '<a href="#" onclick="getUserInfo(' + options.rowId + '); return false;">' + $.jgrid.htmlEncode(cellvalue) + '</a>';
 }
 
+// 사용자 정보 조회
 function getUserInfo(rowId) {
-	alert(rowId);
-}
-
-function insertDeptInfo() {
-	var param = $("#deptInfoForm").serialize();
-	$.getJSON("<c:url value='/ems/sys/deptAdd.json'/>?" + param, function(data) {
-		if(data.result == "Success") {
-			alert(data.message);
-			deptInfoDialog.dialog("close");
+	var userId = $("#userList").jqGrid('getRowData',rowId).userId;
+	$.getJSON("<c:url value='/ems/sys/userInfo.json'/>?userId=" + userId, function(data) {
+		if(data) {
+			$("#userInfoReg").show();
 			
-			// jqGrid 새로고침
-			showDeptGrid();
-		} else if(data.result == "Fail") {
-			alert(data.message);
+			var frm = $("#userInfoForm")[0];
+			$(frm.userId).val(data.userInfo.userId);
+			$(frm.userId).attr("readonly",true);
+			$("#userId").css('backgroundColor', '#cccccc');
+
+			$(frm.userNm).val(data.userInfo.userNm);
+			$(frm.userNm).focus();
+			//$(frm.userStatus).val(data.userInfo.status);
+			var status = data.userInfo.status;
+			$('#userStatus option').each(function(){
+				if($(this).val() == status) {
+					$(this).prop('selected', true);
+				}
+			});
+			//$(frm.userPwd).val(data.userInfo.userPwd);
+			//$(frm.userPwdConf).val(data.userInfo.userPwd);
+			var deptNo = data.userInfo.deptNo;
+			$('#selDeptNo option').each(function(){
+				if($(this).val() == deptNo) {
+					$(this).prop('selected', true);
+				}
+			});
+			$(frm.userEm).val(data.userInfo.userEm);
+			$(frm.userTel).val(data.userInfo.userTel);
+			$(frm.mailFromNm).val(data.userInfo.mailFromNm);
+			$(frm.mailFromEm).val(data.userInfo.mailFromEm);
+			$(frm.replyToEm).val(data.userInfo.replyToEm);
+			$(frm.returnEm).val(data.userInfo.returnEm);
+			var charset = data.userInfo.charset;
+			$('#charset option').each(function(){
+				if($(this).val() == charset) {
+					$(this).prop('selected', true);
+				}
+			});
+			var tzCd = data.userInfo.tzCd;
+			$('#tzCd option').each(function(){
+				if($(this).val() == tzCd) {
+					$(this).prop('selected', true);
+				}
+			});
+			var uilang = data.userInfo.uilang;
+			$('#uilang option').each(function(){
+				if($(this).val() == uilang) {
+					$(this).prop('selected', true);
+				}
+			});
+			$(frm.userDesc).val(data.userInfo.userDesc);
+			
+			$(frm.userRegId).val(data.userInfo.regId);
+			$(frm.userRegDt).val(data.userInfo.regDt);
+			$(frm.userUpId).val(data.userInfo.upId);
+			$(frm.userUpDt).val(data.userInfo.upDt);
+			
+			// 사용자 프로그램 선택
+			var userProgList = data.userProgList;
+			$.each(userProgList,function(idx,row){
+				var userProgId = userProgList[idx].progId;
+				$(frm.progId).each(function() {
+					if(userProgId == this.value) {
+						this.checked = true;
+					}
+				});
+			});
+
+			$(frm.progId).each(function() {
+				var progId = this.value;
+			});
+			
+			// 처리모드(수정)
+			$("#procMode").val("U");
+			userInfoDialog = $("#divUserInfo").dialog({
+				title:"사용자 정보 수정",
+				width:1000,
+				height:500,
+				modal:true,
+				buttons: {
+					"수정": procUserInfo,
+					"취소": function() {
+						userInfoDialog.dialog("close");
+					}
+				},
+				close: function() {
+					$("#userInfoReg").hide();
+					$("#userInfoForm")[0].reset();
+				}
+			});
+			
 		}
 	});
+
 }
 
-function updateDeptInfo() {
-	var param = $("#deptInfoForm").serialize();
-	$.getJSON("<c:url value='/ems/sys/deptUpdate.json'/>?" + param, function(data) {
-		if(data.result == "Success") {
-			alert(data.message);
-			deptInfoDialog.dialog("close");
-			
-			// jqGrid 새로고침
-			showDeptGrid();
-		} else if(data.result == "Fail") {
-			alert(data.message);
-		}
-	});
-}
 
-function insertUserInfo() {
+// 사용자 정보 등록/수정
+function procUserInfo() {
+	
+	// 입력값 유효성 검사
 	var frm = $("#userInfoForm")[0];
 	var errflag = false;
 	var errstr = "";
@@ -343,6 +498,13 @@ function insertUserInfo() {
 		errflag = true;
 		errstr += " [<spring:message code='000SYSTBLTL037'/>] ";	// RETURN이메일
 	}
+	// 등록시에만 비밀번호 필수 입력, 수정시 입력하지 않으면 기존 비밀번호 유지
+	if($("#procMode").val() == "I") {
+		if($(frm.userPwd).val() == "") {
+			errflag = true;
+			errstr += " [<spring:message code='000SYSTBLTL031'/>] ";	// 비밀번호
+		}
+	}
 	if($(frm.userPwd).val() != $(frm.userPwdConf).val()) {
 		errflag = true;
 		errstr += " [<spring:message code='000SYSTBLLB001'/>] ";	// 비밀번호확인
@@ -352,31 +514,49 @@ function insertUserInfo() {
 		return;
 	}
 	
-	var param = $("#userInfoForm").serialize();
-	$.getJSON("<c:url value='/ems/sys/userAdd.json'/>?" + param, function(data) {
-		if(data.result == "Success") {
-			alert(data.message);
-			deptInfoDialog.dialog("close");
-			
-			// jqGrid 새로고침
-			showDeptGrid();
-		} else if(data.result == "Fail") {
-			alert(data.message);
-		}
-	});
-
-
-	return false;
+	
+	// 사용자 정보 등록 처리
+	if($("#procMode").val() == "I") {
+		var param = $("#userInfoForm").serialize();
+		$.getJSON("<c:url value='/ems/sys/userAdd.json'/>?" + param, function(data) {
+			if(data.result == "Success") {
+				alert("<spring:message code='000COMJSALT008'/>");
+				userInfoDialog.dialog("close");
+				
+				// jqGrid 새로고침
+				getUserListGrid($("#userDeptNo").val());
+			} else if(data.result == "Fail") {
+				alert("<spring:message code='000COMJSALT009'/>");
+			}
+		});
+	}
+	
+	// 사용자 정보 수정 처리
+	if($("#procMode").val() == "U") {
+		var param = $("#userInfoForm").serialize();
+		$.getJSON("<c:url value='/ems/sys/userUpdate.json'/>?" + param, function(data) {
+			if(data.result == "Success") {
+				alert("<spring:message code='000COMJSALT010'/>");
+				userInfoDialog.dialog("close");
+				
+				// jqGrid 새로고침
+				getUserListGrid($("#userDeptNo").val());
+			} else if(data.result == "Fail") {
+				alert("<spring:message code='000COMJSALT011'/>");
+			}
+		});
+	}
 }
 
+// 사용자 아이디 체크(중복 확인)
 function checkUserId() {
 	var userId = $("#userId").val();
 	$.getJSON("<c:url value='/ems/sys/userIdCheck.json'/>?userId=" + userId, function(data) {
 		if(data.result == "Success") {
 			alert("사용가능한 아이디입니다.");
-			//$("#userId").attr("disabled",false);
 			$("#userId").css('backgroundColor', '#cccccc');
 			$("#userId").attr("readonly",true);
+			$("#userNm").focus();
 			
 		} else if(data.result == "Fail") {
 			alert("이미 사용중인 아이디입니다.");
@@ -468,7 +648,7 @@ function checkUserId() {
 <!-- 부서 정보 등록/수정용 화면 -->
 <div id="divDeptInfo" style="display:none;">
 	<form id="deptInfoForm" name="deptInfoForm">
-	<input type="hidden" id="deptNo" name="deptNo"/>
+	<input type="hidden" id="deptNo" name="deptNo" value="0"/>
 	<table style="width:750px;">
 		<colgroup>
 		   	<col style="width:15%" />
@@ -527,6 +707,7 @@ function checkUserId() {
 <div id="divUserInfo" style="display:none;">
 
 	<form id="userInfoForm" name="userInfoForm">
+	<input type="hidden" id="procMode" name="procMode"/>
 	<input type="hidden" id="userDeptNo" name="userDeptNo"/>
 	<table>
 		<colgroup>
@@ -545,7 +726,7 @@ function checkUserId() {
 			</td>
 		    <td class="td_title"><spring:message code='000SYSTBLTL026'/></td><!-- 사용자명 -->
 			<td class="td_body">
-				<input type="text" id="userNm" name="userNm" maxlength="15" value="" maxlength="30">
+				<input type="text" id="userNm" name="userNm" maxlength="15" maxlength="30">
 			</td>
 		    <td class="td_title"><spring:message code='000SYSTBLTL028'/></td><!-- 상태 -->
 			<td  class="td_body">
@@ -659,6 +840,28 @@ function checkUserId() {
 			</td>
 		</tr>
 	</table>
+
+	<table id="userInfoReg" style="width:750px;display:none;">
+		<tr>
+			<td width="10%"><spring:message code='000SYSTBLTL021'/></td><!-- 등록자 -->
+			<td class="td_body">
+				<input type="text" id="userRegId" name="regId" maxlength="20" size="8" value="" readOnly>
+			</td>
+			<td width="10%"><spring:message code='000SYSTBLTL022'/></td><!-- 등록일 -->
+			<td>
+				<input type="text" id="userRegDt" name="regDt" maxlength="50" size="12" value="" readOnly>
+			</td>
+			<td width="10%"><spring:message code='000SYSTBLTL042'/></td><!-- 수정자 -->
+			<td>
+				<input type="text" id="userUpId" name="upId" maxlength="20" size="8" value="" readOnly>
+			</td>
+			<td width="10%"><spring:message code='000SYSTBLTL043'/></td><!-- 수정일 -->
+			<td  class="td_body">
+				<input type="text" id="userUpDt" name="upDt" maxlength="50" size="12" value="" readOnly>
+			</td>
+		</tr>
+	</table>
+
 	</form>
 
 </div>

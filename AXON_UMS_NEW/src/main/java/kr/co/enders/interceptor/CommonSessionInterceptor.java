@@ -30,7 +30,7 @@ public class CommonSessionInterceptor extends HandlerInterceptorAdapter {
 		HttpSession session = request.getSession();
 		
 		// 사용자 세션 체크
-		if(session.getAttribute("NEO_USER_ID") == null || "".equals((String)session.getAttribute("NEO_USER_ID"))) {
+		if(session.getAttribute("NEO_USER_ID") == null || "".equals((String)session.getAttribute("NEO_USER_ID")) || session.getAttribute("USER_PROG_LIST") == null) {
 			response.sendRedirect(contextRoot + "/lgn/lgnP.ums");
 			result = false;
 		} else {

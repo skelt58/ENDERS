@@ -27,4 +27,5 @@
 	background-color: #ddd;
 }
 
-.ex-layout .gnb span { padding:20px; cursor:pointer; }
+.ex-layout .gnb span { margin:25px; }
+.ex-layout .gnb span b { cursor:pointer; }

@@ -139,6 +139,69 @@
 		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
 	</select>
 	
+	<select id="getUserInfo" parameterType="userVO" resultType="userVO">
+		SELECT A.USER_ID
+			 , A.DEPT_NO
+			 , A.USER_NM
+			 , A.USER_PWD
+			 , A.USER_EM
+			 , A.USER_TEL
+			 , A.USER_DESC
+			 , A.STATUS
+			 , A.MAIL_FROM_NM
+			 , A.MAIL_FROM_EM
+			 , A.REPLY_TO_EM
+			 , A.RETURN_EM
+			 , A.CHARSET
+			 , A.TZ_CD
+			 , A.UILANG
+			 , A.REG_ID
+			 , A.REG_DT
+			 , A.UP_ID
+			 , A.UP_DT
+			 , B.DEPT_NM
+			 , C.TZ_NM
+			 , D.CD_NM STATUS_NM
+			 , E.CD_NM CHARSET_NM
+			 , F.CD_NM UILANG_NM
+		  FROM NEO_USER A
+			 , NEO_DEPT B
+			 , NEO_TIMEZONE C
+			 , (
+				SELECT CD, CD_NM
+				  FROM NEO_CD
+				 WHERE CD_GRP = 'C010'
+				   AND USE_YN = 'Y'
+				   AND UILANG = #{uilang}) D
+			 , (
+				SELECT CD, CD_NM
+				  FROM NEO_CD
+				 WHERE CD_GRP = 'C022'
+				   AND USE_YN = 'Y'
+				   AND UILANG = #{uilang}) E
+			 , (
+				SELECT CD, CD_NM
+				  FROM NEO_CD
+				 WHERE CD_GRP = 'C025'
+				   AND USE_YN = 'Y'
+				   AND UILANG = #{uilang}) F
+		 WHERE A.USER_ID = #{userId}
+		   AND A.DEPT_NO = B.DEPT_NO
+		   AND A.TZ_CD = C.TZ_CD
+		   AND A.STATUS = D.CD
+		   AND A.CHARSET = E.CD
+		   AND A.UILANG = F.CD
+	</select>
+	
+	<select id="getUserProgList" parameterType="userVO" resultType="userProgVO">
+		SELECT B.PROG_ID, A.PROG_NM
+		  FROM NEO_PROG A
+			 , NEO_USER_PROG B
+		 WHERE A.PROG_ID = B.PROG_ID
+		   AND A.USE_YN = 'Y'
+		   AND B.USER_ID = #{userId}
+	</select>
+	
 	<select id="userIdCheck" parameterType="string" resultType="userVO">
 		SELECT USER_ID
 		FROM NEO_USER
@@ -174,7 +237,7 @@
 		  , #{userPwd}
 		  , #{userEm}
 		  , #{userTel}
-		  , #{UserDesc}
+		  , #{userDesc}
 		  , #{status}
 		  , #{mailFromNm}
 		  , #{mailFromEm}
@@ -187,5 +250,41 @@
 		  , #{regDt}
 		)
 	</insert>
+	
+	<insert id="insertUserProgInfo" parameterType="userProgVO">
+		INSERT INTO NEO_USER_PROG
+			(USER_ID,PROG_ID)
+		VALUES
+			(#{userId}, #{progId})
+	</insert>
+	
+	<update id="updateUserInfo" parameterType="userVO">
+		UPDATE NEO_USER
+		   SET
+			   DEPT_NO = #{deptNo}
+			 , USER_NM = #{userNm}
+			 <if test="userPwd != null and userPwd != ''">
+			 , USER_PWD = #{userPwd}
+			 </if>
+			 , USER_EM = #{userEm}
+			 , USER_TEL = #{userTel}
+			 , USER_DESC = #{userDesc}
+			 , STATUS = #{status}
+			 , MAIL_FROM_NM = #{mailFromNm}
+			 , MAIL_FROM_EM = #{mailFromEm}
+			 , RETURN_EM = #{returnEm}
+			 , REPLY_TO_EM = #{replyToEm}
+			 , CHARSET = #{charset}
+			 , TZ_CD = #{tzCd}
+			 , UILANG = #{uilang}
+			 , UP_ID = #{upId}
+			 , UP_DT = #{upDt}
+		 WHERE USER_ID = #{userId}
+	</update>
+	
+	<delete id="deleteUserProgInfo" parameterType="string">
+		DELETE FROM NEO_USER_PROG
+		 WHERE USER_ID = #{userId}
+	</delete>
 	
 </mapper>
