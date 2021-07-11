@@ -39,7 +39,12 @@
 			<mvc:exclude-mapping path="/error/*" />
 			<bean id="commonInterceptor" class="kr.co.enders.interceptor.CommonSessionInterceptor"/>
 	    </mvc:interceptor>
+	    <!-- 대국어 지원 -->
+		<beans:bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+			<beans:property name="paramName" value="lang" />
+		</beans:bean>
 	</mvc:interceptors>
+	
 
 	<bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
 		<property name="favorPathExtension" value="true"></property>

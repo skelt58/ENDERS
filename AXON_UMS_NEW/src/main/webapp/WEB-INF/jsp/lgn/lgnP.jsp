@@ -39,16 +39,16 @@ function goLogin() {
 
 	if($(frm.pUserId).val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000LGNTBLLB001'/>] ";
+		errstr += " [<spring:message code='LGNTBLLB001'/>] ";
 	} 
 
 	if($(frm.pUserPwd).val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000LGNTBLLB002'/>] ";
+		errstr += " [<spring:message code='LGNTBLLB002'/>] ";
 	} 
 
 	if(errflag) {
-		alert("<spring:message code='000COMJSALT016'/>.\n" + errstr);
+		alert("<spring:message code='COMJSALT016'/>.\n" + errstr);
 		return;
 	}
 
@@ -57,8 +57,8 @@ function goLogin() {
 </script>
 
 <form id="lgn" name="lgn" action="/lgn/lgn.ums" method="post">
-<spring:message code='000LGNTBLLB001'/> : <input id="pUserId" name="pUserId" id="pUserId" type="text"/><br/>
-<spring:message code='000LGNTBLLB002'/> : <input id="pUserPwd" name="pUserPwd" type="password"/><br/>
+<spring:message code='LGNTBLLB001'/> : <input id="pUserId" name="pUserId" id="pUserId" type="text"/><br/>
+<spring:message code='LGNTBLLB002'/> : <input id="pUserPwd" name="pUserPwd" type="password"/><br/>
 </form>
 <button id="lgnBtn">로그인</button>
 

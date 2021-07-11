@@ -127,12 +127,12 @@ function showDeptGrid() {
 		height       : "250",
 		width        : "900",
 		colModel     :[
-                        {name:'deptNo'		,index:'deptNo'		,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL017"/>'},	// 그룹번호
-                        {name:'deptNm'		,index:'deptNm'		,width:300	,align:'left'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL018"/>', formatter:deptInfo},	// 그룹명
-                        {name:'statusNm'	,index:'statusNm'	,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL020"/>'},	// 그룹상태
-                        {name:'regId'		,index:'regId'		,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL021"/>'},	// 등록자
-                        {name:'regDt'		,index:'regDt'		,width:200	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL022"/>'},	// 등록일
-                        {name:'pDeptNo'		,index:'pDeptNo'	,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL024"/>', formatter:userList}	// 사용자보기
+                        {name:'deptNo'		,index:'deptNo'		,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="SYSTBLTL017"/>'},	// 그룹번호
+                        {name:'deptNm'		,index:'deptNm'		,width:300	,align:'left'	,hidden:false	,title:true		,label:'<spring:message code="SYSTBLTL018"/>', formatter:deptInfo},	// 그룹명
+                        {name:'statusNm'	,index:'statusNm'	,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="SYSTBLTL020"/>'},	// 그룹상태
+                        {name:'regId'		,index:'regId'		,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="SYSTBLTL021"/>'},	// 등록자
+                        {name:'regDt'		,index:'regDt'		,width:200	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="SYSTBLTL022"/>'},	// 등록일
+                        {name:'pDeptNo'		,index:'pDeptNo'	,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="SYSTBLTL024"/>', formatter:userList}	// 사용자보기
 					  ],
 		rowNum       : "10",
 		rownumbers	 : false,
@@ -154,7 +154,7 @@ function deptInfo(cellvalue, options, rowObject) {
 
 //부서(그룹) 그리드에서 그룹명 클릭 함수정의
 function userList(cellvalue, options, rowObject) {
-	return '<a href="#" onclick="getUserList(' + options.rowId + '); return false;">사용자보기</a>';
+	return '<a href="#" onclick="getUserList(' + options.rowId + '); return false;"><spring:message code="SYSBTN001"/></a>';
 }
 
 // 부서(그룹) 정보 조회
@@ -208,29 +208,29 @@ function insertDeptInfo() {
 	var errstr = "";
 	if($(frm.deptNm).val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLTL018'/>] "; // 그룹명
+		errstr += " [<spring:message code='SYSTBLTL018'/>] "; // 그룹명
 	}
 
 	if($("#status option:selected").val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLTL028'/>] "; // 상태
+		errstr += " [<spring:message code='SYSTBLTL028'/>] "; // 상태
 	}
 
 	if(errflag) {
-		alert("<spring:message code='000COMJSALT016'/>\n" + errstr); // 다음 정보를 확인하세요.
+		alert("<spring:message code='COMJSALT016'/>\n" + errstr); // 다음 정보를 확인하세요.
 		return;
 	}
 	
 	var param = $("#deptInfoForm").serialize();
 	$.getJSON("<c:url value='/ems/sys/deptAdd.json'/>?" + param, function(data) {
 		if(data.result == "Success") {
-			alert("<spring:message code='000COMJSALT008'/>");
+			alert("<spring:message code='COMJSALT008'/>");
 			deptInfoDialog.dialog("close");
 			
 			// jqGrid 새로고침
 			showDeptGrid();
 		} else if(data.result == "Fail") {
-			alert("<spring:message code='000COMJSALT009'/>");
+			alert("<spring:message code='COMJSALT009'/>");
 		}
 	});
 }
@@ -242,29 +242,29 @@ function updateDeptInfo() {
 	var errstr = "";
 	if($(frm.deptNm).val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLTL018'/>] "; // 그룹명
+		errstr += " [<spring:message code='SYSTBLTL018'/>] "; // 그룹명
 	}
 
 	if($("#status option:selected").val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLTL028'/>] "; // 상태
+		errstr += " [<spring:message code='SYSTBLTL028'/>] "; // 상태
 	}
 
 	if(errflag) {
-		alert("<spring:message code='000COMJSALT016'/>\n" + errstr); // 다음 정보를 확인하세요.
+		alert("<spring:message code='COMJSALT016'/>\n" + errstr); // 다음 정보를 확인하세요.
 		return;
 	}
 	
 	var param = $("#deptInfoForm").serialize();
 	$.getJSON("<c:url value='/ems/sys/deptUpdate.json'/>?" + param, function(data) {
 		if(data.result == "Success") {
-			alert("<spring:message code='000COMJSALT010'/>");
+			alert("<spring:message code='COMJSALT010'/>");
 			deptInfoDialog.dialog("close");
 			
 			// jqGrid 새로고침
 			showDeptGrid();
 		} else if(data.result == "Fail") {
-			alert("<spring:message code='000COMJSALT011'/>");
+			alert("<spring:message code='COMJSALT011'/>");
 		}
 	});
 }
@@ -313,13 +313,13 @@ function getUserListGrid(deptNo) {
 		height       : "250",
 		width        : "900",
 		colModel     :[
-                        {name:'userId'		,index:'userId'		,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL025"/>'},	// 사용자ID
-                        {name:'userNm'		,index:'userNm'		,width:300	,align:'left'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL026"/>', formatter:userInfo},	// 사용자명
-                        {name:'statusNm'	,index:'statusNm'	,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL027"/>'},	// 사용자상태
-                        {name:'uilangNm'	,index:'uilangNm'	,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL029"/>'},	// UI언어권
-                        {name:'tzNm'		,index:'tzNm'		,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL030"/>'},	// 타임존
-                        {name:'regId'		,index:'regId'		,width:200	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL021"/>'},	// 등록자
-                        {name:'regDt'		,index:'regDt'		,width:200	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="000SYSTBLTL022"/>'}	// 등록일
+                        {name:'userId'		,index:'userId'		,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="SYSTBLTL025"/>'},	// 사용자ID
+                        {name:'userNm'		,index:'userNm'		,width:300	,align:'left'	,hidden:false	,title:true		,label:'<spring:message code="SYSTBLTL026"/>', formatter:userInfo},	// 사용자명
+                        {name:'statusNm'	,index:'statusNm'	,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="SYSTBLTL027"/>'},	// 사용자상태
+                        {name:'uilangNm'	,index:'uilangNm'	,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="SYSTBLTL029"/>'},	// UI언어권
+                        {name:'tzNm'		,index:'tzNm'		,width:100	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="SYSTBLTL030"/>'},	// 타임존
+                        {name:'regId'		,index:'regId'		,width:200	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="SYSTBLTL021"/>'},	// 등록자
+                        {name:'regDt'		,index:'regDt'		,width:200	,align:'center'	,hidden:false	,title:true		,label:'<spring:message code="SYSTBLTL022"/>'}	// 등록일
 					  ],
 		rowNum       : "10",
 		rownumbers	 : false,
@@ -448,69 +448,69 @@ function procUserInfo() {
 	var errstr = "";
 	if($(frm.userId).val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLTL025'/>] ";	// 사용자ID
+		errstr += " [<spring:message code='SYSTBLTL025'/>] ";	// 사용자ID
 	}
 	if($("#selDeptNo option:selected").val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLTL017'/>] ";	// 그룹
+		errstr += " [<spring:message code='SYSTBLTL017'/>] ";	// 그룹
 	}
 	if($(frm.userNm).val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLTL026'/>] ";	// 사용자명
+		errstr += " [<spring:message code='SYSTBLTL026'/>] ";	// 사용자명
 	}
 	if($("#userStatus option:selected").val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLTL028'/>] ";	// 상태
+		errstr += " [<spring:message code='SYSTBLTL028'/>] ";	// 상태
 	}
 	if($(frm.userEm).val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLTL032'/>] ";	// 이메일
+		errstr += " [<spring:message code='SYSTBLTL032'/>] ";	// 이메일
 	}
 	if($(frm.userTel).val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLTL033'/>] ";	// 연락처
+		errstr += " [<spring:message code='SYSTBLTL033'/>] ";	// 연락처
 	}
 	if($("#charset option:selected").val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLTL038'/>] ";	// 메일문자셋
+		errstr += " [<spring:message code='SYSTBLTL038'/>] ";	// 메일문자셋
 	}
 	if($("#tzCd option:selected").val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLTL030'/>] ";	// 타임존
+		errstr += " [<spring:message code='SYSTBLTL030'/>] ";	// 타임존
 	}
 	if($("#uilang option:selected").val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLTL029'/>] ";	// UI 언어권
+		errstr += " [<spring:message code='SYSTBLTL029'/>] ";	// UI 언어권
 	}
 	if($(frm.mailFromNm).val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLTL034'/>] ";	// 발송자명
+		errstr += " [<spring:message code='SYSTBLTL034'/>] ";	// 발송자명
 	}
 	if($(frm.mailFromEm).val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLTL035'/>] ";	// 발송자이메일
+		errstr += " [<spring:message code='SYSTBLTL035'/>] ";	// 발송자이메일
 	}
 	if($(frm.replyToEm).val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLTL036'/>] ";	// 회신이메일
+		errstr += " [<spring:message code='SYSTBLTL036'/>] ";	// 회신이메일
 	}
 	if($(frm.returnEm).val() == "") {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLTL037'/>] ";	// RETURN이메일
+		errstr += " [<spring:message code='SYSTBLTL037'/>] ";	// RETURN이메일
 	}
 	// 등록시에만 비밀번호 필수 입력, 수정시 입력하지 않으면 기존 비밀번호 유지
 	if($("#procMode").val() == "I") {
 		if($(frm.userPwd).val() == "") {
 			errflag = true;
-			errstr += " [<spring:message code='000SYSTBLTL031'/>] ";	// 비밀번호
+			errstr += " [<spring:message code='SYSTBLTL031'/>] ";	// 비밀번호
 		}
 	}
 	if($(frm.userPwd).val() != $(frm.userPwdConf).val()) {
 		errflag = true;
-		errstr += " [<spring:message code='000SYSTBLLB001'/>] ";	// 비밀번호확인
+		errstr += " [<spring:message code='SYSTBLLB001'/>] ";	// 비밀번호확인
 	}
 	if(errflag) {
-		alert("<spring:message code='000COMJSALT016'/>\n" + errstr);	// 다음 정보를 확인하세요.
+		alert("<spring:message code='COMJSALT016'/>\n" + errstr);	// 다음 정보를 확인하세요.
 		return;
 	}
 	
@@ -520,13 +520,13 @@ function procUserInfo() {
 		var param = $("#userInfoForm").serialize();
 		$.getJSON("<c:url value='/ems/sys/userAdd.json'/>?" + param, function(data) {
 			if(data.result == "Success") {
-				alert("<spring:message code='000COMJSALT008'/>");
+				alert("<spring:message code='COMJSALT008'/>");
 				userInfoDialog.dialog("close");
 				
 				// jqGrid 새로고침
 				getUserListGrid($("#userDeptNo").val());
 			} else if(data.result == "Fail") {
-				alert("<spring:message code='000COMJSALT009'/>");
+				alert("<spring:message code='COMJSALT009'/>");
 			}
 		});
 	}
@@ -536,13 +536,13 @@ function procUserInfo() {
 		var param = $("#userInfoForm").serialize();
 		$.getJSON("<c:url value='/ems/sys/userUpdate.json'/>?" + param, function(data) {
 			if(data.result == "Success") {
-				alert("<spring:message code='000COMJSALT010'/>");
+				alert("<spring:message code='COMJSALT010'/>");
 				userInfoDialog.dialog("close");
 				
 				// jqGrid 새로고침
 				getUserListGrid($("#userDeptNo").val());
 			} else if(data.result == "Fail") {
-				alert("<spring:message code='000COMJSALT011'/>");
+				alert("<spring:message code='COMJSALT011'/>");
 			}
 		});
 	}
@@ -577,7 +577,7 @@ function checkUserId() {
 		<!-- 좌측 메뉴 -->
 		<div id="lnb" class="lnb"></div>
 		<div class="content">
-			<div><spring:message code='000SYSTBLTL002'/></div><!-- 그룹/사용자관리 -->
+			<div><spring:message code='SYSTBLTL002'/></div><!-- 그룹/사용자관리 -->
 			<div>
 				<form id="searchForm" name="searchForm">
 				<table>
@@ -588,14 +588,14 @@ function checkUserId() {
 						<col style="width:40%" />
 					</colgroup>
 					<tr>
-						<td><spring:message code='000SYSTBLTL018'/></td><!-- 그룹명 -->
+						<td><spring:message code='SYSTBLTL018'/></td><!-- 그룹명 -->
 						<td>
 							<input id="searchDeptNm" name="searchDeptNm" type="text" size="20" maxlength="20">
 						</td>
-						<td><spring:message code='000SYSTBLTL020'/></td><!-- 그룹상태 -->
+						<td><spring:message code='SYSTBLTL020'/></td><!-- 그룹상태 -->
 						<td>
 							<select id="searchStatus" name="searchStatus">
-								<option value="">::: <spring:message code='000SYSTBLLB005'/> :::</option><!-- 그룹상태선택 -->
+								<option value="">::: <spring:message code='SYSTBLLB005'/> :::</option><!-- 그룹상태선택 -->
 								<c:if test="${fn:length(deptStatusList) > 0}">
 									<c:forEach items="${deptStatusList}" var="statusVO">
 										<c:choose>
@@ -609,8 +609,8 @@ function checkUserId() {
 									</c:forEach>
 								</c:if>
 							</select>
-							<input id="btnSearch" type="button" value="<spring:message code='000COMBTN002'/>"><!-- 검색 -->
-							<input id="btnClear" type="button" value="<spring:message code='000COMBTN003'/>"><!-- 초기화 -->
+							<input id="btnSearch" type="button" value="<spring:message code='COMBTN002'/>"><!-- 검색 -->
+							<input id="btnClear" type="button" value="<spring:message code='COMBTN003'/>"><!-- 초기화 -->
 						</td>
 							
 					</tr>
@@ -618,7 +618,7 @@ function checkUserId() {
 				</form>
 				<br/>
 				<div style="width:900px;text-align:right;align:right;">
-					<input type="button" id="btnPopDeptAdd" value="<spring:message code='000COMBTN004'/>"/><!-- 신규등록 -->
+					<input type="button" id="btnPopDeptAdd" value="<spring:message code='COMBTN004'/>"/><!-- 신규등록 -->
 				</div>
 				
 				<!-- 그룹 목록 jqGrid Start -->
@@ -630,7 +630,7 @@ function checkUserId() {
 				<!-- 사용자목록 jqGrid Start -->
 				<div id="divUserList" style="display:none;">
 					<div style="width:900px;text-align:right;align:right;">
-						<input type="button" id="btnPopUserAdd" value="<spring:message code='000COMBTN004'/>"><!-- 신규등록 -->
+						<input type="button" id="btnPopUserAdd" value="<spring:message code='COMBTN004'/>"><!-- 신규등록 -->
 					</div>
 					<table id="userList" summary="사용자목록"></table>
 					<div id="pagerUser"></div>
@@ -657,11 +657,11 @@ function checkUserId() {
 		   	<col style="width:35%" />
 		</colgroup>
 		<tr>
-		    <td><spring:message code='000SYSTBLTL018'/></td><!-- 그룹명 -->
+		    <td><spring:message code='SYSTBLTL018'/></td><!-- 그룹명 -->
 			<td class="td_body">
 				<input type="text" id="deptNm" name="deptNm" class="wBig" value="" maxlength="30">
 			</td>
-		    <td><spring:message code='000SYSTBLTL028'/></td><!-- 상태 -->
+		    <td><spring:message code='SYSTBLTL028'/></td><!-- 상태 -->
 			<td class="td_body">
 				<select id="status" name="status" class="wBig">
 					<c:if test="${fn:length(deptStatusList) > 0}">
@@ -673,7 +673,7 @@ function checkUserId() {
 			</td>
 		</tr>
 		<tr>
-			<td><spring:message code='000SYSTBLTL019'/></td><!-- 그룹설명 -->
+			<td><spring:message code='SYSTBLTL019'/></td><!-- 그룹설명 -->
 			<td colspan="4">
 				<textarea id="deptDesc" name="deptDesc" cols="50" rows="8"></textarea>
 			</td>
@@ -682,19 +682,19 @@ function checkUserId() {
 	
 	<table id="deptInfoReg" style="width:750px;display:none;">
 		<tr>
-			<td width="10%"><spring:message code='000SYSTBLTL021'/></td><!-- 등록자 -->
+			<td width="10%"><spring:message code='SYSTBLTL021'/></td><!-- 등록자 -->
 			<td class="td_body">
 				<input type="text" id="regId" name="regId" maxlength="20" size="8" value="" readOnly>
 			</td>
-			<td width="10%"><spring:message code='000SYSTBLTL022'/></td><!-- 등록일 -->
+			<td width="10%"><spring:message code='SYSTBLTL022'/></td><!-- 등록일 -->
 			<td>
 				<input type="text" id="regDt" name="regDt" maxlength="50" size="12" value="" readOnly>
 			</td>
-			<td width="10%"><spring:message code='000SYSTBLTL042'/></td><!-- 수정자 -->
+			<td width="10%"><spring:message code='SYSTBLTL042'/></td><!-- 수정자 -->
 			<td>
 				<input type="text" id="upId" name="upId" maxlength="20" size="8" value="" readOnly>
 			</td>
-			<td width="10%"><spring:message code='000SYSTBLTL043'/></td><!-- 수정일 -->
+			<td width="10%"><spring:message code='SYSTBLTL043'/></td><!-- 수정일 -->
 			<td  class="td_body">
 				<input type="text" id="upDt" name="upDt" maxlength="50" size="12" value="" readOnly>
 			</td>
@@ -719,16 +719,16 @@ function checkUserId() {
 		    	<col style="width:20%" />
 		</colgroup>
 		<tr>
-			<td class="td_title"><spring:message code='000SYSTBLTL025'/></td><!-- 사용자ID -->
+			<td class="td_title"><spring:message code='SYSTBLTL025'/></td><!-- 사용자ID -->
 			<td class="td_body">
 				<input type="text" id="userId" name="userId" maxlength="10">
-				<!--<input type="button" value="<spring:message code='000COMBTN012'/>" onClick="goIDCheck()" class="btn_style"> 찾기 -->
+				<!--<input type="button" value="<spring:message code='COMBTN012'/>" onClick="goIDCheck()" class="btn_style"> 찾기 -->
 			</td>
-		    <td class="td_title"><spring:message code='000SYSTBLTL026'/></td><!-- 사용자명 -->
+		    <td class="td_title"><spring:message code='SYSTBLTL026'/></td><!-- 사용자명 -->
 			<td class="td_body">
 				<input type="text" id="userNm" name="userNm" maxlength="15" maxlength="30">
 			</td>
-		    <td class="td_title"><spring:message code='000SYSTBLTL028'/></td><!-- 상태 -->
+		    <td class="td_title"><spring:message code='SYSTBLTL028'/></td><!-- 상태 -->
 			<td  class="td_body">
 				<select name="userStatus">
 				
@@ -741,12 +741,12 @@ function checkUserId() {
 			</td>
 		</tr>
 		<tr>
-		    <td class="td_title"><spring:message code='000SYSTBLTL031'/></td><!-- 비밀번호 -->
+		    <td class="td_title"><spring:message code='SYSTBLTL031'/></td><!-- 비밀번호 -->
 			<td  class="td_body" colspan="3">
 				<input type="password" id="userPwd" name="userPwd" maxlength="15">
-				[<spring:message code='000SYSTBLLB001'/>]<input type="password" id="userPwdConf" name="userPwdConf" maxlength="15">
+				[<spring:message code='SYSTBLLB001'/>]<input type="password" id="userPwdConf" name="userPwdConf" maxlength="15">
 			</td><!-- 비밀번호확인 -->
-		    <td class="td_title"><spring:message code='000SYSTBLTL017'/></td><!-- 그룹 -->
+		    <td class="td_title"><spring:message code='SYSTBLTL017'/></td><!-- 그룹 -->
 			<td  class="td_body">
 				<select id="selDeptNo" name="selDeptNo">
 					<c:if test="${fn:length(deptList) > 0}">
@@ -758,35 +758,35 @@ function checkUserId() {
 			</td>
 		</tr>
 		<tr>
-		    <td class="td_title"><spring:message code='000SYSTBLTL032'/></td><!-- 이메일 -->
+		    <td class="td_title"><spring:message code='SYSTBLTL032'/></td><!-- 이메일 -->
 			<td class="td_body">
 				<input type="text" id="userEm" name="userEm"  maxlength="50">
 			</td>
-		    <td class="td_title"><spring:message code='000SYSTBLTL033'/></td><!-- 연락처 -->
+		    <td class="td_title"><spring:message code='SYSTBLTL033'/></td><!-- 연락처 -->
 			<td class="td_body">
 				<input type="text" id="userTel" name="userTel" maxlength="15">
 			</td>
-		    <td class="td_title"><spring:message code='000SYSTBLTL034'/></td><!-- 발송자명 -->
+		    <td class="td_title"><spring:message code='SYSTBLTL034'/></td><!-- 발송자명 -->
 			<td class="td_body">
 				<input type="text" id="mailFromNm" name="mailFromNm" maxlength="20">
 			</td>
 		</tr>
 		<tr>
-		    <td class="td_title"><spring:message code='000SYSTBLTL035'/></td><!-- 발송자이메일 -->
+		    <td class="td_title"><spring:message code='SYSTBLTL035'/></td><!-- 발송자이메일 -->
 			<td class="td_body">
 				<input type="text" id="mailFromEm" name="mailFromEm"  maxlength="50">
 			</td>
-		    <td class="td_title"><spring:message code='000SYSTBLTL036'/></td><!-- 회신이메일 -->
+		    <td class="td_title"><spring:message code='SYSTBLTL036'/></td><!-- 회신이메일 -->
 			<td class="td_body">
 				<input type="text" id="replyToEm" name="replyToEm" maxlength="50">
 			</td>
-		    <td class="td_title"><spring:message code='000SYSTBLTL037'/></td><!-- RETURN이메일 -->
+		    <td class="td_title"><spring:message code='SYSTBLTL037'/></td><!-- RETURN이메일 -->
 			<td class="td_body">
 				<input type="text" id="returnEm" name="returnEm" maxlength="50">
 			</td>
 		</tr>
 		<tr>
-		    <td class="td_title"><spring:message code='000SYSTBLTL038'/></td><!-- 메일문자셋 -->
+		    <td class="td_title"><spring:message code='SYSTBLTL038'/></td><!-- 메일문자셋 -->
 			<td class="td_body">
 				<select id="charset" name="charset">
 					<c:if test="${fn:length(charsetList) > 0}">
@@ -796,7 +796,7 @@ function checkUserId() {
 					</c:if>
 				</select>
 			</td>
-		    <td class="td_title"><spring:message code='000SYSTBLTL030'/></td><!-- 타임존 -->
+		    <td class="td_title"><spring:message code='SYSTBLTL030'/></td><!-- 타임존 -->
 			<td class="td_body">
 				<select id="tzCd" name="tzCd">
 					<c:if test="${fn:length(timezoneList) > 0}">
@@ -806,7 +806,7 @@ function checkUserId() {
 					</c:if>
 				</select>
 			</td>
-		    <td class="td_title"><spring:message code='000SYSTBLTL029'/></td><!-- UI 언어권 -->
+		    <td class="td_title"><spring:message code='SYSTBLTL029'/></td><!-- UI 언어권 -->
 			<td class="td_body">
 				<select id="uilang" name="uilang">
 					<c:if test="${fn:length(uilangList) > 0}">
@@ -818,13 +818,13 @@ function checkUserId() {
 			</td>
 		</tr>
 		<tr>
-			<td class="td_title"><spring:message code='000SYSTBLTL039'/></td><!-- 사용자설명 -->
+			<td class="td_title"><spring:message code='SYSTBLTL039'/></td><!-- 사용자설명 -->
 			<td  class="td_body" colspan="5">
 				<textarea id="userDesc" name="userDesc" cols="50" rows="5"></textarea>
 			</td>
 		</tr>
 		<tr>
-			<td class="td_title"><spring:message code='000SYSTBLTL041'/></td><!-- 사용프로그램 -->
+			<td class="td_title"><spring:message code='SYSTBLTL041'/></td><!-- 사용프로그램 -->
 			<td class="td_body" colspan="5">
 				<table>
 					<c:if test="${fn:length(programList) > 0}">
@@ -843,19 +843,19 @@ function checkUserId() {
 
 	<table id="userInfoReg" style="width:750px;display:none;">
 		<tr>
-			<td width="10%"><spring:message code='000SYSTBLTL021'/></td><!-- 등록자 -->
+			<td width="10%"><spring:message code='SYSTBLTL021'/></td><!-- 등록자 -->
 			<td class="td_body">
 				<input type="text" id="userRegId" name="regId" maxlength="20" size="8" value="" readOnly>
 			</td>
-			<td width="10%"><spring:message code='000SYSTBLTL022'/></td><!-- 등록일 -->
+			<td width="10%"><spring:message code='SYSTBLTL022'/></td><!-- 등록일 -->
 			<td>
 				<input type="text" id="userRegDt" name="regDt" maxlength="50" size="12" value="" readOnly>
 			</td>
-			<td width="10%"><spring:message code='000SYSTBLTL042'/></td><!-- 수정자 -->
+			<td width="10%"><spring:message code='SYSTBLTL042'/></td><!-- 수정자 -->
 			<td>
 				<input type="text" id="userUpId" name="upId" maxlength="20" size="8" value="" readOnly>
 			</td>
-			<td width="10%"><spring:message code='000SYSTBLTL043'/></td><!-- 수정일 -->
+			<td width="10%"><spring:message code='SYSTBLTL043'/></td><!-- 수정일 -->
 			<td  class="td_body">
 				<input type="text" id="userUpDt" name="upDt" maxlength="50" size="12" value="" readOnly>
 			</td>

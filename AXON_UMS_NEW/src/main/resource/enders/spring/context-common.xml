@@ -59,6 +59,9 @@
 			<value>300</value>
 		</property>
 	</bean>
+	
+	<!-- 다국어 지원 -->
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
 
 	<bean id="messageSourceAccessor" class="org.springframework.context.support.MessageSourceAccessor">
 		<constructor-arg ref="messageSource"/>
