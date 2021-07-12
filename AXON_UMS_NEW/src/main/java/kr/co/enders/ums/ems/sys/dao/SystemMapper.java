@@ -9,6 +9,7 @@ import java.util.List;
 
 import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
+import kr.co.enders.ums.ems.sys.vo.LoginHistVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 
@@ -140,4 +141,12 @@ public interface SystemMapper {
 	 * @throws Exception
 	 */
 	public int updateDbConnInfo(DbConnVO dbConnVO) throws Exception;
+	
+	/**
+	 * 사용자 로그인 이력 조회
+	 * @param loginHistVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<LoginHistVO> getLoginHistList(LoginHistVO loginHistVO) throws Exception;
 }

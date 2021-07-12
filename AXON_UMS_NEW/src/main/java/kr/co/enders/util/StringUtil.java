@@ -5,6 +5,7 @@
  */
 package kr.co.enders.util;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -34,6 +35,30 @@ public class StringUtil {
 		} else {
 			return i;
 		}
+	}
+	
+	/**
+	 * 현재 날짜에서 기간을 계산한 날짜를 지정한 양식(format)으로 반환한다.
+	 * durType => D:Date, M:Month, Y:Year<br/>
+	 * @param dur
+	 * @param durType
+	 * @param format
+	 * @return
+	 */
+	public static String getCalcDateFromCurr(int dur, String durType, String format) {
+		Date curDate = new Date();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(curDate);
+		if("D".equals(durType)) {
+			cal.add(Calendar.DATE, dur);
+		} else if("M".equals(durType)) {
+			cal.add(Calendar.MONTH, dur);
+		} else if("Y".equals(durType)) {
+			cal.add(Calendar.YEAR, dur);
+		}
+		
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		return sdf.format(cal.getTime());
 	}
 	
     /**

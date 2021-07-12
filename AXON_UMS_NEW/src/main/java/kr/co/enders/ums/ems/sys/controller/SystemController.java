@@ -27,6 +27,7 @@ import kr.co.enders.ums.com.vo.CodeVO;
 import kr.co.enders.ums.ems.sys.service.SystemService;
 import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
+import kr.co.enders.ums.ems.sys.vo.LoginHistVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 import kr.co.enders.util.Code;
@@ -824,6 +825,15 @@ public class SystemController {
 		return "ems/sys/dbconnInfoP";
 	}
 	
+	/**
+	 * DB Connection 정보를 수정한다.
+	 * @param dbConnVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/dbconnUpdate")
 	public ModelAndView updateDbConnInfo(@ModelAttribute DbConnVO dbConnVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		
@@ -876,6 +886,77 @@ public class SystemController {
 		ModelAndView modelAndView = new ModelAndView("jsonView", map);
 		return modelAndView;
 	}
+	
+	/**
+	 * 사용자 로그인 이력관리 화면을 출력한다.
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/lgnhstListP")
+	public String goLoginHistList(Model model, HttpServletRequest request, HttpServletResponse response) {
+		
+		String searchLgnStdDt = StringUtil.getCalcDateFromCurr(-1, "M", "yyyy-MM-dd");
+		String searchLgnEndDt = StringUtil.getCalcDateFromCurr(0, "D", "yyyy-MM-dd");
+		
+		model.addAttribute("searchLgnStdDt", searchLgnStdDt);
+		model.addAttribute("searchLgnEndDt", searchLgnEndDt);
+		
+		return "ems/sys/lgnhstListP";
+	}
+	
+	/**
+	 * 사용자 로그인 이력 목록을 조회한다.
+	 * @param loginHistVO
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/lgnhstList")
+	public ModelAndView getLoginHistList(@ModelAttribute LoginHistVO loginHistVO, Model model) {
+		logger.debug("getLoginHistList searchDeptNm = " + loginHistVO.getSearchDeptNm());
+		logger.debug("getLoginHistList searchUserId = " + loginHistVO.getSearchUserId());
+		logger.debug("getLoginHistList searchLgnStdDt = " + loginHistVO.getSearchLgnStdDt());
+		logger.debug("getLoginHistList searchLgnEndDt = " + loginHistVO.getSearchLgnEndDt());
+		
+		// 페이지 설정
+		int page = StringUtil.setNullToInt(loginHistVO.getPage(), 1);
+		int rows = StringUtil.setNullToInt(loginHistVO.getRows(), Integer.parseInt(properties.getProperty("UMS.ROW_PER_PAGE")));
+		loginHistVO.setPage(page);
+		loginHistVO.setRows(rows);
+		loginHistVO.setSearchLgnStdDt(loginHistVO.getSearchLgnStdDt().replaceAll("-", "") + "000000");
+		loginHistVO.setSearchLgnEndDt(loginHistVO.getSearchLgnEndDt().replaceAll("-", "") + "235959");
+		
+		
+		// 부서 목록 조회
+		List<LoginHistVO> loginHistList = null;
+		List<LoginHistVO> newLoginHistList = new ArrayList<LoginHistVO>();
+		try {
+			loginHistList = systemService.getLoginHistList(loginHistVO);
+		} catch(Exception e) {
+			logger.error("systemService.getDbConnList error = " + e);
+		}
+		// 등록일시 포멧 수정
+		if(loginHistList != null) {
+			for(LoginHistVO nLoginHistVO:loginHistList) {
+				nLoginHistVO.setLgnDt(StringUtil.getFDate(nLoginHistVO.getLgnDt(), Code.DT_FMT2));
+				newLoginHistList.add(nLoginHistVO);
+			}
+		}
+		
+		
+		int totCnt = newLoginHistList != null && newLoginHistList.size() > 0 ? ((LoginHistVO)newLoginHistList.get(0)).getTotCnt() : 0;
+		int total = (int)Math.ceil((double)totCnt/rows);
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("rows", newLoginHistList);
+		map.put("page", page);
+		map.put("total", total);
+		map.put("records", totCnt);
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
 
-
+	}
 }

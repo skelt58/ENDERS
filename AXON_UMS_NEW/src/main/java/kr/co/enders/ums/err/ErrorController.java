@@ -34,7 +34,7 @@ public class ErrorController {
 		
 		response.setStatus(HttpServletResponse.SC_OK);
 		
-		return "/err/error404";
+		return "err/error404";
 	}
 	
 	/**
@@ -56,7 +56,7 @@ public class ErrorController {
 			
 		response.setStatus(HttpServletResponse.SC_OK);
 		
-		return "/err/error500";
+		return "err/error500";
 	}
 
 }

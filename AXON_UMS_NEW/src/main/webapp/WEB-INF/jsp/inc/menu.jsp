@@ -73,7 +73,7 @@ function goMenu(pgmId) {
 		var str = "<table width=158 border=0 cellpadding=0 cellspacing=0>";
 		str += "<tr><td width=158 height=22><a href='#' onclick=runMenu('<c:url value="/ems/sys/deptMainP.ums"/>')>부서/사용자관리</a></td></tr>";
 		str += "<tr><td width=158 height=22><a href='#' onclick=runMenu('<c:url value="/ems/sys/dbconnMainP.ums"/>')>데이터베이스 연결 관리</a></td></tr>";
-		str += "<tr><td width=158 height=22><a href='/sys/lgnhstListP.ums'>사용자 로그인 관리</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='#' onclick=runMenu('<c:url value="/ems/sys/lgnhstListP.ums"/>')>사용자 로그인 관리</a></td></tr>";
 		str += "<tr><td width=158 height=22><a href='/sys/usercodeMainP.ums?p_cd_grp=C004'>캠페인목적관리</a></td></tr>";
 		str += "</table>";
 		$("#lnb").html(str);

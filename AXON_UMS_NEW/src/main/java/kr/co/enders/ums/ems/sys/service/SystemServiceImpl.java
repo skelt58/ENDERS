@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import kr.co.enders.ums.ems.sys.dao.SystemDAO;
 import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
+import kr.co.enders.ums.ems.sys.vo.LoginHistVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 
@@ -135,5 +136,10 @@ public class SystemServiceImpl implements SystemService {
 	@Override
 	public int updateDbConnInfo(DbConnVO dbConnVO) throws Exception {
 		return systemDAO.updateDbConnInfo(dbConnVO);
+	}
+
+	@Override
+	public List<LoginHistVO> getLoginHistList(LoginHistVO loginHistVO) throws Exception {
+		return systemDAO.getLoginHistList(loginHistVO);
 	}
 }

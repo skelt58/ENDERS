@@ -53,7 +53,7 @@
 		 ORDER BY PROG_NM ASC
 	</select>
 	
-	<insert id="insertLoginHist" parameterType="loginHistVO">
+	<insert id="insertLoginHist" parameterType="lgnHistVO">
 		INSERT INTO NEO_LGN_HST
 		(
 			LGN_HST_ID

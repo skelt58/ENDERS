@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
+import kr.co.enders.ums.ems.sys.vo.LoginHistVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 
@@ -99,6 +100,11 @@ public class SystemDAO implements SystemMapper {
 	@Override
 	public int updateDbConnInfo(DbConnVO dbConnVO) throws Exception {
 		return sqlSessionEms.getMapper(SystemMapper.class).updateDbConnInfo(dbConnVO);
+	}
+
+	@Override
+	public List<LoginHistVO> getLoginHistList(LoginHistVO loginHistVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).getLoginHistList(loginHistVO);
 	}
 
 }
