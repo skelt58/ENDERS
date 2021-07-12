@@ -19,6 +19,7 @@
 		<typeAlias alias="menuVO"			type="kr.co.enders.ums.main.vo.MenuVO" />
 		<typeAlias alias="codeVO"			type="kr.co.enders.ums.com.vo.CodeVO" />
 		<typeAlias alias="deptVO"			type="kr.co.enders.ums.ems.sys.vo.DeptVO" />
+		<typeAlias alias="dbConnVO"			type="kr.co.enders.ums.ems.sys.vo.DbConnVO" />
 	</typeAliases>
 
 	<mappers>

@@ -36,7 +36,7 @@
 			<mvc:exclude-mapping path="/lgn/logout.ums" />
 			<mvc:exclude-mapping path="/lgn/lgnP.ums" />
 			<mvc:exclude-mapping path="/lgn/lgn.ums" />
-			<mvc:exclude-mapping path="/error/*" />
+			<mvc:exclude-mapping path="/err/*" />
 			<bean id="commonInterceptor" class="kr.co.enders.interceptor.CommonSessionInterceptor"/>
 	    </mvc:interceptor>
 	    <!-- 대국어 지원 -->

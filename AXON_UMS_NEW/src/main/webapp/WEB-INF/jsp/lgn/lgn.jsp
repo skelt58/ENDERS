@@ -9,6 +9,6 @@
 <%@ include file="/WEB-INF/jsp/inc/taglib.jsp" %>
 <c:if test="${'Y' eq result}">
 <script type="text/javascript">
-window.location.href = "<c:url value='/index.ums'/>";
+	window.location.href = "<c:url value='/index.ums'/>";
 </script>
 </c:if>

@@ -5,6 +5,7 @@
  */
 package kr.co.enders.ums.ems.sys.controller;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,10 +25,12 @@ import org.springframework.web.servlet.ModelAndView;
 import kr.co.enders.ums.com.service.CodeService;
 import kr.co.enders.ums.com.vo.CodeVO;
 import kr.co.enders.ums.ems.sys.service.SystemService;
+import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 import kr.co.enders.util.Code;
+import kr.co.enders.util.DBUtil;
 import kr.co.enders.util.EncryptUtil;
 import kr.co.enders.util.PropertiesUtil;
 import kr.co.enders.util.StringUtil;
@@ -198,7 +201,7 @@ public class SystemController {
 		}
 		
 		
-		int totCnt = newDeptList != null && deptList.size() > 0 ? ((DeptVO)newDeptList.get(0)).getTotCnt() : 0;
+		int totCnt = newDeptList != null && newDeptList.size() > 0 ? ((DeptVO)newDeptList.get(0)).getTotCnt() : 0;
 		int total = (int)Math.ceil((double)totCnt/rows);
 		
 		// jsonView 생성
@@ -491,6 +494,15 @@ public class SystemController {
 		return modelAndView;
 	}
 	
+	/**
+	 * 사용자 정보를 업데이트 한다.
+	 * @param userVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/userUpdate")
 	public ModelAndView updateUserInfo(@ModelAttribute UserVO userVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("updateUserInfo userId = " + userVO.getUserId());
@@ -528,4 +540,342 @@ public class SystemController {
 		return modelAndView;
 	}
 	
+	/**
+	 * DB Connection 메인 화면을 출력한다.
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/dbconnMainP")
+	public String goDbConnMain(@ModelAttribute DbConnVO dbConnVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("SystemController goDbConnMain Start...");
+		
+		// DBMS 유형 목록을 조회한다.
+		CodeVO dbmsTypeVO = new CodeVO();
+		dbmsTypeVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		dbmsTypeVO.setCdGrp("C033");	// DBMS 유형
+		dbmsTypeVO.setUseYn("Y");
+		List<CodeVO> dbmsTypeList = null;
+		try {
+			dbmsTypeList = codeService.getCodeList(dbmsTypeVO);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList error[C033] = " + e);
+		}
+		
+		// DB Connection 상태코드 목록을 조회한다.
+		CodeVO dbConnStatusVO = new CodeVO();
+		dbConnStatusVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		dbConnStatusVO.setCdGrp("C011");	// DB Connection 상태
+		dbConnStatusVO.setUseYn("Y");
+		List<CodeVO> dbConnStatusList = null;
+		try {
+			dbConnStatusList = codeService.getCodeList(dbConnStatusVO);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList error[C011] = " + e);
+		}
+		
+		// DB CharSet 코드 목록을 조회한다.
+		CodeVO dbCharSetVO = new CodeVO();
+		dbCharSetVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		dbCharSetVO.setCdGrp("C032");	// DB CharSet
+		dbCharSetVO.setUseYn("Y");
+		List<CodeVO> dbCharSetList = null;
+		try {
+			dbCharSetList = codeService.getCodeList(dbCharSetVO);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList error[C032] = " + e);
+		}
+		
+		// model에 코드 목록 추가
+		model.addAttribute("dbmsTypeList", dbmsTypeList);			// DBMS유형코드
+		model.addAttribute("dbConnStatusList", dbConnStatusList);	// DBConnection상태코드
+		model.addAttribute("dbCharSetList",dbCharSetList);			// DB CharSet
+		
+		// 검색항목 설정
+		// 페이지 설정
+		int page = StringUtil.setNullToInt(dbConnVO.getPage(), 1);
+		dbConnVO.setPage(page);
+		dbConnVO.setSearchStatus(dbConnVO.getSearchStatus()==null||"".equals(dbConnVO.getSearchStatus())?"000":dbConnVO.getSearchStatus());
+		model.addAttribute("searchInfo", dbConnVO);
+		
+		return "ems/sys/dbconnMainP";
+	}
+	
+	/**
+	 * DB Connection 목록 조회
+	 * @param dbconnVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value = "/dbconnList")
+	public ModelAndView getDbconnList(@ModelAttribute DbConnVO dbConnVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getDbconnList searchDbConnNm = " + dbConnVO.getSearchDbConnNm());
+		logger.debug("getDbconnList searchDbTy = " + dbConnVO.getSearchDbTy());
+		logger.debug("getDbconnList searchStatus = " + dbConnVO.getSearchStatus());
+		
+		// 페이지 설정
+		int page = StringUtil.setNullToInt(dbConnVO.getPage(), 1);
+		int rows = StringUtil.setNullToInt(dbConnVO.getRows(), Integer.parseInt(properties.getProperty("UMS.ROW_PER_PAGE")));
+		dbConnVO.setPage(page);
+		dbConnVO.setRows(rows);
+		
+		// 부서 목록 조회
+		List<DbConnVO> dbConnList = null;
+		List<DbConnVO> newDbConnList = new ArrayList<DbConnVO>();
+		dbConnVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		try {
+			dbConnList = systemService.getDbConnList(dbConnVO);
+		} catch(Exception e) {
+			logger.error("systemService.getDbConnList error = " + e);
+		}
+		// 등록일시 포멧 수정
+		if(dbConnList != null) {
+			for(DbConnVO lDbconnVO:dbConnList) {
+				lDbconnVO.setRegDt(StringUtil.getFDate(lDbconnVO.getRegDt(), Code.DT_FMT2));
+				newDbConnList.add(lDbconnVO);
+			}
+		}
+		
+		
+		int totCnt = newDbConnList != null && newDbConnList.size() > 0 ? ((DbConnVO)newDbConnList.get(0)).getTotCnt() : 0;
+		int total = (int)Math.ceil((double)totCnt/rows);
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("rows", newDbConnList);
+		map.put("page", page);
+		map.put("total", total);
+		map.put("records", totCnt);
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	/**
+	 * DB Connection 정보를 등록한다.
+	 * @param dbConnVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/dbconnAdd")
+	public ModelAndView insertDbConnInfo(@ModelAttribute DbConnVO dbConnVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		logger.debug("insertDbConnInfo dbConnNm = " + dbConnVO.getDbConnNm());
+		logger.debug("insertDbConnInfo dbTy = " + dbConnVO.getDbTy());
+		logger.debug("insertDbConnInfo status = " + dbConnVO.getStatus());
+		logger.debug("insertDbConnInfo dbDriver = " + dbConnVO.getDbDriver());
+		logger.debug("insertDbConnInfo dbUrl = " + dbConnVO.getDbUrl());
+		logger.debug("insertDbConnInfo dbCharSet = " + dbConnVO.getDbCharSet());
+		logger.debug("insertDbConnInfo loginId = " + dbConnVO.getLoginId());
+		logger.debug("insertDbConnInfo loginPwd = " + dbConnVO.getLoginPwd());
+		logger.debug("insertDbConnInfo dbConnDesc = " + dbConnVO.getDbConnDesc());
+		
+		dbConnVO.setLoginPwd(EncryptUtil.getJasyptEncryptedString(properties.getProperty("JASYPT.algorithm"), properties.getProperty("JASYPT.password"), dbConnVO.getLoginPwd()));
+		dbConnVO.setRegId((String)session.getAttribute("NEO_USER_ID"));
+		dbConnVO.setRegDt(StringUtil.getDate(Code.TM_YMDHMS));
+		
+		
+		int result = 0;
+		
+		// DB Connection 정보를 등록한다.
+		try {
+			result = systemService.insertDbConnInfo(dbConnVO);
+		} catch(Exception e) {
+			logger.error("systemService.insertDbConnInfo error = " + e);
+		}
+		
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		return modelAndView;
+	}
+
+	/**
+	 * DB Connection 연결을 테스트 한다.
+	 * @param dbConnVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/dbconnTest")
+	public ModelAndView testDbConn(@ModelAttribute DbConnVO dbConnVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		int result = 0;
+		
+		logger.debug("testDbConn dbDriver = " + dbConnVO.getDbDriver());
+		logger.debug("testDbConn dbUrl = " + dbConnVO.getDbUrl());
+		logger.debug("testDbConn loginId = " + dbConnVO.getLoginId());
+		logger.debug("testDbConn loginPwd = " + dbConnVO.getLoginPwd());
+
+		// DB 접속 테스트
+		DBUtil dbUtil = new DBUtil();
+		Connection conn = null;
+		String errMsg = "";
+		try {
+			conn = dbUtil.getConnection(dbConnVO.getDbDriver(), dbConnVO.getDbUrl(), dbConnVO.getLoginId(), dbConnVO.getLoginPwd());
+			result++;
+		} catch(Exception e) {
+			logger.error("dbUtil.getConnection error = " + e);
+			errMsg = e.toString();
+		} finally {
+			if(conn != null) try { conn.close(); } catch(Exception e) {}
+		}
+		
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+		} else {
+			map.put("result","Fail");
+			map.put("errMsg", errMsg);
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		return modelAndView;
+	}
+	
+	/**
+	 * DB Connection 정보를 조회한다.
+	 * @param dbConnVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/dbconnInfoP")
+	public String goDbConnInfo(@ModelAttribute DbConnVO dbConnVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("SystemController goDbConnInfo Start...");
+		
+		logger.debug("goDbConnInfo searchDbConnNo = " + dbConnVO.getSearchDbConnNo());
+		logger.debug("goDbConnInfo searchDbConnNm = " + dbConnVO.getSearchDbConnNm());
+		logger.debug("goDbConnInfo searchDbTy = " + dbConnVO.getSearchDbTy());
+		logger.debug("goDbConnInfo searchStatus = " + dbConnVO.getSearchStatus());
+		dbConnVO.setDbConnNo(dbConnVO.getSearchDbConnNo());
+		
+		// DBMS 유형 목록을 조회한다.
+		CodeVO dbmsTypeVO = new CodeVO();
+		dbmsTypeVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		dbmsTypeVO.setCdGrp("C033");	// DBMS 유형
+		dbmsTypeVO.setUseYn("Y");
+		List<CodeVO> dbmsTypeList = null;
+		try {
+			dbmsTypeList = codeService.getCodeList(dbmsTypeVO);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList error[C033] = " + e);
+		}
+		
+		// DB Connection 상태코드 목록을 조회한다.
+		CodeVO dbConnStatusVO = new CodeVO();
+		dbConnStatusVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		dbConnStatusVO.setCdGrp("C011");	// DB Connection 상태
+		dbConnStatusVO.setUseYn("Y");
+		List<CodeVO> dbConnStatusList = null;
+		try {
+			dbConnStatusList = codeService.getCodeList(dbConnStatusVO);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList error[C011] = " + e);
+		}
+		
+		// DB CharSet 코드 목록을 조회한다.
+		CodeVO dbCharSetVO = new CodeVO();
+		dbCharSetVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		dbCharSetVO.setCdGrp("C032");	// DB CharSet
+		dbCharSetVO.setUseYn("Y");
+		List<CodeVO> dbCharSetList = null;
+		try {
+			dbCharSetList = codeService.getCodeList(dbCharSetVO);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList error[C032] = " + e);
+		}
+		
+		// DB Connection 정보를 조회한다.
+		DbConnVO dbConnInfo = null;
+		try {
+			dbConnVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+			dbConnInfo = systemService.getDbConnInfo(dbConnVO);
+			dbConnInfo.setLoginPwd(EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.algorithm"), properties.getProperty("JASYPT.password"), dbConnInfo.getLoginPwd()));
+			dbConnInfo.setRegDt(StringUtil.getFDate(dbConnInfo.getRegDt(), Code.DT_FMT2));
+			dbConnInfo.setUpDt(StringUtil.getFDate(dbConnInfo.getUpDt(), Code.DT_FMT2));
+			
+			logger.debug("systemService.getDbConnInfo Decrypted Password = " + dbConnInfo.getLoginPwd());
+		} catch(Exception e) {
+			logger.error("systemService.getDbConnInfo error = " + e);
+		}
+		
+		// model에 코드 목록 추가
+		model.addAttribute("dbmsTypeList", dbmsTypeList);			// DBMS유형코드
+		model.addAttribute("dbConnStatusList", dbConnStatusList);	// DB Connection상태코드
+		model.addAttribute("dbCharSetList",dbCharSetList);			// DB CharSet
+		model.addAttribute("searchInfo", dbConnVO);					// 리스트 페이지 검색정보
+		model.addAttribute("dbConnInfo", dbConnInfo);				// DB Connetion 정보
+		
+		return "ems/sys/dbconnInfoP";
+	}
+	
+	@RequestMapping(value="/dbconnUpdate")
+	public ModelAndView updateDbConnInfo(@ModelAttribute DbConnVO dbConnVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		logger.debug("updateDbConnInfo dbConnNo = " + dbConnVO.getDbConnNo());
+		logger.debug("updateDbConnInfo dbConnNm = " + dbConnVO.getDbConnNm());
+		logger.debug("updateDbConnInfo dbTy = " + dbConnVO.getDbTy());
+		logger.debug("updateDbConnInfo status = " + dbConnVO.getStatus());
+		logger.debug("updateDbConnInfo dbDriver = " + dbConnVO.getDbDriver());
+		logger.debug("updateDbConnInfo dbUrl = " + dbConnVO.getDbUrl());
+		logger.debug("updateDbConnInfo dbCharSet = " + dbConnVO.getDbCharSet());
+		logger.debug("updateDbConnInfo loginId = " + dbConnVO.getLoginId());
+		logger.debug("updateDbConnInfo loginPwd = " + dbConnVO.getLoginPwd());
+		logger.debug("updateDbConnInfo dbConnDesc = " + dbConnVO.getDbConnDesc());
+		
+		dbConnVO.setLoginPwd(EncryptUtil.getJasyptEncryptedString(properties.getProperty("JASYPT.algorithm"), properties.getProperty("JASYPT.password"), dbConnVO.getLoginPwd()));
+		dbConnVO.setUpId((String)session.getAttribute("NEO_USER_ID"));
+		dbConnVO.setUpDt(StringUtil.getDate(Code.TM_YMDHMS));
+		
+		
+		int result = 0;
+		
+		// DB Connection 정보를 수정한다.
+		try {
+			result = systemService.updateDbConnInfo(dbConnVO);
+		} catch(Exception e) {
+			logger.error("systemService.updateDbConnInfo error = " + e);
+		}
+		
+		// DB Connection 정보를 조회한다.
+		DbConnVO dbConnInfo = null;
+		try {
+			dbConnVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+			dbConnInfo = systemService.getDbConnInfo(dbConnVO);
+			dbConnInfo.setLoginPwd(EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.algorithm"), properties.getProperty("JASYPT.password"), dbConnInfo.getLoginPwd()));
+			dbConnInfo.setRegDt(StringUtil.getFDate(dbConnInfo.getRegDt(), Code.DT_FMT2));
+			dbConnInfo.setUpDt(StringUtil.getFDate(dbConnInfo.getUpDt(), Code.DT_FMT2));
+		} catch(Exception e) {
+			logger.error("systemService.getDbConnInfo error = " + e);
+		}
+
+		
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+			map.put("dbConnInfo", dbConnInfo);
+		} else {
+			map.put("result","Fail");
+		}
+		
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		return modelAndView;
+	}
+
+
 }

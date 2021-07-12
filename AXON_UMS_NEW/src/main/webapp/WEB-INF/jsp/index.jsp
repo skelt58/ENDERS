@@ -16,7 +16,13 @@
 	<div class="main">
 		<div id="lnb" class="lnb"></div>
 		<div class="content">
+		
+			<!-- 메인 컨텐츠 Start -->
+			
 			메인 컨텐츠 실행
+			
+			<!-- 메인 컨텐츠 End -->
+			
 		</div>
 	</div>
 	<div class="footer">
@@ -25,5 +31,4 @@
 </div>
 
 </body>
-
 </html>

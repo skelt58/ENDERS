@@ -1,9 +1,8 @@
 /**
- * Spring 메시지를 추출하기 위한 Utility이다.
+ * 작성자 : 김상진
+ * 작성일시 : 2021.07.07
+ * 설명 : Spring 메시지를 추출하기 위한 Utility이다.
  * /WEB-INF/config/message/message.properties
- * 
- * @author	Kimsangjin
- * @since	2021-07-02
  */
 package kr.co.enders.util;
 

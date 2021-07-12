@@ -11,6 +11,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
@@ -78,6 +79,26 @@ public class SystemDAO implements SystemMapper {
 	@Override
 	public int deleteUserProgInfo(String userId) throws Exception {
 		return sqlSessionEms.getMapper(SystemMapper.class).deleteUserProgInfo(userId);
+	}
+
+	@Override
+	public List<DbConnVO> getDbConnList(DbConnVO dbConnVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).getDbConnList(dbConnVO);
+	}
+
+	@Override
+	public int insertDbConnInfo(DbConnVO dbConnVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).insertDbConnInfo(dbConnVO);
+	}
+
+	@Override
+	public DbConnVO getDbConnInfo(DbConnVO dbConnVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).getDbConnInfo(dbConnVO);
+	}
+
+	@Override
+	public int updateDbConnInfo(DbConnVO dbConnVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).updateDbConnInfo(dbConnVO);
 	}
 
 }

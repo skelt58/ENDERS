@@ -59,7 +59,16 @@
 	</welcome-file-list>
 
 	<session-config>
-		<session-timeout>360</session-timeout>
+		<session-timeout>60</session-timeout>
 	</session-config>
+
+	<error-page>
+		<error-code>404</error-code>
+		<location>/err/error404.ums</location>
+	</error-page>
+	<error-page>
+		<error-code>500</error-code>
+		<location>/err/error500.ums</location>
+	</error-page>
 
 </web-app>

@@ -1,3 +1,8 @@
+/**
+ * 작성자 : 김상진
+ * 작성일시 : 2021.07.07
+ * 설명 : 공통 인터셉터 정의(로그인 체크)
+ */
 package kr.co.enders.interceptor;
 
 import java.util.List;
@@ -31,6 +36,8 @@ public class CommonSessionInterceptor extends HandlerInterceptorAdapter {
 		
 		// 사용자 세션 체크
 		if(session.getAttribute("NEO_USER_ID") == null || "".equals((String)session.getAttribute("NEO_USER_ID")) || session.getAttribute("USER_PROG_LIST") == null) {
+			//session.setAttribute("requestUri", requestUri);
+			
 			response.sendRedirect(contextRoot + "/lgn/lgnP.ums");
 			result = false;
 		} else {
@@ -41,9 +48,12 @@ public class CommonSessionInterceptor extends HandlerInterceptorAdapter {
 
 			String topMenuId = (String)request.getParameter("topMenuId");
 			if(topMenuId == null || "".equals(topMenuId)) {
-				topMenuId = "4";
+				topMenuId = (String)session.getAttribute("topMenuId");
+				if(topMenuId == null || "".equals(topMenuId)) {
+					topMenuId = "4";
+				}
 			}
-			request.setAttribute("topMenuId", topMenuId);
+			session.setAttribute("topMenuId", topMenuId);
 			
 			String uilang = (String)session.getAttribute("NEO_UILANG");
 			// TOP 메뉴 조회
@@ -54,7 +64,6 @@ public class CommonSessionInterceptor extends HandlerInterceptorAdapter {
 				logger.error("mainService.getTopMenuList Error = " + e);
 			}
 			request.setAttribute("menuList", menuList);
-
 			
 			result = true;
 		}

@@ -10,6 +10,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
@@ -97,4 +98,36 @@ public interface SystemService {
 	 */
 	@Transactional(value="transactionManagerEms")
 	public int updateUserInfo(UserVO userVO) throws Exception;
+	
+	/**
+	 * DB Connection 목록 조회
+	 * @param dbConnVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<DbConnVO> getDbConnList(DbConnVO dbConnVO) throws Exception;
+	
+	/**
+	 * DB Connection 정보 조회
+	 * @param dbConnVO
+	 * @return
+	 * @throws Exception
+	 */
+	public DbConnVO getDbConnInfo(DbConnVO dbConnVO) throws Exception;
+	
+	/**
+	 * DB Connection 정보 등록
+	 * @param dbConnVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertDbConnInfo(DbConnVO dbConnVO) throws Exception;
+	
+	/**
+	 * DB Connection 정보 수정
+	 * @param dbConnVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateDbConnInfo(DbConnVO dbConnVO) throws Exception;
 }

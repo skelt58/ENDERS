@@ -73,10 +73,12 @@ $(document).ready(function() {
 			}
 		});
 		
-		//$("#userId").attr("disabled",false);
 		$("#userId").css('backgroundColor', '#ffffff');
 		$("#userId").attr("readonly",false);
 		$("#userId").focus();
+		
+		$("#userPwd").attr("placeholder","");
+		$("#userPwdConf").attr("placeholder","");
 		
 		// 그룹(부서) 선택
 		$('#selDeptNo option').each(function(){
@@ -360,6 +362,8 @@ function getUserInfo(rowId) {
 					$(this).prop('selected', true);
 				}
 			});
+			$(frm.userPwd).attr("placeholder","비밀번호 수정시에만 입력");
+			$(frm.userPwdConf).attr("placeholder","비밀번호 수정시에만 입력");
 			//$(frm.userPwd).val(data.userInfo.userPwd);
 			//$(frm.userPwdConf).val(data.userInfo.userPwd);
 			var deptNo = data.userInfo.deptNo;
@@ -577,6 +581,9 @@ function checkUserId() {
 		<!-- 좌측 메뉴 -->
 		<div id="lnb" class="lnb"></div>
 		<div class="content">
+		
+			<!-- 메인 컨텐츠 Start -->
+			
 			<div><spring:message code='SYSTBLTL002'/></div><!-- 그룹/사용자관리 -->
 			<div>
 				<form id="searchForm" name="searchForm">
@@ -638,6 +645,9 @@ function checkUserId() {
 				<!-- 사용자목록 jqGrid End -->
 									
 			</div>
+			
+			<!-- 메인 컨텐츠 End -->
+			
 		</div>
 	</div>
 	<div class="footer">
@@ -731,7 +741,6 @@ function checkUserId() {
 		    <td class="td_title"><spring:message code='SYSTBLTL028'/></td><!-- 상태 -->
 			<td  class="td_body">
 				<select name="userStatus">
-				
 					<c:if test="${fn:length(userStatusList) > 0}">
 						<c:forEach items="${userStatusList}" var="statusVO">
 							<option value="<c:out value='${statusVO.cd}'/>"><c:out value="${statusVO.cdNm}"/></option>

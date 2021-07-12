@@ -18,7 +18,7 @@ public class DeptVO extends CommonVO {
 	private String upId;		// 수정자
 	private String upDt;		// 수정일시
 	
-	//검색
+	// 검색
 	private String searchDeptNm;	// 검색부서명
 	private String searchStatus;	// 검색상태코드
 	private String uilang;			// 언어권

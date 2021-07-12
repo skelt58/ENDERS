@@ -1,6 +1,10 @@
 package kr.co.enders.ums.ems.sys.vo;
 
-public class UserProgVO {
+import java.io.Serializable;
+
+public class UserProgVO implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private int progId;			// 프로그램아이디
 	private String progNm;		// 프로그램명
 	private String userId;		// 사용자아이디

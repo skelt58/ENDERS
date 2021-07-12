@@ -51,7 +51,8 @@
 	
 	<!-- 부서 정보 등록 -->
 	<insert id="insertDeptInfo" parameterType="deptVO">
-		INSERT INTO NEO_DEPT (
+		INSERT INTO NEO_DEPT
+		(
 			DEPT_NO
 			, DEPT_NM
 			, DEPT_DESC
@@ -59,7 +60,8 @@
 			, REG_ID
 			, REG_DT
 		)
-		VALUES (
+		VALUES
+		(
 			NEO_DEPT_SEQ.NEXTVAL
 			, #{deptNm}
 			, #{deptDesc}
@@ -72,12 +74,12 @@
 	<!-- 부서 정보 수정 -->
 	<update id="updateDeptInfo" parameterType="deptVO">
 		UPDATE NEO_DEPT
-		   SET DEPT_NM = #{deptNm}
+		   SET DEPT_NM   = #{deptNm}
 			 , DEPT_DESC = #{deptDesc}
-			 , STATUS = #{status}
-			 , UP_ID = #{upId}
-			 , UP_DT = #{upDt}
-		WHERE DEPT_NO = #{deptNo}
+			 , STATUS    = #{status}
+			 , UP_ID     = #{upId}
+			 , UP_DT     = #{upDt}
+		WHERE DEPT_NO    = #{deptNo}
 	</update>
 	
 	<!-- 사용자 목록 조회 -->
@@ -261,30 +263,183 @@
 	<update id="updateUserInfo" parameterType="userVO">
 		UPDATE NEO_USER
 		   SET
-			   DEPT_NO = #{deptNo}
-			 , USER_NM = #{userNm}
+			   DEPT_NO      = #{deptNo}
+			 , USER_NM      = #{userNm}
 			 <if test="userPwd != null and userPwd != ''">
-			 , USER_PWD = #{userPwd}
+			 , USER_PWD     = #{userPwd}
 			 </if>
-			 , USER_EM = #{userEm}
-			 , USER_TEL = #{userTel}
-			 , USER_DESC = #{userDesc}
-			 , STATUS = #{status}
+			 , USER_EM      = #{userEm}
+			 , USER_TEL     = #{userTel}
+			 , USER_DESC    = #{userDesc}
+			 , STATUS       = #{status}
 			 , MAIL_FROM_NM = #{mailFromNm}
 			 , MAIL_FROM_EM = #{mailFromEm}
-			 , RETURN_EM = #{returnEm}
-			 , REPLY_TO_EM = #{replyToEm}
-			 , CHARSET = #{charset}
-			 , TZ_CD = #{tzCd}
-			 , UILANG = #{uilang}
-			 , UP_ID = #{upId}
-			 , UP_DT = #{upDt}
-		 WHERE USER_ID = #{userId}
+			 , RETURN_EM    = #{returnEm}
+			 , REPLY_TO_EM  = #{replyToEm}
+			 , CHARSET      = #{charset}
+			 , TZ_CD        = #{tzCd}
+			 , UILANG       = #{uilang}
+			 , UP_ID        = #{upId}
+			 , UP_DT        = #{upDt}
+		 WHERE USER_ID      = #{userId}
 	</update>
 	
 	<delete id="deleteUserProgInfo" parameterType="string">
 		DELETE FROM NEO_USER_PROG
 		 WHERE USER_ID = #{userId}
 	</delete>
+	
+	
+	<!-- DB Conntion -->
+	<select id="getDbConnList" parameterType="dbConnVO" resultType="dbConnVO">
+		SELECT *
+		  FROM (
+				SELECT A.DB_CONN_NO
+		 			 , A.DB_CONN_NM
+		 			 , A.DB_TY
+		 			 , A.DB_DRIVER
+		 			 , A.DB_URL
+		 			 , A.DB_CHAR_SET
+		 			 , A.LOGIN_ID
+		 			 , A.STATUS
+		 			 , A.REG_ID
+		 			 , A.REG_DT
+		 			 , A.UP_ID
+		 			 , A.UP_DT
+		 			 , B.CD_NM DB_TY_NM
+		 			 , C.CD_NM DB_CHAR_SET_NM
+		 			 , D.CD_NM STATUS_NM
+					 , ROW_NUMBER() OVER (ORDER BY A.DB_CONN_NO) SEQ
+					 , COUNT(1) OVER() TOT_CNT
+				  FROM NEO_DBCONN A
+					 , (
+						SELECT CD, CD_NM
+						  FROM NEO_CD
+						 WHERE CD_GRP = 'C033'
+						   AND UILANG = #{uilang}
+						   AND USE_YN = 'Y'
+						) B
+					 , (
+						SELECT CD, CD_NM
+						  FROM NEO_CD
+						 WHERE CD_GRP = 'C032'
+						   AND UILANG = #{uilang}
+						   AND USE_YN = 'Y'
+						) C
+					 , (
+						SELECT CD, CD_NM
+						  FROM NEO_CD
+						 WHERE CD_GRP = 'C011'
+						   AND UILANG = #{uilang}
+						   AND USE_YN = 'Y'
+						) D
+				 WHERE A.DB_TY = B.CD
+				   AND A.DB_CHAR_SET = C.CD
+				   AND A.STATUS = D.CD
+				   <if test="searchDbConnNm != null and searchDbConnNm != ''">
+				   AND A.DB_CONN_NM LIKE '%' || #{searchDbConnNm} || '%'
+				   </if>
+				   <if test="searchDbTy != null and searchDbTy != ''">
+				   AND A.DB_TY = #{searchDbTy}
+				   </if>
+				   <if test="searchStatus != null and searchStatus != ''">
+				   AND A.STATUS = #{searchStatus}
+				   </if>
+			   )
+		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
+	</select>
+	
+	<select id="getDbConnInfo" parameterType="dbConnVO" resultType="dbConnVO">
+		SELECT A.DB_CONN_NO
+			 , A.DB_CONN_NM
+			 , A.DB_TY
+			 , A.DB_DRIVER
+			 , A.DB_URL
+			 , A.DB_CHAR_SET
+			 , A.LOGIN_ID
+			 , A.LOGIN_PWD
+			 , A.DB_CONN_DESC
+			 , A.STATUS
+			 , A.REG_ID
+			 , A.REG_DT
+			 , A.UP_ID
+			 , A.UP_DT
+			 , B.CD_NM DB_TY_NM
+			 , C.CD_NM DB_CHAR_SET_NM
+			 , D.CD_NM STATUS_NM
+		  FROM NEO_DBCONN A
+			 , (
+				SELECT CD, CD_NM
+				  FROM NEO_CD
+				 WHERE CD_GRP = 'C033'
+				   AND UILANG = #{uilang}
+				   AND USE_YN = 'Y') B
+			 , (
+				SELECT CD, CD_NM
+				  FROM NEO_CD
+				 WHERE CD_GRP = 'C032'
+				   AND UILANG = #{uilang}
+				   AND USE_YN = 'Y') C
+			 , (
+				SELECT CD, CD_NM
+				  FROM NEO_CD
+				 WHERE CD_GRP = 'C011'
+				   AND UILANG = #{uilang}
+				   AND USE_YN = 'Y') D
+		 WHERE A.DB_CONN_NO = #{dbConnNo}
+		   AND A.DB_TY = B.CD
+		   AND A.DB_CHAR_SET = C.CD
+		   AND A.STATUS = D.CD
+	</select>
+	
+	<insert id="insertDbConnInfo" parameterType="dbConnVO">
+		INSERT INTO NEO_DBCONN
+		(
+			DB_CONN_NO
+			, DB_CONN_NM
+			, DB_TY
+			, DB_DRIVER
+			, DB_URL
+			, DB_CHAR_SET
+			, LOGIN_ID
+			, LOGIN_PWD
+			, DB_CONN_DESC
+			, STATUS
+			, REG_ID
+			, REG_DT
+		)
+		VALUES
+		(
+			NEO_DBCONN_SEQ.NEXTVAL
+			, #{dbConnNm}
+			, #{dbTy}
+			, #{dbDriver}
+			, #{dbUrl}
+			, #{dbCharSet}
+			, #{loginId}
+			, #{loginPwd}
+			, #{dbConnDesc}
+			, #{status}
+			, #{regId}
+			, #{regDt}
+		)
+	</insert>
+	
+	<update id="updateDbConnInfo" parameterType="dbConnVO">
+		UPDATE NEO_DBCONN
+		  SET
+			   DB_CONN_NM   = #{dbConnNm}
+			 , DB_TY        = #{dbTy}
+			 , DB_DRIVER    = #{dbDriver}
+			 , DB_URL       = #{dbUrl}
+			 , DB_CHAR_SET  = #{dbCharSet}
+			 , LOGIN_ID     = #{loginId}
+			 , LOGIN_PWD    = #{loginPwd}
+			 , DB_CONN_DESC = #{dbConnDesc}
+			 , STATUS       = #{status}
+			 , UP_ID        = #{upId}
+			 , UP_DT        = #{upDt}
+		 WHERE DB_CONN_NO   = #{dbConnNo}
+	</update>
 	
 </mapper>
