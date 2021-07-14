@@ -28,7 +28,7 @@
 		SELECT DEPT_NO CD
 			, DEPT_NM CD_NM
 		  FROM NEO_DEPT
-		 WHERE STATUS = ${status}
+		 WHERE STATUS = #{status}
 		 ORDER BY DEPT_NM
 	</select>
 	

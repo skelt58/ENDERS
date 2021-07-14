@@ -67,6 +67,12 @@ public class LoginController {
 		logger.debug("loginProcess pUserId = " + loginVO.getpUserId());
 		logger.debug("loginProcess pUserPwd = " + loginVO.getpUserPwd());
 		
+		// ADMIN 처리
+		if("ADMIN".equals(loginVO.getpUserId().toUpperCase())) {
+			loginVO.setpUserId(loginVO.getpUserId().toUpperCase());
+			loginVO.setpUserPwd(loginVO.getpUserPwd().toUpperCase());
+		}
+		
 		String encPasswd = EncryptUtil.getEncryptedSHA256(loginVO.getpUserPwd());
 		loginVO.setpUserPwd(encPasswd);
 		UserVO userVO = null;

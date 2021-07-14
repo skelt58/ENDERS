@@ -10,9 +10,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import kr.co.enders.ums.ems.sys.vo.DbConnPermVO;
 import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
 import kr.co.enders.ums.ems.sys.vo.LoginHistVO;
+import kr.co.enders.ums.ems.sys.vo.MetaColumnVO;
+import kr.co.enders.ums.ems.sys.vo.MetaTableVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 
@@ -131,6 +134,73 @@ public interface SystemService {
 	 * @throws Exception
 	 */
 	public int updateDbConnInfo(DbConnVO dbConnVO) throws Exception;
+	
+	/**
+	 * DB 사용권한 목록 조회
+	 * @param dbConnPermVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<DbConnPermVO> getDbConnPermList(DbConnPermVO dbConnPermVO) throws Exception;
+	
+	/**
+	 * DB 사용권한 정보 저장
+	 * @param dbConnPermVO
+	 * @return
+	 * @throws Exception
+	 */
+	@Transactional(value="transactionManagerEms")
+	public int saveDbConnPermInfo(DbConnPermVO dbConnPermVO) throws Exception;
+	
+	/**
+	 * 메타 테이블 목록 조회
+	 * @param dbConnVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<MetaTableVO> getMetaTableList(DbConnVO dbConnVO) throws Exception;
+	
+	/**
+	 * 메타 테이블 정보 조회
+	 * @param metaTableVO
+	 * @return
+	 * @throws Exception
+	 */
+	public MetaTableVO getMetaTableInfo(MetaTableVO metaTableVO) throws Exception;
+	
+	/**
+	 * 메타 테이블 정보 등록
+	 * @param metaTableVO
+	 * @return
+	 * @throws Exception
+	 */
+	@Transactional(value="transactionManagerEms")
+	public int insertMetaTableInfo(MetaTableVO metaTableVO) throws Exception;
+	
+	/**
+	 * 메타 테이블 정보 수정
+	 * @param metaTableVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateMetaTableInfo(MetaTableVO metaTableVO) throws Exception;
+	
+	/**
+	 * 메타 테이블 정보 삭제(관계식 삭제 -> 관계값 삭제 -> 메타컬럼 삭제 -> 메타테이블 삭제)
+	 * @param metaTableVO
+	 * @return
+	 * @throws Exception
+	 */
+	@Transactional(value="transactionManagerEms")
+	public int deleteMetaTableInfo(MetaTableVO metaTableVO) throws Exception;
+	
+	/**
+	 * 메타 컬럼 정보 조회
+	 * @param tblNo
+	 * @return
+	 * @throws Exception
+	 */
+	public List<MetaColumnVO> getMetaColumnList(int tblNo) throws Exception;
 	
 	/**
 	 * 사용자 로그인 이력 조회

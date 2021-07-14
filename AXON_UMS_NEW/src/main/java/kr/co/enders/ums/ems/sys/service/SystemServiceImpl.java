@@ -12,9 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import kr.co.enders.ums.ems.sys.dao.SystemDAO;
+import kr.co.enders.ums.ems.sys.vo.DbConnPermVO;
 import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
 import kr.co.enders.ums.ems.sys.vo.LoginHistVO;
+import kr.co.enders.ums.ems.sys.vo.MetaColumnVO;
+import kr.co.enders.ums.ems.sys.vo.MetaTableVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 
@@ -93,12 +96,10 @@ public class SystemServiceImpl implements SystemService {
 		int result = 0;
 		
 		// 사용자 정보 수정
-		systemDAO.updateUserInfo(userVO);
-		result++;
+		result += systemDAO.updateUserInfo(userVO);
 		
 		// 사용자 프로그램 정보 삭제
-		systemDAO.deleteUserProgInfo(userVO.getUserId());
-		result++;
+		result += systemDAO.deleteUserProgInfo(userVO.getUserId());
 		
 		// 사용자 프로그램 정보 등록
 		List<UserProgVO> userProgList = null;
@@ -110,8 +111,7 @@ public class SystemServiceImpl implements SystemService {
 				userProg.setUserId(userVO.getUserId());
 				userProg.setProgId(Integer.parseInt(userProgs[i]));
 				userProgList.add(userProg);
-				systemDAO.insertUserProgInfo(userProg);
-				result++;
+				result += systemDAO.insertUserProgInfo(userProg);
 			}
 		}
 		
@@ -137,9 +137,81 @@ public class SystemServiceImpl implements SystemService {
 	public int updateDbConnInfo(DbConnVO dbConnVO) throws Exception {
 		return systemDAO.updateDbConnInfo(dbConnVO);
 	}
+	
+	@Override
+	public List<DbConnPermVO> getDbConnPermList(DbConnPermVO dbConnPermVO) throws Exception {
+		return systemDAO.getDbConnPermList(dbConnPermVO);
+	}
+	
+	@Override
+	public int saveDbConnPermInfo(DbConnPermVO dbConnPermVO) throws Exception {
+		int result = 0;
+		
+		// DB 사용권한 정보 삭제
+		result += systemDAO.deleteDbConnPermInfo(dbConnPermVO);
+		
+		// DB 사용권한 정보 삭제
+		if(dbConnPermVO.getUserId() != null && !"".equals(dbConnPermVO.getUserId())) {
+			String[] userIds = dbConnPermVO.getUserId().split(",");
+			for(int i=0;i<userIds.length;i++) {
+				DbConnPermVO permVO = new DbConnPermVO();
+				permVO.setDbConnNo(dbConnPermVO.getDbConnNo());
+				permVO.setUserId(userIds[i]);
+				result += systemDAO.insertDbConnPermInfo(permVO);
+			}
+		}
+		
+		return result;
+	}
+	
+	
+	@Override
+	public List<MetaTableVO> getMetaTableList(DbConnVO dbConnVO) throws Exception {
+		return systemDAO.getMetaTableList(dbConnVO);
+	}
+	
+	@Override
+	public MetaTableVO getMetaTableInfo(MetaTableVO metaTableVO) throws Exception {
+		return systemDAO.getMetaTableInfo(metaTableVO);
+	}
+	
+	@Override
+	public int insertMetaTableInfo(MetaTableVO metaTableVO) throws Exception {
+		
+		int tblNo = 0;
+		// 메타 테이블 정보 등록
+		systemDAO.insertMetaTableInfo(metaTableVO);
+		
+		// 메타 테이블 번호 조회
+		tblNo = systemDAO.getMetaTableSeq();
+		
+		return tblNo;
+	}
+	
+	@Override
+	public int updateMetaTableInfo(MetaTableVO metaTableVO) throws Exception {
+		return systemDAO.updateMetaTableInfo(metaTableVO);
+	}
+	
+	@Override
+	public int deleteMetaTableInfo(MetaTableVO metaTableVO) throws Exception {
+		int result = 0;
+		result += systemDAO.deleteMetaTableOperator(metaTableVO);
+		result += systemDAO.deleteMetaTableValue(metaTableVO);
+		result += systemDAO.deleteMetaTableColumn(metaTableVO);
+		result += systemDAO.deleteMetaTableInfo(metaTableVO);
+		
+		return result;
+	}
+	
+	@Override
+	public List<MetaColumnVO> getMetaColumnList(int tblNo) throws Exception {
+		return systemDAO.getMetaColumnList(tblNo);
+	}
 
 	@Override
 	public List<LoginHistVO> getLoginHistList(LoginHistVO loginHistVO) throws Exception {
 		return systemDAO.getLoginHistList(loginHistVO);
 	}
+
 }

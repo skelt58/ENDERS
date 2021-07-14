@@ -11,9 +11,12 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import kr.co.enders.ums.ems.sys.vo.DbConnPermVO;
 import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
 import kr.co.enders.ums.ems.sys.vo.LoginHistVO;
+import kr.co.enders.ums.ems.sys.vo.MetaColumnVO;
+import kr.co.enders.ums.ems.sys.vo.MetaTableVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 
@@ -101,7 +104,72 @@ public class SystemDAO implements SystemMapper {
 	public int updateDbConnInfo(DbConnVO dbConnVO) throws Exception {
 		return sqlSessionEms.getMapper(SystemMapper.class).updateDbConnInfo(dbConnVO);
 	}
+	
+	@Override
+	public List<DbConnPermVO> getDbConnPermList(DbConnPermVO dbConnPermVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).getDbConnPermList(dbConnPermVO);
+	}
+	
+	@Override
+	public int insertDbConnPermInfo(DbConnPermVO dbConnPermVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).insertDbConnPermInfo(dbConnPermVO);
+	}
 
+	@Override
+	public int deleteDbConnPermInfo(DbConnPermVO dbConnPermVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).deleteDbConnPermInfo(dbConnPermVO);
+	}
+	
+	@Override
+	public int getMetaTableSeq() throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).getMetaTableSeq();
+	}
+	
+	@Override
+	public List<MetaTableVO> getMetaTableList(DbConnVO dbConnVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).getMetaTableList(dbConnVO);
+	}
+	
+	@Override
+	public MetaTableVO getMetaTableInfo(MetaTableVO metaTableVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).getMetaTableInfo(metaTableVO);
+	}
+	
+	@Override
+	public int insertMetaTableInfo(MetaTableVO metaTableVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).insertMetaTableInfo(metaTableVO);
+	}
+
+	@Override
+	public int updateMetaTableInfo(MetaTableVO metaTableVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).updateMetaTableInfo(metaTableVO);
+	}
+	
+	@Override
+	public int deleteMetaTableOperator(MetaTableVO metaTableVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).deleteMetaTableOperator(metaTableVO);
+	}
+
+	@Override
+	public int deleteMetaTableValue(MetaTableVO metaTableVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).deleteMetaTableValue(metaTableVO);
+	}
+
+	@Override
+	public int deleteMetaTableColumn(MetaTableVO metaTableVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).deleteMetaTableColumn(metaTableVO);
+	}
+
+	@Override
+	public int deleteMetaTableInfo(MetaTableVO metaTableVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).deleteMetaTableInfo(metaTableVO);
+	}
+
+	@Override
+	public List<MetaColumnVO> getMetaColumnList(int tblNo) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).getMetaColumnList(tblNo);
+	}
+	
 	@Override
 	public List<LoginHistVO> getLoginHistList(LoginHistVO loginHistVO) throws Exception {
 		return sqlSessionEms.getMapper(SystemMapper.class).getLoginHistList(loginHistVO);

@@ -25,9 +25,12 @@ import org.springframework.web.servlet.ModelAndView;
 import kr.co.enders.ums.com.service.CodeService;
 import kr.co.enders.ums.com.vo.CodeVO;
 import kr.co.enders.ums.ems.sys.service.SystemService;
+import kr.co.enders.ums.ems.sys.vo.DbConnPermVO;
 import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
 import kr.co.enders.ums.ems.sys.vo.LoginHistVO;
+import kr.co.enders.ums.ems.sys.vo.MetaColumnVO;
+import kr.co.enders.ums.ems.sys.vo.MetaTableVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 import kr.co.enders.util.Code;
@@ -763,7 +766,11 @@ public class SystemController {
 		logger.debug("goDbConnInfo searchDbConnNm = " + dbConnVO.getSearchDbConnNm());
 		logger.debug("goDbConnInfo searchDbTy = " + dbConnVO.getSearchDbTy());
 		logger.debug("goDbConnInfo searchStatus = " + dbConnVO.getSearchStatus());
-		dbConnVO.setDbConnNo(dbConnVO.getSearchDbConnNo());
+		if(dbConnVO.getSearchDbConnNo() == 0) {
+			dbConnVO.setDbConnNo(dbConnVO.getDbConnNo());
+		} else {
+			dbConnVO.setDbConnNo(dbConnVO.getSearchDbConnNo());
+		}
 		
 		// DBMS 유형 목록을 조회한다.
 		CodeVO dbmsTypeVO = new CodeVO();
@@ -888,6 +895,329 @@ public class SystemController {
 	}
 	
 	/**
+	 * DB 사용 권한 목록을 조회한다.
+	 * @param dbConnPermVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/dbconnpermuserListP")
+	public String getDbConnPermUserList(@ModelAttribute DbConnPermVO dbConnPermVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getDbConnPermUserList dbConnNo = " + dbConnPermVO.getDbConnNo());
+		
+		// 부서(그룹) 목록 조회
+		CodeVO deptVO = new CodeVO();
+		deptVO.setStatus("000");
+		List<CodeVO> deptList = null;
+		try {
+			deptList = codeService.getDeptList(deptVO);
+		} catch(Exception e) {
+			logger.error("codeService.getDeptList error = " + e);
+		}
+		
+		// DB 사용권한 목록 조회
+		List<DbConnPermVO> dbConnPermList = null;
+		try {
+			dbConnPermList = systemService.getDbConnPermList(dbConnPermVO);
+		} catch(Exception e) {
+			logger.error("systemService.getDbConnPermList error = " + e);
+		}
+		
+		model.addAttribute("dbConnNo", dbConnPermVO.getDbConnNo());
+		model.addAttribute("deptList", deptList);
+		model.addAttribute("dbConnPermList", dbConnPermList);
+		
+		
+		return "ems/sys/dbconnpermuserListP";
+	}
+	
+	/**
+	 * DB 사용 권한 정보를 저장한다.
+	 * @param dbConnPermVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/dbconnpermAdd")
+	public ModelAndView saveDbConnPerm(@ModelAttribute DbConnPermVO dbConnPermVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("saveDbConnPerm dbConnNo = " + dbConnPermVO.getDbConnNo());
+		logger.debug("saveDbConnPerm userId = " + dbConnPermVO.getUserId());
+		
+		// DB 사용 권한 정보 저장(삭제 후 등록)
+		boolean result = false;
+		try {
+			systemService.saveDbConnPermInfo(dbConnPermVO);
+			result = true;
+		} catch(Exception e) {
+			logger.error("systemService.saveDbConnPermInfo error = " + e);
+		}
+		
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result) {
+			map.put("result","Success");
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	/**
+	 * 메타 테이블 정보를 조회한다.
+	 * @param dbConnVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="dbconnmetaMainP")
+	public String getDbConnMetaMain(@ModelAttribute DbConnVO dbConnVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getDbConnMetaMain dbConnNo = " + dbConnVO.getDbConnNo());
+		
+		
+		DbConnVO dbConnInfo = null;
+		try {
+			dbConnVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+			dbConnInfo = systemService.getDbConnInfo(dbConnVO);
+		} catch(Exception e) {
+			logger.error("systemService.getDbConnInfo error = " + e);
+		}
+		
+		// 실제 DB 테이블 목록 조회
+		List<String> realTableList = null;
+		DBUtil dbUtil = new DBUtil();
+		String dbTy = dbConnInfo.getDbTy();
+		String dbDriver = dbConnInfo.getDbDriver();
+		String dbUrl = dbConnInfo.getDbUrl();
+		String loginId = dbConnInfo.getLoginId();
+		String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.algorithm"), properties.getProperty("JASYPT.password"), dbConnInfo.getLoginPwd());
+		realTableList = dbUtil.getRealTableList(dbTy, dbDriver, dbUrl, loginId, loginPwd);
+		
+		// 메타 테이블 목록 조회
+		List<MetaTableVO> metaTableList = null;
+		try {
+			metaTableList = systemService.getMetaTableList(dbConnVO);
+		} catch(Exception e) {
+			logger.error("systemService.getMetaTableList error = " + e);
+		}
+		
+		model.addAttribute("dbConnNo", dbConnVO.getDbConnNo());
+		model.addAttribute("realTableList", realTableList);
+		model.addAttribute("metaTableList", metaTableList);
+		
+		
+		return "ems/sys/dbconnmetaMainP";
+	}
+	
+	/**
+	 * 메타 테이블 정보를 조회한다.
+	 * @param metaTableVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/metatableInfo")
+	public ModelAndView getMetaTableInfo(@ModelAttribute MetaTableVO metaTableVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getMetaTableInfo dbConnNo = " + metaTableVO.getDbConnNo());
+		logger.debug("getMetaTableInfo tblNo = " + metaTableVO.getTblNo());
+		
+		// 메타 테이블 정보 조회
+		MetaTableVO metaTableInfo = null;
+		try {
+			metaTableInfo = systemService.getMetaTableInfo(metaTableVO);
+		} catch(Exception e) {
+			logger.error("systemService.getMetaTableInfo error = " + e);
+		}
+		
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(metaTableInfo != null) {
+			map.put("result","Success");
+			map.put("metaTableInfo", metaTableInfo);
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	/**
+	 * 메타 테이블 정보를 등록한다.(등록후 테이블 번호를 조회함)
+	 * @param metaTableVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/metatableAdd")
+	public ModelAndView insertMetaTableInfo(@ModelAttribute MetaTableVO metaTableVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("insertMetaTableInfo dbConnNo = " + metaTableVO.getDbConnNo());
+		logger.debug("insertMetaTableInfo tblNm = " + metaTableVO.getTblNm());
+		logger.debug("insertMetaTableInfo tblAlias = " + metaTableVO.getTblAlias());
+		logger.debug("insertMetaTableInfo tblDesc = " + metaTableVO.getTblDesc());
+		
+		// 메타 테이블 정보 저장
+		boolean result = false;
+		int tblNo = 0;
+		try {
+			tblNo = systemService.insertMetaTableInfo(metaTableVO);
+			result = true;
+		} catch(Exception e) {
+			logger.error("systemService.insertMetaTableInfo error = " + e);
+		}
+		
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result) {
+			map.put("result","Success");
+			map.put("tblNo", tblNo);
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/metatableUpdate")
+	public ModelAndView updateMetaTableInfo(@ModelAttribute MetaTableVO metaTableVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("updateMetaTableInfo dbConnNo = " + metaTableVO.getDbConnNo());
+		logger.debug("updateMetaTableInfo tblNo = " + metaTableVO.getTblNo());
+		logger.debug("updateMetaTableInfo tblNm = " + metaTableVO.getTblNm());
+		logger.debug("updateMetaTableInfo tblAlias = " + metaTableVO.getTblAlias());
+		logger.debug("updateMetaTableInfo tblDesc = " + metaTableVO.getTblDesc());
+		
+		// 메타 테이블 정보 저장
+		int result = 0;
+		try {
+			result = systemService.updateMetaTableInfo(metaTableVO);
+		} catch(Exception e) {
+			logger.error("systemService.updateMetaTableInfo error = " + e);
+		}
+		
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+			map.put("tblNo", metaTableVO.getTblNo());
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/metatableDelete")
+	public ModelAndView deleteMetaTableInfo(@ModelAttribute MetaTableVO metaTableVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("deleteMetaTableInfo tblNo = " + metaTableVO.getTblNo());
+		
+		// 메타 테이블 삭제(관계식 삭제 -> 관계값 삭제 -> 메타컬럼 삭제 -> 메타테이블 삭제)
+		int result = 0;
+		try {
+			result = systemService.deleteMetaTableInfo(metaTableVO);
+		} catch(Exception e) {
+			logger.error("systemService.deleteMetaTableInfo error = " + e);
+		}
+		
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+			map.put("tblNo", metaTableVO.getTblNo());
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/metacolumnListP")
+	public String getMetaColumnList(@ModelAttribute MetaTableVO metaTableVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getMetaColumnList dbConnNo = " + metaTableVO.getDbConnNo());
+		logger.debug("getMetaColumnList tblNo = " + metaTableVO.getTblNo());
+		logger.debug("getMetaColumnList tblNm = " + metaTableVO.getTblNm());
+		
+		DbConnVO dbConnInfo = null;
+		try {
+			DbConnVO dbConnVO = new DbConnVO();
+			dbConnVO.setDbConnNo(metaTableVO.getDbConnNo());
+			dbConnVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+			dbConnInfo = systemService.getDbConnInfo(dbConnVO);
+		} catch(Exception e) {
+			logger.error("systemService.getDbConnInfo error = " + e);
+		}
+		
+		// 실제 DB 테이블 목록 조회
+		List<MetaColumnVO> realColumnList = null;
+		DBUtil dbUtil = new DBUtil();
+		String dbTy = dbConnInfo.getDbTy();
+		String dbDriver = dbConnInfo.getDbDriver();
+		String dbUrl = dbConnInfo.getDbUrl();
+		String loginId = dbConnInfo.getLoginId();
+		String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.algorithm"), properties.getProperty("JASYPT.password"), dbConnInfo.getLoginPwd());
+		realColumnList = dbUtil.getRealColumnList(dbTy, dbDriver, dbUrl, loginId, loginPwd, metaTableVO.getTblNm());
+
+		
+		List<MetaColumnVO> metaColumnList = null;
+		try {
+			metaColumnList = systemService.getMetaColumnList(metaTableVO.getTblNo());
+		} catch(Exception e) {
+			logger.error("systemService.getMetaColumnList error = " + e);
+		}
+		
+		model.addAttribute("dbConnNo", metaTableVO.getDbConnNo());
+		model.addAttribute("tblNo", metaTableVO.getTblNo());
+		model.addAttribute("tblNm", metaTableVO.getTblNm());
+		model.addAttribute("realColumnList", realColumnList);
+		model.addAttribute("metaColumnList", metaColumnList);
+		
+		return "ems/sys/metacolumnListP";
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/******************************************************** 사용자 로그인 관리 ********************************************************/
+	
+	/**
 	 * 사용자 로그인 이력관리 화면을 출력한다.
 	 * @param model
 	 * @param request
@@ -957,6 +1287,6 @@ public class SystemController {
 		ModelAndView modelAndView = new ModelAndView("jsonView", map);
 		
 		return modelAndView;
-
 	}
+
 }

@@ -16,13 +16,26 @@ public class StringTest {
 //		String oldPass = encryptor.decrypt("SEJsVP/Jfn5PS7xwa6qz+dNJ6jSPY2eb");
 //		System.out.println("oldPass = " + oldPass);
 		
-		String enc = EncryptUtil.getBase64EncodedString("enders");
-		String dec = EncryptUtil.getBase64DecodedString(enc);
+//		String enc = EncryptUtil.getBase64EncodedString("enders");
+//		String dec = EncryptUtil.getBase64DecodedString(enc);
+//		
+//		System.out.println("enc = " + enc);
+//		System.out.println("enc = " + dec);
+//		
+//		String encPwd = EncryptUtil.getEncryptedSHA256("ADMIN");
+//		System.out.println("encPwd = " + encPwd);
 		
-		System.out.println("enc = " + enc);
-		System.out.println("enc = " + dec);
+		String dbUrl = "jdbc:mysql://127.0.0.1:3306/UMS?useUnicode=true&characterEncoding=utf8";
+		String catalog = "";
+		if(dbUrl.indexOf("?") > 0) {
+			catalog = dbUrl.substring(0,dbUrl.indexOf("?"));
+		}
+		catalog = catalog.split("/")[catalog.split("/").length-1];
 		
-		String encPwd = EncryptUtil.getEncryptedSHA256("ADMIN");
-		System.out.println("encPwd = " + encPwd);
+		System.out.println(catalog);
+		System.out.println(dbUrl);
+		
 	}
+	
+	
 }

@@ -20,6 +20,9 @@
 		<typeAlias alias="codeVO"			type="kr.co.enders.ums.com.vo.CodeVO" />
 		<typeAlias alias="deptVO"			type="kr.co.enders.ums.ems.sys.vo.DeptVO" />
 		<typeAlias alias="dbConnVO"			type="kr.co.enders.ums.ems.sys.vo.DbConnVO" />
+		<typeAlias alias="dbConnPermVO"		type="kr.co.enders.ums.ems.sys.vo.DbConnPermVO" />
+		<typeAlias alias="metaTableVO"		type="kr.co.enders.ums.ems.sys.vo.MetaTableVO" />
+		<typeAlias alias="metaColumnVO"		type="kr.co.enders.ums.ems.sys.vo.MetaColumnVO" />
 		<typeAlias alias="loginHistVO"		type="kr.co.enders.ums.ems.sys.vo.LoginHistVO" />
 	</typeAliases>
 

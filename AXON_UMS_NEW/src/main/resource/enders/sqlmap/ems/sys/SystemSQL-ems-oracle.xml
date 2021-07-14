@@ -141,6 +141,7 @@
 		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
 	</select>
 	
+	<!-- 사용자 정보 조회 -->
 	<select id="getUserInfo" parameterType="userVO" resultType="userVO">
 		SELECT A.USER_ID
 			 , A.DEPT_NO
@@ -195,6 +196,7 @@
 		   AND A.UILANG = F.CD
 	</select>
 	
+	<!-- 사용자 프로그램 정보 조회 -->
 	<select id="getUserProgList" parameterType="userVO" resultType="userProgVO">
 		SELECT B.PROG_ID, A.PROG_NM
 		  FROM NEO_PROG A
@@ -204,12 +206,14 @@
 		   AND B.USER_ID = #{userId}
 	</select>
 	
+	<!-- 사용자 아이디를 체크한다. 중복 방지용 -->
 	<select id="userIdCheck" parameterType="string" resultType="userVO">
 		SELECT USER_ID
 		FROM NEO_USER
 		WHERE USER_ID = #{userId}
 	</select>
 	
+	<!-- 사용자 정보 등록 -->
 	<insert id="insertUserInfo" parameterType="userVO">
 		INSERT INTO NEO_USER 
 		(
@@ -253,6 +257,7 @@
 		)
 	</insert>
 	
+	<!-- 사용자 프로그램 정보 등록 -->
 	<insert id="insertUserProgInfo" parameterType="userProgVO">
 		INSERT INTO NEO_USER_PROG
 			(USER_ID,PROG_ID)
@@ -260,6 +265,7 @@
 			(#{userId}, #{progId})
 	</insert>
 	
+	<!-- 사용자 정보 수정 -->
 	<update id="updateUserInfo" parameterType="userVO">
 		UPDATE NEO_USER
 		   SET
@@ -284,13 +290,14 @@
 		 WHERE USER_ID      = #{userId}
 	</update>
 	
+	<!-- 사용자 프로그램 정보 삭제 -->
 	<delete id="deleteUserProgInfo" parameterType="string">
 		DELETE FROM NEO_USER_PROG
 		 WHERE USER_ID = #{userId}
 	</delete>
 	
 	
-	<!-- DB Conntion -->
+	<!-- DB Conntion 목록 조회 -->
 	<select id="getDbConnList" parameterType="dbConnVO" resultType="dbConnVO">
 		SELECT *
 		  FROM (
@@ -349,6 +356,7 @@
 		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
 	</select>
 	
+	<!-- DB Conntion 정보 조회 -->
 	<select id="getDbConnInfo" parameterType="dbConnVO" resultType="dbConnVO">
 		SELECT A.DB_CONN_NO
 			 , A.DB_CONN_NM
@@ -392,6 +400,7 @@
 		   AND A.STATUS = D.CD
 	</select>
 	
+	<!-- DB Conntion 정보 등록 -->
 	<insert id="insertDbConnInfo" parameterType="dbConnVO">
 		INSERT INTO NEO_DBCONN
 		(
@@ -425,9 +434,10 @@
 		)
 	</insert>
 	
+	<!-- DB Conntion 정보 수정 -->
 	<update id="updateDbConnInfo" parameterType="dbConnVO">
 		UPDATE NEO_DBCONN
-		  SET
+		   SET
 			   DB_CONN_NM   = #{dbConnNm}
 			 , DB_TY        = #{dbTy}
 			 , DB_DRIVER    = #{dbDriver}
@@ -442,6 +452,140 @@
 		 WHERE DB_CONN_NO   = #{dbConnNo}
 	</update>
 	
+	<!-- DB 사용권한 목록 조회 -->
+	<select id="getDbConnPermList" parameterType="dbConnPermVO" resultType="dbConnPermVO">
+		SELECT A.USER_ID
+			 , B.DEPT_NM
+			 , A.DEPT_NO
+			 , (
+				CASE WHEN (
+							SELECT DISTINCT 'Y'
+							  FROM NEO_DBCONN_PERM
+							 WHERE DB_CONN_NO = #{dbConnNo}
+							   AND USER_ID = A.USER_ID
+							) IS NULL
+					 THEN 'N' ELSE 'Y' END) PERM_YN
+		  FROM NEO_USER A
+			 , NEO_DEPT B
+		 WHERE B.STATUS = '000'
+		   AND A.DEPT_NO = B.DEPT_NO
+		 ORDER BY B.DEPT_NM, A.USER_ID
+	</select>
+	
+	<!-- DB 사용권한 정보 삭제 -->
+	<delete id="deleteDbConnPermInfo" parameterType="dbConnPermVO">
+		DELETE FROM NEO_DBCONN_PERM
+		 WHERE DB_CONN_NO = #{dbConnNo}
+	</delete>
+	
+	<!-- DB 사용권한 정보 등록 -->
+	<insert id="insertDbConnPermInfo" parameterType="dbConnPermVO">
+		INSERT INTO NEO_DBCONN_PERM
+		(
+			DB_CONN_NO
+			, USER_ID
+		)
+		VALUES
+		(
+			#{dbConnNo}
+			, #{userId}
+		)
+	</insert>
+	
+	<!-- 메타 테이블 목록 조회 -->
+	<select id="getMetaTableList" parameterType="dbConnVO" resultType="metaTableVO">
+		SELECT TBL_NO
+			 , DB_CONN_NO
+			 , TBL_NM
+			 , TBL_DESC
+			 , TBL_ALIAS
+		  FROM NEO_METATABLE
+		 WHERE DB_CONN_NO = #{dbConnNo}
+		 ORDER BY TBL_NM
+	</select>
+	
+	<insert id="insertMetaTableInfo" parameterType="metaTableVO">
+		INSERT INTO NEO_METATABLE
+		(
+			TBL_NO
+			, DB_CONN_NO
+			, TBL_NM
+			, TBL_DESC
+			, TBL_ALIAS
+		)
+		VALUES
+		(
+			NEO_METATABLE_SEQ.NEXTVAL
+			, #{dbConnNo}
+			, #{tblNm}
+			, #{tblDesc}
+			, #{tblAlias}
+		)
+	</insert>
+	
+	<select id="getMetaTableSeq" resultType="_int">
+		SELECT NEO_METATABLE_SEQ.CURRVAL SEQ FROM DUAL
+	</select>
+	
+	<select id="getMetaTableInfo" parameterType="metaTableVO" resultType="metaTableVO">
+		SELECT DB_CONN_NO
+			 , TBL_NM
+			 , TBL_DESC
+			 , TBL_ALIAS
+		  FROM NEO_METATABLE
+		 WHERE TBL_NO = #{tblNo}
+	</select>
+	
+	<update id="updateMetaTableInfo" parameterType="metaTableVO">
+		UPDATE NEO_METATABLE
+		   SET
+			   TBL_NM    = #{tblNm}
+			 , TBL_ALIAS = #{tblAlias}
+			 , TBL_DESC  = #{tblDesc}
+		 WHERE TBL_NO    = #{tblNo}
+	</update>
+	
+	<!-- 관계식 삭제 -> 관계값 삭제 -> 메타컬럼 삭제 -> 메타테이블 삭제 -->
+	<delete id="deleteMetaTableOperator" parameterType="metaTableVO">
+		DELETE FROM NEO_OPERATOR
+		 WHERE COL_NO IN (
+		 					SELECT COL_NO
+							  FROM NEO_METACOLUMN
+							 WHERE TBL_NO = #{tblNo}
+						)
+	</delete>
+	<delete id="deleteMetaTableValue" parameterType="metaTableVO">
+		DELETE FROM NEO_VALUE
+		 WHERE COL_NO IN (
+		 					SELECT COL_NO
+							  FROM NEO_METACOLUMN
+							 WHERE TBL_NO = #{tblNo}
+						)
+	</delete>
+	<delete id="deleteMetaTableColumn" parameterType="metaTableVO">
+		DELETE FROM NEO_METACOLUMN
+		 WHERE TBL_NO = #{tblNo}
+	</delete>
+	<delete id="deleteMetaTableInfo" parameterType="metaTableVO">
+		DELETE FROM NEO_METATABLE
+		 WHERE TBL_NO = #{tblNo}
+	</delete>
+	
+	<select id="getMetaColumnList" parameterType="_int" resultType="metaColumnVO">
+		SELECT COL_NO
+			 , TBL_NO
+			 , COL_NM
+			 , COL_DATA_TY
+			 , COL_DATA_TY_JDBC
+			 , COL_DESC
+			 , COL_ALIAS
+		  FROM NEO_METACOLUMN
+		 WHERE TBL_NO = #{tblNo}
+		 ORDER BY COL_NM
+	</select>
+	
+	
+	<!-- 사용자 로그인 이력 조회 -->
 	<select id="getLoginHistList" parameterType="loginHistVO" resultType="loginHistVO">
 		SELECT *
 		  FROM (

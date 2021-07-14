@@ -19,8 +19,13 @@ $(document).ready(function() {
 		e.preventDefault();
 		updateDbConnInfo();
 	});
+	
+	// 권한관리 탭 실행
+	goTab(1);
 });
 
+/***************************************************** DB Connection 정보 처리 ***********************************************************/
+// 연결 테스트
 function testDbConn() {
 	var errflag = false;
 	var errstr = "";
@@ -60,6 +65,7 @@ function testDbConn() {
 	});
 }
 
+// DB Connection 정보 수정
 function updateDbConnInfo() {
 	var errflag = false;
 	var errstr = "";
@@ -104,15 +110,15 @@ function updateDbConnInfo() {
 	var param = $("#dbConnInfoForm").serialize();
 	$.getJSON("<c:url value='/ems/sys/dbconnUpdate.json'/>?" + param, function(data) {
 		if(data.result == "Success") {
-			alert("<spring:message code='COMJSALT008'/>");	// 등록 성공
+			alert("수정성공");	
 			
 			// 수정된 값으로 세팅
 			$("#upId").val(data.dbConnInfo.upId);
 			$("#upDt").val(data.dbConnInfo.upDt);
 			
-			
+			$("#dbConnInfoForm").attr("action","<c:url value='/ems/sys/dbconnInfoP.ums'/>").submit();
 		} else if(data.result == "Fail") {
-			alert("<spring:message code='COMJSALT009'/>");	// 등록 실패
+			alert("수정실패");	
 		}
 	});
 }
@@ -160,9 +166,245 @@ function setDB(dbTy) {
 function goList() {
 	$("#dbConnInfoForm").attr("action","<c:url value='/ems/sys/dbconnMainP.ums'/>").submit();
 }
+
+function goTab(idx) {
+	if(idx == 1) {
+		$("#td_tab1").css({"background":"#cccccc","font-weight":"bold"});
+		$("#td_tab2").css({"background":"#ffffff","font-weight":"normal"});
+		$("#td_tab3").css({"background":"#ffffff","font-weight":"normal"});
+	} else if(idx == 2) {
+		$("#td_tab1").css({"background":"#ffffff","font-weight":"normal"});
+		$("#td_tab2").css({"background":"#cccccc","font-weight":"bold"});
+		$("#td_tab3").css({"background":"#ffffff","font-weight":"normal"});
+	} else if(idx == 3) {
+		$("#td_tab1").css({"background":"#ffffff","font-weight":"normal"});
+		$("#td_tab2").css({"background":"#ffffff","font-weight":"normal"});
+		$("#td_tab3").css({"background":"#cccccc","font-weight":"bold"});
+	}
+	
+	$("#tabIdx").val(idx);
+	
+	getContentPageHtml(idx);
+}
+
+function getContentPageHtml(idx) {
+	clearContentPageHtml();
+	
+	var url = "";
+	if(idx == 1) {
+		url = 	"<c:url value='/ems/sys/dbconnpermuserListP.ums'/>";
+	} else if(idx == 2) {
+		url = 	"<c:url value='/ems/sys/dbconnmetaMainP.ums'/>";
+	} else if(idx == 3) {
+		url = 	"<c:url value='/ems/sys/dbconnpermuserListP.ums'/>";
+	}
+	
+	var dbConnNo = $("#dbConnNo").val();
+	$.ajax({
+	    type : "GET",
+	    url : url + "?dbConnNo=" + dbConnNo,
+	    dataType : "html",
+	    async: false,
+	    success : function(Parse_data){
+	        $("#divTabContent").html(Parse_data);
+	    },
+	    error : function(){
+	        alert("Error!!");
+	    }
+	});
+}
+
+function clearContentPageHtml() {
+	 $("#divTabContent").html("");
+}
+
+
+/***************************************************** DB 사용 권한 정보 처리 ***********************************************************/
+// 전체 사용자 선택
+function setAllUser(deptNo, chkYn) {
+	$("input[name='deptNo']").each(function(index, item){
+		if($(item).val() == deptNo) {
+			$("input[name='userId']")[index].checked = chkYn;
+		}		
+	});
+}
+
+// DB 사용 권한 정보 저장
+function goConnPermAdd() {
+	var param = $("#dbConnPermForm").serialize();
+	$.getJSON("<c:url value='/ems/sys/dbconnpermAdd.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='COMJSALT008'/>");	// 등록 성공
+			
+			getContentPageHtml(1);
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='COMJSALT009'/>");	// 등록 실패
+		}
+	});
+}
+
+
+
+
+/***************************************************** 메타 테이블 정보 처리 ***********************************************************/
+//메타 테이블 입력 화면 호출
+function goMetaTableForm(tableName) {
+	$("#divMetaTableInfo").show();
+	$("#divMetaTableInsertBtn").show();
+	$("#divMetaTableUpdateBtn").hide();
+	$("#tblNm").val(tableName);
+	$("#tblAlias").val("");
+	$("#tblDesc").val("");
+	
+	// 메터 컬럼 출력 화면 숨김
+	$("#divMetaColumnInfo").hide();	
+}
+
+// 메타 테이블 정보 조회
+function goMetaTableInfo(tableNo,tableName) {
+	$("#divMetaTableInfo").show();
+	$("#divMetaTableInsertBtn").hide();
+	$("#divMetaTableUpdateBtn").show();
+	$("#tblNo").val(tableNo);
+	
+	// 메타 테이블 정보 조회
+	var param = $("#metaTableInfo").serialize();
+	$.getJSON("<c:url value='/ems/sys/metatableInfo.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			
+			$("#tblNm").val(data.metaTableInfo.tblNm);
+			$("#tblAlias").val(data.metaTableInfo.tblAlias);
+			$("#tblDesc").val(data.metaTableInfo.tblDesc);
+			
+		} else if(data.result == "Fail") {
+			alert("데이터 조회 실패");
+		}
+	});
+	
+	$("#divMetaColumnInfo").show();
+	// 메타 컬럼 정보 표시
+	$.ajax({
+	    type : "GET",
+	    url : "<c:url value='/ems/sys/metacolumnListP.ums'/>?dbConnNo=<c:out value='${dbConnInfo.dbConnNo}'/>&tblNo=" + tableNo + "&tblNm=" + tableName,
+	    dataType : "html",
+	    async: false,
+	    success : function(Parse_data){
+	        $("#divMetaColumnInfo").html(Parse_data);
+	    },
+	    error : function(){
+	        alert("Error!!");
+	    }
+	});
+}
+
+// 메타 테이블 정보 등록
+function goMetaTableAdd() {
+	var errflag = false;
+	var errstr = "";
+	
+	if($("#tblNm").val() == "") {
+		errflag = true;
+		errstr += " [<spring:message code='SYSTBLTL061'/>] ";	// 테이블명
+	}
+	
+	if($("#tblAlias").val() == "") {
+		errflag = true;
+		errstr += " [<spring:message code='SYSTBLTL062'/>] ";	// 별칭
+	}
+	
+	if(errflag) {
+		alert("<spring:message code='COMJSALT016'/>\n" + errstr);	// 다음 정보를 확인하세요.
+		return;
+	}
+	
+	var param = $("#metaTableInfo").serialize();
+	$.getJSON("<c:url value='/ems/sys/metatableAdd.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='COMJSALT008'/>");	// 등록 성공
+			$("#hiddenTblNo").val(data.tblNo);
+			$("#hiddenTblNm").val($("#tblNm").val());
+			
+			// 메타테이블 다시 조회
+			reloadMetaTableInfo("I");
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='COMJSALT009'/>");	// 등록 실패
+		}
+	});
+}
+
+//메타 테이블 정보 수정
+function goMetaTableUpdate() {
+	var errflag = false;
+	var errstr = "";
+	
+	if($("#tblNm").val() == "") {
+		errflag = true;
+		errstr += " [<spring:message code='SYSTBLTL061'/>] ";	// 테이블명
+	}
+	
+	if($("#tblAlias").val() == "") {
+		errflag = true;
+		errstr += " [<spring:message code='SYSTBLTL062'/>] ";	// 별칭
+	}
+	
+	if(errflag) {
+		alert("<spring:message code='COMJSALT016'/>\n" + errstr);	// 다음 정보를 확인하세요.
+		return;
+	}
+	
+	var param = $("#metaTableInfo").serialize();
+	$.getJSON("<c:url value='/ems/sys/metatableUpdate.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='COMJSALT010'/>");	// 수정 성공
+			$("#hiddenTblNo").val(data.tblNo);
+			$("#hiddenTblNm").val($("#tblNm").val());
+			
+			// 메타테이블 다시 조회
+			reloadMetaTableInfo("U");
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='COMJSALT011'/>");	// 수정 실패
+		}
+	});
+}
+
+//메타 테이블 정보 삭제
+function goMetaTableDelete() {
+	var param = $("#metaTableInfo").serialize();
+	$.getJSON("<c:url value='/ems/sys/metatableDelete.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='COMJSALT012'/>");	// 삭제 성공
+			$("#hiddenTblNo").val(data.tblNo);
+			$("#hiddenTblNm").val($("#tblNm").val());
+			
+			// 메타테이블 다시 조회
+			reloadMetaTableInfo("D");
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='COMJSALT013'/>");	// 삭제 실패
+		}
+	});
+}
+
+function getMetaColumnList() {
+	
+}
+
+function reloadMetaTableInfo(mode) {
+	getContentPageHtml(2);
+	if(mode == "D") {
+		//goMetaTableForm($("#hiddenTblNm").val());
+		$("#divMetaTableInfo").hide();
+		$("#divMetaColumnInfo").hide();
+	} else {
+		goMetaTableInfo($("#hiddenTblNo").val(), $("#hiddenTblNm").val());
+	}
+}
+
 </script>
-
-
+<form id="hiddenForm" name="hiddenForm" style="display:none;">
+<input type="hidden" id="tabIdx" value="1"/>
+<input type="hidden" id="hiddenTblNo" value=""/>
+<input type="hidden" id="hiddenTblNm" value=""/>
+</form>
 <div class="ex-layout">
 	<div class="gnb">
 		<!-- 상단메뉴화면 -->
@@ -253,7 +495,6 @@ function goList() {
 											<option value="<c:out value='${dbCharSet.cd}'/>"><c:out value="${dbCharSet.cdNm}"/></option>
 										</c:otherwise>
 									</c:choose>
-									<option value="<c:out value='${dbCharSet.cd}'/>"><c:out value="${dbCharSet.cdNm}"/></option>
 								</c:forEach>
 							</c:if>
 						</select>
@@ -301,7 +542,25 @@ function goList() {
 			</table>
 			
 			</form>
+			
+			
+			<!-- TAB Start -->
+			<div id="divMenu1" style="width: 1015px;">
+			     <table class="nTab dbconn">
+				     <tr>
+			         	<td align="center" id="td_tab1"><a href="javascript:goTab(1)"><spring:message code='SYSBTN004'/></a></td><!-- 권한관리 -->
+			         	<td align="center" id="td_tab2"><a href="javascript:goTab(2)"><spring:message code='SYSBTN005'/></a></td><!-- 메타정보관리 -->
+				     	<td align="center" id="td_tab3"><a href="javascript:goTab(3)"><spring:message code='SYSBTN006'/></a></td><!-- 조인정보관리 -->
+				     </tr>
+			     </table>
+			</div>
+			
+			<!-- Tab Content Start -->
+			<div id="divTabContent">
+			</div>
+			<!-- Tab Content End -->
 
+			<!-- TAB End -->
 			
 			<!-- 메인 컨텐츠 End -->
 			
