@@ -263,18 +263,19 @@ public class DBUtil {
 	
 	/*
 	public static void main(String[] args) {
+		
 		DBUtil util = new DBUtil();
 		Connection conn = null;
 		//Statement stmt = null;
 		ResultSet rss = null;
 		try {
-			conn = util.getConnection("com.mysql.cj.jdbc.Driver","jdbc:mysql://127.0.0.1:3306/UMS?useUnicode=true&characterEncoding=utf8","ums2","amway11!");
+			conn = util.getConnection("com.mysql.cj.jdbc.Driver","jdbc:mysql://127.0.0.1:3306/UMS?useUnicode=true&characterEncoding=utf8","ums","amway11!");
 			
 			//stmt = conn.createStatement();
 			
 			//rss = stmt.executeQuery("SELECT OBJECT_NAME FROM USER_OBJECTS WHERE OBJECT_TYPE IN ('TABLE','VIEW') AND STATUS = 'VALID' ORDER BY OBJECT_NAME");
 			DatabaseMetaData metaData = conn.getMetaData();
-			rss = metaData.getTables("UMS", "ums2", null, new String[]{"TABLE"});
+			rss = metaData.getTables("UMS", "ums", null, new String[]{"TABLE"});
 			while(rss.next()) {
 		         System.out.println("Table name: "+rss.getString("TABLE_NAME"));
 		         System.out.println("Table type: "+rss.getString("TABLE_TYPE"));
@@ -291,5 +292,16 @@ public class DBUtil {
 			if(conn != null) try { conn.close(); } catch(Exception e) {}
 		}
 	}
+	
+	
+SELECT *
+FROM INFORMATION_SCHEMA.TABLES
+;
+
+SELECT *
+FROM INFORMATION_SCHEMA.COLUMNS
+;
+	
+	
 	*/
 }
