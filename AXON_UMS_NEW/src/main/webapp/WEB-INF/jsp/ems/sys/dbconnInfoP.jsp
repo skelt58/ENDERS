@@ -201,16 +201,16 @@ function getContentPageHtml(idx) {
 	
 	var dbConnNo = $("#dbConnNo").val();
 	$.ajax({
-	    type : "GET",
-	    url : url + "?dbConnNo=" + dbConnNo,
-	    dataType : "html",
-	    async: false,
-	    success : function(Parse_data){
-	        $("#divTabContent").html(Parse_data);
-	    },
-	    error : function(){
-	        alert("Error!!");
-	    }
+		type : "GET",
+		url : url + "?dbConnNo=" + dbConnNo,
+		dataType : "html",
+		async: false,
+		success : function(pageHtml){
+			$("#divTabContent").html(pageHtml);
+		},
+		error : function(){
+			alert("Error!!");
+		}
 	});
 }
 
@@ -257,7 +257,12 @@ function goMetaTableForm(tableName) {
 	$("#tblDesc").val("");
 	
 	// 메터 컬럼 출력 화면 숨김
-	$("#divMetaColumnInfo").hide();	
+	$("#divMetaColumnInfo").empty();
+	$("#divMetaColumnInfo").hide();
+	
+	// 메타 관계식,관계값 화면 숨김
+	$("#divMetaOperValueInfo").empty();
+	$("#divMetaOperValueInfo").hide();
 }
 
 // 메타 테이블 정보 조회
@@ -266,6 +271,13 @@ function goMetaTableInfo(tableNo,tableName) {
 	$("#divMetaTableInsertBtn").hide();
 	$("#divMetaTableUpdateBtn").show();
 	$("#tblNo").val(tableNo);
+	
+	$("#hiddenTblNo").val(tableNo);
+	$("#hiddenTblNm").val(tableName);
+	
+	// 메타 관계식,관계값 화면 숨김
+	$("#divMetaOperValueInfo").empty();
+	$("#divMetaOperValueInfo").hide();
 	
 	// 메타 테이블 정보 조회
 	var param = $("#metaTableInfo").serialize();
@@ -276,24 +288,32 @@ function goMetaTableInfo(tableNo,tableName) {
 			$("#tblAlias").val(data.metaTableInfo.tblAlias);
 			$("#tblDesc").val(data.metaTableInfo.tblDesc);
 			
+			showMetaColumnInfo(tableNo, tableName);
 		} else if(data.result == "Fail") {
 			alert("데이터 조회 실패");
 		}
 	});
 	
+}
+
+// 메타 컬럼 정보 표시
+function showMetaColumnInfo(tblNo, tblNm) {
+	$("#hiddenTblNo").val(tblNo);
+	$("#hiddenTblNm").val(tblNm);
+	
+	$("#divMetaColumnInfo").empty();
 	$("#divMetaColumnInfo").show();
-	// 메타 컬럼 정보 표시
 	$.ajax({
-	    type : "GET",
-	    url : "<c:url value='/ems/sys/metacolumnListP.ums'/>?dbConnNo=<c:out value='${dbConnInfo.dbConnNo}'/>&tblNo=" + tableNo + "&tblNm=" + tableName,
-	    dataType : "html",
-	    async: false,
-	    success : function(Parse_data){
-	        $("#divMetaColumnInfo").html(Parse_data);
-	    },
-	    error : function(){
-	        alert("Error!!");
-	    }
+		type : "GET",
+		url : "<c:url value='/ems/sys/metacolumnListP.ums'/>?dbConnNo=<c:out value='${dbConnInfo.dbConnNo}'/>&tblNo=" + tblNo + "&tblNm=" + tblNm,
+		dataType : "html",
+		async: false,
+		success : function(pageHtml){
+			$("#divMetaColumnInfo").html(pageHtml);
+		},
+		error : function(){
+			alert("Error(showMetaColumnInfo)!");
+		}
 	});
 }
 
@@ -384,10 +404,6 @@ function goMetaTableDelete() {
 	});
 }
 
-function getMetaColumnList() {
-	
-}
-
 function reloadMetaTableInfo(mode) {
 	getContentPageHtml(2);
 	if(mode == "D") {
@@ -399,10 +415,211 @@ function reloadMetaTableInfo(mode) {
 	}
 }
 
+
+/***************************************************** 메타 컬럼 정보 처리 ***********************************************************/
+// 메타 컬럼정보 등록 및 수정
+function goMetaColumnUpdate(colNo, pos, cnt) {
+	var tblNo = $("#hiddenTblNo").val();
+	var tblNm = $("#hiddenTblNm").val();
+
+	//alert($("#metaColumnForm input[name='colNm']").eq(pos).val());
+	$("#metaColumnDataForm input[name='colNo']").val(colNo == ""?"0":colNo);
+	$("#metaColumnDataForm input[name='colDataTyJdbc']").val($("#metaColumnForm input[name='colDataTyJdbc']").eq(pos).val());
+	$("#metaColumnDataForm input[name='colNm']").val($("#metaColumnForm input[name='colNm']").eq(pos).val());
+	$("#metaColumnDataForm input[name='colAlias']").val($("#metaColumnForm input[name='colAlias']").eq(pos).val());
+	$("#metaColumnDataForm input[name='colDataTy']").val($("#metaColumnForm input[name='colDataTy']").eq(pos).val());
+	$("#metaColumnDataForm input[name='colDesc']").val($("#metaColumnForm textarea[name='colDesc']").eq(pos).val());
+	
+	var errflag = false;
+	var errstr = "";
+	
+	if($("#metaColumnDataForm input[name='dbConnNo']").val() == "") {
+		errflag = true;
+		errstr += " [DB CONNECTION ID] ";
+	}
+	if($("#metaColumnDataForm input[name='tblNm']").val() == "") {
+		errflag = true;
+		errstr += " [<spring:message code='SYSTBLTL061'/>] ";		// 테이블명
+	}
+	if($("#metaColumnDataForm input[name='tblNo']").val() == "") {
+		errflag = true;
+		errstr += " [<spring:message code='SYSTBLTL070'/> ID] ";	// 테이블
+	}
+	if($("#metaColumnDataForm input[name='colNm']").val() == "") {
+		errflag = true;
+		errstr += " [<spring:message code='SYSTBLTL063'/>] ";	// 컬럼명
+	}
+	if($("#metaColumnDataForm input[name='colAlias']").val() == "") {
+		errflag = true;
+		errstr += " [<spring:message code='SYSTBLTL062'/>] ";	// 별칭
+	}
+	if($("#metaColumnDataForm input[name='colDataTy']").val() == "") {
+		errflag = true;
+		errstr += " [<spring:message code='SYSTBLTL072'/> <spring:message code='SYSTBLTL055'/>] ";	// 컬럼, 유형
+	}
+	if($("#metaColumnDataForm input[name='colDataTyJdbc']").val() == "") {
+		errflag = true;
+		errstr += " [<spring:message code='SYSTBLTL072'/> JDBC <spring:message code='SYSTBLTL055'/>] ";	// 컬럼, 유형
+	}
+	if(errflag) {
+		alert("<spring:message code='COMJSALT016'/>\n" + errstr);	// 다음 정보를 확인하세요.
+		return;
+	}
+	
+	var param = $("#metaColumnDataForm").serialize();
+	$.getJSON("<c:url value='/ems/sys/metacolumnUpdate.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='COMJSALT010'/>");	// 수정 성공
+			$("#hiddenTblNo").val(data.tblNo);
+			$("#hiddenTblNm").val($("#tblNm").val());
+			
+			// 메타 컬럼 다시 조회
+			showMetaColumnInfo(tblNo, tblNm);
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='COMJSALT011'/>");	// 수정 실패
+		}
+	});
+}
+
+function goMetaColumnDelete(colNo) {
+	var tblNo = $("#hiddenTblNo").val();
+	var tblNm = $("#hiddenTblNm").val();
+	
+	$.getJSON("<c:url value='/ems/sys/metacolumnDelete.json'/>?colNo=" + colNo, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='COMJSALT012'/>");	// 삭제 성공
+			$("#hiddenTblNo").val(data.tblNo);
+			$("#hiddenTblNm").val($("#tblNm").val());
+			
+			// 메타 컬럼 다시 조회
+			showMetaColumnInfo(tblNo, tblNm);
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='COMJSALT013'/>");	// 삭제 실패
+		}
+	});
+}
+
+
+
+/***************************************************** 메타 관계식 정보 처리 ***********************************************************/
+// 메타 관계식/관계값 화면 호출
+function goMetaOperation(colNo, colNm) {
+	
+	$("#divMetaOperValueInfo").empty();
+	$("#divMetaOperValueInfo").show();
+	$.ajax({
+		type : "GET",
+		url : "<c:url value='/ems/sys/metaoperMainP.ums'/>?colNo=" + colNo + "&colNm=" + colNm,
+		dataType : "html",
+		async: false,
+		success : function(pageHtml){
+			$("#divMetaOperValueInfo").html(pageHtml);
+		},
+		error : function(){
+			alert("Error(goMetaOperation)!");
+		}
+	});
+}
+
+function goMetaOperUpdate() {
+	var colNo = $("#metaOperatorForm input[name='colNo']").val();
+	var colNm = $("#metaOperatorForm input[name='colNm']").val();
+	
+	var param = $("#metaOperatorForm").serialize();
+	$.getJSON("<c:url value='/ems/sys/metaoperUpdate.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='COMJSALT010'/>");	// 수정 성공
+			
+			// 메타 컬럼 다시 조회
+			goMetaOperation(colNo, colNm);
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='COMJSALT011'/>");	// 수정 실패
+		}
+	});
+}
+
+
+/***************************************************** 메타 관계값 정보 처리 ***********************************************************/
+// 메타 관계값 등록
+function goMetaValueAdd() {
+	var colNo = $("#metaValueForm input[name='colNo']").val();
+	var colNm = $("#metaValueForm input[name='colNm']").val();
+	
+	var isValid = false;
+	for(var i=0;i<2;i++) {
+		if($("#metaValueForm input[name='valueNm']").eq(i).val() != "") {
+			isValid = true;
+			if($("#metaValueForm input[name='valueAlias']").eq(i).val() == "") {
+				alert("<spring:message code='SYSJSALT005'/>"); 	// VALUE 값에 대한 ALIAS를 설정하십시요.
+				return;
+			}
+		}
+	}
+	
+	if(!isValid) {
+		alert("VALUE 값을 입력하세요.");
+		return;
+	}
+	
+	var param = $("#metaValueForm").serialize();
+	$.getJSON("<c:url value='/ems/sys/metavalAdd.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='COMJSALT008'/>");	// 등록 성공
+			
+			// 메타 컬럼 다시 조회
+			goMetaOperation(colNo, colNm);
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='COMJSALT009'/>");	// 등록 실패
+		}
+	});
+}
+
+function goMetaValueUpdate(valueNo, pos, cnt) {
+	$("#metaValueUpdate input[name='valueNo']").val(valueNo);
+	$("#metaValueUpdate input[name='valueNm']").val($("#metaValueList input[name='valueNm']").eq(pos).val());
+	$("#metaValueUpdate input[name='valueAlias']").val($("#metaValueList input[name='valueAlias']").eq(pos).val());
+
+	
+	var colNo = $("#metaValueUpdate input[name='colNo']").val();
+	var colNm = $("#metaValueUpdate input[name='colNm']").val();
+
+	
+	var param = $("#metaValueUpdate").serialize();
+	$.getJSON("<c:url value='/ems/sys/metavalUpdate.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='COMJSALT010'/>");	// 수정 성공
+			
+			// 메타 컬럼 다시 조회
+			goMetaOperation(colNo, colNm);
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='COMJSALT011'/>");	// 수정 실패
+		}
+	});
+}
+
+function goMetaValueDelete(valueNo) {
+	$("#metaValueUpdate input[name='valueNo']").val(valueNo);
+
+	var colNo = $("#metaValueUpdate input[name='colNo']").val();
+	var colNm = $("#metaValueUpdate input[name='colNm']").val();
+	
+	var param = $("#metaValueUpdate").serialize();
+	$.getJSON("<c:url value='/ems/sys/metavalDelete.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='COMJSALT012'/>");	// 삭제 성공
+			
+			// 메타 컬럼 다시 조회
+			goMetaOperation(colNo, colNm);
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='COMJSALT013'/>");	// 수정 실패
+		}
+	});
+
+}
 </script>
 <form id="hiddenForm" name="hiddenForm" style="display:none;">
 <input type="hidden" id="tabIdx" value="1"/>
-<input type="hidden" id="hiddenTblNo" value=""/>
+<input type="hidden" id="hiddenTblNo" value="0"/>
 <input type="hidden" id="hiddenTblNm" value=""/>
 </form>
 <div class="ex-layout">

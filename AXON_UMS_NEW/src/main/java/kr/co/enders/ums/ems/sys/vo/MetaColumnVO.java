@@ -17,6 +17,9 @@ public class MetaColumnVO {
 	private String isOper;			// OPER여부
 	private String isValue;			// VALUE여부
 	
+	// 부가정보
+	private int dbConnNo;			// DB 연결 번호
+	
 	public int getColNo() {
 		return colNo;
 	}
@@ -76,5 +79,11 @@ public class MetaColumnVO {
 	}
 	public void setIsValue(String isValue) {
 		this.isValue = isValue;
+	}
+	public int getDbConnNo() {
+		return dbConnNo;
+	}
+	public void setDbConnNo(int dbConnNo) {
+		this.dbConnNo = dbConnNo;
 	}
 }

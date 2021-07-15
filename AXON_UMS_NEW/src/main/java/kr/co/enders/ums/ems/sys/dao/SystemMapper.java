@@ -12,7 +12,9 @@ import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
 import kr.co.enders.ums.ems.sys.vo.LoginHistVO;
 import kr.co.enders.ums.ems.sys.vo.MetaColumnVO;
+import kr.co.enders.ums.ems.sys.vo.MetaOperatorVO;
 import kr.co.enders.ums.ems.sys.vo.MetaTableVO;
+import kr.co.enders.ums.ems.sys.vo.MetaValueVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 
@@ -247,6 +249,94 @@ public interface SystemMapper {
 	 * @throws Exception
 	 */
 	public List<MetaColumnVO> getMetaColumnList(int tblNo) throws Exception;
+	
+	/**
+	 * 메타 컬럼 정보 등록
+	 * @param metaColumnVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertMetaColumnInfo(MetaColumnVO metaColumnVO) throws Exception;
+	
+	/**
+	 * 메타 컬럼 정보 수정
+	 * @param metaColumnVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateMetaColumnInfo(MetaColumnVO metaColumnVO) throws Exception;
+	
+	/**
+	 * 메타 컬럼 관계식 삭제
+	 * @param colNo
+	 * @return
+	 * @throws Exception
+	 */
+	public int deleteMetaColumnOperator(int colNo) throws Exception;
+	
+	/**
+	 * 메타 컬럼 관계값 삭제
+	 * @param colNo
+	 * @return
+	 * @throws Exception
+	 */
+	public int deleteMetaColumnValue(int colNo) throws Exception;
+	
+	/**
+	 * 메타 컬럼 정보 삭제
+	 * @param colNo
+	 * @return
+	 * @throws Exception
+	 */
+	public int deleteMetaColumnInfo(int colNo) throws Exception;
+	
+	/**
+	 * 메타 관계식 목록 조회
+	 * @param metaOperatorVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<MetaOperatorVO> getMetaOperatorList(MetaOperatorVO metaOperatorVO) throws Exception;
+	
+	/**
+	 * 메타 관계식 등록
+	 * @param metaOperatorVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertMetaOperatorInfo(MetaOperatorVO metaOperatorVO) throws Exception;
+	
+	/**
+	 * 메타 관계값 목록 조회
+	 * @param metaValueVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<MetaValueVO> getMetaValueList(MetaValueVO metaValueVO) throws Exception;
+	
+	/**
+	 * 메타 관계값 등록
+	 * @param metaValueVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertMetaValueInfo(MetaValueVO metaValueVO) throws Exception;
+	
+	/**
+	 * 메타 관계값 수정
+	 * @param metaValueVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateMetaValueInfo(MetaValueVO metaValueVO) throws Exception;
+	
+	/**
+	 * 메타 관계값 삭제
+	 * @param metaValueVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int deleteMetaValueInfo(MetaValueVO metaValueVO) throws Exception;
 	
 	/**
 	 * 사용자 로그인 이력 조회

@@ -34,6 +34,16 @@ function getCookie(name) {
     return "";
 }
 
+/**
+ * 허용하지 않을 문자를 체크한다.
+ */
+function containsChars(inputValue,chars) {
+	for (var inx = 0; inx < inputValue.length; inx++) {
+		if (chars.indexOf(inputValue.charAt(inx)) != -1)
+			return true;
+	}
+	return false;
+}
 
 /********************************************************
  * jQuery 관련

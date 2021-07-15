@@ -7,7 +7,6 @@
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/inc/taglib.jsp" %>
-<script type="text/javascript" src="<c:url value='/js/jquery-3.6.0.min.js'/>"></script>
 <script type="text/javascript">
 
 $(document).ready(function() {
@@ -102,10 +101,13 @@ $(document).ready(function() {
 <div id="divMetaColumnInfo" style="display:none;"></div>
 <!-- 메타 컬럼 등록 End -->
 
+<br/>
 
-<br/>
-<br/>
-<br/>
+<!-- 메타 관계식,관계값 등록 Start -->
+<div id="divMetaOperValueInfo" style="display:none;"></div>
+<!-- 메타 관계식 등록 End -->
+
+
 <br/>
 <br/>
 <br/>

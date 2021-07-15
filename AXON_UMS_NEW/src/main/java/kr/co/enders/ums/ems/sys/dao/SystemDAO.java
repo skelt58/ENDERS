@@ -16,7 +16,9 @@ import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
 import kr.co.enders.ums.ems.sys.vo.LoginHistVO;
 import kr.co.enders.ums.ems.sys.vo.MetaColumnVO;
+import kr.co.enders.ums.ems.sys.vo.MetaOperatorVO;
 import kr.co.enders.ums.ems.sys.vo.MetaTableVO;
+import kr.co.enders.ums.ems.sys.vo.MetaValueVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 
@@ -171,8 +173,66 @@ public class SystemDAO implements SystemMapper {
 	}
 	
 	@Override
+	public int insertMetaColumnInfo(MetaColumnVO metaColumnVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).insertMetaColumnInfo(metaColumnVO);
+	}
+
+	@Override
+	public int updateMetaColumnInfo(MetaColumnVO metaColumnVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).updateMetaColumnInfo(metaColumnVO);
+	}
+
+	@Override
+	public int deleteMetaColumnOperator(int colNo) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).deleteMetaColumnOperator(colNo);
+	}
+
+	@Override
+	public int deleteMetaColumnValue(int colNo) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).deleteMetaColumnValue(colNo);
+	}
+
+	@Override
+	public int deleteMetaColumnInfo(int colNo) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).deleteMetaColumnInfo(colNo);
+	}
+	
+	@Override
+	public List<MetaOperatorVO> getMetaOperatorList(MetaOperatorVO metaOperatorVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).getMetaOperatorList(metaOperatorVO);
+	}
+
+	@Override
+	public int insertMetaOperatorInfo(MetaOperatorVO metaOperatorVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).insertMetaOperatorInfo(metaOperatorVO);
+	}
+	
+	@Override
+	public List<MetaValueVO> getMetaValueList(MetaValueVO metaValueVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).getMetaValueList(metaValueVO);
+	}
+	
+	@Override
+	public int insertMetaValueInfo(MetaValueVO metaValueVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).insertMetaValueInfo(metaValueVO);
+	}
+	
+	@Override
+	public int updateMetaValueInfo(MetaValueVO metaValueVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).updateMetaValueInfo(metaValueVO);
+	}
+	
+	@Override
+	public int deleteMetaValueInfo(MetaValueVO metaValueVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).deleteMetaValueInfo(metaValueVO);
+	}
+	
+	
+	
+	@Override
 	public List<LoginHistVO> getLoginHistList(LoginHistVO loginHistVO) throws Exception {
 		return sqlSessionEms.getMapper(SystemMapper.class).getLoginHistList(loginHistVO);
 	}
+
 
 }

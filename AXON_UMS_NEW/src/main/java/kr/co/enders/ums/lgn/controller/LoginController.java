@@ -134,6 +134,6 @@ public class LoginController {
 		// 세션정보 초기화
 		session.invalidate();
 		
-		return "/lgn/lgnP";
+		return "/lgn/logout";
 	}
 }

@@ -7,20 +7,18 @@
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/inc/taglib.jsp" %>
-<script type="text/javascript" src="<c:url value='/js/jquery-3.6.0.min.js'/>"></script>
-<script type="text/javascript">
-$(document).ready(function() {
-	$("#btnAdd").click(function(e){
-		e.preventDefault();
-		goConnPermAdd();
-	});
-	
-	$("#btnReset").click(function(e){
-		e.preventDefault();
-		$("#dbConnPermForm")[0].reset();
-	});
-});
-</script>
+
+<form id="metaColumnDataForm">
+<input type="hidden" name="dbConnNo" value="<c:out value='${dbConnNo}'/>">
+<input type="hidden" name="tblNo" value="<c:out value='${tblNo}'/>">
+<input type="hidden" name="tblNm" value="<c:out value='${tblNm}'/>">
+<input type="hidden" name="colNo" value="0"/>
+<input type="hidden" name="colNm"/>
+<input type="hidden" name="colAlias"/>
+<input type="hidden" name="colDataTy"/>
+<input type="hidden" name="colDataTyJdbc"/>
+<input type="hidden" name="colDesc"/>
+</form>
 
 <form id="metaColumnForm" name="metaColumnForm">
 <input type="hidden" name="dbConnNo" value="<c:out value='${dbConnNo}'/>">
@@ -62,16 +60,16 @@ $(document).ready(function() {
 					<input type="text" name="colDataTy" value="<c:out value='${realColumn.colDataTy}'/>" maxlength="20" size="10" readOnly class="readonly_style">
 				</td>
 				<td>
-					<textarea name="p_col_desc" rows="1" cols="18"><c:out value='${colDesc}'/></textarea>
+					<textarea name="colDesc" rows="1" cols="18"><c:out value='${colDesc}'/></textarea>
 				</td>
 				<td>
 				<c:if test="${colNo == 0}">
-					<input type="button" value="<spring:message code='COMBTN005'/>" onClick="goUpdate('','<c:out value='${status.index}'/>','<c:out value='${realColumnListSize}'/>')" class="btn_style"><!-- 등록 -->
+					<input type="button" value="<spring:message code='COMBTN005'/>" onClick="goMetaColumnUpdate('','<c:out value='${status.index}'/>','<c:out value='${realColumnListSize}'/>')" class="btn_style"><!-- 등록 -->
 				</c:if>
 				<c:if test="${colNo != 0}">
-					<input type="button" value="<spring:message code='COMBTN008'/>" onClick="goDelete('<c:out value='${colNo}'/>')" class="btn_style"><!--삭제 -->
-					<input type="button" value="<spring:message code='COMBTN007'/>" onClick="goUpdate('<c:out value='${colNo}'/>','<c:out value='${status.index}'/>','<c:out value='${realColumnListSize}'/>')" class="btn_style"><!-- 수정 -->
-					<input type="button" value="OPER" onClick="goOper('<c:out value='${colNo}'/>','<c:out value='${realColumn.colNm}'/>')" class="btn_style">
+					<input type="button" value="<spring:message code='COMBTN008'/>" onClick="goMetaColumnDelete('<c:out value='${colNo}'/>')" class="btn_style"><!--삭제 -->
+					<input type="button" value="<spring:message code='COMBTN007'/>" onClick="goMetaColumnUpdate('<c:out value='${colNo}'/>','<c:out value='${status.index}'/>','<c:out value='${realColumnListSize}'/>')" class="btn_style"><!-- 수정 -->
+					<input type="button" value="OPER" onClick="goMetaOperation('<c:out value='${colNo}'/>','<c:out value='${realColumn.colNm}'/>')" class="btn_style">
 				</c:if>
 				</td>
 			</tr>

@@ -30,7 +30,9 @@ import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
 import kr.co.enders.ums.ems.sys.vo.LoginHistVO;
 import kr.co.enders.ums.ems.sys.vo.MetaColumnVO;
+import kr.co.enders.ums.ems.sys.vo.MetaOperatorVO;
 import kr.co.enders.ums.ems.sys.vo.MetaTableVO;
+import kr.co.enders.ums.ems.sys.vo.MetaValueVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 import kr.co.enders.util.Code;
@@ -1089,6 +1091,14 @@ public class SystemController {
 		return modelAndView;
 	}
 	
+	/**
+	 * 메타 테이블 정보 수정
+	 * @param metaTableVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value="/metatableUpdate")
 	public ModelAndView updateMetaTableInfo(@ModelAttribute MetaTableVO metaTableVO, Model model, HttpServletRequest request, HttpServletResponse response) {
 		logger.debug("updateMetaTableInfo dbConnNo = " + metaTableVO.getDbConnNo());
@@ -1119,6 +1129,14 @@ public class SystemController {
 		return modelAndView;
 	}
 	
+	/**
+	 * 메타 테이블 정보 삭제
+	 * @param metaTableVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value="/metatableDelete")
 	public ModelAndView deleteMetaTableInfo(@ModelAttribute MetaTableVO metaTableVO, Model model, HttpServletRequest request, HttpServletResponse response) {
 		logger.debug("deleteMetaTableInfo tblNo = " + metaTableVO.getTblNo());
@@ -1145,6 +1163,15 @@ public class SystemController {
 		return modelAndView;
 	}
 	
+	/**
+	 * 메타 컬럼 목록 조회
+	 * @param metaTableVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/metacolumnListP")
 	public String getMetaColumnList(@ModelAttribute MetaTableVO metaTableVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("getMetaColumnList dbConnNo = " + metaTableVO.getDbConnNo());
@@ -1187,6 +1214,242 @@ public class SystemController {
 		
 		return "ems/sys/metacolumnListP";
 	}
+	
+	/**
+	 * 메타 컬럼 정보 등록 및 수정
+	 * @param metaColumnVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/metacolumnUpdate")
+	public ModelAndView updateMetaColumnInfo(@ModelAttribute MetaColumnVO metaColumnVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("updateMetaColumnInfo tblNo = " + metaColumnVO.getTblNo());
+		logger.debug("updateMetaColumnInfo colNo = " + metaColumnVO.getColNo());
+		
+		
+		int result = 0;
+		try {
+			if(metaColumnVO.getColNo() == 0) {
+				result = systemService.insertMetaColumnInfo(metaColumnVO);
+			} else {
+				result = systemService.updateMetaColumnInfo(metaColumnVO);
+				
+			}
+		} catch(Exception e) {
+			if(metaColumnVO.getColNo() == 0) {
+				logger.error("systemService.insertMetaColumnInfo error = " + e);
+			} else {
+				logger.error("systemService.updateMetaColumnInfo error = " + e);
+			}
+		}
+		
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	/**
+	 * 메타 컬럼 정보 삭제(관계식, 관계값, 컬럼정보)
+	 * @param metaColumnVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/metacolumnDelete")
+	public ModelAndView deleteMetaColumnInfo(@ModelAttribute MetaColumnVO metaColumnVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("deleteMetaColumnInfo colNo = " + metaColumnVO.getColNo());
+		
+		
+		int result = 0;
+		try {
+			result = systemService.deleteMetaColumnInfo(metaColumnVO.getColNo());
+		} catch(Exception e) {
+			logger.error("systemService.deleteMetaColumnInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	/**
+	 * 메타 관계식, 관계값 화면 출력
+	 * @param metaOperVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/metaoperMainP")
+	public String getMetaOperationList(@ModelAttribute MetaOperatorVO metaOperVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getMetaOperationList colNo = " + metaOperVO.getColNo());
+		logger.debug("getMetaOperationList colNm = " + metaOperVO.getColNm());
+
+		// 관계식코드 목록을 조회한다.
+		CodeVO operVO = new CodeVO();
+		operVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		operVO.setCdGrp("C037");	// 관계식
+		operVO.setUseYn("Y");
+		List<CodeVO> operCodeList = null;
+		try {
+			operCodeList = codeService.getCodeList(operVO);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList error[C037] = " + e);
+		}
+		
+		List<MetaOperatorVO> metaOperatorList = null;
+		metaOperVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		try {
+			metaOperatorList = systemService.getMetaOperatorList(metaOperVO);
+		} catch(Exception e) {
+			logger.error("systemService.getMetaOperatorList error = " + e);
+		}
+		
+		List<MetaValueVO> metaValueList = null;
+		MetaValueVO valueVO = new MetaValueVO();
+		valueVO.setColNo(metaOperVO.getColNo());
+		try {
+			metaValueList = systemService.getMetaValueList(valueVO);
+		} catch(Exception e) {
+			logger.error("systemService.getMetaValueList error = " + e);
+		}
+		
+		model.addAttribute("colNo", metaOperVO.getColNo());
+		model.addAttribute("colNm", metaOperVO.getColNm());
+		model.addAttribute("operCodeList", operCodeList);
+		model.addAttribute("metaOperatorList", metaOperatorList);
+		model.addAttribute("metaValueList", metaValueList);
+		
+		return "ems/sys/metaoperMainP";
+	}
+	
+	@RequestMapping(value="/metaoperUpdate")
+	public ModelAndView updateMetaOperatorInfo(@ModelAttribute MetaOperatorVO metaOperatorVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("updateMetaOperatorInfo colNo = " + metaOperatorVO.getColNo());
+		logger.debug("updateMetaOperatorInfo operCd = " + metaOperatorVO.getOperCd());
+		
+		
+		int result = 0;
+		try {
+			result = systemService.updateMetaOperatorInfo(metaOperatorVO);
+		} catch(Exception e) {
+			logger.error("systemService.updateMetaOperatorInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/metavalAdd")
+	public ModelAndView insertMetaValueInfo(@ModelAttribute MetaValueVO metaValueVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("insertMetaValueInfo colNo = " + metaValueVO.getColNo());
+		logger.debug("insertMetaValueInfo valueNm = " + metaValueVO.getValueNm());
+		logger.debug("insertMetaValueInfo valueAlias = " + metaValueVO.getValueAlias());
+		
+		
+		int result = 0;
+		try {
+			result = systemService.insertMetaValueInfo(metaValueVO);
+		} catch(Exception e) {
+			logger.error("systemService.insertMetaValueInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/metavalUpdate")
+	public ModelAndView updateMetaValueInfo(@ModelAttribute MetaValueVO metaValueVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("updateMetaValueInfo colNo = " + metaValueVO.getColNo());
+		logger.debug("updateMetaValueInfo valueNm = " + metaValueVO.getValueNm());
+		logger.debug("updateMetaValueInfo valueAlias = " + metaValueVO.getValueAlias());
+		
+		
+		int result = 0;
+		try {
+			result = systemService.updateMetaValueInfo(metaValueVO);
+		} catch(Exception e) {
+			logger.error("systemService.updateMetaValueInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/metavalDelete")
+	public ModelAndView deleteMetaValueInfo(@ModelAttribute MetaValueVO metaValueVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("metavalDelete valueNo = " + metaValueVO.getValueNo());
+		
+		int result = 0;
+		try {
+			result = systemService.deleteMetaValueInfo(metaValueVO);
+		} catch(Exception e) {
+			logger.error("systemService.deleteMetaValueInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

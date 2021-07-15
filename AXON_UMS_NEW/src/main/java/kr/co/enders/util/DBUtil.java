@@ -6,10 +6,10 @@
 package kr.co.enders.util;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,75 +59,73 @@ public class DBUtil {
 			conn = getConnection(dbDriver, dbUrl, loginId, loginPwd);
 			
 			if(Code.DB_VENDOR_ORACLE.equals(dbTy)) {	// Oracle
-				sql =  "SELECT OBJECT_NAME TABLE_NAME ";
-				sql += "  FROM USER_OBJECTS ";
-				sql += " WHERE OBJECT_TYPE IN ('TABLE','VIEW') ";
-				sql += "   AND NOT OBJECT_NAME LIKE 'NEO_%' ";
-				sql += "   AND STATUS = 'VALID' ";
-				sql += " ORDER BY OBJECT_NAME ";
+				sql =  "SELECT OBJECT_NAME TABLE_NAME 			";
+				sql += "  FROM USER_OBJECTS 					";
+				sql += " WHERE OBJECT_TYPE IN ('TABLE','VIEW') 	";
+				sql += "   AND NOT OBJECT_NAME LIKE 'NEO_%' 	";
+				sql += "   AND STATUS = 'VALID' 				";
+				sql += " ORDER BY OBJECT_NAME 					";
 			} else if(Code.DB_VENDOR_MSSQL.equals(dbTy)) {		//MSSQL
-				sql =  "SELECT A.NAME TABLE_NAME ";
-				sql += "  FROM SYSOBJECTS A, SYSUSERS B ";
-				sql += " WHERE A.UID = B.UID ";
-				sql += "   AND A.TYPE IN ('U','V') ";
-				sql += "   AND A.NAME NOT LIKE 'NEO_%' ";
-				sql += " ORDER BY A.NAME ";
+				sql =  "SELECT A.NAME TABLE_NAME 				";
+				sql += "  FROM SYSOBJECTS A, SYSUSERS B 		";
+				sql += " WHERE A.UID = B.UID 					";
+				sql += "   AND A.TYPE IN ('U','V') 				";
+				sql += "   AND A.NAME NOT LIKE 'NEO_%' 			";
+				sql += " ORDER BY A.NAME 						";
 			} else if(Code.DB_VENDOR_INFORMIX.equals(dbTy)) {	//INFORMIX
-				sql =  "SELECT TABNAME TABLE_NAME ";
-				sql += "  FROM SYSTABLES ";
-				sql += " WHERE TABTYPE IN ('T','V') ";
-				sql += "   AND TABNAME NOT LIKE 'NEO_%' ";
-				sql += "   AND TABID >= 100 ";
-				sql += " ORDER BY TABNAME ";
+				sql =  "SELECT TABNAME TABLE_NAME 				";
+				sql += "  FROM SYSTABLES 						";
+				sql += " WHERE TABTYPE IN ('T','V') 			";
+				sql += "   AND TABNAME NOT LIKE 'NEO_%' 		";
+				sql += "   AND TABID >= 100 					";
+				sql += " ORDER BY TABNAME 						";
 			} else if(Code.DB_VENDOR_SYBASE.equals(dbTy)) {	//SYBASE
-				sql =  "SELECT name TABLE_NAME ";
-				sql += "  FROM sysobjects ";
-				sql += " WHERE type IN ('U','V') ";
-				sql += "   AND name NOT LIKE 'NEO_%' ";
-				sql += " ORDER BY name ";
+				sql =  "SELECT name TABLE_NAME 					";
+				sql += "  FROM sysobjects 						";
+				sql += " WHERE type IN ('U','V') 				";
+				sql += "   AND name NOT LIKE 'NEO_%' 			";
+				sql += " ORDER BY name 							";
 			} else if(Code.DB_VENDOR_MYSQL.equals(dbTy)) {		//MYSQL
-				sql =  "SELECT A.NAME TABLE_NAME ";
-				sql += "  FROM SYSOBJECTS A, SYSUSERS B ";
-				sql += " WHERE A.UID = B.UID ";
-				sql += "   AND A.TYPE IN ('U','V') ";
-				sql += "   AND A.NAME NOT LIKE 'NEO_%' ";
-				sql += " ORDER BY A.NAME ";
+				/*
+				sql =  "SELECT A.NAME TABLE_NAME 				";
+				sql += "  FROM SYSOBJECTS A, SYSUSERS B 		";
+				sql += " WHERE A.UID = B.UID 					";
+				sql += "   AND A.TYPE IN ('U','V') 				";
+				sql += "   AND A.NAME NOT LIKE 'NEO_%' 			";
+				sql += " ORDER BY A.NAME 						";
+				*/
+				String schema = "";
+				if(dbUrl.indexOf("?") > 0) {
+					schema = dbUrl.substring(0,dbUrl.indexOf("?"));
+				}
+				schema = dbUrl.split("/")[dbUrl.split("/").length-1];
+				
+				sql =  "SELECT TABLE_NAME						";
+				sql += "  FROM INFORMATION_SCHEMA.TABLES		";
+				sql += " WHERE TABLE_SCHEMA = '" + schema + "'	";
+				sql += " ORDER BY TABLE_NAME					";
 			} else if(Code.DB_VENDOR_CUBRID.equals(dbTy)) {		//CUBRID
-				sql =  "SELECT class_name AS TABLE_NAME ";
-				sql += "  FROM db_class ";
-				sql += " WHERE class_name  NOT LIKE 'neo_%' ";
-				sql += "  AND class_name NOT LIKE 'db_%' ";
+				sql =  "SELECT class_name AS TABLE_NAME 		";
+				sql += "  FROM db_class 						";
+				sql += " WHERE class_name  NOT LIKE 'neo_%' 	";
+				sql += "  AND class_name NOT LIKE 'db_%' 		";
 			} else if(Code.DB_VENDOR_UNISQL.equals(dbTy)) {	//UNISQL
 			} else if(Code.DB_VENDOR_INGRES.equals(dbTy)) {	//INGRES
 			} else if(Code.DB_VENDOR_DB2.equals(dbTy)) {		//DB2
-				sql =  "SELECT TABNAME TABLE_NAME ";
+				sql =  "SELECT TABNAME TABLE_NAME 				";
 				sql += "  FROM SYSCAT.TABLES ";
 				sql += " WHERE TABSCHEMA = '" +loginId.toUpperCase() + "' ";
-				sql += "   AND TABNAME NOT LIKE 'NEO_%' ";
-				sql += " ORDER BY TABNAME ";
+				sql += "   AND TABNAME NOT LIKE 'NEO_%' 		";
+				sql += " ORDER BY TABNAME 						";
 			} else if(Code.DB_VENDOR_POSTGRES.equals(dbTy)) {	//POSTGRES
 			} else {
 				sql = "";
 			}
 			
-			if(Code.DB_VENDOR_MYSQL.equals(dbTy)) {		//MYSQL
-				String catalog = "";
-				if(dbUrl.indexOf("?") > 0) {
-					catalog = dbUrl.substring(0,dbUrl.indexOf("?"));
-				}
-				catalog = dbUrl.split("/")[dbUrl.split("/").length-1];
-				DatabaseMetaData metaData = conn.getMetaData();
-				
-				rss = metaData.getTables(catalog, loginId, null, new String[]{"TABLE"});
-				while(rss.next()) {
-					tableList.add(rss.getString("TABLE_NAME").toUpperCase());
-				}
-			} else {
-				pstm = conn.prepareStatement(sql);
-				rss = pstm.executeQuery();
-				while(rss.next()) {
-					tableList.add(rss.getString("TABLE_NAME"));
-				}
+			pstm = conn.prepareStatement(sql);
+			rss = pstm.executeQuery();
+			while(rss.next()) {
+				tableList.add(rss.getString("TABLE_NAME").toUpperCase());
 			}
 		} catch(Exception e) {
 			System.out.println("getRealTableList error = " + e);
@@ -142,6 +140,7 @@ public class DBUtil {
 	
 	public List<MetaColumnVO> getRealColumnList(String dbTy, String dbDriver, String dbUrl, String loginId, String loginPwd, String tblNm) {
 		logger.debug("getRealTableList dbTy = " + dbTy);
+		logger.debug("getRealTableList tblNm = " + tblNm);
 		List<MetaColumnVO> columnList = new ArrayList<MetaColumnVO>();
 		
 		String sql = "";
@@ -190,6 +189,7 @@ public class DBUtil {
 				sql += "	   AND B.name = '" + tblNm + "'	";
 				sql += "	   AND A.usertype = C.usertype	";
 			} else if(Code.DB_VENDOR_MYSQL.equals(dbTy)) {		//MYSQL
+				/*
 				sql =  " SELECT B.NAME TBL_NM, 			";
 				sql += "		   A.NAME COL_NM,			";
 				sql += "		   C.NAME COL_DATA_TY,		";
@@ -200,6 +200,21 @@ public class DBUtil {
 				sql += "	 WHERE A.ID = B.ID				";
 				sql += "	   AND B.NAME = '" + tblNm + "'	";
 				sql += "	   AND A.XTYPE = C.XUSERTYPE	";
+				*/
+				String schema = "";
+				if(dbUrl.indexOf("?") > 0) {
+					schema = dbUrl.substring(0,dbUrl.indexOf("?"));
+				}
+				schema = dbUrl.split("/")[dbUrl.split("/").length-1];
+
+				sql =  "SELECT TABLE_NAME TBL_NM,			";
+				sql += "		COLUMN_NAME COL_NM,			";
+				sql += "		DATA_TYPE COL_DATA_TY,		";
+				sql += "		'' COL_DATA_TY_JDBC			";
+				sql += "  FROM INFORMATION_SCHEMA.COLUMNS	";
+				sql += " WHERE TABLE_SCHEMA = '" + schema + "'	";
+				sql += "   AND TABLE_NAME = '" + tblNm + "'	";
+				sql += " ORDER BY ORDINAL_POSITION			";
 			} else if(Code.DB_VENDOR_CUBRID.equals(dbTy)) {		//CUBRID
 				sql =  " SELECT class_name AS TBL_NM, attr_name AS COL_NM, [DATA_TYPE] AS COL_DATA_TY, '' COL_DATA_TY_JDBC ";
 				sql += "	from db_attribute 		     	         ";
@@ -219,35 +234,36 @@ public class DBUtil {
 				sql = "";
 			}
 			
+			logger.debug("getRealColumnList sql = " + sql);
 			
-			if(Code.DB_VENDOR_MYSQL.equals(dbTy)) {		//MYSQL
-				/*
-				String catalog = "";
-				if(dbUrl.indexOf("?") > 0) {
-					catalog = dbUrl.substring(0,dbUrl.indexOf("?"));
-				}
-				catalog = dbUrl.split("/")[dbUrl.split("/").length-1];
-				DatabaseMetaData metaData = conn.getMetaData();
+			/*
+			pstm = conn.prepareStatement(sql);
+			rss = pstm.executeQuery();
+			
+			while(rss.next()) {
+				MetaColumnVO metaColumn = new MetaColumnVO();
+				metaColumn.setTblNm(rss.getString("TBL_NM").toUpperCase());
+				metaColumn.setColNm(rss.getString("COL_NM").toUpperCase());
+				metaColumn.setColDataTy(rss.getString("COL_DATA_TY").toUpperCase());
+				metaColumn.setColDataTyJdbc(rss.getString("COL_DATA_TY_JDBC"));
 				
-				rss = metaData.getTables(catalog, loginId, null, new String[]{"TABLE"});
-				while(rss.next()) {
-					tableList.add(rss.getString("TABLE_NAME").toUpperCase());
-				}
-				*/
-			} else {
-				pstm = conn.prepareStatement(sql);
-				rss = pstm.executeQuery();
-				while(rss.next()) {
-					MetaColumnVO metaColumn = new MetaColumnVO();
-					metaColumn.setTblNm(rss.getString("TBL_NM"));
-					metaColumn.setColNm(rss.getString("COL_NM"));
-					metaColumn.setColDataTy(rss.getString("COL_DATA_TY"));
-					metaColumn.setColDataTyJdbc(rss.getString("COL_DATA_TY_JDBC"));
-					
-					logger.debug("COL NM = " + rss.getString("COL_NM"));
-					
-					columnList.add(metaColumn);
-				}
+				columnList.add(metaColumn);
+			}
+			*/
+			
+			sql = "SELECT * FROM " + tblNm + " WHERE 1 = 2 ";
+			
+			pstm = conn.prepareStatement(sql);
+			rss = pstm.executeQuery();
+			ResultSetMetaData metaData = rss.getMetaData();
+			int colcnt = metaData.getColumnCount();
+			for(int cnt = 1; cnt <= colcnt; cnt++) {
+				MetaColumnVO metaColumn = new MetaColumnVO();
+				metaColumn.setTblNm(tblNm);
+				metaColumn.setColNm(metaData.getColumnName(cnt).toUpperCase());
+				metaColumn.setColDataTy(metaData.getColumnTypeName(cnt));
+				metaColumn.setColDataTyJdbc(Integer.toString(metaData.getColumnType(cnt)));
+				columnList.add(metaColumn);
 			}
 		} catch(Exception e) {
 			System.out.println("getRealColumnList error = " + e);
@@ -266,42 +282,33 @@ public class DBUtil {
 		
 		DBUtil util = new DBUtil();
 		Connection conn = null;
-		//Statement stmt = null;
+		PreparedStatement pstm = null;
 		ResultSet rss = null;
 		try {
-			conn = util.getConnection("com.mysql.cj.jdbc.Driver","jdbc:mysql://127.0.0.1:3306/UMS?useUnicode=true&characterEncoding=utf8","ums","amway11!");
+			conn = util.getConnection("oracle.jdbc.OracleDriver","jdbc:oracle:thin:@localhost:1521:XE","ums2","amway11!");
+			//conn = util.getConnection("com.mysql.cj.jdbc.Driver","jdbc:mysql://127.0.0.1:3306/UMS?useUnicode=true&characterEncoding=utf8","tester","tester");
 			
-			//stmt = conn.createStatement();
+			pstm = conn.prepareStatement("SELECT * FROM NEO_CD WHERE 1 = 2");
 			
-			//rss = stmt.executeQuery("SELECT OBJECT_NAME FROM USER_OBJECTS WHERE OBJECT_TYPE IN ('TABLE','VIEW') AND STATUS = 'VALID' ORDER BY OBJECT_NAME");
-			DatabaseMetaData metaData = conn.getMetaData();
-			rss = metaData.getTables("UMS", "ums", null, new String[]{"TABLE"});
-			while(rss.next()) {
-		         System.out.println("Table name: "+rss.getString("TABLE_NAME"));
-		         System.out.println("Table type: "+rss.getString("TABLE_TYPE"));
-		         System.out.println("Table schema: "+rss.getString("TABLE_SCHEM"));
-		         System.out.println("Table catalog: "+rss.getString("TABLE_CAT"));
-		         System.out.println("\n");
+			rss = pstm.executeQuery();
+			ResultSetMetaData metaData = rss.getMetaData();
+			int colcnt = metaData.getColumnCount();
+			for(int cnt = 1; cnt <= colcnt; cnt++) {
+				String COL_NAME = metaData.getColumnName(cnt).toUpperCase();	
+				String COL_TYPE = metaData.getColumnTypeName(cnt);	
+				String COL_RAW_TYPE = Integer.toString(metaData.getColumnType(cnt));	
+				String COL_SIZE = Integer.toString(metaData.getColumnDisplaySize(cnt));
+				
+				System.out.println(COL_NAME + ", " + COL_TYPE + ", " + COL_RAW_TYPE + ", " + COL_SIZE);
 			}
 			
 		} catch(Exception e) {
 			System.out.println("error = " + e);
 		} finally {
 			if(rss != null) try { rss.close(); } catch(Exception e) {}
-			//if(stmt != null) try { stmt.close(); } catch(Exception e) {}
+			if(pstm != null) try { pstm.close(); } catch(Exception e) {}
 			if(conn != null) try { conn.close(); } catch(Exception e) {}
 		}
 	}
-	
-	
-SELECT *
-FROM INFORMATION_SCHEMA.TABLES
-;
-
-SELECT *
-FROM INFORMATION_SCHEMA.COLUMNS
-;
-	
-	
 	*/
 }

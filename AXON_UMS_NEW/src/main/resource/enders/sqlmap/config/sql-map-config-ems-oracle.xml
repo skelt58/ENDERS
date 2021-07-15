@@ -23,6 +23,8 @@
 		<typeAlias alias="dbConnPermVO"		type="kr.co.enders.ums.ems.sys.vo.DbConnPermVO" />
 		<typeAlias alias="metaTableVO"		type="kr.co.enders.ums.ems.sys.vo.MetaTableVO" />
 		<typeAlias alias="metaColumnVO"		type="kr.co.enders.ums.ems.sys.vo.MetaColumnVO" />
+		<typeAlias alias="metaOperatorVO"	type="kr.co.enders.ums.ems.sys.vo.MetaOperatorVO" />
+		<typeAlias alias="metaValueVO"		type="kr.co.enders.ums.ems.sys.vo.MetaValueVO" />
 		<typeAlias alias="loginHistVO"		type="kr.co.enders.ums.ems.sys.vo.LoginHistVO" />
 	</typeAliases>
 

@@ -17,7 +17,9 @@ import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
 import kr.co.enders.ums.ems.sys.vo.LoginHistVO;
 import kr.co.enders.ums.ems.sys.vo.MetaColumnVO;
+import kr.co.enders.ums.ems.sys.vo.MetaOperatorVO;
 import kr.co.enders.ums.ems.sys.vo.MetaTableVO;
+import kr.co.enders.ums.ems.sys.vo.MetaValueVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 
@@ -210,8 +212,82 @@ public class SystemServiceImpl implements SystemService {
 	}
 
 	@Override
+	public int insertMetaColumnInfo(MetaColumnVO metaColumnVO) throws Exception {
+		return systemDAO.insertMetaColumnInfo(metaColumnVO);
+	}
+
+	@Override
+	public int updateMetaColumnInfo(MetaColumnVO metaColumnVO) throws Exception {
+		return systemDAO.updateMetaColumnInfo(metaColumnVO);
+	}
+
+	@Override
+	public int deleteMetaColumnInfo(int colNo) throws Exception {
+		int result = 0;
+		result += systemDAO.deleteMetaColumnOperator(colNo);
+		result += systemDAO.deleteMetaColumnValue(colNo);
+		result += systemDAO.deleteMetaColumnInfo(colNo);
+		return result;
+	}
+	
+	@Override
+	public List<MetaOperatorVO> getMetaOperatorList(MetaOperatorVO metaOperatorVO) throws Exception {
+		return systemDAO.getMetaOperatorList(metaOperatorVO);
+	}
+
+	@Override
+	public int updateMetaOperatorInfo(MetaOperatorVO metaOperatorVO) throws Exception {
+		
+		systemDAO.deleteMetaColumnOperator(metaOperatorVO.getColNo());
+		if(metaOperatorVO.getOperCd() != null && !"".equals(metaOperatorVO.getOperCd())) {
+			String[] operCds = metaOperatorVO.getOperCd().split(",");
+			for(int i=0;i<operCds.length;i++) {
+				MetaOperatorVO operVO = new MetaOperatorVO();
+				operVO.setColNo(metaOperatorVO.getColNo());
+				operVO.setOperCd(operCds[i]);
+				systemDAO.insertMetaOperatorInfo(operVO);
+			}
+		}
+		
+		return 1;
+	}
+
+	@Override
+	public List<MetaValueVO> getMetaValueList(MetaValueVO metaValueVO) throws Exception {
+		return systemDAO.getMetaValueList(metaValueVO);
+	}
+	
+	@Override
+	public int insertMetaValueInfo(MetaValueVO metaValueVO) throws Exception {
+		int result = 0;
+		if(metaValueVO.getValueNm() != null && !"".equals(metaValueVO.getValueNm())) {
+			String[] valueNm = metaValueVO.getValueNm().split(",");
+			String[] valueAlias = metaValueVO.getValueAlias().split(",");
+			for(int i=0;i<valueNm.length;i++) {
+				MetaValueVO valueVO = new MetaValueVO();
+				valueVO.setColNo(metaValueVO.getColNo());
+				valueVO.setValueNm(valueNm[i]);
+				valueVO.setValueAlias(valueAlias[i]);
+				result += systemDAO.insertMetaValueInfo(valueVO);
+			}
+		}
+		return result;
+	}
+	
+
+	@Override
+	public int updateMetaValueInfo(MetaValueVO metaValueVO) throws Exception {
+		return systemDAO.updateMetaValueInfo(metaValueVO);
+	}
+	
+	@Override
+	public int deleteMetaValueInfo(MetaValueVO metaValueVO) throws Exception {
+		return systemDAO.deleteMetaValueInfo(metaValueVO);
+	}
+	
+	@Override
 	public List<LoginHistVO> getLoginHistList(LoginHistVO loginHistVO) throws Exception {
 		return systemDAO.getLoginHistList(loginHistVO);
 	}
-
+	
 }

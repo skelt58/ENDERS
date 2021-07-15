@@ -545,7 +545,7 @@
 		 WHERE TBL_NO    = #{tblNo}
 	</update>
 	
-	<!-- 관계식 삭제 -> 관계값 삭제 -> 메타컬럼 삭제 -> 메타테이블 삭제 -->
+	<!-- 메타 테이블 삭제 : 관계식 삭제 -> 관계값 삭제 -> 메타컬럼 삭제 -> 메타테이블 삭제 -->
 	<delete id="deleteMetaTableOperator" parameterType="metaTableVO">
 		DELETE FROM NEO_OPERATOR
 		 WHERE COL_NO IN (
@@ -583,6 +583,132 @@
 		 WHERE TBL_NO = #{tblNo}
 		 ORDER BY COL_NM
 	</select>
+	
+	<insert id="insertMetaColumnInfo" parameterType="metaColumnVO">
+		INSERT INTO NEO_METACOLUMN
+		(
+			COL_NO
+			, TBL_NO
+			, COL_NM
+			, COL_DATA_TY
+			, COL_DATA_TY_JDBC
+			, COL_DESC
+			, COL_ALIAS
+		)
+		VALUES
+		(
+			NEO_METACOLUMN_SEQ.NEXTVAL
+			, #{tblNo}
+			, #{colNm}
+			, #{colDataTy}
+			, #{colDataTyJdbc}
+			, #{colDesc}
+			, #{colAlias}
+		)
+	</insert>
+	
+	<update id="updateMetaColumnInfo" parameterType="metaColumnVO">
+		UPDATE NEO_METACOLUMN
+		   SET COL_ALIAS = #{colAlias}
+			 , COL_DESC = #{colDesc}
+		 WHERE COL_NO = #{colNo}
+	</update>
+	
+	
+	<!-- 메타 컬럼 삭제 : 관계식 삭제 -> 관계값 삭제 -> 메타컬럼 삭제 -->
+	<delete id="deleteMetaColumnOperator" parameterType="_int">
+		DELETE FROM NEO_OPERATOR
+		 WHERE COL_NO = #{colNo}
+	</delete>
+	<delete id="deleteMetaColumnValue" parameterType="_int">
+		DELETE FROM NEO_VALUE
+		 WHERE COL_NO = #{colNo}
+	</delete>
+	<delete id="deleteMetaColumnInfo" parameterType="_int">
+		DELETE FROM NEO_METACOLUMN
+			WHERE COL_NO = #{colNo}
+	</delete>
+	
+	<!-- 메타 관계식 정보 조회 -->
+	<select id="getMetaOperatorList" parameterType="metaOperatorVO" resultType="metaOperatorVO">
+		SELECT A.OPER_NO
+			 , A.COL_NO
+			 , A.OPER_CD
+			 , B.CD_NM OPER_NM
+			 , B.CD_DTL
+			 , B.CD_DTL OPER_ALIAS
+		  FROM NEO_OPERATOR A
+			 , (
+				SELECT CD, CD_NM, CD_DTL
+				  FROM NEO_CD
+				 WHERE CD_GRP = 'C037'
+				   AND UILANG = #{uilang}
+				   AND USE_YN = 'Y'
+				) B
+		 WHERE A.COL_NO = #{colNo}
+		   AND A.OPER_CD = B.CD
+		 ORDER BY OPER_NO
+	</select>
+	
+	<insert id="insertMetaOperatorInfo" parameterType="metaOperatorVO">
+		INSERT INTO NEO_OPERATOR
+		(
+			OPER_NO
+			, COL_NO
+			, OPER_CD
+		)
+		VALUES
+		(
+			NEO_OPERATOR_SEQ.NEXTVAL
+			, #{colNo}
+			, #{operCd}
+		)
+	</insert>
+	
+	<select id="getMetaValueList" parameterType="metaValueVO" resultType="metaValueVO">
+		SELECT VALUE_NO
+			 , COL_NO
+			 , VALUE_NM
+			 , VALUE_ALIAS
+		  FROM NEO_VALUE
+		 WHERE COL_NO = #{colNo}
+		 ORDER BY VALUE_NO
+	</select>
+	
+	<insert id="insertMetaValueInfo" parameterType="metaValueVO">
+		INSERT INTO NEO_VALUE
+		(
+			VALUE_NO
+			, COL_NO
+			, VALUE_NM
+			, VALUE_ALIAS
+		)
+		VALUES
+		(
+			NEO_VALUE_SEQ.NEXTVAL
+			, #{colNo}
+			, #{valueNm}
+			, #{valueAlias}
+		)
+	</insert>
+	
+	<update id="updateMetaValueInfo" parameterType="metaValueVO">
+		UPDATE NEO_VALUE
+		   SET VALUE_NM    = #{valueNm}
+			 , VALUE_ALIAS = #{valueAlias}
+		 WHERE VALUE_NO    = #{valueNo}
+	</update>
+	
+	<delete id="deleteMetaValueInfo" parameterType="metaValueVO">
+		DELETE FROM NEO_VALUE
+		 WHERE VALUE_NO = #{valueNo}
+	</delete>
+	
+	
+	
+	
+	
+	
 	
 	
 	<!-- 사용자 로그인 이력 조회 -->
