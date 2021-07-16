@@ -1847,8 +1847,8 @@ public class SystemController {
 		
 		int result = 0;
 		try {
-			if(",".equals(userCodeVO.getCdNm())) userCodeVO.setCdNm(" , ");
-			if(",".equals(userCodeVO.getCdDtl())) userCodeVO.setCdDtl(" , ");
+			if(",".equals(userCodeVO.getCdNm().trim())) userCodeVO.setCdNm(" , ");
+			if(",".equals(userCodeVO.getCdDtl().trim())) userCodeVO.setCdDtl(" , ");
 			result = systemService.insertUserCodeInfo(userCodeVO);
 		} catch(Exception e) {
 			logger.error("systemService.insertUserCodeInfo error = " + e);
