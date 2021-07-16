@@ -16,6 +16,18 @@
 		 ORDER BY CD
 	</select>
 	
+	<!-- 코드 그룹 정보 조회 -->
+	<select id="getCodeGrpInfo" parameterType="codeGrpVO" resultType="codeGrpVO">
+		SELECT CD_GRP
+			 , CD_GRP_NM
+			 , CD_GRP_DTL
+			 , USE_YN
+		  FROM NEO_CD_GRP
+		 WHERE CD_GRP = #{cdGrp}
+		   AND UILANG = #{uilang}
+
+	</select>
+	
 	<select id="getTimezoneList" parameterType="codeVO" resultType="codeVO">
 		SELECT TZ_CD CD
 			 , TZ_NM CD_NM

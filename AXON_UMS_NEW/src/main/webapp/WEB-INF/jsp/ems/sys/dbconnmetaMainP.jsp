@@ -27,7 +27,7 @@ $(document).ready(function() {
 </script>
 
 <!-- 메타 테이블 목록 Start -->
-<table border="1" style="width:380px;">
+<table border="1" cellspacing="0" style="width:380px;">
 	<tr class="tr_head">
 		<td><spring:message code='SYSTBLTL060'/></td><!-- 메타테이블 -->
 	</tr>
@@ -59,12 +59,15 @@ $(document).ready(function() {
 </table>
 <!-- 메타 테이블 목록 End -->
 
+<br/>
+<br/>
+
 <!-- 메타 테이블 등록 Start -->
 <div id="divMetaTableInfo" style="display:none;">
 	<form id="metaTableInfo" name="metaTableInfo">
 	<input type="hidden" name="dbConnNo" value="${dbConnNo}"/>
 	<input type="hidden" id="tblNo" name="tblNo" value="${tblNo}"/>
-	<table width="600" border="1" cellspacing="1" cellpadding="0" class="table_line_outline">
+	<table border="1" cellspacing="0" cellpadding="0" class="table_line_outline" style="width:998px;">
 		<tr>
 		    <td class="td_title" width="13%"><spring:message code='SYSTBLTL061'/></td><!-- 테이블명 -->
 			<td class="td_body" width="37%">
@@ -95,19 +98,17 @@ $(document).ready(function() {
 </div>
 <!-- 메타 테이블 등록 End -->
 
-
+<br/>
+<br/>
 
 <!-- 메타 컬럼 등록 Start -->
 <div id="divMetaColumnInfo" style="display:none;"></div>
 <!-- 메타 컬럼 등록 End -->
 
 <br/>
+<br/>
 
 <!-- 메타 관계식,관계값 등록 Start -->
 <div id="divMetaOperValueInfo" style="display:none;"></div>
 <!-- 메타 관계식 등록 End -->
 
-
-<br/>
-<br/>
-<br/>

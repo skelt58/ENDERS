@@ -16,9 +16,11 @@ import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
 import kr.co.enders.ums.ems.sys.vo.LoginHistVO;
 import kr.co.enders.ums.ems.sys.vo.MetaColumnVO;
+import kr.co.enders.ums.ems.sys.vo.MetaJoinVO;
 import kr.co.enders.ums.ems.sys.vo.MetaOperatorVO;
 import kr.co.enders.ums.ems.sys.vo.MetaTableVO;
 import kr.co.enders.ums.ems.sys.vo.MetaValueVO;
+import kr.co.enders.ums.ems.sys.vo.UserCodeVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 
@@ -227,11 +229,49 @@ public class SystemDAO implements SystemMapper {
 		return sqlSessionEms.getMapper(SystemMapper.class).deleteMetaValueInfo(metaValueVO);
 	}
 	
+	@Override
+	public List<MetaJoinVO> getMetaJoinList(MetaJoinVO metaJoinVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).getMetaJoinList(metaJoinVO);
+	}
 	
+	@Override
+	public int insertMetaJoinInfo(MetaJoinVO metaJoinVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).insertMetaJoinInfo(metaJoinVO);
+	}
+	
+	@Override
+	public int updateMetaJoinInfo(MetaJoinVO metaJoinVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).updateMetaJoinInfo(metaJoinVO);
+	}
+
+	@Override
+	public int deleteMetaJoinInfo(MetaJoinVO metaJoinVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).deleteMetaJoinInfo(metaJoinVO);
+	}
 	
 	@Override
 	public List<LoginHistVO> getLoginHistList(LoginHistVO loginHistVO) throws Exception {
 		return sqlSessionEms.getMapper(SystemMapper.class).getLoginHistList(loginHistVO);
+	}
+
+	@Override
+	public List<UserCodeVO> getUserCodeList(UserCodeVO userCodeVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).getUserCodeList(userCodeVO);
+	}
+
+	@Override
+	public int insertUserCodeInfo(UserCodeVO userCodeVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).insertUserCodeInfo(userCodeVO);
+	}
+
+	@Override
+	public int updateUserCodeInfo(UserCodeVO userCodeVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).updateUserCodeInfo(userCodeVO);
+	}
+
+	@Override
+	public int deleteUserCodeInfo(UserCodeVO userCodeVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).deleteUserCodeInfo(userCodeVO);
 	}
 
 

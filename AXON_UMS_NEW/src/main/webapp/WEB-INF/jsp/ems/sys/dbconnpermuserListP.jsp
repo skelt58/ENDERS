@@ -24,14 +24,14 @@ $(document).ready(function() {
 
 <form id="dbConnPermForm" name="dbConnPermForm" method="post">
 	<input type="hidden" name="dbConnNo" value="<c:out value='${dbConnNo}'/>">
-	<table border="1" style="width: 1015px;">
+	<table border="1" cellspacing="0" style="width: 1015px;">
 	   	<colgroup>
 	   		<col style="width:10%">
 	   		<col style="width:30%">
 	   		<col style="width:60%">
 	   	</colgroup>
 		<tr>
-			<td class="td_title"><spring:message code='SYSTBLTL059'/></td><!-- 그룹선택 -->
+			<td class="td_title"><spring:message code='SYSTBLTL059'/>1</td><!-- 그룹선택 -->
 			<td class="td_title"><spring:message code='SYSTBLTL017'/></td><!-- 그룹 -->
 			<td class="td_title"><spring:message code='SYSTBLTL023'/></td><!-- 사용자 -->
 		</tr>

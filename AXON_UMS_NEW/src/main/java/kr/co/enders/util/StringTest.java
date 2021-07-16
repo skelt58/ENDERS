@@ -25,6 +25,7 @@ public class StringTest {
 //		String encPwd = EncryptUtil.getEncryptedSHA256("ADMIN");
 //		System.out.println("encPwd = " + encPwd);
 		
+		/*
 		String dbUrl = "jdbc:mysql://127.0.0.1:3306/UMS?useUnicode=true&characterEncoding=utf8";
 		String catalog = "";
 		if(dbUrl.indexOf("?") > 0) {
@@ -34,6 +35,14 @@ public class StringTest {
 		
 		System.out.println(catalog);
 		System.out.println(dbUrl);
+		*/
+		
+		String str = " , ";
+		String[] aa = str.split(",");
+		System.out.println(aa.length);
+		for(int i=0;i<aa.length;i++) {
+			System.out.println(aa[i]);
+		}
 		
 	}
 	

@@ -6,11 +6,11 @@
 package kr.co.enders.ums.com.vo;
 
 public class CodeGroupVO {
-	private String cdGrp;
-	private String cdGrpNm;
-	private String cdGrpDtl;
-	private String uilang;
-	private String useYn;
+	private String cdGrp;		// 코드그룹
+	private String cdGrpNm;		// 코드그룹명
+	private String cdGrpDtl;	// 코드그룸설명
+	private String uilang;		// 언어권
+	private String useYn;		// 사용여부
 	
 	public String getCdGrp() {
 		return cdGrp;

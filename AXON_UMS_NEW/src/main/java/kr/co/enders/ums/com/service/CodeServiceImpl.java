@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import kr.co.enders.ums.com.dao.CodeDAO;
+import kr.co.enders.ums.com.vo.CodeGroupVO;
 import kr.co.enders.ums.com.vo.CodeVO;
 
 @Service
@@ -21,6 +22,11 @@ public class CodeServiceImpl implements CodeService {
 	@Override
 	public List<CodeVO> getCodeList(CodeVO codeVO) throws Exception {
 		return codeDAO.getCodeList(codeVO);
+	}
+	
+	@Override
+	public CodeGroupVO getCodeGrpInfo(CodeGroupVO codeGroupVO) throws Exception {
+		return codeDAO.getCodeGrpInfo(codeGroupVO);
 	}
 
 	@Override

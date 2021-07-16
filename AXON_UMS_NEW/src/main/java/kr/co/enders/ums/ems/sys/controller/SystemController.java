@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.enders.ums.com.service.CodeService;
+import kr.co.enders.ums.com.vo.CodeGroupVO;
 import kr.co.enders.ums.com.vo.CodeVO;
 import kr.co.enders.ums.ems.sys.service.SystemService;
 import kr.co.enders.ums.ems.sys.vo.DbConnPermVO;
@@ -30,9 +31,11 @@ import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
 import kr.co.enders.ums.ems.sys.vo.LoginHistVO;
 import kr.co.enders.ums.ems.sys.vo.MetaColumnVO;
+import kr.co.enders.ums.ems.sys.vo.MetaJoinVO;
 import kr.co.enders.ums.ems.sys.vo.MetaOperatorVO;
 import kr.co.enders.ums.ems.sys.vo.MetaTableVO;
 import kr.co.enders.ums.ems.sys.vo.MetaValueVO;
+import kr.co.enders.ums.ems.sys.vo.UserCodeVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 import kr.co.enders.util.Code;
@@ -819,7 +822,6 @@ public class SystemController {
 			dbConnInfo.setRegDt(StringUtil.getFDate(dbConnInfo.getRegDt(), Code.DT_FMT2));
 			dbConnInfo.setUpDt(StringUtil.getFDate(dbConnInfo.getUpDt(), Code.DT_FMT2));
 			
-			logger.debug("systemService.getDbConnInfo Decrypted Password = " + dbConnInfo.getLoginPwd());
 		} catch(Exception e) {
 			logger.error("systemService.getDbConnInfo error = " + e);
 		}
@@ -1188,7 +1190,7 @@ public class SystemController {
 			logger.error("systemService.getDbConnInfo error = " + e);
 		}
 		
-		// 실제 DB 테이블 목록 조회
+		// 실제 DB 테이블 컬럼 목록 조회
 		List<MetaColumnVO> realColumnList = null;
 		DBUtil dbUtil = new DBUtil();
 		String dbTy = dbConnInfo.getDbTy();
@@ -1342,6 +1344,14 @@ public class SystemController {
 		return "ems/sys/metaoperMainP";
 	}
 	
+	/**
+	 * 메타 관계식 정보 수정
+	 * @param metaOperatorVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value="/metaoperUpdate")
 	public ModelAndView updateMetaOperatorInfo(@ModelAttribute MetaOperatorVO metaOperatorVO, Model model, HttpServletRequest request, HttpServletResponse response) {
 		logger.debug("updateMetaOperatorInfo colNo = " + metaOperatorVO.getColNo());
@@ -1367,6 +1377,14 @@ public class SystemController {
 		return modelAndView;
 	}
 	
+	/**
+	 * 메타 관계값 정보 등록
+	 * @param metaValueVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value="/metavalAdd")
 	public ModelAndView insertMetaValueInfo(@ModelAttribute MetaValueVO metaValueVO, Model model, HttpServletRequest request, HttpServletResponse response) {
 		logger.debug("insertMetaValueInfo colNo = " + metaValueVO.getColNo());
@@ -1393,6 +1411,14 @@ public class SystemController {
 		return modelAndView;
 	}
 	
+	/**
+	 * 메타 관계값 정보 수정
+	 * @param metaValueVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value="/metavalUpdate")
 	public ModelAndView updateMetaValueInfo(@ModelAttribute MetaValueVO metaValueVO, Model model, HttpServletRequest request, HttpServletResponse response) {
 		logger.debug("updateMetaValueInfo colNo = " + metaValueVO.getColNo());
@@ -1419,6 +1445,14 @@ public class SystemController {
 		return modelAndView;
 	}
 	
+	/**
+	 * 메타 관계값 정보 삭제
+	 * @param metaValueVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value="/metavalDelete")
 	public ModelAndView deleteMetaValueInfo(@ModelAttribute MetaValueVO metaValueVO, Model model, HttpServletRequest request, HttpServletResponse response) {
 		logger.debug("metavalDelete valueNo = " + metaValueVO.getValueNo());
@@ -1442,38 +1476,230 @@ public class SystemController {
 		return modelAndView;
 	}
 	
+	/**
+	 * 메차 조인 화면 출력
+	 * @param metaJoinVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/metajoinMainP")
+	public String getMetaJoinList(@ModelAttribute MetaJoinVO metaJoinVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getMetaJoinList dbConnNo = " + metaJoinVO.getDbConnNo());
 
+		// 조인유형코드 목록을 조회한다.
+		CodeVO joinTyVO = new CodeVO();
+		joinTyVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		joinTyVO.setCdGrp("C040");	// 조인유형코드
+		joinTyVO.setUseYn("Y");
+		List<CodeVO> joinTyList = null;
+		try {
+			joinTyList = codeService.getCodeList(joinTyVO);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList error[C040] = " + e);
+		}
+
+		// 관계유형코드 목록을 조회한다.
+		CodeVO relTyVO = new CodeVO();
+		relTyVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		relTyVO.setCdGrp("C041");	// 관계유형코드
+		relTyVO.setUseYn("Y");
+		List<CodeVO> relTyList = null;
+		try {
+			relTyList = codeService.getCodeList(relTyVO);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList error[C041] = " + e);
+		}
+		
+		// 페이지 설정
+		int page = StringUtil.setNullToInt(metaJoinVO.getPage(), 1);
+		int rows = StringUtil.setNullToInt(metaJoinVO.getRows(), Integer.parseInt(properties.getProperty("UMS.ROW_PER_PAGE")));
+		metaJoinVO.setPage(page);
+		metaJoinVO.setRows(rows);
+
+		// 메타 조인 목록 조회
+		List<MetaJoinVO> metaJoinList = null;
+		metaJoinVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		try {
+			metaJoinList = systemService.getMetaJoinList(metaJoinVO);
+		} catch(Exception e) {
+			logger.error("systemService.getMetaJoinList error = " + e);
+		}
+		
+		int totCnt = metaJoinList != null && metaJoinList.size() > 0 ? ((MetaJoinVO)metaJoinList.get(0)).getTotCnt() : 0;
+		int total = (int)Math.ceil((double)totCnt/rows);
+
+		
+		// 메타 테이블 목록 조회
+		List<MetaTableVO> metaTableList = null;
+		DbConnVO connVO = new DbConnVO();
+		connVO.setDbConnNo(metaJoinVO.getDbConnNo());
+		try {
+			metaTableList = systemService.getMetaTableList(connVO);
+		} catch(Exception e) {
+			logger.error("systemService.getMetaTableList error = " + e);
+		}
+		
+		model.addAttribute("dbConnNo", metaJoinVO.getDbConnNo());
+		model.addAttribute("joinTyList", joinTyList);
+		model.addAttribute("relTyList", relTyList);
+		model.addAttribute("metaJoinList", metaJoinList);
+		model.addAttribute("metaTableList", metaTableList);
+		model.addAttribute("rows", metaJoinList);
+		model.addAttribute("page", page);
+		model.addAttribute("total", total);
+		model.addAttribute("records", totCnt);
+		
+		return "ems/sys/metajoinMainP";
+	}
 	
+	/**
+	 * 메타 조인 컬럼 목록 조회
+	 * @param metaJoinVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/getColumnList")
+	public ModelAndView getColumnList(@ModelAttribute MetaJoinVO metaJoinVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getColumnList dbConnNo = " + metaJoinVO.getDbConnNo());
+		logger.debug("getColumnList tblNm = " + metaJoinVO.getTblNm());
+		
+		// DB Connection 정보를 조회한다.
+		DbConnVO dbConnInfo = null;
+		try {
+			DbConnVO searchVO = new DbConnVO();
+			searchVO.setDbConnNo(metaJoinVO.getDbConnNo());
+			searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+			dbConnInfo = systemService.getDbConnInfo(searchVO);
+		} catch(Exception e) {
+			logger.error("systemService.getDbConnInfo error = " + e);
+		}
+
+		// 실제 DB 테이블 컬럼 목록 조회
+		List<MetaColumnVO> realColumnList = null;
+		
+		DBUtil dbUtil = new DBUtil();
+		String dbTy = dbConnInfo.getDbTy();
+		String dbDriver = dbConnInfo.getDbDriver();
+		String dbUrl = dbConnInfo.getDbUrl();
+		String loginId = dbConnInfo.getLoginId();
+		String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.algorithm"), properties.getProperty("JASYPT.password"), dbConnInfo.getLoginPwd());
+		realColumnList = dbUtil.getRealColumnList(dbTy, dbDriver, dbUrl, loginId, loginPwd, metaJoinVO.getTblNm());
+
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("realColumnList", realColumnList);
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
 	
+	/**
+	 * 메타 조인 정보 등록
+	 * @param metaJoinVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/metajoinAdd")
+	public ModelAndView insertMetaJoinInfo(@ModelAttribute MetaJoinVO metaJoinVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("insertMetaJoinInfo dbConnNo = " + metaJoinVO.getDbConnNo());
+		logger.debug("insertMetaJoinInfo mstTblNm = " + metaJoinVO.getMstTblNm());
+		logger.debug("insertMetaJoinInfo forTblNm = " + metaJoinVO.getForTblNm());
+		logger.debug("insertMetaJoinInfo joinTy = " + metaJoinVO.getJoinTy());
+		logger.debug("insertMetaJoinInfo relTy = " + metaJoinVO.getRelTy());
+		
+		int result = 0;
+		try {
+			result = systemService.insertMetaJoinInfo(metaJoinVO);
+		} catch(Exception e) {
+			logger.error("systemService.insertMetaJoinInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
 	
+	/**
+	 * 메타 조인 정보 수정
+	 * @param metaJoinVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/metajoinUpdate")
+	public ModelAndView updateMetaJoinInfo(@ModelAttribute MetaJoinVO metaJoinVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("updateMetaJoinInfo dbConnNo = " + metaJoinVO.getDbConnNo());
+		logger.debug("updateMetaJoinInfo joinNo = " + metaJoinVO.getJoinNo());
+		logger.debug("updateMetaJoinInfo mstTblNm = " + metaJoinVO.getMstTblNm());
+		logger.debug("updateMetaJoinInfo forTblNm = " + metaJoinVO.getForTblNm());
+		logger.debug("updateMetaJoinInfo joinTy = " + metaJoinVO.getJoinTy());
+		logger.debug("updateMetaJoinInfo relTy = " + metaJoinVO.getRelTy());
+		
+		int result = 0;
+		try {
+			result = systemService.updateMetaJoinInfo(metaJoinVO);
+		} catch(Exception e) {
+			logger.error("systemService.updateMetaJoinInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	/**
+	 * 메타 조인 정보 삭제
+	 * @param metaJoinVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/metajoinDelete")
+	public ModelAndView deleteMetaJoinInfo(@ModelAttribute MetaJoinVO metaJoinVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("deleteMetaJoinInfo joinNo = " + metaJoinVO.getJoinNo());
+		
+		int result = 0;
+		try {
+			result = systemService.deleteMetaJoinInfo(metaJoinVO);
+		} catch(Exception e) {
+			logger.error("systemService.deleteMetaJoinInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
 	
 	
 	
@@ -1537,7 +1763,6 @@ public class SystemController {
 			}
 		}
 		
-		
 		int totCnt = newLoginHistList != null && newLoginHistList.size() > 0 ? ((LoginHistVO)newLoginHistList.get(0)).getTotCnt() : 0;
 		int total = (int)Math.ceil((double)totCnt/rows);
 		
@@ -1547,6 +1772,148 @@ public class SystemController {
 		map.put("page", page);
 		map.put("total", total);
 		map.put("records", totCnt);
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	
+	
+	/**
+	 * 캠페인 목적 관리 화면 출력
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/usercodeMainP")
+	public String goUserCodeList(Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		String uilang = (String)session.getAttribute("NEO_UILANG");
+		String cdGrp = "C004";		// 캠페인목적
+		
+		UserCodeVO userCodeVO = new UserCodeVO();
+		userCodeVO.setUilang(uilang);
+		userCodeVO.setCdGrp(cdGrp);
+		
+		// 코드그룹 정보 조회
+		CodeGroupVO codeGrpVO = new CodeGroupVO();
+		codeGrpVO.setUilang(uilang);
+		codeGrpVO.setCdGrp(cdGrp);
+		CodeGroupVO codeGrpInfo = null;
+		try {
+			codeGrpInfo = codeService.getCodeGrpInfo(codeGrpVO);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeGrpInfo error = " + e);
+		}
+		
+		
+		List<UserCodeVO> userCodeList = null;
+		try {
+			userCodeList = systemService.getUserCodeList(userCodeVO);
+		} catch(Exception e) {
+			logger.error("systemService.getUserCodeList error = " + e);
+		}
+		
+		// 언어권 코드
+		CodeVO code = new CodeVO();
+		code.setUilang(uilang);
+		code.setCdGrp("C025");
+		code.setUseYn("Y");
+		List<CodeVO> uilangList = null;
+		try {
+			uilangList = codeService.getCodeList(code);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList error = " + e);
+		}
+		
+		model.addAttribute("uilang", uilang);
+		model.addAttribute("cdGrp", cdGrp);
+		model.addAttribute("codeGrpInfo", codeGrpInfo);
+		model.addAttribute("userCodeList", userCodeList);
+		model.addAttribute("uilangList", uilangList);
+		
+		return "ems/sys/usercodeMainP";
+	}
+	
+	@RequestMapping(value="/usercodeAdd")
+	public ModelAndView insertUserCodeInfo(@ModelAttribute UserCodeVO userCodeVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("insertUserCodeInfo cdGrp = " + userCodeVO.getCdGrp());
+		logger.debug("insertUserCodeInfo uilang = " + userCodeVO.getUilang());
+		logger.debug("insertUserCodeInfo cd = " + userCodeVO.getCd());
+		logger.debug("insertUserCodeInfo cdNm = " + userCodeVO.getCdNm());
+		logger.debug("insertUserCodeInfo cdDtl = " + userCodeVO.getCdDtl());
+		logger.debug("insertUserCodeInfo useYn = " + userCodeVO.getUseYn());
+		
+		int result = 0;
+		try {
+			if(",".equals(userCodeVO.getCdNm())) userCodeVO.setCdNm(" , ");
+			if(",".equals(userCodeVO.getCdDtl())) userCodeVO.setCdDtl(" , ");
+			result = systemService.insertUserCodeInfo(userCodeVO);
+		} catch(Exception e) {
+			logger.error("systemService.insertUserCodeInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/usercodeUpdate")
+	public ModelAndView updateUserCodeInfo(@ModelAttribute UserCodeVO userCodeVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("updateUserCodeInfo cdGrp = " + userCodeVO.getCdGrp());
+		logger.debug("updateUserCodeInfo uilang = " + userCodeVO.getUilang());
+		logger.debug("updateUserCodeInfo cd = " + userCodeVO.getCd());
+		logger.debug("updateUserCodeInfo cdNm = " + userCodeVO.getCdNm());
+		logger.debug("updateUserCodeInfo cdDtl = " + userCodeVO.getCdDtl());
+		logger.debug("updateUserCodeInfo useYn = " + userCodeVO.getUseYn());
+		
+		int result = 0;
+		try {
+			result = systemService.updateUserCodeInfo(userCodeVO);
+		} catch(Exception e) {
+			logger.error("systemService.updateUserCodeInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+		} else {
+			map.put("result","Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/usercodeDelete")
+	public ModelAndView deleteUserCodeInfo(@ModelAttribute UserCodeVO userCodeVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("deleteUserCodeInfo cdGrp = " + userCodeVO.getCdGrp());
+		logger.debug("deleteUserCodeInfo uilang = " + userCodeVO.getUilang());
+		logger.debug("deleteUserCodeInfo cd = " + userCodeVO.getCd());
+		
+		int result = 0;
+		try {
+			result = systemService.deleteUserCodeInfo(userCodeVO);
+		} catch(Exception e) {
+			logger.error("systemService.deleteUserCodeInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result","Success");
+		} else {
+			map.put("result","Fail");
+		}
 		ModelAndView modelAndView = new ModelAndView("jsonView", map);
 		
 		return modelAndView;

@@ -167,6 +167,7 @@ function goList() {
 	$("#dbConnInfoForm").attr("action","<c:url value='/ems/sys/dbconnMainP.ums'/>").submit();
 }
 
+// 탭 클릭시 컨텐츠
 function goTab(idx) {
 	if(idx == 1) {
 		$("#td_tab1").css({"background":"#cccccc","font-weight":"bold"});
@@ -188,7 +189,8 @@ function goTab(idx) {
 }
 
 function getContentPageHtml(idx) {
-	clearContentPageHtml();
+	// 컨텐츠 초기화
+	$("#divTabContent").empty();
 	
 	var url = "";
 	if(idx == 1) {
@@ -196,7 +198,7 @@ function getContentPageHtml(idx) {
 	} else if(idx == 2) {
 		url = 	"<c:url value='/ems/sys/dbconnmetaMainP.ums'/>";
 	} else if(idx == 3) {
-		url = 	"<c:url value='/ems/sys/dbconnpermuserListP.ums'/>";
+		url = 	"<c:url value='/ems/sys/metajoinMainP.ums'/>";
 	}
 	
 	var dbConnNo = $("#dbConnNo").val();
@@ -212,10 +214,6 @@ function getContentPageHtml(idx) {
 			alert("Error!!");
 		}
 	});
-}
-
-function clearContentPageHtml() {
-	 $("#divTabContent").html("");
 }
 
 
@@ -616,6 +614,124 @@ function goMetaValueDelete(valueNo) {
 	});
 
 }
+
+
+/***************************************************** 메타 조인 정보 처리 ***********************************************************/
+// 
+function setTableColumn(target, tblNm) {
+	var dbConnNo = $("#metaJoinInsertForm input[name='dbConnNo']").val();
+
+	$.getJSON("<c:url value='/ems/sys/getColumnList.json'/>?dbConnNo=" + dbConnNo + "&tblNm=" + tblNm, function(data) {
+		/*
+		if(target == 'mstColNm') {
+			$("#metaJoinInsertForm select[name='mstColNm']").children("option:not(:first)").remove();
+			$.each(data.realColumnList, function(idx,item){
+				var option = new Option(item.colNm,item.colNm);
+				$("#metaJoinInsertForm select[name='mstColNm']").append(option);
+			});
+		} else if(target == 'forColNm') {
+			$("#metaJoinInsertForm select[name='forColNm']").children("option:not(:first)").remove();
+			$.each(data.realColumnList, function(idx,item){
+				var option = new Option(item.colNm,item.colNm);
+				$("#metaJoinInsertForm select[name='forColNm']").append(option);
+			});
+		}
+		*/
+		
+		$("#metaJoinInsertForm select[name='" + target + "']").children("option:not(:first)").remove();
+		$.each(data.realColumnList, function(idx,item){
+			var option = new Option(item.colNm,item.colNm);
+			$("#metaJoinInsertForm select[name='" + target +"']").append(option);
+		});
+		
+	});
+}
+
+function goMetaJoinAdd() {
+	var dbConnNo = $("#metaJoinInsertForm input[name='dbConnNo']").val();
+
+	var errflag = false;
+	var errstr = "";
+	if($("#metaJoinInsertForm select[name='mstTblNm'] option:selected").val() == "") {
+		errflag = true;
+		errstr += " [MASTER <spring:message code='SYSTBLTL061'/>] ";		// 테이블명
+	}
+	if($("#metaJoinInsertForm select[name='mstColNm'] option:selected").val() == "") {
+		errflag = true;
+		errstr += " [MASTER <spring:message code='SYSTBLTL063'/>] ";		// 컬럼명
+	}
+	if($("#metaJoinInsertForm select[name='joinTy'] option:selected").val() == "") {
+		errflag = true;
+		errstr += " [<spring:message code='SYSTBLTL063'/>] ";	// 조인유형
+	}
+
+	if($("#metaJoinInsertForm select[name='relTy'] option:selected").val() == "") {
+		errflag = true;
+		errstr += " [<spring:message code='SYSTBLTL069'/>] ";	// 관계유형
+	}
+	if($("#metaJoinInsertForm select[name='forTblNm'] option:selected").val() == "") {
+		errflag = true;
+		errstr += " [FORIGN <spring:message code='SYSTBLTL061'/>] ";	// 테이블명
+	}
+	if($("#metaJoinInsertForm select[name='forColNm'] option:selected").val() == "") {
+		errflag = true;
+		errstr += " [FORIGN <spring:message code='SYSTBLTL063'/>] ";	// 컬럼명
+	}
+	if(errflag) {
+		alert("<spring:message code='COMJSALT016'/>\n" + errstr);	// 다음 정보를 확인하세요.
+		return;
+	}
+
+	var param = $("#metaJoinInsertForm").serialize();
+	$.getJSON("<c:url value='/ems/sys/metajoinAdd.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='COMJSALT008'/>");	// 등록 성공
+			
+			// 메타 조인 다시 조회
+			getContentPageHtml(3);
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='COMJSALT009'/>");	// 등록 실패
+		}
+	});
+}
+
+function goMetaJoinUpdate(joinNo, pos, cnt) {
+	$("#metaJoinUpdateData input[name='joinNo']").val( joinNo );
+	$("#metaJoinUpdateData input[name='mstTblNm']").val( $("#metaJoinUpdateForm input[name='mstTblNm']").eq(pos).val() );
+	$("#metaJoinUpdateData input[name='mstColNm']").val( $("#metaJoinUpdateForm input[name='mstColNm']").eq(pos).val() );
+	$("#metaJoinUpdateData input[name='forTblNm']").val( $("#metaJoinUpdateForm input[name='forTblNm']").eq(pos).val() );
+	$("#metaJoinUpdateData input[name='forColNm']").val( $("#metaJoinUpdateForm input[name='forColNm']").eq(pos).val() );
+	$("#metaJoinUpdateData input[name='joinTy']").val( $("#metaJoinUpdateForm select[name='joinTy']").eq(pos).val() );
+	$("#metaJoinUpdateData input[name='relTy']").val( $("#metaJoinUpdateForm select[name='relTy']").eq(pos).val() );
+	
+	var param = $("#metaJoinUpdateData").serialize();
+	$.getJSON("<c:url value='/ems/sys/metajoinUpdate.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='COMJSALT010'/>");	// 수정 성공
+			
+			// 메타 조인 다시 조회
+			getContentPageHtml(3);
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='COMJSALT011'/>");	// 수정 실패
+		}
+	});
+}
+
+function goMetaJoinDelete(joinNo) {
+	$("#metaJoinUpdateData input[name='joinNo']").val( joinNo );
+	
+	var param = $("#metaJoinUpdateData").serialize();
+	$.getJSON("<c:url value='/ems/sys/metajoinDelete.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='COMJSALT012'/>");	// 삭제 성공
+			
+			// 메타 조인 다시 조회
+			getContentPageHtml(3);
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='COMJSALT013'/>");	// 삭제 실패
+		}
+	});
+}
 </script>
 <form id="hiddenForm" name="hiddenForm" style="display:none;">
 <input type="hidden" id="tabIdx" value="1"/>
@@ -644,7 +760,7 @@ function goMetaValueDelete(valueNo) {
 			<input type="hidden" id="searchStatus" name="searchStatus" value="<c:out value='${searchInfo.searchStatus}'/>"/>
 			<input type="hidden" id="dbConnNo" name="dbConnNo" value="<c:out value='${dbConnInfo.dbConnNo}'/>"/>
 			
-			<table width="800" border="0" cellspacing="1" cellpadding="0" class="table_line_outline" style="width: 1015px;">
+			<table border="1" cellspacing="0" cellpadding="0" class="table_line_outline" style="width: 1015px;">
 				<tr>
 				    <td class="td_title"><spring:message code='SYSTBLTL054'/></td><!-- CONNECTION명 -->
 					<td class="td_body">
@@ -737,7 +853,7 @@ function goMetaValueDelete(valueNo) {
 		      	<input type="button" id="btnUpdate" class="btn_typeC" value="<spring:message code='COMBTN007'/>"><!-- 수정 -->
 		        <!--input type="reset" class="btn_typeC" value="<spring:message code='COMBTN009'/>"--><!-- 재입력 -->
 			</div>
-			<table width="800" border="0" cellspacing="1" cellpadding="0" class="table_line_outline">
+			<table width="800" border="1" cellspacing="0" cellpadding="0" class="table_line_outline">
 				<tr>
 					<td class="td_title"><spring:message code='SYSTBLTL021'/></td><!-- 등록자 -->
 					<td class="td_body">
@@ -757,8 +873,9 @@ function goMetaValueDelete(valueNo) {
 					</td>
 				</tr>
 			</table>
-			
 			</form>
+			<br/>
+			<br/>
 			
 			
 			<!-- TAB Start -->
@@ -779,8 +896,10 @@ function goMetaValueDelete(valueNo) {
 
 			<!-- TAB End -->
 			
+			<br/>
+			<br/>
+			<br/>
 			<!-- 메인 컨텐츠 End -->
-			
 		</div>
 	</div>
 	<div class="footer">

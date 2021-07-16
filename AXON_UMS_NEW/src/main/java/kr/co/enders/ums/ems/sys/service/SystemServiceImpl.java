@@ -17,9 +17,11 @@ import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
 import kr.co.enders.ums.ems.sys.vo.LoginHistVO;
 import kr.co.enders.ums.ems.sys.vo.MetaColumnVO;
+import kr.co.enders.ums.ems.sys.vo.MetaJoinVO;
 import kr.co.enders.ums.ems.sys.vo.MetaOperatorVO;
 import kr.co.enders.ums.ems.sys.vo.MetaTableVO;
 import kr.co.enders.ums.ems.sys.vo.MetaValueVO;
+import kr.co.enders.ums.ems.sys.vo.UserCodeVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 
@@ -286,8 +288,63 @@ public class SystemServiceImpl implements SystemService {
 	}
 	
 	@Override
+	public List<MetaJoinVO> getMetaJoinList(MetaJoinVO metaJoinVO) throws Exception {
+		return systemDAO.getMetaJoinList(metaJoinVO);
+	}
+	
+	@Override
+	public int insertMetaJoinInfo(MetaJoinVO metaJoinVO) throws Exception {
+		return systemDAO.insertMetaJoinInfo(metaJoinVO);
+	}
+	
+	@Override
+	public int updateMetaJoinInfo(MetaJoinVO metaJoinVO) throws Exception {
+		return systemDAO.updateMetaJoinInfo(metaJoinVO);
+	}
+
+	@Override
+	public int deleteMetaJoinInfo(MetaJoinVO metaJoinVO) throws Exception {
+		return systemDAO.deleteMetaJoinInfo(metaJoinVO);
+	}
+	
+	@Override
 	public List<LoginHistVO> getLoginHistList(LoginHistVO loginHistVO) throws Exception {
 		return systemDAO.getLoginHistList(loginHistVO);
 	}
+	
+	@Override
+	public List<UserCodeVO> getUserCodeList(UserCodeVO userCodeVO) throws Exception {
+		return systemDAO.getUserCodeList(userCodeVO);
+	}
+
+	@Override
+	public int insertUserCodeInfo(UserCodeVO userCodeVO) throws Exception {
+		int result = 0;
+		String[] uilang = userCodeVO.getUilang().split(",");
+		String[] cdNm = userCodeVO.getCdNm().split(",");
+		String[] cdDtl = userCodeVO.getCdDtl().split(",");
+		for(int i=0;i<uilang.length;i++) {
+			UserCodeVO code = new UserCodeVO();
+			code.setUilang(uilang[i]);
+			code.setCdGrp(userCodeVO.getCdGrp());
+			code.setCd(userCodeVO.getCd());
+			code.setCdNm(cdNm[i].trim());
+			code.setUseYn(userCodeVO.getUseYn());
+			code.setCdDtl(cdDtl[i].trim());
+			result += systemDAO.insertUserCodeInfo(code);
+		}
+		return result;
+	}
+
+	@Override
+	public int updateUserCodeInfo(UserCodeVO userCodeVO) throws Exception {
+		return systemDAO.updateUserCodeInfo(userCodeVO);
+	}
+
+	@Override
+	public int deleteUserCodeInfo(UserCodeVO userCodeVO) throws Exception {
+		return systemDAO.deleteUserCodeInfo(userCodeVO);
+	}
+	
 	
 }

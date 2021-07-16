@@ -24,7 +24,7 @@
 <input type="hidden" name="dbConnNo" value="<c:out value='${dbConnNo}'/>">
 <input type="hidden" name="tblNo" value="<c:out value='${tblNo}'/>">
 <input type="hidden" name="tblNm" value="<c:out value='${tblNm}'/>">
-<table border="1" cellspacing="1" cellpadding="0" class="table_line_outline" style="width:998px;">
+<table border="1" cellspacing="0" cellpadding="0" class="table_line_outline" style="width:998px;">
 	<tr class="tr_head">
 	    <td width="19%"><spring:message code='SYSTBLTL063'/></td><!-- 컬럼명 -->
 		<td width="19%"><spring:message code='SYSTBLTL062'/></td><!-- 별칭 -->

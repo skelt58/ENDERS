@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import kr.co.enders.ums.com.vo.CodeGroupVO;
 import kr.co.enders.ums.com.vo.CodeVO;
 
 @Service
@@ -20,6 +21,14 @@ public interface CodeService {
 	 * @throws Exception
 	 */
 	public List<CodeVO> getCodeList(CodeVO codeVO) throws Exception;
+	
+	/**
+	 * 코드그룹 정보 조회
+	 * @param codeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	public CodeGroupVO getCodeGrpInfo(CodeGroupVO codeGroupVO) throws Exception;
 	
 	/**
 	 * 타임존 목록 조회

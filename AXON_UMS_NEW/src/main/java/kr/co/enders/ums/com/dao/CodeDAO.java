@@ -11,6 +11,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import kr.co.enders.ums.com.vo.CodeGroupVO;
 import kr.co.enders.ums.com.vo.CodeVO;
 
 @Repository
@@ -20,8 +21,12 @@ public class CodeDAO implements CodeMapper {
 
 	@Override
 	public List<CodeVO> getCodeList(CodeVO codeVO) throws Exception {
-		
 		return sqlSessionEms.getMapper(CodeMapper.class).getCodeList(codeVO);
+	}
+	
+	@Override
+	public CodeGroupVO getCodeGrpInfo(CodeGroupVO codeGroupVO) throws Exception {
+		return sqlSessionEms.getMapper(CodeMapper.class).getCodeGrpInfo(codeGroupVO);
 	}
 
 	@Override

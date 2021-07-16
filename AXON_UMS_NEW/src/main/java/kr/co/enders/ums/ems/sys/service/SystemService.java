@@ -15,9 +15,11 @@ import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.DeptVO;
 import kr.co.enders.ums.ems.sys.vo.LoginHistVO;
 import kr.co.enders.ums.ems.sys.vo.MetaColumnVO;
+import kr.co.enders.ums.ems.sys.vo.MetaJoinVO;
 import kr.co.enders.ums.ems.sys.vo.MetaOperatorVO;
 import kr.co.enders.ums.ems.sys.vo.MetaTableVO;
 import kr.co.enders.ums.ems.sys.vo.MetaValueVO;
+import kr.co.enders.ums.ems.sys.vo.UserCodeVO;
 import kr.co.enders.ums.ems.sys.vo.UserProgVO;
 import kr.co.enders.ums.ems.sys.vo.UserVO;
 
@@ -279,6 +281,38 @@ public interface SystemService {
 	 */
 	public int deleteMetaValueInfo(MetaValueVO metaValueVO) throws Exception;
 	
+	/**
+	 * 메타 조인 목록 조회
+	 * @param metaJoinVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<MetaJoinVO> getMetaJoinList(MetaJoinVO metaJoinVO) throws Exception;
+	
+	/**
+	 * 메타 조인 정보 등록
+	 * @param metaJoinVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertMetaJoinInfo(MetaJoinVO metaJoinVO) throws Exception;
+	
+	/**
+	 * 메타 조인 정보 수정
+	 * @param metaJoinVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateMetaJoinInfo(MetaJoinVO metaJoinVO) throws Exception;
+	
+	/**
+	 * 메타 조인 정보 삭제
+	 * @param metaJoinVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int deleteMetaJoinInfo(MetaJoinVO metaJoinVO) throws Exception;
+	
 	
 	/**
 	 * 사용자 로그인 이력 조회
@@ -287,4 +321,37 @@ public interface SystemService {
 	 * @throws Exception
 	 */
 	public List<LoginHistVO> getLoginHistList(LoginHistVO loginHistVO) throws Exception;
+	
+	/**
+	 * 캠페인 목적(사용자 코드) 목록 조회
+	 * @param userCodeVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<UserCodeVO> getUserCodeList(UserCodeVO userCodeVO) throws Exception;
+	
+	/**
+	 * 캠페인 목적(사용자 코드) 등록
+	 * @param userCodeVO
+	 * @return
+	 * @throws Exception
+	 */
+	@Transactional(value="transactionManagerEms")
+	public int insertUserCodeInfo(UserCodeVO userCodeVO) throws Exception;
+	
+	/**
+	 * 캠페인 목적(사용자 코드) 수정
+	 * @param userCodeVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateUserCodeInfo(UserCodeVO userCodeVO) throws Exception;
+	
+	/**
+	 * 캠페인 목적(사용자 코드) 삭제
+	 * @param userCodeVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int deleteUserCodeInfo(UserCodeVO userCodeVO) throws Exception;
 }
