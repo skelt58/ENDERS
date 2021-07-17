@@ -10,12 +10,6 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-	/*
-	var referer = document.referrer;
-	if(referer.indexOf("lgn.ums") >= 0) {
-		goMenu(<c:out value="${topMenuId}"/>);
-	}
-	*/
 	goMenu(<c:out value="${topMenuId}"/>);
 });
 
@@ -27,12 +21,10 @@ function goMenu(pgmId) {
 	// 발송대상자관리  
 	if(pgmId == 1) {
 		var str = "<table width=158 border=0 cellpadding=0 cellspacing=0>";
-		str += "<tr><td width=158 height=22><a href='<c:url value='/seg/segMainP.ums'/>'>대상자관리</a></td></tr>";
-		str += "<tr><td width=158 height=22><a href='<c:url value='/seg/segFileAddP.ums'/>'>대상자등록</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='#' onclick=runMenu('<c:url value='/ems/seg/segMainP.ums'/>')>대상자관리</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/ems/seg/segFileAddP.ums'/>'>대상자등록</a></td></tr>";
 		str += "</table>";
 		$("#lnb").html(str);
-		
-		//runMenu('<c:url value="/ems/seg/segMainP.um"/>');
 		
 	// 발송
 	} else if(pgmId == 2) {
@@ -42,8 +34,6 @@ function goMenu(pgmId) {
 		str += "<tr><td width=158 height=22><a href='<c:url value='/cam/mailMainP.ums'/>'>메일관리</a></td></tr>";
 		str += "</table>";
 		$("#lnb").html(str);
-		
-		//runMenu('<c:url value="/ems/cam/campListP.ums"/>');
 		
 	// 통계/분석
 	} else if(pgmId == 3) {
@@ -56,8 +46,6 @@ function goMenu(pgmId) {
 		str += "</table>";
 		$("#lnb").html(str);
 		
-		//runMenu('<c:url value="/ems/ana/mailListP.ums"/>');
-		
 	// 월간일정
 	} else if(pgmId == 4) {
 		var str = "<table width=158 border=0 cellpadding=0 cellspacing=0>";
@@ -66,8 +54,6 @@ function goMenu(pgmId) {
 		str += "</table>";
 		$("#lnb").html(str);
 		
-		//runMenu('<c:url value="/ems/sch/scheMonthP.um"/>');
-
 	// 시스템관리
 	} else if(pgmId == 5) {
 		var str = "<table width=158 border=0 cellpadding=0 cellspacing=0>";
@@ -77,8 +63,6 @@ function goMenu(pgmId) {
 		str += "<tr><td width=158 height=22><a href='#' onclick=runMenu('<c:url value="/ems/sys/usercodeMainP.ums"/>')>캠페인목적관리</a></td></tr>";
 		str += "</table>";
 		$("#lnb").html(str);
-		
-		//runMenu('<c:url value="/ems/sys/deptMainP.ums"/>');
 	}
 }
 
@@ -113,6 +97,6 @@ function goLogout() {
 </c:if>
 
 <span style="margin-left:420px;font-size:9pt;" onclick="goLogout();"><b>로그아웃</b></span>
-<form id="topMenuExec" name="topMenuExec" method="get">
+<form id="topMenuExec" name="topMenuExec" method="post">
 <input type="hidden" id="topMenuId" name="topMenuId" value="<c:out value='${topMenuId}'/>"/>
 </form>

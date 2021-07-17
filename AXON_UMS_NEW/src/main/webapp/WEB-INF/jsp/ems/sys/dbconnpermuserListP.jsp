@@ -36,13 +36,13 @@ $(document).ready(function() {
 			<td class="td_title"><spring:message code='SYSTBLTL023'/></td><!-- 사용자 -->
 		</tr>
 		<c:if test="${fn:length(deptList) > 0}">
-			<c:forEach items="${deptList}" var="deptVO">
+			<c:forEach items="${deptList}" var="dept">
 				<tr>
 					<td>
-						<input type="checkbox" name="selAll" onclick="setAllUser('<c:out value='${deptVO.cd}'/>',this.checked)">
+						<input type="checkbox" name="selAll" onclick="setAllUser('<c:out value='${dept.deptNo}'/>',this.checked)">
 					</td>
 					<td>
-						<c:out value="${deptVO.cdNm}"/>
+						<c:out value="${dept.deptNm}"/>
 					</td>
 					<td>
 						<c:if test="${fn:length(dbConnPermList) > 0}">
@@ -51,7 +51,7 @@ $(document).ready(function() {
 								<c:if test="${status.index == 1}">
 								<tr>
 								</c:if>
-									<c:if test="${dbConnPermVO.deptNo eq deptVO.cd}">
+									<c:if test="${dbConnPermVO.deptNo eq dept.deptNo}">
 										<td>
 											<input type="hidden" name="deptNo" value="<c:out value='${dbConnPermVO.deptNo}'/>">
 											<c:set var="checked" value=""/>

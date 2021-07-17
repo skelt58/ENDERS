@@ -210,7 +210,7 @@ public class SystemController {
 		}
 		
 		
-		int totCnt = newDeptList != null && newDeptList.size() > 0 ? ((DeptVO)newDeptList.get(0)).getTotCnt() : 0;
+		int totCnt = newDeptList != null && newDeptList.size() > 0 ? ((DeptVO)newDeptList.get(0)).getTotalCount() : 0;
 		int total = (int)Math.ceil((double)totCnt/rows);
 		
 		// jsonView 생성
@@ -366,7 +366,7 @@ public class SystemController {
 			}
 		}
 		
-		int totCnt = newUsertList != null && newUsertList.size() > 0 ? ((UserVO)newUsertList.get(0)).getTotCnt() : 0;
+		int totCnt = newUsertList != null && newUsertList.size() > 0 ? ((UserVO)newUsertList.get(0)).getTotalCount() : 0;
 		int total = (int)Math.ceil((double)totCnt/rows);
 		
 		// jsonView 생성
@@ -651,7 +651,7 @@ public class SystemController {
 		}
 		
 		
-		int totCnt = newDbConnList != null && newDbConnList.size() > 0 ? ((DbConnVO)newDbConnList.get(0)).getTotCnt() : 0;
+		int totCnt = newDbConnList != null && newDbConnList.size() > 0 ? ((DbConnVO)newDbConnList.get(0)).getTotalCount() : 0;
 		int total = (int)Math.ceil((double)totCnt/rows);
 		
 		// jsonView 생성
@@ -1528,7 +1528,7 @@ public class SystemController {
 			logger.error("systemService.getMetaJoinList error = " + e);
 		}
 		
-		int totCnt = metaJoinList != null && metaJoinList.size() > 0 ? ((MetaJoinVO)metaJoinList.get(0)).getTotCnt() : 0;
+		int totCnt = metaJoinList != null && metaJoinList.size() > 0 ? ((MetaJoinVO)metaJoinList.get(0)).getTotalCount() : 0;
 		int total = (int)Math.ceil((double)totCnt/rows);
 
 		
@@ -1705,7 +1705,6 @@ public class SystemController {
 	
 	
 	/******************************************************** 사용자 로그인 관리 ********************************************************/
-	
 	/**
 	 * 사용자 로그인 이력관리 화면을 출력한다.
 	 * @param model
@@ -1747,7 +1746,7 @@ public class SystemController {
 		loginHistVO.setSearchLgnEndDt(loginHistVO.getSearchLgnEndDt().replaceAll("-", "") + "235959");
 		
 		
-		// 부서 목록 조회
+		// 로그인 이력 목록 조회
 		List<LoginHistVO> loginHistList = null;
 		List<LoginHistVO> newLoginHistList = new ArrayList<LoginHistVO>();
 		try {
@@ -1763,7 +1762,7 @@ public class SystemController {
 			}
 		}
 		
-		int totCnt = newLoginHistList != null && newLoginHistList.size() > 0 ? ((LoginHistVO)newLoginHistList.get(0)).getTotCnt() : 0;
+		int totCnt = newLoginHistList != null && newLoginHistList.size() > 0 ? ((LoginHistVO)newLoginHistList.get(0)).getTotalCount() : 0;
 		int total = (int)Math.ceil((double)totCnt/rows);
 		
 		// jsonView 생성
@@ -1779,6 +1778,7 @@ public class SystemController {
 	
 	
 	
+	/******************************************************** 캠페인 목적 관리 ********************************************************/
 	/**
 	 * 캠페인 목적 관리 화면 출력
 	 * @param model

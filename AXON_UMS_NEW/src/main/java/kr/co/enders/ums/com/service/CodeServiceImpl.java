@@ -38,6 +38,11 @@ public class CodeServiceImpl implements CodeService {
 	public List<CodeVO> getDeptList(CodeVO codeVO) throws Exception {
 		return codeDAO.getDeptList(codeVO);
 	}
+	
+	@Override
+	public List<CodeVO> getUserList(CodeVO codeVO) throws Exception {
+		return codeDAO.getUserList(codeVO);
+	}
 
 	@Override
 	public List<CodeVO> getAuthGroupList() throws Exception {

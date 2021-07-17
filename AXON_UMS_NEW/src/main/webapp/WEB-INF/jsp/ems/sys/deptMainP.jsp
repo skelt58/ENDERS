@@ -759,8 +759,8 @@ function checkUserId() {
 			<td  class="td_body">
 				<select id="selDeptNo" name="selDeptNo">
 					<c:if test="${fn:length(deptList) > 0}">
-						<c:forEach items="${deptList}" var="deptVO">
-							<option value="<c:out value='${deptVO.cd}'/>"><c:out value="${deptVO.cdNm}"/></option>
+						<c:forEach items="${deptList}" var="dept">
+							<option value="<c:out value='${dept.deptNo}'/>"><c:out value="${dept.deptNm}"/></option>
 						</c:forEach>
 					</c:if>
 				</select>

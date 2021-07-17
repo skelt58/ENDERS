@@ -38,7 +38,12 @@ public class CodeDAO implements CodeMapper {
 	public List<CodeVO> getDeptList(CodeVO codeVO) throws Exception {
 		return sqlSessionEms.getMapper(CodeMapper.class).getDeptList(codeVO);
 	}
-
+	
+	@Override
+	public List<CodeVO> getUserList(CodeVO codeVO) throws Exception {
+		return sqlSessionEms.getMapper(CodeMapper.class).getUserList(codeVO);
+	}
+	
 	@Override
 	public List<CodeVO> getAuthGroupList() throws Exception {
 		return sqlSessionEms.getMapper(CodeMapper.class).getAuthGroupList();

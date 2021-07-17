@@ -17,7 +17,7 @@
 					 , A.REG_DT
 					 , B.CD_NM STATUS_NM
 					 , ROW_NUMBER() OVER (ORDER BY A.DEPT_NO DESC) SEQ
-					 , COUNT(1) OVER() TOT_CNT
+					 , COUNT(1) OVER() TOTAL_COUNT
 				  FROM NEO_DEPT A,
 						(SELECT CD, CD_NM
 						   FROM NEO_CD
@@ -118,7 +118,7 @@
 					 , E.CD_NM CHARSET_NM
 					 , F.CD_NM UILANG_NM
 					 , ROW_NUMBER() OVER (ORDER BY A.USER_ID) SEQ
-					 , COUNT(1) OVER() TOT_CNT
+					 , COUNT(1) OVER() TOTAL_COUNT
 				  FROM NEO_USER A
 				  	 , NEO_DEPT B
 				  	 , NEO_TIMEZONE C
@@ -327,7 +327,7 @@
 		 			 , C.CD_NM DB_CHAR_SET_NM
 		 			 , D.CD_NM STATUS_NM
 					 , ROW_NUMBER() OVER (ORDER BY A.DB_CONN_NO) SEQ
-					 , COUNT(1) OVER() TOT_CNT
+					 , COUNT(1) OVER() TOTAL_COUNT
 				  FROM NEO_DBCONN A
 					 , (
 						SELECT CD, CD_NM
@@ -769,7 +769,7 @@
 					 , B.CD_NM JOIN_TY_NM
 					 , C.CD_NM REL_TY_NM
 					 , ROW_NUMBER() OVER (ORDER BY A.MST_TBL_NM, A.MST_COL_NM, A.FOR_TBL_NM, A.FOR_COL_NM) SEQ
-					 , COUNT(1) OVER() TOT_CNT
+					 , COUNT(1) OVER() TOTAL_COUNT
 				  FROM NEO_METAJOIN A
 					 , (
 						SELECT CD, CD_NM
@@ -850,7 +850,7 @@
 					 , B.LGN_DT
 					 , B.LGN_IP
 					 , ROW_NUMBER() OVER (ORDER BY LGN_DT DESC) SEQ
-					 , COUNT(1) OVER() TOT_CNT
+					 , COUNT(1) OVER() TOTAL_COUNT
 				  FROM NEO_DEPT A
 					 , NEO_LGN_HST B
 				 WHERE A.DEPT_NO = B.DEPT_NO

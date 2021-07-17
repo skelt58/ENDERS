@@ -37,11 +37,23 @@
 	</select>
 	
 	<select id="getDeptList" parameterType="codeVO" resultType="codeVO">
-		SELECT DEPT_NO CD
-			, DEPT_NM CD_NM
+		SELECT DEPT_NO
+			, DEPT_NM
 		  FROM NEO_DEPT
 		 WHERE STATUS = #{status}
 		 ORDER BY DEPT_NM
+	</select>
+	
+	<select id="getUserList" parameterType="codeVO" resultType="codeVO">
+		SELECT DEPT_NO
+			 , USER_ID CD
+			 , USER_NM CD_NM
+		  FROM NEO_USER
+		 WHERE STATUS = #{status}
+		 <if test="deptNo != 0">
+		   AND DEPT_NO = #{deptNo}
+		 </if>
+		 ORDER BY DEPT_NO, USER_NM
 	</select>
 	
 	<select id="getAuthGroupList" resultType="codeVO">

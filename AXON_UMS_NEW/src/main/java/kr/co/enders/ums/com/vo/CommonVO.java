@@ -10,7 +10,6 @@ public class CommonVO {
 	private int totalCount;			// 전체건수
 	private int	pageNum;			// 페이지번호
 	private int rowPerPage;			// 페이지당행수
-	private int totCnt;				// 전체건수
 	private int	page;				// 페이지번호
 	private int rows;				// 페이지당행수
 	private int seq;				// 순번
@@ -38,12 +37,6 @@ public class CommonVO {
 	}
 	public void setRowPerPage(int rowPerPage) {
 		this.rowPerPage = rowPerPage;
-	}
-	public int getTotCnt() {
-		return totCnt;
-	}
-	public void setTotCnt(int totCnt) {
-		this.totCnt = totCnt;
 	}
 	public int getPage() {
 		return page;

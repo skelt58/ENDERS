@@ -88,14 +88,20 @@ public class LoginController {
 			model.addAttribute("result","Y");
 			
 			// 세션값 설정
-			session.setAttribute("NEO_USER_ID", userVO.getUserId());
-			session.setAttribute("NEO_USER_NM", userVO.getUserNm());
-			session.setAttribute("NEO_DEPT_NO", userVO.getDeptNo());
-			session.setAttribute("NEO_TZ_CD", userVO.getTzCd());
-			session.setAttribute("NEO_TZ_TERM", userVO.getTzTerm());
-			session.setAttribute("NEO_UILANG", userVO.getUilang());
-			session.setAttribute("NEO_CHARSET", userVO.getCharset());
-			session.setAttribute("NEO_FONT", userVO.getFont());
+			session.setAttribute("NEO_USER_ID", userVO.getUserId());		// 사용자ID
+			session.setAttribute("NEO_USER_NM", userVO.getUserNm());		// 사용자명
+			session.setAttribute("NEO_DEPT_NO", userVO.getDeptNo());		// 부서번호
+			session.setAttribute("NEO_TZ_CD", userVO.getTzCd());			// 타임존코드
+			session.setAttribute("NEO_TZ_TERM", userVO.getTzTerm());		// 타임존시간차
+			session.setAttribute("NEO_UILANG", userVO.getUilang());			// 언어권
+			session.setAttribute("NEO_CHARSET", userVO.getCharset());		// 문자셋
+			session.setAttribute("NEO_FONT", userVO.getFont());				// 폰트
+			// 관리자 여부
+			if(userVO.getDeptNo() == 1) {
+				session.setAttribute("NEO_ADMIN_YN", "Y");
+			} else {
+				session.setAttribute("NEO_ADMIN_YN", "N");
+			}
 			
 			// 사용자 프로그램 사용권한 조회
 			List<UserProgVO> userProgList = null;

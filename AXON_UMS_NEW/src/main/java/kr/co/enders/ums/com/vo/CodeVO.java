@@ -12,7 +12,11 @@ public class CodeVO {
 	private String uilang;	// 언어권
 	private String cdDtl;	// 코드설명
 	private String useYn;	// 사용여부
-	private String status;	// 상태(별도 추가함)
+	
+	// 추가정보
+	private String status;	// 상태
+	private int deptNo;		// 부서번호
+	private String deptNm;	// 부서명
 	
 	public String getCdGrp() {
 		return cdGrp;
@@ -55,5 +59,17 @@ public class CodeVO {
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	public int getDeptNo() {
+		return deptNo;
+	}
+	public void setDeptNo(int deptNo) {
+		this.deptNo = deptNo;
+	}
+	public String getDeptNm() {
+		return deptNm;
+	}
+	public void setDeptNm(String deptNm) {
+		this.deptNm = deptNm;
 	}
 }

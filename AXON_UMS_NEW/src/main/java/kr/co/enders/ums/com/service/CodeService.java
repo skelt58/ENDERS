@@ -47,6 +47,14 @@ public interface CodeService {
 	public List<CodeVO> getDeptList(CodeVO codeVO) throws Exception;
 	
 	/**
+	 * 사용자 목록 조회
+	 * @param codeVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<CodeVO> getUserList(CodeVO codeVO) throws Exception;
+	
+	/**
 	 * 권한그룹 목록 조회
 	 * @return
 	 * @throws Exception
