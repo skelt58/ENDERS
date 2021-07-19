@@ -194,7 +194,7 @@ public class StringUtil {
 
 		int length = stand_date.length();
 
-		int year, month, day, hour, minute, second, milli;
+		int year, month, day, hour, minute, second;
 
 		String retval = "";
 
@@ -227,9 +227,9 @@ public class StringUtil {
 				cal.clear();
 				cal.setTime(new Date(temp_long));
 
-				retval = Integer.toString(cal.get(cal.YEAR))
-						+ lPad(Integer.toString(cal.get(cal.MONTH) + 1), 2, "0")
-						+ lPad(Integer.toString(cal.get(cal.DAY_OF_MONTH)), 2,
+				retval = Integer.toString(cal.get(Calendar.YEAR))
+						+ lPad(Integer.toString(cal.get(Calendar.MONTH) + 1), 2, "0")
+						+ lPad(Integer.toString(cal.get(Calendar.DAY_OF_MONTH)), 2,
 								"0");
 				break;
 
@@ -256,11 +256,11 @@ public class StringUtil {
 				cal.clear();
 				cal.setTime(new Date(temp_long));
 
-				retval = Integer.toString(cal.get(cal.YEAR))
-						+ lPad(Integer.toString(cal.get(cal.MONTH) + 1), 2, "0")
-						+ lPad(Integer.toString(cal.get(cal.DAY_OF_MONTH)), 2,
+				retval = Integer.toString(cal.get(Calendar.YEAR))
+						+ lPad(Integer.toString(cal.get(Calendar.MONTH) + 1), 2, "0")
+						+ lPad(Integer.toString(cal.get(Calendar.DAY_OF_MONTH)), 2,
 								"0")
-						+ lPad(Integer.toString(cal.get(cal.HOUR_OF_DAY)), 2,
+						+ lPad(Integer.toString(cal.get(Calendar.HOUR_OF_DAY)), 2,
 								"0");
 				break;
 
@@ -287,13 +287,11 @@ public class StringUtil {
 				cal.clear();
 				cal.setTime(new Date(temp_long));
 
-				retval = Integer.toString(cal.get(cal.YEAR))
-						+ lPad(Integer.toString(cal.get(cal.MONTH) + 1), 2, "0")
-						+ lPad(Integer.toString(cal.get(cal.DAY_OF_MONTH)), 2,
-								"0")
-						+ lPad(Integer.toString(cal.get(cal.HOUR_OF_DAY)), 2,
-								"0")
-						+ lPad(Integer.toString(cal.get(cal.MINUTE)), 2, "0");
+				retval = Integer.toString(cal.get(Calendar.YEAR))
+						+ lPad(Integer.toString(cal.get(Calendar.MONTH) + 1), 2, "0")
+						+ lPad(Integer.toString(cal.get(Calendar.DAY_OF_MONTH)), 2, "0")
+						+ lPad(Integer.toString(cal.get(Calendar.HOUR_OF_DAY)), 2, "0")
+						+ lPad(Integer.toString(cal.get(Calendar.MINUTE)), 2, "0");
 				break;
 
 			case 14:
@@ -320,14 +318,12 @@ public class StringUtil {
 				cal.clear();
 				cal.setTime(new Date(temp_long));
 
-				retval = Integer.toString(cal.get(cal.YEAR))
-						+ lPad(Integer.toString(cal.get(cal.MONTH) + 1), 2, "0")
-						+ lPad(Integer.toString(cal.get(cal.DAY_OF_MONTH)), 2,
-								"0")
-						+ lPad(Integer.toString(cal.get(cal.HOUR_OF_DAY)), 2,
-								"0")
-						+ lPad(Integer.toString(cal.get(cal.MINUTE)), 2, "0")
-						+ lPad(Integer.toString(cal.get(cal.SECOND)), 2, "0");
+				retval = Integer.toString(cal.get(Calendar.YEAR))
+						+ lPad(Integer.toString(cal.get(Calendar.MONTH) + 1), 2, "0")
+						+ lPad(Integer.toString(cal.get(Calendar.DAY_OF_MONTH)), 2, "0")
+						+ lPad(Integer.toString(cal.get(Calendar.HOUR_OF_DAY)), 2, "0")
+						+ lPad(Integer.toString(cal.get(Calendar.MINUTE)), 2, "0")
+						+ lPad(Integer.toString(cal.get(Calendar.SECOND)), 2, "0");
 				break;
 
 			case 18:
@@ -354,16 +350,13 @@ public class StringUtil {
 				cal.clear();
 				cal.setTime(new Date(temp_long));
 
-				retval = Integer.toString(cal.get(cal.YEAR))
-						+ lPad(Integer.toString(cal.get(cal.MONTH) + 1), 2, "0")
-						+ lPad(Integer.toString(cal.get(cal.DAY_OF_MONTH)), 2,
-								"0")
-						+ lPad(Integer.toString(cal.get(cal.HOUR_OF_DAY)), 2,
-								"0")
-						+ lPad(Integer.toString(cal.get(cal.MINUTE)), 2, "0")
-						+ lPad(Integer.toString(cal.get(cal.SECOND)), 2, "0")
-						+ lPad(Integer.toString(cal.get(cal.MILLISECOND)), 4,
-								"0");
+				retval = Integer.toString(cal.get(Calendar.YEAR))
+						+ lPad(Integer.toString(cal.get(Calendar.MONTH) + 1), 2, "0")
+						+ lPad(Integer.toString(cal.get(Calendar.DAY_OF_MONTH)), 2, "0")
+						+ lPad(Integer.toString(cal.get(Calendar.HOUR_OF_DAY)), 2, "0")
+						+ lPad(Integer.toString(cal.get(Calendar.MINUTE)), 2, "0")
+						+ lPad(Integer.toString(cal.get(Calendar.SECOND)), 2, "0")
+						+ lPad(Integer.toString(cal.get(Calendar.MILLISECOND)), 4, "0");
 				break;
 
 			default:
