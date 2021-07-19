@@ -12,13 +12,17 @@
 	<typeAliases>
 		<typeAlias alias="string"			type="java.lang.String" />
 		<typeAlias alias="map"     			type="java.util.Map" />
+		
+		<!-- 로그인 -->
 		<typeAlias alias="loginVO"			type="kr.co.enders.ums.lgn.vo.LoginVO" />
 		<typeAlias alias="lgnHistVO"		type="kr.co.enders.ums.lgn.vo.LoginHistVO" />
+		
+		<!-- 시스템 관리 -->
+		<typeAlias alias="codeVO"			type="kr.co.enders.ums.com.vo.CodeVO" />
+		<typeAlias alias="codeGrpVO"		type="kr.co.enders.ums.com.vo.CodeGroupVO" />
 		<typeAlias alias="userVO"			type="kr.co.enders.ums.ems.sys.vo.UserVO" />
 		<typeAlias alias="userProgVO"		type="kr.co.enders.ums.ems.sys.vo.UserProgVO" />
 		<typeAlias alias="menuVO"			type="kr.co.enders.ums.main.vo.MenuVO" />
-		<typeAlias alias="codeVO"			type="kr.co.enders.ums.com.vo.CodeVO" />
-		<typeAlias alias="codeGrpVO"		type="kr.co.enders.ums.com.vo.CodeGroupVO" />
 		<typeAlias alias="deptVO"			type="kr.co.enders.ums.ems.sys.vo.DeptVO" />
 		<typeAlias alias="dbConnVO"			type="kr.co.enders.ums.ems.sys.vo.DbConnVO" />
 		<typeAlias alias="dbConnPermVO"		type="kr.co.enders.ums.ems.sys.vo.DbConnPermVO" />
@@ -29,6 +33,10 @@
 		<typeAlias alias="metaJoinVO"		type="kr.co.enders.ums.ems.sys.vo.MetaJoinVO" />
 		<typeAlias alias="loginHistVO"		type="kr.co.enders.ums.ems.sys.vo.LoginHistVO" />
 		<typeAlias alias="userCodeVO"		type="kr.co.enders.ums.ems.sys.vo.UserCodeVO" />
+		
+		<!-- 발송관리 -->
+		<typeAlias alias="segmentVO"		type="kr.co.enders.ums.ems.seg.vo.SegmentVO" />
+		
 	</typeAliases>
 
 	<mappers>
@@ -36,6 +44,7 @@
 		<mapper resource="enders/sqlmap/main/MainSQL-ems-oracle.xml"></mapper>
 		<mapper resource="enders/sqlmap/com/CodeSQL-ems-oracle.xml"></mapper>
 		<mapper resource="enders/sqlmap/ems/sys/SystemSQL-ems-oracle.xml"></mapper>
+		<mapper resource="enders/sqlmap/ems/seg/SegmentSQL-ems-oracle.xml"></mapper>
 	</mappers>
 	
 </configuration>

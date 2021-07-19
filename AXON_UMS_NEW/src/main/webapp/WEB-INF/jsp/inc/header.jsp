@@ -11,9 +11,7 @@
 <%@ taglib prefix="fn"     uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form"   uri="http://www.springframework.org/tags/form" %>
-<c:set var="title"			value="ENDERS UMS"	scope="request"></c:set>
-<c:set var="dateFormat"		value="yyyy-MM-dd"	scope="request"></c:set>
-<c:set var="datepickFormat"	value="yy-mm-dd"	scope="request"></c:set>
+<c:set var="title"			value="AXON UMS NEW"	scope="request"></c:set>
 <!DOCTYPE html>
 <html>
 <head>

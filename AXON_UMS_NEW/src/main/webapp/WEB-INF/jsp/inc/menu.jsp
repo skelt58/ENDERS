@@ -22,7 +22,7 @@ function goMenu(pgmId) {
 	if(pgmId == 1) {
 		var str = "<table width=158 border=0 cellpadding=0 cellspacing=0>";
 		str += "<tr><td width=158 height=22><a href='#' onclick=runMenu('<c:url value='/ems/seg/segMainP.ums'/>')>대상자관리</a></td></tr>";
-		str += "<tr><td width=158 height=22><a href='<c:url value='/ems/seg/segFileAddP.ums'/>'>대상자등록</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='#' onclick=runMenu('<c:url value='/ems/seg/segFileAddP.ums'/>')>대상자등록</a></td></tr>";
 		str += "</table>";
 		$("#lnb").html(str);
 		

@@ -188,7 +188,7 @@ public class SystemController {
 		
 		// 페이지 설정
 		int page = StringUtil.setNullToInt(deptVO.getPage(), 1);
-		int rows = StringUtil.setNullToInt(deptVO.getRows(), Integer.parseInt(properties.getProperty("UMS.ROW_PER_PAGE")));
+		int rows = StringUtil.setNullToInt(deptVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE")));
 		deptVO.setPage(page);
 		deptVO.setRows(rows);
 		
@@ -344,7 +344,7 @@ public class SystemController {
 		
 		// 페이지 설정
 		int page = StringUtil.setNullToInt(deptVO.getPage(), 1);
-		int rows = StringUtil.setNullToInt(deptVO.getRows(), Integer.parseInt(properties.getProperty("UMS.ROW_PER_PAGE")));
+		int rows = StringUtil.setNullToInt(deptVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE")));
 		deptVO.setPage(page);
 		deptVO.setRows(rows);
 		deptVO.setDeptNo(deptVO.getUserDeptNo());
@@ -629,7 +629,7 @@ public class SystemController {
 		
 		// 페이지 설정
 		int page = StringUtil.setNullToInt(dbConnVO.getPage(), 1);
-		int rows = StringUtil.setNullToInt(dbConnVO.getRows(), Integer.parseInt(properties.getProperty("UMS.ROW_PER_PAGE")));
+		int rows = StringUtil.setNullToInt(dbConnVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE")));
 		dbConnVO.setPage(page);
 		dbConnVO.setRows(rows);
 		
@@ -687,7 +687,7 @@ public class SystemController {
 		logger.debug("insertDbConnInfo loginPwd = " + dbConnVO.getLoginPwd());
 		logger.debug("insertDbConnInfo dbConnDesc = " + dbConnVO.getDbConnDesc());
 		
-		dbConnVO.setLoginPwd(EncryptUtil.getJasyptEncryptedString(properties.getProperty("JASYPT.algorithm"), properties.getProperty("JASYPT.password"), dbConnVO.getLoginPwd()));
+		dbConnVO.setLoginPwd(EncryptUtil.getJasyptEncryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnVO.getLoginPwd()));
 		dbConnVO.setRegId((String)session.getAttribute("NEO_USER_ID"));
 		dbConnVO.setRegDt(StringUtil.getDate(Code.TM_YMDHMS));
 		
@@ -818,7 +818,7 @@ public class SystemController {
 		try {
 			dbConnVO.setUilang((String)session.getAttribute("NEO_UILANG"));
 			dbConnInfo = systemService.getDbConnInfo(dbConnVO);
-			dbConnInfo.setLoginPwd(EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.algorithm"), properties.getProperty("JASYPT.password"), dbConnInfo.getLoginPwd()));
+			dbConnInfo.setLoginPwd(EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd()));
 			dbConnInfo.setRegDt(StringUtil.getFDate(dbConnInfo.getRegDt(), Code.DT_FMT2));
 			dbConnInfo.setUpDt(StringUtil.getFDate(dbConnInfo.getUpDt(), Code.DT_FMT2));
 			
@@ -859,7 +859,7 @@ public class SystemController {
 		logger.debug("updateDbConnInfo loginPwd = " + dbConnVO.getLoginPwd());
 		logger.debug("updateDbConnInfo dbConnDesc = " + dbConnVO.getDbConnDesc());
 		
-		dbConnVO.setLoginPwd(EncryptUtil.getJasyptEncryptedString(properties.getProperty("JASYPT.algorithm"), properties.getProperty("JASYPT.password"), dbConnVO.getLoginPwd()));
+		dbConnVO.setLoginPwd(EncryptUtil.getJasyptEncryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnVO.getLoginPwd()));
 		dbConnVO.setUpId((String)session.getAttribute("NEO_USER_ID"));
 		dbConnVO.setUpDt(StringUtil.getDate(Code.TM_YMDHMS));
 		
@@ -878,7 +878,7 @@ public class SystemController {
 		try {
 			dbConnVO.setUilang((String)session.getAttribute("NEO_UILANG"));
 			dbConnInfo = systemService.getDbConnInfo(dbConnVO);
-			dbConnInfo.setLoginPwd(EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.algorithm"), properties.getProperty("JASYPT.password"), dbConnInfo.getLoginPwd()));
+			dbConnInfo.setLoginPwd(EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd()));
 			dbConnInfo.setRegDt(StringUtil.getFDate(dbConnInfo.getRegDt(), Code.DT_FMT2));
 			dbConnInfo.setUpDt(StringUtil.getFDate(dbConnInfo.getUpDt(), Code.DT_FMT2));
 		} catch(Exception e) {
@@ -1000,7 +1000,7 @@ public class SystemController {
 		String dbDriver = dbConnInfo.getDbDriver();
 		String dbUrl = dbConnInfo.getDbUrl();
 		String loginId = dbConnInfo.getLoginId();
-		String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.algorithm"), properties.getProperty("JASYPT.password"), dbConnInfo.getLoginPwd());
+		String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd());
 		realTableList = dbUtil.getRealTableList(dbTy, dbDriver, dbUrl, loginId, loginPwd);
 		
 		// 메타 테이블 목록 조회
@@ -1197,7 +1197,7 @@ public class SystemController {
 		String dbDriver = dbConnInfo.getDbDriver();
 		String dbUrl = dbConnInfo.getDbUrl();
 		String loginId = dbConnInfo.getLoginId();
-		String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.algorithm"), properties.getProperty("JASYPT.password"), dbConnInfo.getLoginPwd());
+		String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd());
 		realColumnList = dbUtil.getRealColumnList(dbTy, dbDriver, dbUrl, loginId, loginPwd, metaTableVO.getTblNm());
 
 		
@@ -1515,7 +1515,7 @@ public class SystemController {
 		
 		// 페이지 설정
 		int page = StringUtil.setNullToInt(metaJoinVO.getPage(), 1);
-		int rows = StringUtil.setNullToInt(metaJoinVO.getRows(), Integer.parseInt(properties.getProperty("UMS.ROW_PER_PAGE")));
+		int rows = StringUtil.setNullToInt(metaJoinVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE")));
 		metaJoinVO.setPage(page);
 		metaJoinVO.setRows(rows);
 
@@ -1588,7 +1588,7 @@ public class SystemController {
 		String dbDriver = dbConnInfo.getDbDriver();
 		String dbUrl = dbConnInfo.getDbUrl();
 		String loginId = dbConnInfo.getLoginId();
-		String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.algorithm"), properties.getProperty("JASYPT.password"), dbConnInfo.getLoginPwd());
+		String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd());
 		realColumnList = dbUtil.getRealColumnList(dbTy, dbDriver, dbUrl, loginId, loginPwd, metaJoinVO.getTblNm());
 
 		// jsonView 생성
@@ -1739,7 +1739,7 @@ public class SystemController {
 		
 		// 페이지 설정
 		int page = StringUtil.setNullToInt(loginHistVO.getPage(), 1);
-		int rows = StringUtil.setNullToInt(loginHistVO.getRows(), Integer.parseInt(properties.getProperty("UMS.ROW_PER_PAGE")));
+		int rows = StringUtil.setNullToInt(loginHistVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE")));
 		loginHistVO.setPage(page);
 		loginHistVO.setRows(rows);
 		loginHistVO.setSearchLgnStdDt(loginHistVO.getSearchLgnStdDt().replaceAll("-", "") + "000000");

@@ -26,6 +26,7 @@ public class SegmentVO extends CommonVO {
 	private String whereSql;		// WHERE절
 	private String OrderbySql;		// ORDER BY절
 	private String status;			// 상태
+	private String statusNm;		// 상태명
 	private String userId;			// 아이디
 	private String decode;			// ??
 	private String regId;			// 등록자
@@ -150,6 +151,12 @@ public class SegmentVO extends CommonVO {
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	public String getStatusNm() {
+		return statusNm;
+	}
+	public void setStatusNm(String statusNm) {
+		this.statusNm = statusNm;
 	}
 	public String getUserId() {
 		return userId;

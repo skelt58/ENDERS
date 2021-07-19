@@ -13,7 +13,7 @@ $(document).ready(function() {
 	// 조회기간 시작일 설정
 	$("#searchStartDt").datepicker({
 		//showOn:"button",
-		minDate:"2020-01-01",
+		minDate:"2021-01-01",
 		maxDate:$("#searchEndDt").val(),
 		onClose:function(selectedDate) {
 			$("#searchEndDt").datepicker("option", "minDate", selectedDate);
@@ -34,10 +34,19 @@ function getUserList(deptNo) {
 	$.getJSON("<c:url value='/com/getUserList.json'/>?deptNo=" + deptNo, function(data) {
 		$("#searchForm select[name='searchUserId']").children("option:not(:first)").remove();
 		$.each(data.userList, function(idx,item){
-			var option = new Option(item.cd,item.cdNm);
+			var option = new Option(item.cdNm,item.cd);
 			$("#searchForm select[name='searchUserId']").append(option);
 		});
 	});
+}
+
+function goSearch() {
+	$("#searchForm input[name='page']").val("1");
+	$("#searchForm").submit();
+}
+
+function goAddf() {
+	
 }
 </script>
 
@@ -55,8 +64,8 @@ function getUserList(deptNo) {
 			<br/>
 			
 			<!-- 검색 Start -->
-			<form id="searchForm" name="searchForm">
-			<input type="hidden" name="page" value=""/>
+			<form id="searchForm" name="searchForm" method="post">
+			<input type="hidden" name="page" value="${searchVO.page}"/>
 			<table border="1" cellspacing="0" style="width:900px;">
 				<colgroup>
 					<col style="width:15%">
@@ -67,8 +76,7 @@ function getUserList(deptNo) {
 				<tr>
 					<!-- 발송대상그룹명 -->
 					<td class="td_title"><spring:message code="SEGTBLTL002"/></td><!-- 발송대상그룹명 -->
-					<td class="td_body"><input type="text" name="searchSegNm"
-						class="wBig"></td>
+					<td class="td_body"><input type="text" name="searchSegNm" value="${searchVO.searchSegNm}" class="wBig"></td>
 					<!-- 발송대상그룹유형 -->
 					<td class="td_title"><spring:message code="SEGTBLTL003"/></td><!-- 유형 -->
 					<td class="td_body">
@@ -76,7 +84,7 @@ function getUserList(deptNo) {
 							<option value='' selected>::::<spring:message code="SEGTBLLB001"/>::::</option><!-- 유형 선택 -->
 							<c:if test="${fn:length(createTyList) > 0}">
 								<c:forEach items="${createTyList}" var="createTy">
-									<option value="<c:out value='${createTy.cd}'/>"<c:if test="${createTy.cd eq searchCreateTy}"> selected</c:if>><c:out value='${createTy.cdNm}'/></option>
+									<option value="<c:out value='${createTy.cd}'/>"<c:if test="${createTy.cd eq searchVO.searchCreateTy}"> selected</c:if>><c:out value='${createTy.cdNm}'/></option>
 								</c:forEach>
 							</c:if>
 						</select>
@@ -88,15 +96,19 @@ function getUserList(deptNo) {
 							<option value='ALL' selected>::::<spring:message code="COMTBLLB003"/>::::</option><!-- 상태 선택 -->
 							<c:if test="${fn:length(statusList) > 0}">
 								<c:forEach items="${statusList}" var="status">
-									<option value="<c:out value='${status.cd}'/>"<c:if test="${status.cd eq searchStatus}"> selected</c:if>><c:out value='${status.cdNm}'/></option>
+									<option value="<c:out value='${status.cd}'/>"<c:if test="${status.cd eq searchVO.searchStatus}"> selected</c:if>><c:out value='${status.cdNm}'/></option>
 								</c:forEach>
 							</c:if>
 						</select>
 					</td>
 					<td class="td_title"><spring:message code="COMTBLTL002"/></td><!-- 등록일 -->
 					<td class="td_body">
-						<input type="text" id="searchStartDt" name="searchStartDt" value="<c:out value='${searchVO.searchStartDt}'/>" style="width:100px" readonly> ~ 
-						<input type="text" id="searchEndDt" name="searchEndDt" value="<c:out value='${searchVO.searchEndDt}'/>" style="width:100px" readonly>
+						<fmt:parseDate var="startDt" value="${searchVO.searchStartDt}" pattern="yyyyMMddHHmmss"/>
+						<fmt:formatDate var="searchStartDt" value="${startDt}" pattern="yyyy-MM-dd"/> 
+						<input type="text" id="searchStartDt" name="searchStartDt" value="<c:out value='${searchStartDt}'/>" style="width:100px" readonly> ~ 
+						<fmt:parseDate var="endDt" value="${searchVO.searchEndDt}" pattern="yyyyMMddHHmmss"/>
+						<fmt:formatDate var="searchEndDt" value="${endDt}" pattern="yyyy-MM-dd"/> 
+						<input type="text" id="searchEndDt" name="searchEndDt" value="<c:out value='${searchEndDt}'/>" style="width:100px" readonly>
 					</td>
 					</tr>
 					<tr>
@@ -108,7 +120,7 @@ function getUserList(deptNo) {
 								<select name="searchDeptNo" class="wBig" onchange="javascript:getUserList(this.value);">
 									<option value='0'>::::<spring:message code="COMTBLLB004"/>::::</option><!-- 그룹 선택 -->
 									<c:forEach items="${deptList}" var="dept">
-										<option value="<c:out value='${dept.deptNo}'/>"<c:if test="${dept.deptNo eq searchDeptNo}"> selected</c:if>><c:out value='${dept.deptNm}'/></option>
+										<option value="<c:out value='${dept.deptNo}'/>"<c:if test="${dept.deptNo == searchVO.searchDeptNo}"> selected</c:if>><c:out value='${dept.deptNm}'/></option>
 									</c:forEach>
 								</select>
 							</c:if>
@@ -130,7 +142,7 @@ function getUserList(deptNo) {
 							<option value=''>::::<spring:message code="COMTBLLB005"/>::::</option><!-- 사용자 선택 -->
 							<c:if test="${fn:length(userList) > 0}">
 								<c:forEach items="${userList}" var="user">
-									<option value="<c:out value='${user.cd}'/>"<c:if test="${user.cd eq searchUserId}"></c:if>><c:out value='${user.cdNm}'/></option>
+									<option value="<c:out value='${user.cd}'/>"<c:if test="${user.cd eq searchVO.searchUserId}"> selected</c:if>><c:out value='${user.cdNm}'/></option>
 								</c:forEach>
 							</c:if>
 						</select> 
@@ -184,6 +196,7 @@ function getUserList(deptNo) {
 				    		<a href="#" onclick="goUpdatef('<c:out value='${segment.segNo}'/>','<c:out value='${segment.createTy}'/>','<c:out value='${segment.segFlPath}'/>')"><c:out value="${segment.segNm}"/></a>
 				    	</td>
 				    	<td>
+		    				<div style="width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
 				    		<c:choose>
 				    			<c:when test="${segment.createTy eq '003'}">
 				    				<a href="#" onclick="goSegInfo('<c:out value='${segment.segNo}'/>')" title="<c:out value='${segment.segFlPath}'/>">
@@ -201,10 +214,11 @@ function getUserList(deptNo) {
 				    				<a href="#" onclick="goSegInfo('<c:out value='${segment.segNo}'/>')" title="<c:out value='${query}'/>"><c:out value='${segment.query}'/></a>
 				    			</c:otherwise>
 				    		</c:choose>
+				    		</div>
 						</td>
 						<td align="center"><c:out value='${segment.createTyNm}'/></td>
 						<td align="center"><c:out value='${segment.userId}'/></td>
-						<td align="center"><fmt:formatNumber value="${segment.totCnt}" type="number"/></td>
+						<td align="center"><c:out value="${segment.totCnt}"/></td>
 						<td align="center"><c:out value='${segment.statusNm}'/></td>
 					</tr>
 
