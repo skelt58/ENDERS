@@ -170,8 +170,8 @@ public class SystemDAO implements SystemMapper {
 	}
 
 	@Override
-	public List<MetaColumnVO> getMetaColumnList(int tblNo) throws Exception {
-		return sqlSessionEms.getMapper(SystemMapper.class).getMetaColumnList(tblNo);
+	public List<MetaColumnVO> getMetaColumnList(MetaColumnVO metaColumnVO) throws Exception {
+		return sqlSessionEms.getMapper(SystemMapper.class).getMetaColumnList(metaColumnVO);
 	}
 	
 	@Override

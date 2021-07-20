@@ -1175,10 +1175,10 @@ public class SystemController {
 	 * @return
 	 */
 	@RequestMapping(value="/metacolumnListP")
-	public String getMetaColumnList(@ModelAttribute MetaTableVO metaTableVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		logger.debug("getMetaColumnList dbConnNo = " + metaTableVO.getDbConnNo());
-		logger.debug("getMetaColumnList tblNo = " + metaTableVO.getTblNo());
-		logger.debug("getMetaColumnList tblNm = " + metaTableVO.getTblNm());
+	public String getMetaColumnListP(@ModelAttribute MetaTableVO metaTableVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getMetaColumnListP dbConnNo = " + metaTableVO.getDbConnNo());
+		logger.debug("getMetaColumnListP tblNo = " + metaTableVO.getTblNo());
+		logger.debug("getMetaColumnListP tblNm = " + metaTableVO.getTblNm());
 		
 		DbConnVO dbConnInfo = null;
 		try {
@@ -1202,8 +1202,10 @@ public class SystemController {
 
 		
 		List<MetaColumnVO> metaColumnList = null;
+		MetaColumnVO columnVO = new MetaColumnVO();
+		columnVO.setTblNo(metaTableVO.getTblNo());
 		try {
-			metaColumnList = systemService.getMetaColumnList(metaTableVO.getTblNo());
+			metaColumnList = systemService.getMetaColumnList(columnVO);
 		} catch(Exception e) {
 			logger.error("systemService.getMetaColumnList error = " + e);
 		}
@@ -1215,6 +1217,37 @@ public class SystemController {
 		model.addAttribute("metaColumnList", metaColumnList);
 		
 		return "ems/sys/metacolumnListP";
+	}
+	
+	/**
+	 * 메타 컬럼 목록 조회
+	 * @param metaTableVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/metacolumnList")
+	public ModelAndView getMetaColumnList(@ModelAttribute MetaTableVO metaTableVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getMetaColumnList dbConnNo = " + metaTableVO.getDbConnNo());
+		logger.debug("getMetaColumnList tblNo = " + metaTableVO.getTblNo());
+		
+		List<MetaColumnVO> metaColumnList = null;
+		MetaColumnVO columnVO = new MetaColumnVO();
+		columnVO.setTblNo(metaTableVO.getTblNo());
+		try {
+			metaColumnList = systemService.getMetaColumnList(columnVO);
+		} catch(Exception e) {
+			logger.error("systemService.getMetaColumnList error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("metaColumnList", metaColumnList);
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
 	}
 	
 	/**
@@ -1302,9 +1335,9 @@ public class SystemController {
 	 * @return
 	 */
 	@RequestMapping(value="/metaoperMainP")
-	public String getMetaOperationList(@ModelAttribute MetaOperatorVO metaOperVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		logger.debug("getMetaOperationList colNo = " + metaOperVO.getColNo());
-		logger.debug("getMetaOperationList colNm = " + metaOperVO.getColNm());
+	public String getMetaOperationListP(@ModelAttribute MetaOperatorVO metaOperVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getMetaOperationListP colNo = " + metaOperVO.getColNo());
+		logger.debug("getMetaOperationListP colNm = " + metaOperVO.getColNm());
 
 		// 관계식코드 목록을 조회한다.
 		CodeVO operVO = new CodeVO();
@@ -1475,6 +1508,62 @@ public class SystemController {
 		
 		return modelAndView;
 	}
+	
+	/**
+	 * 메타 관계값 목록 조회(JSON)
+	 * @param metaValueVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/metavalList")
+	public ModelAndView getMetaValueList(@ModelAttribute MetaValueVO metaValueVO, Model model, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("getMetaValueList colNo = " + metaValueVO.getColNo());
+		
+		List<MetaValueVO> metaValueList = null;
+		try {
+			metaValueList = systemService.getMetaValueList(metaValueVO);
+		} catch(Exception e) {
+			logger.error("systemService.getMetaValueList error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("metaValueList", metaValueList);
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	/**
+	 * 메타 관계식 목록 조회(JSON)
+	 * @param metaValueVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value="/metaoperList")
+	public ModelAndView getMetaOperationList(@ModelAttribute MetaOperatorVO metaOperatorVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getMetaOperationList colNo = " + metaOperatorVO.getColNo());
+		metaOperatorVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		
+		List<MetaOperatorVO> metaOperatorList = null;
+		try {
+			metaOperatorList = systemService.getMetaOperatorList(metaOperatorVO);
+		} catch(Exception e) {
+			logger.error("systemService.getMetaOperatorList error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("metaOperatorList", metaOperatorList);
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
 	
 	/**
 	 * 메차 조인 화면 출력

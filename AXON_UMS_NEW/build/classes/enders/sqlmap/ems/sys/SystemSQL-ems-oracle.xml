@@ -597,7 +597,8 @@
 
 	<!-- #############################################################  메타 컬럼 데이터 처리  ############################################################# -->
 	<!-- 메타 컬럼 목록 조회 -->
-	<select id="getMetaColumnList" parameterType="_int" resultType="metaColumnVO">
+	<select id="getMetaColumnList" parameterType="metaColumnVO" resultType="metaColumnVO">
+		<if test='tblNo != 0'>
 		SELECT COL_NO
 			 , TBL_NO
 			 , COL_NM
@@ -608,6 +609,19 @@
 		  FROM NEO_METACOLUMN
 		 WHERE TBL_NO = #{tblNo}
 		 ORDER BY COL_NM
+		</if>
+		<if test='tblNo == 0'>
+		SELECT COL_NO
+			 , TBL_NO
+			 , COL_NM
+			 , COL_DATA_TY
+			 , COL_DATA_TY_JDBC
+			 , COL_DESC
+			 , COL_ALIAS
+		  FROM NEO_METACOLUMN
+		 WHERE TBL_NO IN (SELECT TBL_NO FROM NEO_METATABLE WHERE DB_CONN_NO = #{dbConnNo})
+		 ORDER BY COL_NO
+		 </if>
 	</select>
 	
 	<!-- 메타 컬럼 정보 등록 -->

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import kr.co.enders.ums.ems.seg.dao.SegmentDAO;
 import kr.co.enders.ums.ems.seg.vo.SegmentVO;
+import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 
 @Service
 public class SegmentServiceImpl implements SegmentService {
@@ -21,6 +22,16 @@ public class SegmentServiceImpl implements SegmentService {
 	@Override
 	public List<SegmentVO> getSegmentList(SegmentVO segmentVO) throws Exception {
 		return segmentDAO.getSegmentList(segmentVO);
+	}
+
+	@Override
+	public int insertSegmentInfo(SegmentVO segmentVO) throws Exception {
+		return segmentDAO.insertSegmentInfo(segmentVO);
+	}
+
+	@Override
+	public List<DbConnVO> getDbConnList(DbConnVO dbConnVO) throws Exception {
+		return segmentDAO.getDbConnList(dbConnVO);
 	}
 
 }

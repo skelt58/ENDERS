@@ -200,11 +200,11 @@ public interface SystemService {
 	
 	/**
 	 * 메타 컬럼 정보 조회
-	 * @param tblNo
+	 * @param metaColumnVO
 	 * @return
 	 * @throws Exception
 	 */
-	public List<MetaColumnVO> getMetaColumnList(int tblNo) throws Exception;
+	public List<MetaColumnVO> getMetaColumnList(MetaColumnVO metaColumnVO) throws Exception;
 	
 	/**
 	 * 메타 컬럼 정보를 등록

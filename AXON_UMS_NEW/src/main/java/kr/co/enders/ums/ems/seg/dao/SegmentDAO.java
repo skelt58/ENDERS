@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import kr.co.enders.ums.ems.seg.vo.SegmentVO;
+import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 
 @Repository
 public class SegmentDAO implements SegmentMapper {
@@ -21,6 +22,16 @@ public class SegmentDAO implements SegmentMapper {
 	@Override
 	public List<SegmentVO> getSegmentList(SegmentVO segmentVO) throws Exception {
 		return sqlSessionEms.getMapper(SegmentMapper.class).getSegmentList(segmentVO);
+	}
+
+	@Override
+	public int insertSegmentInfo(SegmentVO segmentVO) throws Exception {
+		return sqlSessionEms.getMapper(SegmentMapper.class).insertSegmentInfo(segmentVO);
+	}
+
+	@Override
+	public List<DbConnVO> getDbConnList(DbConnVO dbConnVO) throws Exception {
+		return sqlSessionEms.getMapper(SegmentMapper.class).getDbConnList(dbConnVO);
 	}
 
 }

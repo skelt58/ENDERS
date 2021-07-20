@@ -32,6 +32,10 @@ public class DbConnVO extends CommonVO {
 	private String searchDbTy;		// 검색DB유형
 	private String searchStatus;	// 검색상태코드
 	private String uilang;			// 언어권
+	
+	// 추가정보
+	private String userId;			// 사용자아이디
+	private String adminYn;			// 관리자여부
 
 	
 	public int getDbConnNo() {
@@ -165,5 +169,17 @@ public class DbConnVO extends CommonVO {
 	}
 	public void setUilang(String uilang) {
 		this.uilang = uilang;
+	}
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	public String getAdminYn() {
+		return adminYn;
+	}
+	public void setAdminYn(String adminYn) {
+		this.adminYn = adminYn;
 	}
 }

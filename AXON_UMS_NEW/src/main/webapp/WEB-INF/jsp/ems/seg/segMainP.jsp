@@ -46,7 +46,7 @@ function goSearch() {
 }
 
 function goAddf() {
-	
+	$("#searchForm").attr("action","<c:url value='/ems/seg/segFileAddP.ums'/>").submit();
 }
 </script>
 

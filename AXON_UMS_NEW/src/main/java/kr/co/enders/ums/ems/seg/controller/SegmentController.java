@@ -23,11 +23,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.enders.ums.com.service.CodeService;
 import kr.co.enders.ums.com.vo.CodeVO;
 import kr.co.enders.ums.ems.seg.service.SegmentService;
 import kr.co.enders.ums.ems.seg.vo.SegmentVO;
+import kr.co.enders.ums.ems.sys.service.SystemService;
+import kr.co.enders.ums.ems.sys.vo.DbConnVO;
+import kr.co.enders.ums.ems.sys.vo.MetaColumnVO;
+import kr.co.enders.ums.ems.sys.vo.MetaTableVO;
+import kr.co.enders.util.Code;
+import kr.co.enders.util.PageUtil;
 import kr.co.enders.util.PropertiesUtil;
 import kr.co.enders.util.StringUtil;
 
@@ -37,10 +44,13 @@ public class SegmentController {
 	private Logger logger = Logger.getLogger(this.getClass());
 	
 	@Autowired
-	private PropertiesUtil Properties;
+	private PropertiesUtil properties;
 	
 	@Autowired
 	private CodeService codeService;
+	
+	@Autowired
+	private SystemService systemService;
 	
 	@Autowired
 	private SegmentService segmentService;
@@ -151,7 +161,7 @@ public class SegmentController {
 		logger.debug("goSegFileAdd searchEndDt = " + searchVO.getSearchEndDt());
 		logger.debug("goSegFileAdd searchDeptNo = " + searchVO.getSearchDeptNo());
 		logger.debug("goSegFileAdd searchUserId = " + searchVO.getSearchUserId());
-
+		
 		// 부서목록(코드성) 조회
 		CodeVO deptVO = new CodeVO();
 		deptVO.setStatus("000"); // 정상
@@ -177,17 +187,23 @@ public class SegmentController {
 	public String goSegFileMemberList(@ModelAttribute SegmentVO segmentVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("goSegFileMemberList segFlPath = " + segmentVO.getSegFlPath());
 		logger.debug("goSegFileMemberList separatorChar = " + segmentVO.getSeparatorChar());
+		logger.debug("goSegFileMemberList page = " + segmentVO.getPage());
 
-		List<HashMap<String,String>> memList = new ArrayList<HashMap<String,String>>();
-		List<String> memAlias = new ArrayList<String>();
+		int pageRow = Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE"));
+		if(segmentVO.getPage() == 0) segmentVO.setPage(1);
 		
 		String result = "";
 		int totCount = 0;	// 회원총수
 		int aliasCnt = 0;	// 알리아스수
+		String mergeKey = "";
+		
+		List<HashMap<String,String>> memList = new ArrayList<HashMap<String,String>>();
+		List<String> memAlias = new ArrayList<String>();
+		
 		BufferedReader line = null;
 		String tempStr = "";
 		try {
-			String tmpFlPath = Properties.getProperty("FILE.UPLOAD_PATH") + "/" + segmentVO.getSegFlPath();
+			String tmpFlPath = properties.getProperty("FILE.UPLOAD_PATH") + "/" + segmentVO.getSegFlPath();
 			line = new BufferedReader(new InputStreamReader(new FileInputStream(tmpFlPath), "UTF-8"));
 			while((tempStr = line.readLine()) != null) {
 				if("".equals(tempStr.trim())) continue;
@@ -200,14 +216,14 @@ public class SegmentController {
 					}
 				} else {
 					if(tempStr == null || "".equals(tempStr)) break;
-					//if(tot_cnt > (pageno-1)*pagerow && tot_cnt <= pageno * pagerow) { // 페이지별로 size만큼만 저장.
-					HashMap<String, String> unitInfo = new HashMap<String,String>();
-                    for(int cnt = 0; cnt < aliasCnt; cnt++) {
-                    	unitInfo.put((String)memAlias.get(cnt), st.nextToken());
-                    }
-                    memList.add(unitInfo);
+					if(totCount > (segmentVO.getPage()-1)*pageRow && totCount <= segmentVO.getPage() * pageRow) { // 페이지별로 size만큼만 저장.
+						HashMap<String, String> unitInfo = new HashMap<String,String>();
+	                    for(int cnt = 0; cnt < aliasCnt; cnt++) {
+	                    	unitInfo.put((String)memAlias.get(cnt), st.nextToken());
+	                    }
+	                    memList.add(unitInfo);
 
-					//}
+					}
 				}
 				totCount++;
 			}
@@ -229,12 +245,157 @@ public class SegmentController {
             result = "Fail";
 		}
 		
+		if(memAlias != null && memAlias.size() > 0) {
+			for(int i=0;i<memAlias.size();i++) {
+				if(i == 0) {
+					mergeKey += (String)memAlias.get(i);
+				} else {
+					mergeKey += "," + (String)memAlias.get(i);
+				}
+			}
+		}
+		
+		PageUtil pageUtil = new PageUtil();
+		pageUtil.init(request, segmentVO.getPage(), totCount, pageRow);
+		
 		model.addAttribute("result", result);
 		model.addAttribute("totCount", totCount);
 		model.addAttribute("memList", memList);
 		model.addAttribute("memAlias", memAlias);
+		model.addAttribute("mergeKey", mergeKey);
+		model.addAttribute("pageUtil", pageUtil);
 		
 		return "ems/seg/segFileMemberListP";
+	}
+	
+	@RequestMapping(value="/segAdd")
+	public ModelAndView insertSegmentInfo(@ModelAttribute SegmentVO segmentVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("insertSegmentInfo userId        = " + segmentVO.getUserId());
+		logger.debug("insertSegmentInfo dbConnNo      = " + segmentVO.getDbConnNo());
+		logger.debug("insertSegmentInfo segNm         = " + segmentVO.getSegNm());
+		logger.debug("insertSegmentInfo createTy      = " + segmentVO.getCreateTy());
+		logger.debug("insertSegmentInfo mergeKey      = " + segmentVO.getMergeKey());
+		logger.debug("insertSegmentInfo mergeCol      = " + segmentVO.getMergeCol());
+		logger.debug("insertSegmentInfo segFlPath     = " + segmentVO.getSegFlPath());
+		logger.debug("insertSegmentInfo srcWhere      = " + segmentVO.getSrcWhere());
+		logger.debug("insertSegmentInfo totCnt        = " + segmentVO.getTotCnt());
+		logger.debug("insertSegmentInfo selectSql     = " + segmentVO.getSelectSql());
+		logger.debug("insertSegmentInfo fromSql       = " + segmentVO.getFromSql());
+		logger.debug("insertSegmentInfo whereSql      = " + segmentVO.getWhereSql());
+		logger.debug("insertSegmentInfo orderbySql    = " + segmentVO.getOrderbySql());
+		logger.debug("insertSegmentInfo query         = " + segmentVO.getQuery());
+		logger.debug("insertSegmentInfo separatorChar = " + segmentVO.getSeparatorChar());
+		
+		int result = 0;
+		
+		if(segmentVO.getUserId() == null || "".equals(segmentVO.getUserId())) {
+			segmentVO.setUserId((String)session.getAttribute("NEO_USER_ID"));
+		}
+		segmentVO.setRegId((String)session.getAttribute("NEO_USER_ID"));
+		segmentVO.setRegDt(StringUtil.getDate(Code.TM_YMDHMS));
+		segmentVO.setStatus("000");
+		
+		try {
+			result = segmentService.insertSegmentInfo(segmentVO);
+		} catch(Exception e) {
+			logger.error("segmentService.insertSegmentInfo Error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result", "Success");
+		} else {
+			map.put("result", "Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/segToolAddP")
+	public String goSegToolAdd(@ModelAttribute SegmentVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goSegToolAdd createTy = " + searchVO.getCreateTy());
+		String createTy =  searchVO.getCreateTy()==null||"".equals(searchVO.getCreateTy())?"000":searchVO.getCreateTy();
+		
+		// DB Connection 목록 조회
+		DbConnVO dbConnVO = new DbConnVO();
+		dbConnVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		dbConnVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
+		dbConnVO.setUserId((String)session.getAttribute("NEO_USER_ID"));
+		List<DbConnVO> dbConnList = null;
+		try {
+			dbConnList = segmentService.getDbConnList(dbConnVO);
+		} catch(Exception e) {
+			logger.error("segmentService.getDbConnList error = " + e);
+		}
+		
+		
+		// 부서목록(코드성) 조회
+		CodeVO deptVO = new CodeVO();
+		deptVO.setStatus("000"); // 정상
+		List<CodeVO> deptList = null;
+		try {
+			deptList = codeService.getDeptList(deptVO);
+		} catch(Exception e) {
+			logger.error("codeService.getDeptList error = " + e);
+		}
+		
+		int dbConnNo = 0;
+		if(searchVO.getDbConnNo() == 0) {
+			if(dbConnList != null && dbConnList.size() > 0) {
+				dbConnNo = ((DbConnVO)dbConnList.get(0)).getDbConnNo();
+			}
+		} else {
+			dbConnNo = searchVO.getDbConnNo();
+		}
+
+		// 메타 테이블 목록 조회
+		List<MetaTableVO> metaTableList = null;
+		DbConnVO metaDbConn = new DbConnVO();
+		metaDbConn.setDbConnNo(dbConnNo);
+		try {
+			metaTableList = systemService.getMetaTableList(metaDbConn);
+		} catch(Exception e) {
+			logger.error("systemService.getMetaTableList error = " + e);
+		}
+		
+		model.addAttribute("searchVO", searchVO);			// 검색 항목
+		model.addAttribute("createTy", createTy);			// 생성 유형
+		model.addAttribute("dbConnList", dbConnList);		// DB연결 목록
+		model.addAttribute("deptList", deptList);			// 부서 목록
+		model.addAttribute("metaTableList", metaTableList);	// 메타테이블 목록
+		
+		return "ems/seg/segToolAddP";
+	}
+	
+	@RequestMapping(value="/segMetaFrameP")
+	public String goSegMetaFrame(@ModelAttribute MetaColumnVO columnVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goSegMetaFrame dbConnNo = " + columnVO.getDbConnNo());
+		logger.debug("goSegMetaFrame tblNo = " + columnVO.getTblNo());
+		
+		// 메타 테이블 목록 조회
+		List<MetaTableVO> metaTableList = null;
+		DbConnVO connVO = new DbConnVO();
+		connVO.setDbConnNo( columnVO.getDbConnNo());
+		try {
+			metaTableList = systemService.getMetaTableList(connVO);
+		} catch(Exception e) {
+			logger.error("systemService.getMetaTableList error = " + e);
+		}
+		
+		// 메타 컬럼 목록 조회
+		List<MetaColumnVO> metaColumnList = null;
+		try {
+			metaColumnList = systemService.getMetaColumnList(columnVO);
+		} catch(Exception e) {
+			logger.error("systemService.getMetaColumnList error = " + e);
+		}
+
+		model.addAttribute("metaTableList", metaTableList);
+		model.addAttribute("metaColumnList", metaColumnList);
+		
+		return "ems/seg/segMetaFrameP";
 	}
 	
 	

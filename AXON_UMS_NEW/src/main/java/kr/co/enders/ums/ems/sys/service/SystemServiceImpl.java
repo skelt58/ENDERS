@@ -209,8 +209,8 @@ public class SystemServiceImpl implements SystemService {
 	}
 	
 	@Override
-	public List<MetaColumnVO> getMetaColumnList(int tblNo) throws Exception {
-		return systemDAO.getMetaColumnList(tblNo);
+	public List<MetaColumnVO> getMetaColumnList(MetaColumnVO metaColumnVO) throws Exception {
+		return systemDAO.getMetaColumnList(metaColumnVO);
 	}
 
 	@Override

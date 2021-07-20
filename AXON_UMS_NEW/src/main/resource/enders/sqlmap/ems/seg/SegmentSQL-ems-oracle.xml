@@ -61,4 +61,65 @@
 		 ORDER BY NEO_SEGMENT.REG_DT DESC
 	</select>
 	
+	<insert id="insertSegmentInfo" parameterType="segmentVO">
+		INSERT INTO NEO_SEGMENT
+		(
+			  SEG_NO
+			, USER_ID
+			, DB_CONN_NO
+			, SEG_NM
+			, CREATE_TY
+			, QUERY
+			, SEPARATOR_
+			, SELECT_
+			, FROM_
+			, WHERE_
+			, ORDERBY_
+			, MERGE_KEY
+			, MERGE_COL
+			, SEG_FL_PATH
+			, SRC_WHERE
+			, TOT_CNT
+			, REG_ID
+			, REG_DT
+			, STATUS
+		)
+		VALUES
+		(
+			  NEO_SEGMENT_SEQ.NEXTVAL
+			, #{userId}
+			, #{dbConnNo}
+			, #{segNm}
+			, #{createTy}
+			, #{query}
+			, #{separatorChar}
+			, #{selectSql}
+			, #{fromSql}
+			, #{whereSql}
+			, #{orderbySql}
+			, #{mergeKey}
+			, #{mergeCol}
+			, #{segFlPath}
+			, #{srcWhere}
+			, #{totCnt}
+			, #{regId}
+			, #{regDt}
+			, #{status}
+		)
+	</insert>
+	
+	<select id="getDbConnList" parameterType="dbConnVO" resultType="dbConnVO">
+		SELECT NEO_DBCONN.DB_CONN_NO
+			 , NEO_DBCONN.DB_CONN_NM
+			 , NEO_DBCONN.DB_TY DB_TY
+			 , NEO_CD.CD_NM DB_TY_NM
+		  FROM NEO_DBCONN, NEO_CD
+		 WHERE NEO_CD.CD_GRP = 'C033'
+		   AND NEO_CD.UILANG = #{uilang}
+		   <if test='adminYn == "N"'>
+		   AND NEO_DBCONN.DB_CONN_NO IN (SELECT DB_CONN_NO FROM NEO_DBCONN_PERM WHERE USER_ID = #{userId})
+		   </if>
+		   AND NEO_DBCONN.DB_TY = NEO_CD.CD
+	</select>
+	
 </mapper>

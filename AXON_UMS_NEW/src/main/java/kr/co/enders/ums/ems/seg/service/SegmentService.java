@@ -10,6 +10,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import kr.co.enders.ums.ems.seg.vo.SegmentVO;
+import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 
 @Service
 public interface SegmentService {
@@ -20,4 +21,20 @@ public interface SegmentService {
 	 * @throws Exception
 	 */
 	public List<SegmentVO> getSegmentList(SegmentVO segmentVO) throws Exception;
+	
+	/**
+	 * 발생대상(세그먼트) 정보 등록
+	 * @param segmentVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertSegmentInfo(SegmentVO segmentVO) throws Exception;
+	
+	/**
+	 * 권한 있는 DB연결 목록 조회
+	 * @param dbConnVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<DbConnVO> getDbConnList(DbConnVO dbConnVO) throws Exception;
 }

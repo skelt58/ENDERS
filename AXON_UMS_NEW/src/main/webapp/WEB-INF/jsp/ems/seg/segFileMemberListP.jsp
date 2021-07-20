@@ -11,7 +11,11 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	var totCount = "<c:out value='${totCount}'/>";
-	$("#segInfoForm input[name='totCnt']").val(totCount);
+	$("#totCnt").val(totCount);
+	
+	var mergeKey = "<c:out value='${mergeKey}'/>";
+	$("#mergeKey").val(mergeKey);
+	$("#mergeCol").val(mergeKey);
 });
 </script>
 
@@ -19,7 +23,6 @@ $(document).ready(function(){
     <tr>
         <td>
             <table border="1" cellspacing="0" cellpadding="0" width="100%" class="table_line_outline">
-            
             
             	<c:if test="${'Success' eq result }">
 					<tr height="23" class="tr_head">
@@ -53,11 +56,11 @@ $(document).ready(function(){
 							<c:forEach items="${memList}" var="member">
 								<c:forEach items="${member}" var="mem">
 									<c:forEach items="${mem.key}" var="item">
-										<c:if test="${'LINE' eq item.key}">
-											<c:set var="LINE" value="${mem[item.key].value}"/>
+										<c:if test="${'LINE' eq item}">
+											<c:set var="LINE" value="${mem.value}"/>
 										</c:if>
-										<c:if test="${'Error' eq item.key}">
-											<c:set var="Error" value="${mem[item.key].value}"/>
+										<c:if test="${'Error' eq item}">
+											<c:set var="Error" value="${mem.value}"/>
 										</c:if>
 									</c:forEach>
 								</c:forEach>
@@ -67,9 +70,17 @@ $(document).ready(function(){
 		                    * Line : <c:out value="${LINE}"/>
 		                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		                    MSG : <c:out value="${Error}"/>
+		                    </font>
             	</c:if>
             	
             </table>
+        </td>
+    </tr>
+    </table>
+    <table width="100%" align="center" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td height='20' align="center">
+        ${pageUtil.pageHtml}
         </td>
     </tr>
     </table>
