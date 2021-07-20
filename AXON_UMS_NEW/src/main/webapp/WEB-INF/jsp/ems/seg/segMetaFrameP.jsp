@@ -24,7 +24,7 @@
 	    			<tr>
 		    			<td colspan="2" align="center">
 		    				<c:out value="${metaTable.tblAlias}"/>
-		    				<input type="checkbox" name="metaTblNm" value="<c:out value="${metaTable.tblNm}"/>">
+		    				<input type="checkbox" name="metaTblNm" style="width:0px;" value="<c:out value="${metaTable.tblNm}"/>">
 		    			</td>
 		    		</tr>
 		    		<c:if test="${fn:length(metaColumnList) > 0}">

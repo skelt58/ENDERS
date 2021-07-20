@@ -107,8 +107,6 @@ function goColumnClick() {
     $("input[name='metaTblNm']").each(function(idx, item) {
     	$(item).prop("checked", false);
     });
-    
-    
 
     // Select절 구하는 부분
     var cnt = 0;
@@ -132,74 +130,11 @@ function goColumnClick() {
     	}
     });
     
-    
-    /*
-    parent.getFrom_();
-    parent.getWhere_();
-    parent.document.segform.p_merge_key.value = mergeKey;
-    parent.document.segform.p_merge_col.value = mergeCol;
-    parent.document.segform.p_select_.value = select_;
-    */
-}
-
-function getFromSql() {
-    var frm = window.document.segform;
-    var frmMeta = iFrmMeta.window.document.metaform;
-
-    var arrayFrom_ = new Array();    // from절에 들어갈 모든 테이블명을 넣어 놓는다... 나중에 하니씩 비교를 하여 중복되는 것을 삭제함.
-
-    var j = 0;
-    // 이건 Select 절에 필요한 부분에서 From 절 뽑아옴.
-    for (i=0; i < frmMeta.length; i++) {
-        if(frmMeta.elements[i].name == "tbl_nm") {
-            if(frmMeta.elements[i].checked) {
-                arrayFrom_[j] = frmMeta.elements[i].value;
-                j++;
-            }
-        }
-    }
-
-    // 이건 Where절에 필요한 부분에서 From 절 뽑아옴.
-    for (i=frm.length-1; i >= 0; i--) {
-        if(frm.elements[i].name == "isLine") {
-           if(frm.elements[i].checked) {
-                tmpIsLine = frm.elements[i].value.substring(frm.elements[i].value.indexOf("|")+1);;
-                arrayFrom_[j] = tmpIsLine.substring(0, tmpIsLine.indexOf("|"));
-                j++;
-            }
-        }
-    }
-
-    // 마지막으로 Where절을 하고 있을때(operator와 정렬까지 선택하였을 경우)
-    if(frm.p_tbl_nm.value != "") {
-        arrayFrom_[j] = frm.p_tbl_nm.value;
-        j++;
-    }
-
-    var tblCheck = false;                   // arrayFrom_ 과 arrayTemp를 비교하여 false일 경우에만 from_ 에 추가함.
-    var arrayTemp = new Array();            // arrayFrom_ 과 비교하기 위해 임시로 저장함.
-    var from_ = "";                         // 실질적으로 from절에 들어갈 값
-
-    if(j > 0) {
-        arrayTemp[0] = arrayFrom_[0];     // arrayTemp를 초기화함.
-        from_ = arrayTemp[0];
-
-        j = 1;
-        // 중복 테이블 명을 제거하는 부분
-        for(i = 1; i < arrayFrom_.length; i++) {
-            tblCheck = false;
-            for(iii=0; iii < arrayTemp.length; iii++) {
-                if(arrayTemp[iii] == arrayFrom_[i]) tblCheck = true;
-            }
-
-            if(!tblCheck) {
-                arrayTemp[j] = arrayFrom_[i];
-                from_ += ", " + arrayTemp[j];
-                j++;
-            }
-        }
-    }
-    frm.p_from_.value = from_;
+    getFromSql();
+    getWhereSql();
+    $("#mergeKey").val(mergeKey);
+    $("#mergeCol").val(mergeCol);
+    $("#selectSql").val(selectSql);
 }
 
 function goTblSelect() {
@@ -280,57 +215,72 @@ function goColSelect() {
 }
 
 function goValueSelect() {
-    var obj1 = document.segform;
-    var vobj = iFrmValue.window.document.valform;
-    var tmp = vobj.value_info.value;
 
     var tempStr = $("#valueInfo").val();
-    if(tmp == "") {
-        obj1.p_value_no.value = "";
-        obj1.p_value_nm.value = "";
-        obj1.p_value_alias.value = "";
-    } else if(tmp.indexOf("|") == -1) {
-        obj1.p_value_no.value = "none";
-        obj1.p_value_nm.value = tmp;
-        obj1.p_value_alias.value = tmp;
+    if(tempStr == "") {
+        $("#valueNo").val("");			//obj1.p_value_no.value = "";
+        $("#valueNm").val("");			//obj1.p_value_nm.value = "";
+        $("#valueAlias").val("");		//obj1.p_value_alias.value = "";
+    } else if(tempStr.indexOf("|") == -1) {
+        $("#valueNo").val("0");				//obj1.p_value_no.value = "none";
+        $("#valueNm").val( tempStr );		//obj1.p_value_nm.value = tmp;
+        $("#valueAlias").val( tempStr );	//obj1.p_value_alias.value = tmp;
     } else {
-        obj1.p_value_no.value = tmp.substring(0, tmp.indexOf("|"));
-        obj1.p_value_nm.value = tmp.substring(tmp.indexOf("|")+1, tmp.lastIndexOf("|"));
-        obj1.p_value_alias.value = tmp.substring(tmp.lastIndexOf("|")+1);
+        $("#valueNo").val( tempStr.substring(0, tempStr.indexOf("|")) );							// obj1.p_value_no.value = tmp.substring(0, tmp.indexOf("|"));
+        $("#valueNm").val( tempStr.substring(tempStr.indexOf("|")+1, tempStr.lastIndexOf("|")) );	//obj1.p_value_nm.value = tmp.substring(tmp.indexOf("|")+1, tmp.lastIndexOf("|"));
+        $("#valueAlias").val( tempStr.substring(tempStr.lastIndexOf("|")+1) );						//obj1.p_value_alias.value = tmp.substring(tmp.lastIndexOf("|")+1);
     }
-
 }
 
-function goOperSelect() {
-    var obj1 = document.segform;
-    var oobj = iFrmOper.window.document.operform;
-    // var tmp = oobj.oper_info.options[oobj.oper_info.selectedIndex].value;
-    var tmp = oobj.oper_info.value;
 
-    if(tmp == "") {
-        obj1.p_oper_no.value = "";
-        obj1.p_oper_nm.value = "";
-        obj1.p_oper_alias.value = "";
+function goOperSelect() {
+    var tempStr = $("#operInfo").val();
+    if(tempStr == "") {
+        $("#operNo").val("");		//obj1.p_oper_no.value = "";
+        $("#operNm").val("");		//obj1.p_oper_nm.value = "";
+        $("#operAlias").val("");	//obj1.p_oper_alias.value = "";
     } else {
-        obj1.p_oper_no.value = tmp.substring(0, tmp.indexOf("|"));
-        obj1.p_oper_nm.value = tmp.substring(tmp.indexOf("|")+1, tmp.lastIndexOf("|"));
-        obj1.p_oper_alias.value = tmp.substring(tmp.lastIndexOf("|")+1);
+        $("#operNo").val( tempStr.substring(0, tempStr.indexOf("|")) );								//obj1.p_oper_no.value = tmp.substring(0, tmp.indexOf("|"));
+        $("#operNm").val( tempStr.substring(tempStr.indexOf("|")+1, tempStr.lastIndexOf("|")) );	//obj1.p_oper_nm.value = tmp.substring(tmp.indexOf("|")+1, tmp.lastIndexOf("|"));
+        $("#operAlias").val( tempStr.substring(tempStr.lastIndexOf("|")+1) );						// obj1.p_oper_alias.value = tmp.substring(tmp.lastIndexOf("|")+1);
     }
 
-    if(obj1.p_value_nm.value == "") {
-        alert("<%= util.getUILang(request,"SEGJSALT011") %>");
+    if($("#valueNm").val() == "") {
+        alert("<spring:message code='SEGJSALT011'/>");		// 추출값을 선택해 주세요.
         oobj.oper_info.selectedIndex = 0;
         return;
     }
+}
 
+// Sort를 선택하였을 경우
+function goSortSelect() {
+
+    if($("#tblInfo").val() == "") {
+        alert("<spring:message code='SEGJSALT012'/>");		// 테이블을 선택해 주세요.
+        frm.sort.selectedIndex = 0;
+        return;
+    }
+
+    if($("#colInfo").val() == "") {
+        alert("<spring:message code='SEGJSALT013'/>");		// 컬럼을 선택해 주세요.
+        frm.sort.selectedIndex = 0;
+        return;
+    }
+
+    if($("#valueInfo").val() == "") {
+        alert("<spring:message code='SEGJSALT011'/>");		// 추출값을 선택해 주세요.
+        frm.sort.selectedIndex = 0;
+        return;
+    }
+
+    if($("#operInfo").val() == "") {
+        alert("<spring:message code='SEGJSALT014'/>");		// 조건식을 선택해 주세요.
+        frm.sort.selectedIndex = 0;
+        return;
+    }
 }
 
 function fRelSelect() {
-    //var frm = window.document.segform;
-    //var frmCol = iFrmCol.window.document.colform;
-    //var frmValue = iFrmValue.window.document.valform;
-    //var frmOper = iFrmOper.window.document.operform;
-
     var temp = "";
     var sort = "";
     var colAlias = "";
@@ -350,13 +300,13 @@ function fRelSelect() {
 
     if($("#valueInfo").val() == "") {
         alert("<spring:message code='SEGJSALT011'/>");		// 추출값을 선택해 주세요.
-        frm.sort.selectedIndex = 0;
+        $("#sort option").eq(0).prop("selected",true);
         return;
     }
     
     if($("#operInfo").val() == "") {
         alert("<spring:message code='SEGJSALT014'/>");		// 조건식을 선택해 주세요.
-        frm.sort.selectedIndex = 0;
+        $("#sort option").eq(0).prop("selected",true);
         return;
     }
 
@@ -373,10 +323,10 @@ function fRelSelect() {
 
     var isLine = new Array(16);
 
-     condHTML = "<table>"
+     condHTML = "<table width='800'>"
         +"<tr> "
         +"    <td> "
-        +"       <table class='table_line_outline'>";
+        +"       <table border='1' cellspacing='0' class='table_line_outline' width='100%'>";
 
     var frm = document.segInfoForm;
     for(i=frm.length-1; i >= 0; i--) {
@@ -416,54 +366,283 @@ function fRelSelect() {
 
     var tmpSort = "";
 
-    if(frm.sort.value == "") tmpSort = "none|none";
-    else tmpSort = frm.sort.value;
+    if($("#sort").val() == "") tmpSort = "none|none";
+    else tmpSort = $("#sort").val();
 
-    condHTML += "        <tr class='tr_body'> "
-        +"            <td><input type='checkbox' name='isLine' value='"+ frm.tblInfo.value +"|"+ frm.colInfo.value +"|"+ frm.valueNo.value +"|"+ frm.valueNm.value +"|"+ frm.valueAlias.value +"|"+ frm.operInfo.value +"|"+ tmpSort +"|"+ frm.whereRel.value +"' onclick='goIsLineClick();' checked></td>"
-        +"            <td>"+ frm.tblAlias.value +"</td>"
-        +"            <td>"+ frm.colAlias.value +"</td>"
-        +"            <td>"+ frm.valueAlias.value +"</td>"
-        +"            <td>"+ frm.operAlias.value +"</td>"
-        +"            <td>"+ sort +"</td>"
-        +"            <td>"+ frm.whereRel.value +"</td>"
-        +"        </tr>"
-        +"        </table>"
-        +"    </td>"
-        +"</tr>"
-        +"</table>";
+    condHTML += "        <tr class='tr_body'> ";
+    condHTML += "            <td><input type='checkbox' name='isLine' value='"+ $("#tblInfo").val() +"|"+ $("#colInfo").val() +"|"+ $("#valueNo").val() +"|"+ $("#valueNm").val() +"|"+ $("#valueAlias").val() +"|"+ $("#operInfo").val() +"|"+ tmpSort +"|"+ $("#whereRel").val() +"' onclick='goIsLineClick();' checked></td>";
+    condHTML += "            <td>"+ frm.tblAlias.value +"</td>";
+    condHTML += "            <td>"+ frm.colAlias.value +"</td>";
+    condHTML += "            <td>"+ frm.valueAlias.value +"</td>";
+    condHTML += "            <td>"+ frm.operAlias.value +"</td>";
+    condHTML += "            <td>"+ sort +"</td>";
+    condHTML += "            <td>"+ frm.whereRel.value +"</td>";
+    condHTML += "        </tr>";
+    condHTML += "        </table>";
+    condHTML += "    </td>"
+    condHTML += "</tr>"
+    condHTML += "</table>";
 
     divConditional.innerHTML = (condHTML);
 
 
-	/*
     // 테이블, 컬럼, value, operator, 정렬, 관계식등을 초기화함.
-    frm.tbl_info.selectedIndex = 0;
-    iFrmCol.document.location.href= "/seg/segMetaColFrameP.jsp";
-    iFrmValue.document.location.href= "/seg/segMetaValFrameP.jsp";
-    iFrmOper.document.location.href= "/seg/segMetaOperFrameP.jsp";
-    frm.sort.selectedIndex = 0;
-    frm.whereRel.selectedIndex = 0;
+    $("#tblInfo option").eq(0).prop("selected",true);
+    $("#colInfo").children("option:not(:first)").remove();
+	$("#valueInfoDisplay").empty();
+	var valueHtml = "<input type='text' id='valueInfo' name='valueInfo' onkeyup='goValueSelect()' style='width:120px;'>";
+	$("#valueInfoDisplay").html(valueHtml);
+	$("#operInfo").children("option:not(:first)").remove();
+    $("#sort option").eq(0).prop("selected",true);
+    $("#whereRel option").eq(0).prop("selected",true);
 
-    frm.p_tbl_no.value = "";
-    frm.p_tbl_nm.value = "";
-    frm.p_tbl_alias.value = "";
-    frm.p_col_no.value = "";
-    frm.p_col_nm.value = "";
-    frm.p_col_data_ty.value = "";
-    frm.p_col_alias.value = "";
-    frm.p_value_no.value = "";
-    frm.p_value_nm.value = "";
-    frm.p_value_alias.value = "";
-    frm.p_oper_no.value = "";
-    frm.p_oper_nm.value = "";
-    frm.p_oper_alias.value = "";
+    $("#tblNo").val("");			//frm.p_tbl_no.value = "";
+    $("#tblNm").val("");			//frm.p_tbl_nm.value = "";
+    $("#tblAlias").val("");			//frm.p_tbl_alias.value = "";
+    $("#colNo").val("");			//frm.p_col_no.value = "";
+    $("#colNm").val("");			//frm.p_col_nm.value = "";
+    $("#colDataTy").val("");		//frm.p_col_data_ty.value = "";
+    $("#colAlias").val("");			//frm.p_col_alias.value = "";
+    $("#valueNo").val("");			//frm.p_value_no.value = "";
+    $("#valueNm").val("");			//frm.p_value_nm.value = "";
+    $("#valueAlias").val("");		//frm.p_value_alias.value = "";
+    $("#operNo").val("");			//frm.p_oper_no.value = "";
+    $("#operNm").val("");			//frm.p_oper_nm.value = "";
+    $("#operAlias").val("");		//frm.p_oper_alias.value = "";
 
-    getFrom_();
-    getWhere_();
+    getFromSql();
+    getWhereSql();
+	/*
     getOrderby_();
     */
-	alert("A");
+}
+
+// From절을 얻어온다..........
+// isLins에 들어가는 순서
+// tblInfo = tblNo|tblNm|tblAlias
+// colInfo = colNo|colNm|colDataTy|colAlias
+// valueInfo = valueNo|valueNm|valueAlias
+// operInfo = operNo|operNm|operAlias
+// sort = sortNm|sortAlias(NULL일 경우 none|none가 들어감)
+// whereRel = 관계식(AND 또는 OR)
+function getFromSql() {
+    var arrayFromSql = new Array();    // from절에 들어갈 모든 테이블명을 넣어 놓는다... 나중에 하니씩 비교를 하여 중복되는 것을 삭제함.
+    var j = 0;
+    // 이건 Select 절에 필요한 부분에서 From 절 뽑아옴.
+    $("input[name='metaTblNm']").each(function(idx,item){
+    	if($(item).is(":checked") == true) {
+    		arrayFromSql[j] = $(item).val();
+    		j++;
+    	}
+    });
+    
+    // 이건 Where절에 필요한 부분에서 From 절 뽑아옴.
+    $("input[name='isLine']").each(function(idx,item){
+    	if($(item).is(":checked") == true) {
+    		var tempIsLine = $(item).val().substring($(item).val().indexOf("|")+1);
+    		arrayFromSql[j] = tempIsLine.substring(0, tempIsLine.indexOf("|"));
+    		j++;
+    	}
+    });
+
+    // 마지막으로 Where절을 하고 있을때(operator와 정렬까지 선택하였을 경우)
+    if($("#tblNm").val() != "") {
+        arrayFromSql[j] = $("#tblNm").val();
+        j++;
+    }
+
+    var tblCheck = false;                   // arrayFromSql 과 arrayTemp를 비교하여 false일 경우에만 fromSql 에 추가함.
+    var arrayTemp = new Array();            // arrayFromSql 과 비교하기 위해 임시로 저장함.
+    var fromSql = "";                       // 실질적으로 from절에 들어갈 값
+
+    if(j > 0) {
+        arrayTemp[0] = arrayFromSql[0];     // arrayTemp를 초기화함.
+        fromSql = arrayTemp[0];
+
+        j = 1;
+        // 중복 테이블 명을 제거하는 부분
+        for(i = 1; i < arrayFromSql.length; i++) {
+            tblCheck = false;
+            for(iii=0; iii < arrayTemp.length; iii++) {
+                if(arrayTemp[iii] == arrayFromSql[i]) tblCheck = true;
+            }
+
+            if(!tblCheck) {
+                arrayTemp[j] = arrayFromSql[i];
+                fromSql += ", " + arrayTemp[j];
+                j++;
+            }
+        }
+    }
+    $("#fromSql").val(fromSql);
+}
+
+// Where절을 얻어온다..........
+function getWhereSql() {
+    var isLine = new Array(16);
+    var temp = "";
+    var ii;
+
+    var whereSql = "";
+
+    var tblNm = "";
+    var colNm = "";
+    var colDataTy = "";   // 데이타 타입
+    var colRel = "";        //조건식
+    var valueNm = "";
+
+    var srcWhere = "";      // 조건절의 모든 부분을 여기에 저장함.
+
+    var pos = -1;
+
+    $("input[name='isLine']").each(function(idx,item){
+    	if($(item).is(":checked") == true) {
+    		temp = $(item).val();
+    		srcWhere += temp + "##";
+    		
+    		ii = temp.indexOf("|");
+    		isLine[0] = temp.substring(0, ii);
+    		
+    		for(kk = 1;kk<=14;kk++) {
+    			temp = temp.substring(ii+1);
+    			ii = temp.indexOf("|");
+    			isLine[kk] = temp.substring(0, ii);
+    		}
+    		isLine[15] = temp.substring(ii+1);
+    		
+            // 조건식을 만든다.
+            if(isLine[11].toUpperCase() == "PLIKE" || isLine[11].toUpperCase() == "SLIKE") whereSql += isLine[1] + "." + isLine[4] + " LIKE ";
+            else whereSql += isLine[1] + "." + isLine[4] + " " + isLine[11] + " ";
+
+            // tblInfo   = 0. tblNo|1. tblNm|2. tblAlias
+            // colInfo   = 3. colNo|4. colNm|5. colDataTy|6. colAlias
+            // valueInfo = 7. valueNo|8. valueNm|9. valueAlias
+            // operInfo  = 10. operNo|11. operNm|12. operAlias
+            // sort      = 13. sortNm|14. sortAlias(NULL일 경우 none|none가 들어감)
+            // whereRel  = 15. 관계식(AND 또는 OR)
+            // =, <>, >, < ,  >=, <=, != 등은 그대로
+            // in 일 경우 괄호를 삽입
+            // like일 경우 %를 양쪽으로 삽입
+            if(!checkDBStrType(colDataTy)) {    // ums.common.js에 존제
+                if(isLine[11].toUpperCase() == "IN" || isLine[11].toUpperCase() == "NOT IN") {
+                    whereSql += "(" +isLine[8] + ") ";
+                } else if(isLine[11].toUpperCase() == "LIKE" || isLine[11].toUpperCase() == "NOT LIKE") {
+                	whereSql += "%" + isLine[8] + "% ";
+                } else if(isLine[11].toUpperCase() == "PLIKE") {
+                	whereSql += "" + isLine[8] + "% ";
+                } else if(isLine[11].toUpperCase() == "SLIKE") {
+                	whereSql += "%" + isLine[8] + " ";
+                } else {
+                	whereSql += isLine[8] + " ";
+                }
+            } else {
+                if(isLine[11].toUpperCase() == "IN" || isLine[11].toUpperCase() == "NOT IN") {
+                    temp = isLine[8];
+                    valueNm = "";
+
+                    pos = temp.indexOf(",");
+                    while(pos != -1) {
+                        valueNm += "'" + temp.substring(0, pos) + "', ";
+                        temp = trim(temp.substring(pos+1));
+                        pos = temp.indexOf(",");
+                    }
+                    value += "'" + trim(temp) + "' ";
+
+                    whereSql += "(" +valueNm + ") ";
+                } else if(isLine[11].toUpperCase() == "LIKE" || isLine[11].toUpperCase() == "NOT LIKE") {
+                	whereSql += "'%" + isLine[8] + "%' ";
+                } else if(isLine[11].toUpperCase() == "PLIKE") {
+                	whereSql += "'" + isLine[8] + "%' ";
+                } else if(isLine[11].toUpperCase() == "SLIKE") {
+                	whereSql += "'%" + isLine[8] + "' ";
+                } else {
+                	whereSql += "'" + isLine[8] + "' ";
+                }
+            }
+
+            whereSql += isLine[15] + " ";
+    	}
+    	
+    	
+    });
+
+    // 마지막에 붙는 관계식(AND/OR)를 삭제함.. (조건식 및 정렬을 선택하였을 경우에는 삭제하지 않음)
+    if($("#tblNm").val() == "") {
+    	whereSql = whereSql.substring(0, whereSql.lastIndexOf(" "));
+    	whereSql = whereSql.substring(0, whereSql.lastIndexOf(" "));
+    }
+
+    // 마지막으로 Where절을 하고 있을때(operator와 정렬까지 선택하였을 경우)
+    if($("#tblNm").val() != "") {
+        tblNm = $("#tblNm").val();
+        colNm = $("#colNm").val();
+        colDataTy = $("#colDataTy").val();
+        colRel = $("#operNm").val();
+        valueNm = $("#valueNm").val();
+
+        // isLine에 들어가지 않은 조건의 선택문을 srcWhere 저장해 놓음.
+        // 추후, 수정에서 사용됨.
+        // 수정할때, isLine부분과 조건을 선택하는 부분을 그대로 재현하기 위하여 정보를 DB에 저장하기 위함.
+
+        var tmpSort = "";
+
+        if($("#sort").val() == "") tmpSort = "none|none";
+        else tmpSort = $("#sort").val();
+
+        srcWhere += $("#tblInfo").val() +"|"+ $("#colInfo").val() +"|"+ $("#valueNo").val() +"|"+ $("#valueNm").val() +"|"+ $("#valueAlias").val() +"|"+ $("#operInfo").val() +"|"+ tmpSort;
+
+        if(colRel.toUpperCase() == "PLIKE" || colRel.toUpperCase() == "SLIKE") whereSql += tblNm + "." + colNm + " LIKE ";
+        else whereSql += tblNm + "." + colNm + " " + colRel + " ";
+
+        // =, <>, >, < ,  >=, <=, != 등은 그대로
+        // in 일 경우 괄호를 삽입
+        // like일 경우 %를 양쪽으로 삽입
+        if(!checkDBStrType(colDataTy)) {
+            if(colRel.toUpperCase() == "IN" || colRel.toUpperCase() == "NOT IN") {
+            	whereSql += "(" +valueNm + ") ";
+            } else if(colRel.toUpperCase() == "LIKE" || colRel.toUpperCase() == "NOT LIKE") {
+            	whereSql += "%" + valueNm + "% ";
+            } else if(colRel.toUpperCase() == "PLIKE") {
+            	whereSql += "" + valueNm + "% ";
+            } else if(colRel.toUpperCase() == "SLIKE") {
+            	whereSql += "%" + valueNm + " ";
+            } else {
+            	whereSql += valueNm + " ";
+            }
+        } else {
+            if(colRel.toUpperCase() == "IN" || colRel.toUpperCase() == "NOT IN") {
+                var pos = -1;
+                temp = valueNm;
+                valueNm = "";
+
+                pos = temp.indexOf(",");
+                while(pos != -1) {
+                    valueNm += "'" + temp.substring(0, pos) + "', ";
+                    temp = trim(temp.substring(pos+1));
+                    pos = temp.indexOf(",");
+                }
+                value += "'" + trim(temp) + "' ";
+
+                where_ += "(" +valueNm + ") ";
+            } else if(colRel.toUpperCase() == "LIKE" || colRel.toUpperCase() == "NOT LIKE") {
+            	whereSql += "'%" + valueNm + "%' ";
+            } else if(colRel.toUpperCase() == "PLIKE") {
+            	whereSql += "'" + valueNm + "%' ";
+            } else if(colRel.toUpperCase() == "SLIKE") {
+            	whereSql += "'%" + valueNm + "' ";
+            } else {
+            	whereSql += "'" + valueNm + "' ";
+            }
+        }
+    }
+
+    var joinTbl = ""; //getJoinTbl();
+
+    if(joinTbl.length != 0 && whereSql.length != 0) whereSql = whereSql + " AND " + joinTbl;
+    else if(joinTbl.length != 0 && whereSql.length == 0) whereSql = joinTbl;
+
+    $("#srcWhere").val( srcWhere);
+    $("#whereSql").val( whereSql );
 }
 </script>
 
@@ -615,18 +794,18 @@ function fRelSelect() {
 				    </select>
                 </td>
              	<td>
-             		<select id="sort" name="sort" class="w130" onchange='goSortSelect();' style="width:120px;">
-                            <option value="" selected>------- 선택-------</option>
-                            <option value="ASC|올림"><spring:message code='SEGTBLLB017'/></option><!-- 올림 -->
-                            <option value="DESC|내림"><spring:message code='SEGTBLLB018'/></option><!-- 내림 -->
+             		<select id="sort" name="sort" class="w130" onchange='goSortSelect()' style="width:120px;">
+                        <option value="" selected>------- 선택-------</option>
+                        <option value="ASC|올림"><spring:message code='SEGTBLLB017'/></option><!-- 올림 -->
+                        <option value="DESC|내림"><spring:message code='SEGTBLLB018'/></option><!-- 내림 -->
                     </select>
              	</td>
              	<td>
              		<select id="whereRel" name="whereRel" class="w130" style="width:120px;">
-                            <option value="" selected>------- 선택-------</option>
-                            <option value="AND">AND</option>
-                            <option value="OR">OR</option>
-                        </select>
+                        <option value="" selected>------- 선택-------</option>
+                        <option value="AND">AND</option>
+                        <option value="OR">OR</option>
+                    </select>
              	</td>
              	<td><input type="button" class="btn_style" value="<spring:message code='COMBTN005'/>" onClick="fRelSelect()"></td><!-- 등록 -->
              </tr>         

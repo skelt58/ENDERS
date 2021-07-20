@@ -34,6 +34,29 @@ function getCookie(name) {
     return "";
 }
 
+// JDBC TYPE 확인(문자형, 숫자형)
+function checkDBStrType(jdbcType) {
+	var yn = true;
+
+	switch(jdbcType) {
+		case 1:		//java.sql.Type.CHAR
+			yn = true;
+			break;
+		case 2:		//java.sql.Type.NUMERIC
+			yn = false;
+			break;
+		case 12:	//java.sql.Type.VARCHAR
+			yn = true;
+			break;
+		case 91:	//java.sql.Type.DATE
+			yn = true;
+			break;
+		default:
+			yn = true;
+	}
+	return yn;
+}
+
 /**
  * 허용하지 않을 문자를 체크한다.
  */
