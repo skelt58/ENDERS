@@ -1575,8 +1575,8 @@ public class SystemController {
 	 * @return
 	 */
 	@RequestMapping(value="/metajoinMainP")
-	public String getMetaJoinList(@ModelAttribute MetaJoinVO metaJoinVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		logger.debug("getMetaJoinList dbConnNo = " + metaJoinVO.getDbConnNo());
+	public String getMetaJoinListP(@ModelAttribute MetaJoinVO metaJoinVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getMetaJoinListP dbConnNo = " + metaJoinVO.getDbConnNo());
 
 		// 조인유형코드 목록을 조회한다.
 		CodeVO joinTyVO = new CodeVO();

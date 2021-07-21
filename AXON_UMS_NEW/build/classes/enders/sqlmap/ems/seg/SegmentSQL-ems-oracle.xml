@@ -50,14 +50,13 @@
 		   <if test="searchCreateTy != null and searchCreateTy != ''">
 		   AND NEO_SEGMENT.CREATE_TY = #{searchCreateTy}
 		   </if>
-		   <if test="searchStatus != null and searchStatus != ''">
+		   <if test='searchStatus != null and searchStatus != "ALL"'>
 		   AND NEO_SEGMENT.STATUS = #{searchStatus}
 		   </if>
 		   <if test="searchStartDt != '' and searchEndDt != ''">
 		   AND NEO_SEGMENT.REG_DT &gt;= #{searchStartDt}
 		   AND NEO_SEGMENT.REG_DT &lt;= #{searchEndDt}
 		   </if>
-		   
 		 ORDER BY NEO_SEGMENT.REG_DT DESC
 	</select>
 	
@@ -107,6 +106,14 @@
 			, #{status}
 		)
 	</insert>
+	
+	<update id="updateSegmentStatus" parameterType="segmentVO">
+		UPDATE NEO_SEGMENT
+		   SET STATUS 	= #{status}
+			 , UP_ID 	= #{upId}
+			 , UP_DT 	= #{upDt}
+		 WHERE SEG_NO 	= #{segNo}
+	</update>
 	
 	<select id="getDbConnList" parameterType="dbConnVO" resultType="dbConnVO">
 		SELECT NEO_DBCONN.DB_CONN_NO

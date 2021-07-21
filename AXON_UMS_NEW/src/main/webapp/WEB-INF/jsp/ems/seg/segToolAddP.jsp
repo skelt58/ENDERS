@@ -412,9 +412,14 @@ function fRelSelect() {
 
     getFromSql();
     getWhereSql();
-	/*
-    getOrderby_();
-    */
+    getOrderbySql();
+}
+
+// 조건식을 선택하였을 경우
+function goIsLineClick() {
+    getOrderbySql();
+    getWhereSql();
+    getFromSql();
 }
 
 // From절을 얻어온다..........
@@ -636,13 +641,245 @@ function getWhereSql() {
         }
     }
 
-    var joinTbl = ""; //getJoinTbl();
+    var joinTbl = getJoinTbl();
 
     if(joinTbl.length != 0 && whereSql.length != 0) whereSql = whereSql + " AND " + joinTbl;
     else if(joinTbl.length != 0 && whereSql.length == 0) whereSql = joinTbl;
 
-    $("#srcWhere").val( srcWhere);
+    $("#srcWhere").val( srcWhere );
     $("#whereSql").val( whereSql );
+}
+
+// order by 절
+function getOrderbySql() {
+    var isLine = new Array(16);
+    var temp = "";
+    var ii;
+
+    var sortNm = "none";
+
+    var orderbySql = "";
+
+    var srcWhere = "";      // 조건절의 모든 부분을 여기에 저장함.
+
+    var j = 0;
+    $("input[name='isLine']").each(function(idx,item){
+    	if($(item).is(":checked") == true) {
+            temp = $(item).val();
+
+            srcWhere += temp + "##";
+
+            ii = temp.indexOf("|");
+            isLine[0] = temp.substring(0, ii);
+
+            for(kk = 1; kk <= 14; kk++) {
+                temp = temp.substring(ii+1);
+                ii = temp.indexOf("|");
+                isLine[kk] = temp.substring(0, ii);
+            }
+
+            if(isLine[13] != "none") {
+                if(j != 0) orderbySql += ", ";
+                orderbySql += isLine[1] + "." + isLine[4] + " " + isLine[13];
+
+                if(sortNm != "none" && sortNm != isLine[13]) {
+                    if(sortNm == "none") sortNm = "";
+                    $("#orderbySql").val( orderbySql );
+                    $("#sort option").eq(0).prop("selected",true);
+                    return false;
+                }
+                sortNm = isLine[13];
+                j++;
+            }
+
+    	}
+    	
+    });
+
+    if($("#sort").val() != "") {
+        if(sortNm != "none" && sortNm != $("#sort").val().substring(0, $("#sort").val().indexOf("|")) ) {
+            if(sortNm == "none") sortNm = "";
+            $("#orderbySql").val( orderbySql );
+            $("#sort option").eq(0).prop("selected",true);
+            return false;
+        }
+
+        if(j > 0) orderbySql += ", ";
+        else sortNm = $("#sort").val().substring(0, $("#sort").val().indexOf("|"));
+
+        orderbySql += $("#tblNm").val() + "." + $("#colNm").val();
+
+        var tmpSort = "";
+
+        if($("#sort").val() == "") tmpSort = "none|none";
+        else tmpSort = $("#sort").val();
+
+        srcWhere += $("#tblInfo").val() +"|"+ $("#colInfo").val() +"|"+ $("#valueNo").val() +"|"+ $("#valueNm").val() +"|"+ $("#valueAlias").val() +"|"+ $("#operInfo").val() +"|"+ tmpSort;
+    }
+
+
+    if(sortNm == "none") sortNm = "";
+    $("#srcWhere").val( srcWhere );
+    if(orderbySql != "") $("#orderbySql").val( orderbySql );
+    else $("#orderbySql").val("");
+}
+
+// 조인
+function getJoinTbl() {
+    var temp = "";
+    var pos = -1;
+
+    var returnValue = "";
+    var joinRelValue = new Array();
+    var joinTblList = new Array();
+    var joinRel = new Array();
+    var n = 0;
+
+    var fromTblList = new Array();      // From절에서 가져오 테이블 리스트
+    
+<c:if test="${fn:length(metaJoinList) > 0}">
+	<c:set var="cnt" value="${0}"/>
+	<c:forEach items="${metaJoinList}" var="metaJoin">
+		joinTblList[<c:out value='${cnt}'/>] = "<c:out value='${metaJoin.mstTblNm}'/>,<c:out value='${metaJoin.forTblNm}'/>";
+		joinRel[<c:out value='${cnt}'/>] = "<c:out value='${metaJoin.mstTblNm}'/>.<c:out value='${metaJoin.mstColNm}'/> = <c:out value='${metaJoin.forTblNm}'/>.<c:out value='${metaJoin.forColNm}'/>";
+		<c:set var="cnt" value="${cnt+1}"/>
+		joinTblList[<c:out value='${cnt}'/>] = "<c:out value='${metaJoin.forTblNm}'/>,<c:out value='${metaJoin.mstTblNm}'/>";
+		joinRel[<c:out value='${cnt}'/>] = "<c:out value='${metaJoin.mstTblNm}'/>.<c:out value='${metaJoin.mstColNm}'/> = <c:out value='${metaJoin.forTblNm}'/>.<c:out value='${metaJoin.forColNm}'/>";
+		<c:set var="cnt" value="${cnt+2}"/>
+	</c:forEach>
+</c:if>
+
+    // [시작] From 절의 테이블을 fromTblList 배열에 넣어 놓는다.
+    temp = $("#fromSql").val().toUpperCase();
+    pos = temp.indexOf(",");
+    while(pos != -1) {
+        fromTblList[n] =  trim(temp.substring(0, pos));
+        temp = temp.substring(pos+1);
+        pos = temp.indexOf(",");
+        n++;
+    }
+    fromTblList[n] = trim(temp);
+    // [끝] From 절의 테이블을 fromTblList 배열에 넣어 놓는다.
+
+    n = 0;
+    // formTblList을 두개씩 나두어 조합을 하여 모든 경우의 수를 만들어 joinTblList와 비교를 한다.
+    // formTblList는 A,B와 B,A의 경우를 같은 걸로 보고 A,B만 비교한다.
+    for(ni = 0; ni < joinTblList.length; ni++) {
+        for(fromTblList_i = 0; fromTblList_i < fromTblList.length; fromTblList_i++) {
+            for(fromTblList_j = fromTblList_i + 1; fromTblList_j < fromTblList.length; fromTblList_j++) {
+                if(joinTblList[ni] == (fromTblList[fromTblList_i] + "," + fromTblList[fromTblList_j])) {
+                    joinRelValue[n] = joinRel[ni];
+                    n++;
+                }
+            }
+        }
+    }
+
+    for(rn = 0; rn < joinRelValue.length; rn++) {
+        if(rn == joinRelValue.length - 1) returnValue += joinRelValue[rn];
+        else returnValue += joinRelValue[rn] + " AND ";
+    }
+    return returnValue;
+}
+
+// 대상수 구하기
+function goSegCnt() {
+    var obj = document.segform;
+
+    if($("#dbConnNo").val().length == 0) {
+        alert("<spring:message code='SEGJSALT008'/>");		// Connection 을 선택해 주세요.
+        return;
+    }
+
+    if($("#selectSql").val().length == 0 || $("#fromSql").val().length == 0) {
+        alert("<spring:message code='SEGJSALT009'/>");		// 쿼리문을 잘못 입력하셨습니다.
+        return;
+    }
+    
+    var param = $("#segInfoForm").serialize();
+	$.getJSON("<c:url value='/ems/seg/segCount.json'/>?" + param, function(data) {
+		$("#totCnt").val(data.totCnt);
+	});
+}
+
+//등록
+function goSegToolAdd() {
+    var errflag = false;
+    var errstr = "";
+
+    if(typeof $("#deptNo").val() != "undefined") {
+    	if($("#deptNo").val() != "0" && $("#userId").val() == "") {
+            errflag = true;
+            errstr += " [ <spring:message code='COMTBLTL005'/> ] ";			// 사용자
+        }
+    }
+
+    if($("#dbConnNo").val() == "") {
+        errflag = true;
+        errstr += " [ DB Connection ] ";
+    }
+
+    if($("#segNm").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='SEGTBLTL002'/> ] ";			// 발송대상그룹명
+    }
+
+    if($("#selectSql").val() == "" || $("#fromSql").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='SEGTBLTL004'/> ] ";			// 질의문
+    }
+
+    if(errflag) {
+        alert("<spring:message code='COMJSALT001'/>\n" + errstr);		// 입력값 에러\\n다음 정보를 확인하세요.
+        return;
+    }
+
+    if($("#totCnt").val() == "0") {
+        var a = confirm("<spring:message code='SEGJSALT010'/>");		// 대상자수 추출을 하지 않았습니다.\\n계속 실행을 하겠습니까?
+        if ( a ) {
+        	var param = $("#segInfoForm").serialize();
+        	$.getJSON("<c:url value='/ems/seg/segAdd.json'/>?" + param, function(data) {
+        		if(data.result == "Success") {
+        			alert("<spring:message code='COMJSALT008'/>");	// 등록 성공
+        			
+        			$("#searchForm").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
+        		} else if(data.result == "Fail") {
+        			alert("<spring:message code='COMJSALT009'/>");	// 등록 실패
+        		}
+        	});
+        } else return;
+    } else {
+    	var param = $("#segInfoForm").serialize();
+    	$.getJSON("<c:url value='/ems/seg/segAdd.json'/>?" + param, function(data) {
+    		if(data.result == "Success") {
+    			alert("<spring:message code='COMJSALT008'/>");	// 등록 성공
+    			
+    			$("#searchForm").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
+    		} else if(data.result == "Fail") {
+    			alert("<spring:message code='COMJSALT009'/>");	// 등록 실패
+    		}
+    	});
+    }
+}
+
+// 대상자보기(미리보기)
+function goSegInfo() {
+    if($("#dbConnNo").val() == "") {
+        alert("<spring:message code='SEGJSALT008'/>");		// Connection 을 선택해 주세요.
+        return;
+    }
+
+    if($("#selectSql").val() == "" || $("#fromSql").val() == "") {
+        alert("<spring:message code='SEGJSALT009'/>");		// 쿼리문을 잘못 입력하셨습니다.
+        return;
+    }
+    
+    window.open("","segInfo", "width=1100, height=683,status=yes,scrollbars=no,resizable=no");
+    $("#segInfoForm").attr("target","segInfo").attr("action","<c:url value='/ems/seg/segInfoP.ums'/>").submit();
+}
+
+function goSegList() {
+	$("#searchForm").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
 }
 </script>
 
@@ -668,7 +905,7 @@ function getWhereSql() {
 			<input type="hidden" name="dbConnNo" value="<c:out value='${searchVO.dbConnNo}'/>">
 			</form>
 
-			<form id="segInfoForm" name="segInfoForm">
+			<form id="segInfoForm" name="segInfoForm" method="post">
 			<!-- new title -->
     		<p class="title_default"><spring:message code="SEGTBLTL001"/></p><!-- 발송대상그룹 -->
     		<!-- //new title -->
@@ -721,7 +958,7 @@ function getWhereSql() {
             <td class="td_title"><spring:message code='COMTBLTL004'/></td><!-- 사용자그룹 -->
             <td class="td_body">
                 <select id="deptNo" name="deptNo" onchange="getUserList(this.value);">
-                    <option value=''>::::<spring:message code='COMTBLLB004'/>::::</option><!-- 그룹 선택 -->
+                    <option value='0'>::::<spring:message code='COMTBLLB004'/>::::</option><!-- 그룹 선택 -->
                     <c:if test="${fn:length(deptList) > 0}">
                     	<c:forEach items="${deptList}" var="dept">
                     		<option value="<c:out value='${dept.deptNo}'/>"><c:out value='${dept.deptNm}'/></option>
@@ -849,7 +1086,7 @@ function getWhereSql() {
         <div class="btn">
         <div class="left">
 	        <input type="button" class="btn_style" value="<spring:message code='SEGBTN006'/>" onClick="goSegCnt()"><!-- 대상자수추출 -->
-	        <input type="text" name="totCnt" size="10" class='readonly_style' readonly>
+	        <input type="text" id="totCnt" name="totCnt" size="10" class='readonly_style' value="0" readonly>
 	        <spring:message code='SEGTBLLB015'/><!-- 명 -->
         
        	      <input type="hidden" id="mergeKey" name="mergeKey" style="width:0;" readonly>
@@ -879,9 +1116,9 @@ function getWhereSql() {
         
         </div>
        	<div class="btnR">
-	      	<input type="button" class="btn_typeC" value="<spring:message code='COMBTN005'/>" onClick="goAdd()">
+	      	<input type="button" class="btn_typeC" value="<spring:message code='COMBTN005'/>" onClick="goSegToolAdd()">
 	        <input type="button" class="btn_typeG" value="<spring:message code='SEGBTN007'/>" onClick="goSegInfo()">
-	        <input type="button" class="btn_typeG" value="<spring:message code='COMBTN010'/>" onClick="goList()">
+	        <input type="button" class="btn_typeG" value="<spring:message code='COMBTN010'/>" onClick="goSegList()">
     	 </div>
       </div> 
       <table>

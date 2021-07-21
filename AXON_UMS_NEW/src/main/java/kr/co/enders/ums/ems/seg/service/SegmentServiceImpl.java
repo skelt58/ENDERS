@@ -34,4 +34,23 @@ public class SegmentServiceImpl implements SegmentService {
 		return segmentDAO.getDbConnList(dbConnVO);
 	}
 
+	@Override
+	public int updateSegmentStatus(SegmentVO segmentVO) throws Exception {
+		int result = 0;
+		if(segmentVO.getSegNos() != null && "".equals(segmentVO.getSegNos())) {
+			String[] segNo = segmentVO.getSegNos().split(",");
+			for(int i=0;i<segNo.length;i++) {
+				SegmentVO segment = new SegmentVO();
+				
+				segment.setSegNo(Integer.parseInt(segNo[i]));
+				segment.setStatus(segmentVO.getStatus());
+				segment.setUpId(segmentVO.getUpId());
+				segment.setUpDt(segmentVO.getUpDt());
+				
+				result += segmentDAO.updateSegmentStatus(segment);
+			}
+		}
+		return result;
+	}
+
 }

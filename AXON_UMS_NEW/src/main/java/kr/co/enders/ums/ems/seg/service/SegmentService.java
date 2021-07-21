@@ -8,6 +8,7 @@ package kr.co.enders.ums.ems.seg.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import kr.co.enders.ums.ems.seg.vo.SegmentVO;
 import kr.co.enders.ums.ems.sys.vo.DbConnVO;
@@ -29,6 +30,15 @@ public interface SegmentService {
 	 * @throws Exception
 	 */
 	public int insertSegmentInfo(SegmentVO segmentVO) throws Exception;
+	
+	/**
+	 * 발송대상(세그먼트) 상태 수정(중지,삭제)
+	 * @param segmentVO
+	 * @return
+	 * @throws Exception
+	 */
+	@Transactional(value="transactionManagerEms")
+	public int updateSegmentStatus(SegmentVO segmentVO) throws Exception;
 	
 	/**
 	 * 권한 있는 DB연결 목록 조회

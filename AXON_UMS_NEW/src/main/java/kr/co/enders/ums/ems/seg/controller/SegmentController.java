@@ -28,12 +28,16 @@ import org.springframework.web.servlet.ModelAndView;
 import kr.co.enders.ums.com.service.CodeService;
 import kr.co.enders.ums.com.vo.CodeVO;
 import kr.co.enders.ums.ems.seg.service.SegmentService;
+import kr.co.enders.ums.ems.seg.vo.SegmentMemberVO;
 import kr.co.enders.ums.ems.seg.vo.SegmentVO;
 import kr.co.enders.ums.ems.sys.service.SystemService;
 import kr.co.enders.ums.ems.sys.vo.DbConnVO;
 import kr.co.enders.ums.ems.sys.vo.MetaColumnVO;
+import kr.co.enders.ums.ems.sys.vo.MetaJoinVO;
 import kr.co.enders.ums.ems.sys.vo.MetaTableVO;
 import kr.co.enders.util.Code;
+import kr.co.enders.util.DBUtil;
+import kr.co.enders.util.EncryptUtil;
 import kr.co.enders.util.PageUtil;
 import kr.co.enders.util.PropertiesUtil;
 import kr.co.enders.util.StringUtil;
@@ -295,6 +299,17 @@ public class SegmentController {
 		segmentVO.setRegDt(StringUtil.getDate(Code.TM_YMDHMS));
 		segmentVO.setStatus("000");
 		
+		if(!"003".equals(segmentVO.getCreateTy()) && !"002".equals(segmentVO.getCreateTy())) {
+			String query = "";
+	    	
+	    	query = " SELECT " + segmentVO.getSelectSql();
+	    	query += " FROM " + segmentVO.getFromSql();
+	    	if(!"".equals(segmentVO.getWhereSql())) {
+	    		query += " WHERE " + segmentVO.getWhereSql();
+	    	}
+	    	segmentVO.setQuery(query);
+		}
+		
 		try {
 			result = segmentService.insertSegmentInfo(segmentVO);
 		} catch(Exception e) {
@@ -360,11 +375,28 @@ public class SegmentController {
 			logger.error("systemService.getMetaTableList error = " + e);
 		}
 		
+		
+		// 페이지 설정
+		MetaJoinVO metaJoinVO = new MetaJoinVO();
+		metaJoinVO.setPage(1);
+		metaJoinVO.setRows(100);
+		metaJoinVO.setDbConnNo(dbConnNo);
+		metaJoinVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+
+		// 메타 조인 목록 조회
+		List<MetaJoinVO> metaJoinList = null;
+		try {
+			metaJoinList = systemService.getMetaJoinList(metaJoinVO);
+		} catch(Exception e) {
+			logger.error("systemService.getMetaJoinList error = " + e);
+		}
+		
 		model.addAttribute("searchVO", searchVO);			// 검색 항목
 		model.addAttribute("createTy", createTy);			// 생성 유형
 		model.addAttribute("dbConnList", dbConnList);		// DB연결 목록
 		model.addAttribute("deptList", deptList);			// 부서 목록
 		model.addAttribute("metaTableList", metaTableList);	// 메타테이블 목록
+		model.addAttribute("metaJoinList", metaJoinList);	// 메타조인 목록
 		
 		return "ems/seg/segToolAddP";
 	}
@@ -398,6 +430,180 @@ public class SegmentController {
 		return "ems/seg/segMetaFrameP";
 	}
 	
+	/**
+	 * 대상자 수 추출(DB로 조회)
+	 * @param segmentVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/segCount")
+	public ModelAndView getSegCount(@ModelAttribute SegmentVO segmentVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getSegCount dbConnNo      = " + segmentVO.getDbConnNo());
+		logger.debug("getSegCount selectSql     = " + segmentVO.getSelectSql());
+		logger.debug("getSegCount fromSql       = " + segmentVO.getFromSql());
+		logger.debug("getSegCount whereSql      = " + segmentVO.getWhereSql());
+		logger.debug("getSegCount query         = " + segmentVO.getQuery());
+		logger.debug("getSegCount createTy      = " + segmentVO.getCreateTy());
+		
+		int totCnt = 0;
+		
+		// DB Connection 정보를 조회한다.
+		DbConnVO dbConnInfo = null;
+		try {
+			DbConnVO searchVO = new DbConnVO();
+			searchVO.setDbConnNo(segmentVO.getDbConnNo());
+			searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+			dbConnInfo = systemService.getDbConnInfo(searchVO);
+		} catch(Exception e) {
+			logger.error("systemService.getDbConnInfo error = " + e);
+		}
+		
+		// 대상자 수 조회
+		if(dbConnInfo != null) {
+			DBUtil dbUtil = new DBUtil();
+			String dbDriver = dbConnInfo.getDbDriver();
+			String dbUrl = dbConnInfo.getDbUrl();
+			String loginId = dbConnInfo.getLoginId();
+			String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd());
+			totCnt = dbUtil.getSegmentCount(dbDriver, dbUrl, loginId, loginPwd, segmentVO);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("totCnt", totCnt);
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
 	
+	@RequestMapping(value="/segInfoP")
+	public String goSegInfoPreview(@ModelAttribute SegmentVO segmentVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goSegInfoPreview segNo         = " + segmentVO.getSegNo());
+		logger.debug("goSegInfoPreview dbConnNo      = " + segmentVO.getDbConnNo());
+		logger.debug("goSegInfoPreview selectSql     = " + segmentVO.getSelectSql());
+		logger.debug("goSegInfoPreview fromSql       = " + segmentVO.getFromSql());
+		logger.debug("goSegInfoPreview whereSql      = " + segmentVO.getWhereSql());
+		logger.debug("goSegInfoPreview orderbySql    = " + segmentVO.getOrderbySql());
+		logger.debug("goSegInfoPreview query         = " + segmentVO.getQuery());
+		logger.debug("goSegInfoPreview createTy      = " + segmentVO.getCreateTy());
+		logger.debug("goSegInfoPreview mergeKey      = " + segmentVO.getMergeKey());
+		logger.debug("goSegInfoPreview mergeCol      = " + segmentVO.getMergeCol());
+
+		model.addAttribute("segmentVO", segmentVO);
+		
+		if(segmentVO.getSegNo() != 0) {
+			
+		}
+		
+		model.addAttribute("segmentVO", segmentVO);
+		
+		return "ems/seg/segInfoP";
+	}
 	
+	@RequestMapping(value="/segDbMemberListP")
+	public String getDbMemberList(@ModelAttribute SegmentVO segmentVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goSegInfoPreview segNo         = " + segmentVO.getSegNo());
+		logger.debug("goSegInfoPreview dbConnNo      = " + segmentVO.getDbConnNo());
+		logger.debug("goSegInfoPreview selectSql     = " + segmentVO.getSelectSql());
+		logger.debug("goSegInfoPreview fromSql       = " + segmentVO.getFromSql());
+		logger.debug("goSegInfoPreview whereSql      = " + segmentVO.getWhereSql());
+		logger.debug("goSegInfoPreview orderbySql    = " + segmentVO.getOrderbySql());
+		logger.debug("goSegInfoPreview query         = " + segmentVO.getQuery());
+		logger.debug("goSegInfoPreview createTy      = " + segmentVO.getCreateTy());
+		logger.debug("goSegInfoPreview mergeKey      = " + segmentVO.getMergeKey());
+		logger.debug("goSegInfoPreview mergeCol      = " + segmentVO.getMergeCol());
+		logger.debug("goSegInfoPreview segNo         = " + segmentVO.getPage());
+
+		int pageRow = Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE"));
+		if(segmentVO.getPage() == 0) segmentVO.setPage(1);
+		
+		// DB Connection 정보를 조회한다.
+		DbConnVO dbConnInfo = null;
+		try {
+			DbConnVO searchVO = new DbConnVO();
+			searchVO.setDbConnNo(segmentVO.getDbConnNo());
+			searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+			dbConnInfo = systemService.getDbConnInfo(searchVO);
+		} catch(Exception e) {
+			logger.error("systemService.getDbConnInfo error = " + e);
+		}
+		
+		SegmentMemberVO memberVO = null;
+		List<HashMap<String,String>> memberList = null;
+		List<HashMap<String,String>> pageMemberList = new ArrayList<HashMap<String,String>>();
+		// 대상자 수 조회
+		if(dbConnInfo != null) {
+			DBUtil dbUtil = new DBUtil();
+			String dbDriver = dbConnInfo.getDbDriver();
+			String dbUrl = dbConnInfo.getDbUrl();
+			String loginId = dbConnInfo.getLoginId();
+			String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd());
+			memberVO = dbUtil.getMemberList(dbDriver, dbUrl, loginId, loginPwd, segmentVO);
+		}
+		
+		int totalCount = 0;
+		if(memberVO != null) {
+			totalCount = memberVO.getTotalCount();
+			memberList = memberVO.getMemberList();
+			if(memberList != null && memberList.size() > 0) {
+				for(int i=0;i<memberList.size();i++) {
+					if(i >= (segmentVO.getPage()-1)*pageRow && i< segmentVO.getPage()*pageRow) { // 페이지별로 size만큼만 저장.
+						HashMap<String,String> member = (HashMap<String,String>)memberList.get(i);
+						pageMemberList.add(member);
+					}
+				}
+			}
+		}
+		
+		PageUtil pageUtil = new PageUtil();
+		pageUtil.init(request, segmentVO.getPage(), totalCount, pageRow);
+		
+		model.addAttribute("segmentVO", segmentVO);
+		model.addAttribute("totalCount", totalCount);
+		model.addAttribute("memberList", pageMemberList);
+		model.addAttribute("pageUtil", pageUtil);
+		
+		return "ems/seg/segDbMemberListP";
+	}
+	
+	/**
+	 * 발송대상(세그먼트) 상태 수정(중지, 삭제...)
+	 * @param segmentVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/segDelete")
+	public ModelAndView updateSegmentStatus(@ModelAttribute SegmentVO segmentVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("updateSegmentStatus segNo  = " + segmentVO.getSegNo());
+		logger.debug("updateSegmentStatus segNos = " + segmentVO.getSegNos());
+		logger.debug("updateSegmentStatus status = " + segmentVO.getStatus());
+		
+		int result = 0;
+		
+		segmentVO.setUpId((String)session.getAttribute("NEO_USER_ID"));
+		segmentVO.setUpDt(StringUtil.getDate(Code.TM_YMDHMS));
+		
+		try {
+			result = segmentService.updateSegmentStatus(segmentVO);
+		} catch(Exception e) {
+			logger.error("segmentService.updateSegmentStatus Error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result", "Success");
+		} else {
+			map.put("result", "Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
 }

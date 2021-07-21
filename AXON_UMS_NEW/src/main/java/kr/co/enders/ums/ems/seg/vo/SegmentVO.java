@@ -43,6 +43,9 @@ public class SegmentVO extends CommonVO {
 	private int searchDeptNo;		// 검색부서번호
 	private String searchUserId;	// 검색사용자아이디
 	private String uilang;			// 언어권
+	private String value;			// 검색값
+	private String search;			// 검색항목
+	private String segNos;			// 세그먼트번호멀티
 	
 	public int getSegNo() {
 		return segNo;
@@ -241,5 +244,23 @@ public class SegmentVO extends CommonVO {
 	}
 	public void setUilang(String uilang) {
 		this.uilang = uilang;
+	}
+	public String getValue() {
+		return value;
+	}
+	public void setValue(String value) {
+		this.value = value;
+	}
+	public String getSearch() {
+		return search;
+	}
+	public void setSearch(String search) {
+		this.search = search;
+	}
+	public String getSegNos() {
+		return segNos;
+	}
+	public void setSegNos(String segNos) {
+		this.segNos = segNos;
 	}
 }

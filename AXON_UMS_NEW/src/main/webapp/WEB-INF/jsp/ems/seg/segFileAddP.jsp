@@ -139,7 +139,7 @@ function goSegFileAdd() {
         		if(data.result == "Success") {
         			alert("<spring:message code='COMJSALT008'/>");	// 등록 성공
         			
-        			getContentPageHtml(1);
+        			$("#searchForm").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
         		} else if(data.result == "Fail") {
         			alert("<spring:message code='COMJSALT009'/>");	// 등록 실패
         		}

@@ -68,6 +68,34 @@ function containsChars(inputValue,chars) {
 	return false;
 }
 
+/**
+ * 입력값의 앞뒤 공백을 제거해준다.
+ * @param		str     스트림할 값(object.value)
+ * @return      str     앞뒤 공백이 제거된 입력 스트링
+ */
+function trim(str) {
+	return endEnc(firstEnc(str));
+}
+function firstEnc(str) {
+	var len = str.length;
+	var i = 0;
+
+	for(i = 0; str.charAt(i) == ' '; i++);
+	str = str.substring(i, len);
+
+	return str;
+}
+function endEnc(str) {
+	var i = 0;
+	var len = str.length;
+
+	for(i = (len - 1); (str.charAt(i) == ' '); i--);
+	str = str.substring(0, i + 1);
+
+	return str;
+}
+
+
 /********************************************************
  * jQuery 관련
  ********************************************************/

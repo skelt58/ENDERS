@@ -34,4 +34,9 @@ public class SegmentDAO implements SegmentMapper {
 		return sqlSessionEms.getMapper(SegmentMapper.class).getDbConnList(dbConnVO);
 	}
 
+	@Override
+	public int updateSegmentStatus(SegmentVO segmentVO) throws Exception {
+		return sqlSessionEms.getMapper(SegmentMapper.class).updateSegmentStatus(segmentVO);
+	}
+
 }

@@ -20,12 +20,20 @@ public interface SegmentMapper {
 	public List<SegmentVO> getSegmentList(SegmentVO segmentVO) throws Exception;
 	
 	/**
-	 * 발생대상(세그먼트) 정보 등록
+	 * 발송대상(세그먼트) 정보 등록
 	 * @param segmentVO
 	 * @return
 	 * @throws Exception
 	 */
 	public int insertSegmentInfo(SegmentVO segmentVO) throws Exception;
+	
+	/**
+	 * 발송대상(세그먼트) 상태 수정(중지,삭제)
+	 * @param segmentVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateSegmentStatus(SegmentVO segmentVO) throws Exception;
 	
 	/**
 	 * 권한 있는 DB연결 목록 조회

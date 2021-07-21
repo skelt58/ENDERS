@@ -11,10 +11,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
+import kr.co.enders.ums.ems.seg.vo.SegmentMemberVO;
+import kr.co.enders.ums.ems.seg.vo.SegmentVO;
 import kr.co.enders.ums.ems.sys.vo.MetaColumnVO;
 
 public class DBUtil {
@@ -138,6 +142,16 @@ public class DBUtil {
 		return tableList;
 	}
 	
+	/**
+	 * DB별 테이블의 컬럼 목록을 조회한다.
+	 * @param dbTy
+	 * @param dbDriver
+	 * @param dbUrl
+	 * @param loginId
+	 * @param loginPwd
+	 * @param tblNm
+	 * @return
+	 */
 	public List<MetaColumnVO> getRealColumnList(String dbTy, String dbDriver, String dbUrl, String loginId, String loginPwd, String tblNm) {
 		logger.debug("getRealTableList dbTy = " + dbTy);
 		logger.debug("getRealTableList tblNm = " + tblNm);
@@ -274,7 +288,160 @@ public class DBUtil {
 		}
 		
 		return columnList;
+	}
+	
+	/**
+	 * 쿼리 실행 데이터 건수를 조회한다.
+	 * @param dbDriver
+	 * @param dbUrl
+	 * @param loginId
+	 * @param loginPwd
+	 * @param segmentInfo
+	 * @return
+	 */
+	public int getSegmentCount(String dbDriver, String dbUrl, String loginId, String loginPwd, SegmentVO segmentInfo) {
 		
+		Connection conn = null;
+		PreparedStatement pstm = null;
+		ResultSet rss = null;
+		
+		String sql = "";
+		if("002".equals(segmentInfo.getCreateTy())) {	// 직접SQL입력
+			sql  = "SELECT COUNT(*) FROM TOT_CNT ";
+			sql += "  FROM ( ";
+			sql += segmentInfo.getQuery();
+			sql += "       ) NEO_DUAL";
+		} else {
+			String fromUnder = "FROM " + segmentInfo.getFromSql() + " ";
+			if(segmentInfo.getWhereSql() != null && segmentInfo.getWhereSql().length() > 0) {
+				fromUnder += "WHERE " + segmentInfo.getWhereSql() + " ";
+			}
+			if(segmentInfo.getSelectSql() != null && segmentInfo.getSelectSql().toUpperCase().indexOf("DISTINCT") != -1) {
+				sql = "SELECT " + segmentInfo.getSelectSql() + " " + fromUnder;
+				sql = "SELECT COUNT(*) TOT_CNT FROM (" + sql.trim() + ")";
+			} else {
+				sql = "SELECT COUNT(*) TOT_CNT " + fromUnder;
+			}
+		}
+		
+		logger.debug("getSegmentCount sql = " + sql);
+		
+		int totCnt = 0;
+		try {
+			conn = getConnection(dbDriver, dbUrl, loginId, loginPwd);
+			pstm = conn.prepareStatement(sql);
+			rss = pstm.executeQuery();
+			if(rss.next()) {
+				totCnt = rss.getInt("TOT_CNT");
+			}
+		} catch(Exception e) {
+			logger.error("getSegmentCount error = " + e);
+		} finally {
+			if(rss != null) try { rss.close(); } catch(Exception e) {}
+			if(pstm != null) try { pstm.close(); } catch(Exception e) {}
+			if(conn != null) try { conn.close(); } catch(Exception e) {}
+		}
+		
+		return totCnt;
+	}
+	
+	public SegmentMemberVO getMemberList(String dbDriver, String dbUrl, String loginId, String loginPwd, SegmentVO segmentInfo) {
+		
+		Connection conn = null;
+		PreparedStatement pstm = null;
+		ResultSet rss = null;
+		
+		SegmentMemberVO memberVO = new SegmentMemberVO();
+		List<HashMap<String,String>> memberList = new ArrayList<HashMap<String, String>>();
+		
+		String cSql = "";
+		String sql = "";
+        if("002".equals(segmentInfo.getCreateTy())) {		//직접 SQL 입력
+        	sql = segmentInfo.getQuery();
+        	cSql = "SELECT COUNT(*) " + segmentInfo.getQuery().substring(segmentInfo.getQuery().indexOf("FROM"), segmentInfo.getQuery().length());
+        } else {
+
+	        // Legacy DB에서 회원정보를 추출함.
+        	sql  = "SELECT " +  segmentInfo.getSelectSql() + " ";
+        	sql += "FROM " + segmentInfo.getFromSql() + " ";
+        	if(segmentInfo.getWhereSql() != null && !"".equals(segmentInfo.getWhereSql())) {
+            	if(segmentInfo.getValue() != null && !"".equals(segmentInfo.getValue())) {
+            		sql += "WHERE " + segmentInfo.getWhereSql() + " AND " + segmentInfo.getSearch() + " LIKE '%" + segmentInfo.getValue() + "%' ";
+            	} else {
+            		sql += "WHERE " + segmentInfo.getWhereSql() + " ";
+            	}
+        	} else {
+            	if(segmentInfo.getValue() != null && !"".equals(segmentInfo.getValue())) {
+            		sql += "WHERE " + segmentInfo.getSearch() + " LIKE '%" + segmentInfo.getValue() + "%' ";
+            	}
+        	}
+        	if(segmentInfo.getOrderbySql() != null && !"".equals(segmentInfo.getOrderbySql().trim())) {
+        		sql += "ORDER BY " + segmentInfo.getOrderbySql();
+        	}
+
+        	String fromUnder = "FROM " + segmentInfo.getFromSql() + " ";
+        	if(segmentInfo.getWhereSql() != null && !"".equals(segmentInfo.getWhereSql())) {
+            	if(segmentInfo.getValue() != null && !"".equals(segmentInfo.getValue())) {
+            		fromUnder += "WHERE " + segmentInfo.getWhereSql() + " AND " + segmentInfo.getSearch() + " LIKE '%" + segmentInfo.getValue() + "%' ";
+            	} else {
+            		fromUnder += "WHERE " + segmentInfo.getWhereSql() + " ";
+            	}
+        	} else {
+            	if(segmentInfo.getValue() != null && !"".equals(segmentInfo.getValue())) {
+            		fromUnder += "WHERE " + segmentInfo.getSearch() + " LIKE '%" + segmentInfo.getValue() + "%' ";
+            	}
+        	}
+
+        	if(segmentInfo.getSelectSql().toUpperCase().indexOf("DISTINCT") != -1) {
+            	cSql = "SELECT COUNT(DISTINCT *)  " + fromUnder;
+        	} else {
+            	cSql = "SELECT COUNT(*) " + fromUnder.trim();
+        	}
+        }
+        
+        logger.debug("getMemberList sql = " + sql);
+        logger.debug("getMemberList cSql = " + cSql);
+        logger.debug("getMemberList mergeKey = " + segmentInfo.getMergeKey());
+        
+        try {
+        	conn = getConnection(dbDriver, dbUrl, loginId, loginPwd);
+        	
+        	// 전체건수 조회
+        	pstm = conn.prepareStatement(cSql);
+        	rss = pstm.executeQuery();
+        	if(rss.next()) {
+            	logger.debug("getMemberList Total Count data found!!");
+        		memberVO.setTotalCount(rss.getInt(1));
+        	} else {
+        		memberVO.setTotalCount(0);
+        	}
+        	rss.close();
+        	pstm.close();
+        	
+        	// 데이터 상세 조회
+        	pstm = conn.prepareStatement(sql);
+        	rss = pstm.executeQuery();
+        	while(rss.next()) {
+        		int idx = 1;
+        		HashMap<String,String> data = new HashMap<String,String>();
+        		StringTokenizer mkey = new StringTokenizer(segmentInfo.getMergeKey(), ",");
+        		while(mkey.hasMoreTokens()) {
+        			String tmpMkey = mkey.nextToken();
+        			data.put(tmpMkey, rss.getString(idx));
+        			idx++;
+        		}
+        		memberList.add(data);
+        	}
+        	
+        	memberVO.setMemberList(memberList);
+        	
+        } catch(Exception e) {
+        	logger.error("getMemberList error = " + e);
+        } finally {
+        	
+        }
+		
+		return memberVO;
 	}
 	
 	/*

@@ -48,6 +48,49 @@ function goSearch() {
 function goAddf() {
 	$("#searchForm").attr("action","<c:url value='/ems/seg/segFileAddP.ums'/>").submit();
 }
+
+//삭제 EVENT 구현
+function goDelete() {
+    var checked = false;
+    if($("input[name='segNos']").val() != "undefined") {
+    	$("input[name='segNos']").each(function(idx,item) {
+    		if($(item).is(":checked") == true) {
+    			checked = true;
+    		}
+    	});
+    }
+    if(!checked) {
+        alert("<spring:message code='CAMJSALT025'/>");		// 삭제할 목록을 선택해 주세요!!
+        return;
+    }
+	
+    $("#status").val("002");
+    var param = $("#segInfoForm").serialize();
+	$.getJSON("<c:url value='/ems/seg/segDelete.json'/>?" + param, function(data) {
+		if(data.result == 'Success') {
+			alert("성공");
+			$("#searchForm").attr("action","<c:url value='/ems/seg/segFileAddP.ums'/>").submit();
+		} else if(data.result == 'Fail') {
+			alert("실패");
+		}
+	});
+    
+    //obj.p_status.value = "002";
+    //obj.action = "/seg/segDeleteP.jsp";
+    //obj.submit();
+}
+
+function goSelectAll() {
+    if($("#segInfoForm input[name='isAll']").is(":checked")) {
+    	$("#segInfoForm input[name='segNos']").each(function(idx,item){
+    		$(item).prop("checked", true);
+    	});
+    } else {
+    	$("#segInfoForm input[name='segNos']").each(function(idx,item){
+    		$(item).prop("checked", false);
+    	});
+    }
+}
 </script>
 
 <div class="ex-layout">
@@ -93,7 +136,7 @@ function goAddf() {
 				<tr>	
 					<td class="td_title"><spring:message code="COMTBLTL001"/></td><!-- 상태 -->
 					<td class="td_body"><select name="searchStatus" class="wBig">
-							<option value='ALL' selected>::::<spring:message code="COMTBLLB003"/>::::</option><!-- 상태 선택 -->
+							<option value='ALL'>::::<spring:message code="COMTBLLB003"/>::::</option><!-- 상태 선택 -->
 							<c:if test="${fn:length(statusList) > 0}">
 								<c:forEach items="${statusList}" var="status">
 									<option value="<c:out value='${status.cd}'/>"<c:if test="${status.cd eq searchVO.searchStatus}"> selected</c:if>><c:out value='${status.cdNm}'/></option>
@@ -163,12 +206,13 @@ function goAddf() {
 			
 			
 			<!-- 목록 Start -->
-		    <form name="segform">
+		    <form id="segInfoForm" name="segInfoForm">
+		    <input type="hidden" id="status" name="status"/>
 		    <table  border="1" cellspacing="0" style="width:900px;">
 			    <tr class="tr_head"  align="center">
 			        <td>
 			        	<c:if test="${fn:length(segmentList) > 0}">
-			        		<input type="checkbox" name="isAll" onclick='goAll()'>
+			        		<input type="checkbox" name="isAll" onclick='goSelectAll()'>
 			        	</c:if>
 			        </td>
 			        <td><spring:message code="SEGTBLTL002"/></td><!-- 발송대상그룹명 -->
@@ -187,7 +231,8 @@ function goAddf() {
 					    			<input type="checkbox" name="segNoDelete" value="<c:out value='${segment.segNo}'/>" onclick="goDeleteClick();"/>
 					    		</c:when>
 					    		<c:otherwise>
-					    			<input type="checkbox" name="segNo" value="<c:out value='${segment.segNo}'/>"/>
+					    			<input type="hidden" name="segNo" value="<c:out value='${segment.segNo}'/>"/>
+					    			<input type="checkbox" name="segNos" value="<c:out value='${segment.segNo}'/>"/>
 					    		</c:otherwise>
 					    	</c:choose>
 					    	<input type="hidden" name="createTy" value="<c:out value='${segment.createTy}'/>"/>
@@ -231,7 +276,7 @@ function goAddf() {
 		    <div class="btnR">
 		    	<input type="button" class="btn_typeC" value="<spring:message code="COMBTN005"/>" onClick="goAddf()"><!-- 등록 -->
 		        <input type="button" class="btn_typeG" value="<spring:message code="COMBTN006"/>" onClick="goDisable()"><!-- 사용중지 -->
-		        <input type="button" class="btn_typeG" value="<spring:message code="COMBTN008"/>" onClick="goDelete()"><!-- 수정 -->
+		        <input type="button" class="btn_typeG" value="<spring:message code="COMBTN008"/>" onClick="goDelete()"><!-- 삭제 -->
 		    </div>
 		    </form>
 
@@ -248,6 +293,8 @@ function goAddf() {
 		<%@ include file="/WEB-INF/jsp/inc/footer.jsp" %>
 	</div>
 </div>
+<form id="segInfoForm">
 
+</form>
 </body>
 </html>
