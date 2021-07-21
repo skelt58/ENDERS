@@ -49,7 +49,34 @@ function goAddf() {
 	$("#searchForm").attr("action","<c:url value='/ems/seg/segFileAddP.ums'/>").submit();
 }
 
-//삭제 EVENT 구현
+// 사용중지 EVENT 구현
+function goDisable() {
+    var checked = false;
+    if($("input[name='segNos']").val() != "undefined") {
+    	$("input[name='segNos']").each(function(idx,item) {
+    		if($(item).is(":checked") == true) {
+    			checked = true;
+    		}
+    	});
+    }
+    if(!checked) {
+        alert("<spring:message code='CAMJSALT013'/>");		// 사용중지 할 목록을 선택해 주세요.
+        return;
+    }
+
+    $("#status").val("001");
+    var param = $("#segInfoForm").serialize();
+	$.getJSON("<c:url value='/ems/seg/segDelete.json'/>?" + param, function(data) {
+		if(data.result == 'Success') {
+			alert("<spring:message code='CAMJSALT028'/>");		// 사용중지성공
+			$("#searchForm").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
+		} else if(data.result == 'Fail') {
+			alert("<spring:message code='CAMJSALT030'/>");		// 사용중지실패
+		}
+	});
+}
+
+// 삭제 EVENT 구현
 function goDelete() {
     var checked = false;
     if($("input[name='segNos']").val() != "undefined") {
@@ -68,16 +95,12 @@ function goDelete() {
     var param = $("#segInfoForm").serialize();
 	$.getJSON("<c:url value='/ems/seg/segDelete.json'/>?" + param, function(data) {
 		if(data.result == 'Success') {
-			alert("성공");
-			$("#searchForm").attr("action","<c:url value='/ems/seg/segFileAddP.ums'/>").submit();
+			alert("<spring:message code='COMJSALT012'/>");		// 삭제 성공
+			$("#searchForm").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
 		} else if(data.result == 'Fail') {
-			alert("실패");
+			alert("<spring:message code='COMJSALT013'/>");		// 삭제 실패
 		}
 	});
-    
-    //obj.p_status.value = "002";
-    //obj.action = "/seg/segDeleteP.jsp";
-    //obj.submit();
 }
 
 function goSelectAll() {
@@ -90,6 +113,11 @@ function goSelectAll() {
     		$(item).prop("checked", false);
     	});
     }
+}
+
+function goDeleteClick() {
+    alert("<spring:message code='CAMJSALT019'/>");	// 삭제된 목록은 선택할 수 없습니다.
+    return false;
 }
 </script>
 
@@ -228,7 +256,7 @@ function goSelectAll() {
 				    	<td align="center">
 					    	<c:choose>
 					    		<c:when test="${segment.status eq '002'}">
-					    			<input type="checkbox" name="segNoDelete" value="<c:out value='${segment.segNo}'/>" onclick="goDeleteClick();"/>
+					    			<input type="checkbox" name="segNoDelete" value="<c:out value='${segment.segNo}'/>" onclick="return goDeleteClick();"/>
 					    		</c:when>
 					    		<c:otherwise>
 					    			<input type="hidden" name="segNo" value="<c:out value='${segment.segNo}'/>"/>
@@ -272,7 +300,7 @@ function goSelectAll() {
 			    </c:if>
 
 		    </table>
-		    <div class="center">페이징</div>
+		    <div class="center" style="width:900px;text-align:center;">${pageUtil.pageHtml}</div>
 		    <div class="btnR">
 		    	<input type="button" class="btn_typeC" value="<spring:message code="COMBTN005"/>" onClick="goAddf()"><!-- 등록 -->
 		        <input type="button" class="btn_typeG" value="<spring:message code="COMBTN006"/>" onClick="goDisable()"><!-- 사용중지 -->

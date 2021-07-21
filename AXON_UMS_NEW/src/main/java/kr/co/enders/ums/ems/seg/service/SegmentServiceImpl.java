@@ -37,7 +37,7 @@ public class SegmentServiceImpl implements SegmentService {
 	@Override
 	public int updateSegmentStatus(SegmentVO segmentVO) throws Exception {
 		int result = 0;
-		if(segmentVO.getSegNos() != null && "".equals(segmentVO.getSegNos())) {
+		if(segmentVO.getSegNos() != null && !"".equals(segmentVO.getSegNos())) {
 			String[] segNo = segmentVO.getSegNos().split(",");
 			for(int i=0;i<segNo.length;i++) {
 				SegmentVO segment = new SegmentVO();
