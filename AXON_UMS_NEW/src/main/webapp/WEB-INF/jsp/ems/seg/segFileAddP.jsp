@@ -9,6 +9,7 @@
 <%@ include file="/WEB-INF/jsp/inc/header.jsp" %>
 <style type="text/css">
 .on { text-weight:bold; background-color:#cccccc; }
+.tArea { width:700px;height:50px; }
 </style>
 
 <script type="text/javascript">
@@ -43,6 +44,7 @@ function goNoticeParamPop() {
 	window.open("<c:url value='/ems/seg/fileSampleDownPop.ums'/>", "segParamInfo", 'width=450,height=168,status=yes,scrollbars=no,resizable=no');
 }
 
+//사용자그룹 선택시 사용자 목록 설정
 function getUserList(deptNo) {
 	$.getJSON("<c:url value='/com/getUserList.json'/>?deptNo=" + deptNo, function(data) {
 		$("#userId").children("option:not(:first)").remove();
@@ -53,6 +55,7 @@ function getUserList(deptNo) {
 	});
 }
 
+// 구분자 확인
 function fncSep() {
     var frm = $("#segInfoForm")[0];
 

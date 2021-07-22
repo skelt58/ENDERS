@@ -46,6 +46,7 @@ public class SegmentVO extends CommonVO {
 	private String value;			// 검색값
 	private String search;			// 검색항목
 	private String segNos;			// 세그먼트번호멀티
+	private String testType;		// 테스트유형
 	
 	public int getSegNo() {
 		return segNo;
@@ -262,5 +263,11 @@ public class SegmentVO extends CommonVO {
 	}
 	public void setSegNos(String segNos) {
 		this.segNos = segNos;
+	}
+	public String getTestType() {
+		return testType;
+	}
+	public void setTestType(String testType) {
+		this.testType = testType;
 	}
 }

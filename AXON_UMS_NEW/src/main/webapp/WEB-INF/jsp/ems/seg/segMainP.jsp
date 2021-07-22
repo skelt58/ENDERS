@@ -174,10 +174,10 @@ function goDeleteClick() {
 					</td>
 					<td class="td_title"><spring:message code="COMTBLTL002"/></td><!-- 등록일 -->
 					<td class="td_body">
-						<fmt:parseDate var="startDt" value="${searchVO.searchStartDt}" pattern="yyyyMMddHHmmss"/>
+						<fmt:parseDate var="startDt" value="${searchVO.searchStartDt}" pattern="yyyyMMdd"/>
 						<fmt:formatDate var="searchStartDt" value="${startDt}" pattern="yyyy-MM-dd"/> 
 						<input type="text" id="searchStartDt" name="searchStartDt" value="<c:out value='${searchStartDt}'/>" style="width:100px" readonly> ~ 
-						<fmt:parseDate var="endDt" value="${searchVO.searchEndDt}" pattern="yyyyMMddHHmmss"/>
+						<fmt:parseDate var="endDt" value="${searchVO.searchEndDt}" pattern="yyyyMMdd"/>
 						<fmt:formatDate var="searchEndDt" value="${endDt}" pattern="yyyy-MM-dd"/> 
 						<input type="text" id="searchEndDt" name="searchEndDt" value="<c:out value='${searchEndDt}'/>" style="width:100px" readonly>
 					</td>

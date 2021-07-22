@@ -300,6 +300,15 @@ public class DBUtil {
 	 * @return
 	 */
 	public int getSegmentCount(String dbDriver, String dbUrl, String loginId, String loginPwd, SegmentVO segmentInfo) {
+		logger.debug("getMemberList query     = " + segmentInfo.getQuery());
+		logger.debug("getMemberList selectSql = " + segmentInfo.getSelectSql());
+		logger.debug("getMemberList fromSql   = " + segmentInfo.getFromSql());
+		logger.debug("getMemberList whereSql  = " + segmentInfo.getWhereSql());
+		
+		String query      = StringUtil.setUpperString(segmentInfo.getQuery());
+		String selectSql  = StringUtil.setUpperString(segmentInfo.getSelectSql());
+		String fromSql    = StringUtil.setUpperString(segmentInfo.getFromSql());
+		String whereSql   = StringUtil.setUpperString(segmentInfo.getWhereSql());
 		
 		Connection conn = null;
 		PreparedStatement pstm = null;
@@ -307,17 +316,17 @@ public class DBUtil {
 		
 		String sql = "";
 		if("002".equals(segmentInfo.getCreateTy())) {	// 직접SQL입력
-			sql  = "SELECT COUNT(*) FROM TOT_CNT ";
+			sql  = "SELECT COUNT(*) TOT_CNT ";
 			sql += "  FROM ( ";
-			sql += segmentInfo.getQuery();
+			sql += query;
 			sql += "       ) NEO_DUAL";
 		} else {
-			String fromUnder = "FROM " + segmentInfo.getFromSql() + " ";
-			if(segmentInfo.getWhereSql() != null && segmentInfo.getWhereSql().length() > 0) {
-				fromUnder += "WHERE " + segmentInfo.getWhereSql() + " ";
+			String fromUnder = "FROM " + fromSql + " ";
+			if(whereSql != null && whereSql.length() > 0) {
+				fromUnder += "WHERE " + whereSql + " ";
 			}
-			if(segmentInfo.getSelectSql() != null && segmentInfo.getSelectSql().toUpperCase().indexOf("DISTINCT") != -1) {
-				sql = "SELECT " + segmentInfo.getSelectSql() + " " + fromUnder;
+			if(selectSql != null && selectSql.toUpperCase().indexOf("DISTINCT") != -1) {
+				sql = "SELECT " + selectSql + " " + fromUnder;
 				sql = "SELECT COUNT(*) TOT_CNT FROM (" + sql.trim() + ")";
 			} else {
 				sql = "SELECT COUNT(*) TOT_CNT " + fromUnder;
@@ -345,7 +354,26 @@ public class DBUtil {
 		return totCnt;
 	}
 	
+	/**
+	 * SQL 실행결과 목록을 조회한다.
+	 * @param dbDriver
+	 * @param dbUrl
+	 * @param loginId
+	 * @param loginPwd
+	 * @param segmentInfo
+	 * @return
+	 */
 	public SegmentMemberVO getMemberList(String dbDriver, String dbUrl, String loginId, String loginPwd, SegmentVO segmentInfo) {
+		logger.debug("getMemberList query     = " + segmentInfo.getQuery());
+		logger.debug("getMemberList selectSql = " + segmentInfo.getSelectSql());
+		logger.debug("getMemberList fromSql   = " + segmentInfo.getFromSql());
+		logger.debug("getMemberList whereSql  = " + segmentInfo.getWhereSql());
+		
+		String query      = StringUtil.setUpperString(segmentInfo.getQuery());
+		String selectSql  = StringUtil.setUpperString(segmentInfo.getSelectSql());
+		String fromSql    = StringUtil.setUpperString(segmentInfo.getFromSql());
+		String whereSql   = StringUtil.setUpperString(segmentInfo.getWhereSql());
+		String orderbySql = StringUtil.setUpperString(segmentInfo.getOrderbySql());
 		
 		Connection conn = null;
 		PreparedStatement pstm = null;
@@ -357,34 +385,34 @@ public class DBUtil {
 		String cSql = "";
 		String sql = "";
         if("002".equals(segmentInfo.getCreateTy())) {		//직접 SQL 입력
-        	sql = segmentInfo.getQuery();
-        	cSql = "SELECT COUNT(*) " + segmentInfo.getQuery().substring(segmentInfo.getQuery().indexOf("FROM"), segmentInfo.getQuery().length());
+        	sql = query;
+        	cSql = "SELECT COUNT(*) " + query.substring(query.indexOf("FROM"), query.length());
         } else {
 
 	        // Legacy DB에서 회원정보를 추출함.
-        	sql  = "SELECT " +  segmentInfo.getSelectSql() + " ";
-        	sql += "FROM " + segmentInfo.getFromSql() + " ";
-        	if(segmentInfo.getWhereSql() != null && !"".equals(segmentInfo.getWhereSql())) {
+        	sql  = "SELECT " +  selectSql + " ";
+        	sql += "FROM " + fromSql + " ";
+        	if(whereSql != null && !"".equals(whereSql)) {
             	if(segmentInfo.getValue() != null && !"".equals(segmentInfo.getValue())) {
-            		sql += "WHERE " + segmentInfo.getWhereSql() + " AND " + segmentInfo.getSearch() + " LIKE '%" + segmentInfo.getValue() + "%' ";
+            		sql += "WHERE " + whereSql + " AND " + segmentInfo.getSearch() + " LIKE '%" + segmentInfo.getValue() + "%' ";
             	} else {
-            		sql += "WHERE " + segmentInfo.getWhereSql() + " ";
+            		sql += "WHERE " + whereSql + " ";
             	}
         	} else {
             	if(segmentInfo.getValue() != null && !"".equals(segmentInfo.getValue())) {
             		sql += "WHERE " + segmentInfo.getSearch() + " LIKE '%" + segmentInfo.getValue() + "%' ";
             	}
         	}
-        	if(segmentInfo.getOrderbySql() != null && !"".equals(segmentInfo.getOrderbySql().trim())) {
-        		sql += "ORDER BY " + segmentInfo.getOrderbySql();
+        	if(orderbySql != null && !"".equals(orderbySql.trim())) {
+        		sql += "ORDER BY " + orderbySql;
         	}
 
-        	String fromUnder = "FROM " + segmentInfo.getFromSql() + " ";
-        	if(segmentInfo.getWhereSql() != null && !"".equals(segmentInfo.getWhereSql())) {
+        	String fromUnder = "FROM " + fromSql + " ";
+        	if(whereSql != null && !"".equals(whereSql)) {
             	if(segmentInfo.getValue() != null && !"".equals(segmentInfo.getValue())) {
-            		fromUnder += "WHERE " + segmentInfo.getWhereSql() + " AND " + segmentInfo.getSearch() + " LIKE '%" + segmentInfo.getValue() + "%' ";
+            		fromUnder += "WHERE " + whereSql + " AND " + segmentInfo.getSearch() + " LIKE '%" + segmentInfo.getValue() + "%' ";
             	} else {
-            		fromUnder += "WHERE " + segmentInfo.getWhereSql() + " ";
+            		fromUnder += "WHERE " + whereSql + " ";
             	}
         	} else {
             	if(segmentInfo.getValue() != null && !"".equals(segmentInfo.getValue())) {
@@ -392,7 +420,7 @@ public class DBUtil {
             	}
         	}
 
-        	if(segmentInfo.getSelectSql().toUpperCase().indexOf("DISTINCT") != -1) {
+        	if(selectSql.toUpperCase().indexOf("DISTINCT") != -1) {
             	cSql = "SELECT COUNT(DISTINCT *)  " + fromUnder;
         	} else {
             	cSql = "SELECT COUNT(*) " + fromUnder.trim();
@@ -440,6 +468,58 @@ public class DBUtil {
         } finally {
         	
         }
+		
+		return memberVO;
+	}
+	
+	/**
+	 * SQL 직접 입력 테스트
+	 * @param dbDriver
+	 * @param dbUrl
+	 * @param loginId
+	 * @param loginPwd
+	 * @param segmentInfo
+	 * @return
+	 */
+	public SegmentMemberVO getDirectSqlTest(String dbDriver, String dbUrl, String loginId, String loginPwd, SegmentVO segmentInfo) {
+		Connection conn = null;
+		PreparedStatement pstm = null;
+		ResultSet rss = null;
+		ResultSetMetaData mrs = null;
+		
+		SegmentMemberVO memberVO = new SegmentMemberVO();
+		
+		String sql = segmentInfo.getQuery();
+		logger.debug("getDirectSqlTest sql = " + sql);
+		
+		try {
+			conn = getConnection(dbDriver, dbUrl, loginId, loginPwd);
+			
+			pstm = conn.prepareStatement(sql);
+			rss = pstm.executeQuery();
+			mrs = rss.getMetaData();
+			
+			String mergeKey = "";
+			int cols = mrs.getColumnCount();
+			for(int i=1;i<=cols;i++) {
+				if(i == 1) {
+					mergeKey += mrs.getColumnName(i).toUpperCase();
+				} else {
+					mergeKey += "," + mrs.getColumnName(i).toUpperCase();
+				}
+			}
+			
+			memberVO.setMergeKey(mergeKey);
+			memberVO.setResult(true);
+		} catch(Exception e) {
+			logger.error("getDirectSqlTest error = " + e);
+			memberVO.setMessage(e.getMessage());
+			memberVO.setResult(false);
+		} finally {
+			if(rss != null) try { rss.close(); } catch(Exception e) {}
+			if(pstm != null) try { pstm.close(); } catch(Exception e) {}
+			if(conn != null) try { conn.close(); } catch(Exception e) {}
+		}
 		
 		return memberVO;
 	}

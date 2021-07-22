@@ -58,8 +58,8 @@
 				   AND NEO_SEGMENT.STATUS = #{searchStatus}
 				   </if>
 				   <if test="searchStartDt != '' and searchEndDt != ''">
-				   AND NEO_SEGMENT.REG_DT &gt;= #{searchStartDt}
-				   AND NEO_SEGMENT.REG_DT &lt;= #{searchEndDt}
+				   AND NEO_SEGMENT.REG_DT &gt;= #{searchStartDt} || '000000'
+				   AND NEO_SEGMENT.REG_DT &lt; #{searchEndDt} || '240000'
 				   </if>
 				)
 		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}

@@ -34,8 +34,16 @@
 		<typeAlias alias="loginHistVO"		type="kr.co.enders.ums.ems.sys.vo.LoginHistVO" />
 		<typeAlias alias="userCodeVO"		type="kr.co.enders.ums.ems.sys.vo.UserCodeVO" />
 		
+		
+		
 		<!-- 발송관리 -->
 		<typeAlias alias="segmentVO"		type="kr.co.enders.ums.ems.seg.vo.SegmentVO" />
+		
+		<!-- 캠페인 -->
+		<typeAlias alias="campaignVO"		type="kr.co.enders.ums.ems.cam.vo.CampaignVO" />
+		<typeAlias alias="taskVO"			type="kr.co.enders.ums.ems.cam.vo.TaskVO" />
+		
+		
 		
 	</typeAliases>
 
@@ -45,6 +53,7 @@
 		<mapper resource="enders/sqlmap/com/CodeSQL-ems-oracle.xml"></mapper>
 		<mapper resource="enders/sqlmap/ems/sys/SystemSQL-ems-oracle.xml"></mapper>
 		<mapper resource="enders/sqlmap/ems/seg/SegmentSQL-ems-oracle.xml"></mapper>
+		<mapper resource="enders/sqlmap/ems/cam/CampaignSQL-ems-oracle.xml"></mapper>
 	</mappers>
 	
 </configuration>

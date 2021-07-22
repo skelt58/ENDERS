@@ -868,8 +868,8 @@
 				  FROM NEO_DEPT A
 					 , NEO_LGN_HST B
 				 WHERE A.DEPT_NO = B.DEPT_NO
-				   AND LGN_DT &gt;= #{searchLgnStdDt}
-				   AND LGN_DT &lt;= #{searchLgnEndDt}
+				   AND LGN_DT &gt;= #{searchLgnStdDt} || '000000'
+				   AND LGN_DT &lt; #{searchLgnEndDt} || '240000'
 				   <if test="searchDeptNm != null and searchDeptNm != ''">
 				   AND A.DEPT_NM LIKE '%' || #{searchDeptNm} || '%'
 				   </if>

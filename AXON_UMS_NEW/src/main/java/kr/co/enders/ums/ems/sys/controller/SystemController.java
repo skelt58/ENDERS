@@ -1831,8 +1831,8 @@ public class SystemController {
 		int rows = StringUtil.setNullToInt(loginHistVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE")));
 		loginHistVO.setPage(page);
 		loginHistVO.setRows(rows);
-		loginHistVO.setSearchLgnStdDt(loginHistVO.getSearchLgnStdDt().replaceAll("-", "") + "000000");
-		loginHistVO.setSearchLgnEndDt(loginHistVO.getSearchLgnEndDt().replaceAll("-", "") + "235959");
+		loginHistVO.setSearchLgnStdDt(loginHistVO.getSearchLgnStdDt().replaceAll("-", ""));
+		loginHistVO.setSearchLgnEndDt(loginHistVO.getSearchLgnEndDt().replaceAll("-", ""));
 		
 		
 		// 로그인 이력 목록 조회

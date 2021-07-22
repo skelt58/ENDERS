@@ -27,6 +27,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.enders.ums.com.service.CodeService;
 import kr.co.enders.ums.com.vo.CodeVO;
+import kr.co.enders.ums.ems.cam.service.CampaignService;
+import kr.co.enders.ums.ems.cam.vo.CampaignVO;
+import kr.co.enders.ums.ems.cam.vo.TaskVO;
 import kr.co.enders.ums.ems.seg.service.SegmentService;
 import kr.co.enders.ums.ems.seg.vo.SegmentMemberVO;
 import kr.co.enders.ums.ems.seg.vo.SegmentVO;
@@ -58,6 +61,9 @@ public class SegmentController {
 	
 	@Autowired
 	private SegmentService segmentService;
+	
+	@Autowired
+	private CampaignService campaignService;
 	
 	@RequestMapping(value="/segMainP")
 	public String goSegMain(@ModelAttribute SegmentVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
@@ -144,8 +150,8 @@ public class SegmentController {
 		// 발송대상(세그먼트) 목록 조회
 		SegmentVO search = searchVO;
 		search.setUilang((String)session.getAttribute("NEO_UILANG"));
-		search.setSearchStartDt(search.getSearchStartDt().replaceAll("-","") + "000000");
-		search.setSearchEndDt(search.getSearchEndDt().replaceAll("-", "") + "235959");
+		search.setSearchStartDt(search.getSearchStartDt().replaceAll("-",""));
+		search.setSearchEndDt(search.getSearchEndDt().replaceAll("-", ""));
 		List<SegmentVO> segmentList = null;
 		try {
 			segmentList = segmentService.getSegmentList(search);
@@ -344,6 +350,13 @@ public class SegmentController {
 	
 	@RequestMapping(value="/segToolAddP")
 	public String goSegToolAdd(@ModelAttribute SegmentVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goSegToolAdd searchSegNm = " + searchVO.getSearchSegNm());
+		logger.debug("goSegToolAdd searchCreateTy = " + searchVO.getSearchCreateTy());
+		logger.debug("goSegToolAdd searchStatus = " + searchVO.getSearchStatus());
+		logger.debug("goSegToolAdd searchStartDt = " + searchVO.getSearchStartDt());
+		logger.debug("goSegToolAdd searchEndDt = " + searchVO.getSearchEndDt());
+		logger.debug("goSegToolAdd searchDeptNo = " + searchVO.getSearchDeptNo());
+		logger.debug("goSegToolAdd searchUserId = " + searchVO.getSearchUserId());
 		logger.debug("goSegToolAdd createTy = " + searchVO.getCreateTy());
 		String createTy =  searchVO.getCreateTy()==null||"".equals(searchVO.getCreateTy())?"000":searchVO.getCreateTy();
 		
@@ -621,12 +634,27 @@ public class SegmentController {
 		return modelAndView;
 	}
 	
-	
+	/**
+	 * 	 * 직접SQL이용 화면을 출력한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/segDirectSQLAddP")
 	public String goSegDirectSQLAddP(@ModelAttribute SegmentVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		logger.debug("goSegToolAdd createTy = " + searchVO.getCreateTy());
+		logger.debug("goSegDirectSQLAddP searchSegNm = " + searchVO.getSearchSegNm());
+		logger.debug("goSegDirectSQLAddP searchCreateTy = " + searchVO.getSearchCreateTy());
+		logger.debug("goSegDirectSQLAddP searchStatus = " + searchVO.getSearchStatus());
+		logger.debug("goSegDirectSQLAddP searchStartDt = " + searchVO.getSearchStartDt());
+		logger.debug("goSegDirectSQLAddP searchEndDt = " + searchVO.getSearchEndDt());
+		logger.debug("goSegDirectSQLAddP searchDeptNo = " + searchVO.getSearchDeptNo());
+		logger.debug("goSegDirectSQLAddP searchUserId = " + searchVO.getSearchUserId());
+		logger.debug("goSegDirectSQLAddP createTy = " + searchVO.getCreateTy());
 		String createTy =  searchVO.getCreateTy()==null||"".equals(searchVO.getCreateTy())?"002":searchVO.getCreateTy();
-
+		
 		// DB Connection 목록 조회
 		DbConnVO dbConnVO = new DbConnVO();
 		dbConnVO.setUilang((String)session.getAttribute("NEO_UILANG"));
@@ -638,7 +666,6 @@ public class SegmentController {
 		} catch(Exception e) {
 			logger.error("segmentService.getDbConnList error = " + e);
 		}
-		
 		
 		// 부서목록(코드성) 조회
 		CodeVO deptVO = new CodeVO();
@@ -677,4 +704,282 @@ public class SegmentController {
 		
 		return "ems/seg/segDirectSQLAddP";
 	}
+	
+	/**
+	 * 	 * 직접SQL이용 테이블 목록 조회
+	 * @param dbConnVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/metatableListP")
+	public String getMetaTableListP(@ModelAttribute DbConnVO dbConnVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getMetaTableListP dbConnNo = " + dbConnVO.getDbConnNo());
+		
+		DbConnVO dbConnInfo = null;
+		try {
+			dbConnVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+			dbConnInfo = systemService.getDbConnInfo(dbConnVO);
+		} catch(Exception e) {
+			logger.error("systemService.getDbConnInfo error = " + e);
+		}
+		
+		// 실제 DB 테이블 목록 조회
+		List<String> realTableList = null;
+		DBUtil dbUtil = new DBUtil();
+		String dbTy = dbConnInfo.getDbTy();
+		String dbDriver = dbConnInfo.getDbDriver();
+		String dbUrl = dbConnInfo.getDbUrl();
+		String loginId = dbConnInfo.getLoginId();
+		String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd());
+		realTableList = dbUtil.getRealTableList(dbTy, dbDriver, dbUrl, loginId, loginPwd);
+
+		// 메타 테이블 목록 조회
+		List<MetaTableVO> metaTableList = null;
+		try {
+			metaTableList = systemService.getMetaTableList(dbConnVO);
+		} catch(Exception e) {
+			logger.error("systemService.getMetaTableList error = " + e);
+		}
+		
+		model.addAttribute("realTableList", realTableList);	// 실제테이블 목록
+		model.addAttribute("metaTableList", metaTableList);	// 메타테이블 목록
+		
+		return "ems/seg/metatableListP";
+	}
+	
+	/**
+	 * 직접SQL이용 컬럼 목록 조회
+	 * @param metaColumnVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/metacolumnListP")
+	public String getMetaColumnListP(@ModelAttribute MetaColumnVO metaColumnVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getMetaColumnListP dbConnNo = " + metaColumnVO.getDbConnNo());
+		logger.debug("getMetaColumnListP tblNo    = " + metaColumnVO.getTblNo());
+		
+		DbConnVO dbConnInfo = new DbConnVO();
+		try {
+			dbConnInfo.setDbConnNo(metaColumnVO.getDbConnNo());
+			dbConnInfo.setUilang((String)session.getAttribute("NEO_UILANG"));
+			dbConnInfo = systemService.getDbConnInfo(dbConnInfo);
+		} catch(Exception e) {
+			logger.error("systemService.getDbConnInfo error = " + e);
+		}
+		
+		// 실제 DB 테이블 컬럼 목록 조회
+		List<MetaColumnVO> realColumnList = null;
+		DBUtil dbUtil = new DBUtil();
+		String dbTy = dbConnInfo.getDbTy();
+		String dbDriver = dbConnInfo.getDbDriver();
+		String dbUrl = dbConnInfo.getDbUrl();
+		String loginId = dbConnInfo.getLoginId();
+		String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd());
+		realColumnList = dbUtil.getRealColumnList(dbTy, dbDriver, dbUrl, loginId, loginPwd, metaColumnVO.getTblNm());
+		
+		// 메타 컬럼 목록 조회
+		List<MetaColumnVO> metaColumnList = null;
+		try {
+			metaColumnList = systemService.getMetaColumnList(metaColumnVO);
+		} catch(Exception e) {
+			logger.error("systemService.getMetaColumnList error = " + e);
+		}
+		
+		model.addAttribute("realColumnList", realColumnList);	// 실제컬럼 목록
+		model.addAttribute("metaColumnList", metaColumnList);	// 메타컬럼 목록
+		
+		return "ems/seg/metacolumnListP";
+	}
+	
+	/**
+	 * SQL TES 실행
+	 * @param segmentVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/segDirectSQLTest")
+	public ModelAndView goSegDirectSQLTest(@ModelAttribute SegmentVO segmentVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goSegDirectSQLTest dbConnNo = " + segmentVO.getDbConnNo());
+		logger.debug("goSegDirectSQLTest query    = " + segmentVO.getQuery());
+		logger.debug("goSegDirectSQLTest testType = " + segmentVO.getTestType());
+		
+		DbConnVO dbConnInfo = new DbConnVO();
+		try {
+			dbConnInfo.setDbConnNo(segmentVO.getDbConnNo());
+			dbConnInfo.setUilang((String)session.getAttribute("NEO_UILANG"));
+			dbConnInfo = systemService.getDbConnInfo(dbConnInfo);
+		} catch(Exception e) {
+			logger.error("systemService.getDbConnInfo error = " + e);
+		}
+		
+		// 실제 DB 테이블 컬럼 목록 조회
+		SegmentMemberVO memberVO = null;
+		DBUtil dbUtil = new DBUtil();
+		String dbDriver = dbConnInfo.getDbDriver();
+		String dbUrl = dbConnInfo.getDbUrl();
+		String loginId = dbConnInfo.getLoginId();
+		String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd());
+		memberVO = dbUtil.getDirectSqlTest(dbDriver, dbUrl, loginId, loginPwd, segmentVO);
+
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(memberVO.isResult()) {
+			map.put("result", "Success");
+			map.put("mergeKey", memberVO.getMergeKey());
+		} else {
+			map.put("result", "Fail");
+			map.put("message", memberVO.getMessage());
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	/**
+	 * 연계서비스지정 화면을 출력한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/segRemarketAddP")
+	public String goSegRemarketAddP(@ModelAttribute SegmentVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goSegRemarketAddP searchSegNm = " + searchVO.getSearchSegNm());
+		logger.debug("goSegRemarketAddP searchCreateTy = " + searchVO.getSearchCreateTy());
+		logger.debug("goSegRemarketAddP searchStatus = " + searchVO.getSearchStatus());
+		logger.debug("goSegRemarketAddP searchStartDt = " + searchVO.getSearchStartDt());
+		logger.debug("goSegRemarketAddP searchEndDt = " + searchVO.getSearchEndDt());
+		logger.debug("goSegRemarketAddP searchDeptNo = " + searchVO.getSearchDeptNo());
+		logger.debug("goSegRemarketAddP searchUserId = " + searchVO.getSearchUserId());
+		
+		// 수신자정보머지키 조회
+		CodeVO merge = new CodeVO();
+		merge.setUilang((String)session.getAttribute("NEO_UILANG"));
+		merge.setCdGrp("C001");	// 발송그룹상태
+		merge.setUseYn("Y");
+		List<CodeVO> mergeKeyList = null;
+		try {
+			mergeKeyList = codeService.getCodeList(merge);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList[C001] error = " + e);
+		}
+		
+		// 부서목록(코드성) 조회
+		CodeVO deptVO = new CodeVO();
+		deptVO.setStatus("000"); // 정상
+		List<CodeVO> deptList = null;
+		try {
+			deptList = codeService.getDeptList(deptVO);
+		} catch(Exception e) {
+			logger.error("codeService.getDeptList error = " + e);
+		}
+		
+		model.addAttribute("searchVO", searchVO);			// 검색 항목
+		model.addAttribute("mergeKeyList", mergeKeyList);	// 수신자정보머지키 목록
+		model.addAttribute("deptList", deptList);			// 부서목록
+		
+		return "ems/seg/segRemarketAddP";
+	}
+	
+	@RequestMapping(value="/segRemarketMailMainP")
+	public String goSegRemarketMailMainP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		// 검색 기본값 설정
+		if(searchVO.getSearchStartDt() == null || "".equals(searchVO.getSearchStartDt())) {
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyy-MM-dd"));
+		}
+		if(searchVO.getSearchEndDt() == null || "".equals(searchVO.getSearchEndDt())) {
+			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyy-MM-dd"));
+		}
+		
+		// 부서목록(코드성) 조회
+		CodeVO deptVO = new CodeVO();
+		deptVO.setStatus("000"); // 정상
+		List<CodeVO> deptList = null;
+		try {
+			deptList = codeService.getDeptList(deptVO);
+		} catch(Exception e) {
+			logger.error("codeService.getDeptList error = " + e);
+		}
+		
+		// 사용자목록(코드성) 조회
+		CodeVO userVO = new CodeVO();
+		userVO.setStatus("000"); // 정상
+		if("Y".equals((String)session.getAttribute("NEO_ADMIN_YN"))) {
+			userVO.setDeptNo(0);
+		} else {
+			userVO.setDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+		}
+		List<CodeVO> userList = null;
+		try {
+			userList = codeService.getUserList(userVO);
+		} catch(Exception e) {
+			logger.error("codeService.getUserList error = " + e);
+		}
+		
+		// 캠페인 목록 조회
+		CampaignVO campaignVO = new CampaignVO();
+		campaignVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		List<CampaignVO> campaignList = null;
+		try {
+			campaignList = campaignService.getCampaignList(campaignVO);
+		} catch(Exception e) {
+			logger.error("campaignService.getCampaignList error = " + e);
+		}
+		
+		model.addAttribute("searchVO", searchVO);			// 검색항목
+		model.addAttribute("deptList", deptList);			// 부서목록
+		model.addAttribute("userList", userList);			// 사용자목록
+		model.addAttribute("campaignList", campaignList);	// 캠페인목록
+		
+		return "ems/seg/segRemarketMailMainP";
+	}
+	
+	@RequestMapping(value="/segRemarketMailListP")
+	public String goSegRemarketMailListP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goSegRemarketMailListP searchTaskNm     = " + searchVO.getSearchTaskNm());
+		logger.debug("goSegRemarketMailListP searchCampNo     = " + searchVO.getSearchCampNo());
+		logger.debug("goSegRemarketMailListP searchDeptNo     = " + searchVO.getSearchDeptNo());
+		logger.debug("goSegRemarketMailListP searchUserId     = " + searchVO.getSearchUserId());
+		logger.debug("goSegRemarketMailListP searchStatus     = " + searchVO.getSearchStatus());
+		logger.debug("goSegRemarketMailListP searchStartDt    = " + searchVO.getSearchStartDt());
+		logger.debug("goSegRemarketMailListP searchEndDt      = " + searchVO.getSearchEndDt());
+		logger.debug("goSegRemarketMailListP searchWorkStatus = " + searchVO.getSearchWorkStatus());
+		
+		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		searchVO.setSearchStatus("000");
+		searchVO.setSearchWorkStatus("000,001,002,003");
+		searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("-", ""));
+		searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("-", ""));
+		List<String> workStatusList = new ArrayList<String>();
+		String[] workStatus = searchVO.getSearchWorkStatus().split(",");
+		for(int i=0;i<workStatus.length;i++) {
+			workStatusList.add(workStatus[i]);
+		}
+		searchVO.setSearchWorkStatusList(workStatusList);
+		
+		List<TaskVO> mailList = null;
+		try {
+			mailList = campaignService.getMailList(searchVO);
+		} catch(Exception e) {
+			logger.error("campaignService.getMailList error = " + e);
+		}
+		
+		model.addAttribute("mailList", mailList);
+		
+		return "ems/seg/segRemarketMailListP";
+	}
+	
+	
 }

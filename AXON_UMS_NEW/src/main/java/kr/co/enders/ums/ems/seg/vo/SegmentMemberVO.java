@@ -12,6 +12,9 @@ public class SegmentMemberVO {
 	private int totalCount;								// 전체건수
 	private List<HashMap<String,String>> memberList;	// 멤버목록
 	private HashMap<String,String> member;				// 멤버정보
+	private String mergeKey;							// 머지키
+	private String message;								// 메시지
+	boolean result;										// 결과
 	public int getTotalCount() {
 		return totalCount;
 	}
@@ -29,5 +32,23 @@ public class SegmentMemberVO {
 	}
 	public void setMember(HashMap<String, String> member) {
 		this.member = member;
+	}
+	public String getMergeKey() {
+		return mergeKey;
+	}
+	public void setMergeKey(String mergeKey) {
+		this.mergeKey = mergeKey;
+	}
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	public boolean isResult() {
+		return result;
+	}
+	public void setResult(boolean result) {
+		this.result = result;
 	}
 }

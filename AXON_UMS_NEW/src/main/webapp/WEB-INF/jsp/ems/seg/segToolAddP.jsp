@@ -17,6 +17,7 @@ $(document).ready(function() {
 	getMetaFrameContent();
 });
 
+// 탭 클릭
 function goCreateTy(no) {
     if(no == '000') {   // 추출도구이용
         //goSqlEdit('000');
@@ -69,6 +70,7 @@ function goReload() {
 	$("#searchForm").attr("action","<c:url value='/ems/seg/segToolAddP.ums'/>").submit();
 }
 
+//사용자그룹 선택시 사용자 목록 설정
 function getUserList(deptNo) {
 	$.getJSON("<c:url value='/com/getUserList.json'/>?deptNo=" + deptNo, function(data) {
 		$("#userId").children("option:not(:first)").remove();
@@ -1121,14 +1123,7 @@ function goSegList() {
 	        <input type="button" class="btn_typeG" value="<spring:message code='COMBTN010'/>" onClick="goSegList()">
     	 </div>
       </div> 
-      <table>
-      <tr>
-          <td>
-              <iFrame name=iFrmCnt frameborder=0 framespacing=0 marginheight=0 noresize scrolling=no style='height:0; margin:0; width:0'></iFrame>
-          </td>
-      </tr>
-      </table>
-      </div>
+    </div>
  </div>
 </form>
 

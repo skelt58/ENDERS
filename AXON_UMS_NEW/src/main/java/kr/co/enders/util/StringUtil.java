@@ -38,6 +38,19 @@ public class StringUtil {
 	}
 	
 	/**
+	 * 대문자로 변환하여 반환한다.
+	 * @param str
+	 * @return
+	 */
+	public static String setUpperString(String str) {
+		if(str == null) {
+			return "";
+		} else {
+			return str.toUpperCase();
+		}
+	}
+	
+	/**
 	 * 현재 날짜에서 기간을 계산한 날짜를 지정한 양식(format)으로 반환한다.
 	 * durType => D:Date, M:Month, Y:Year<br/>
 	 * @param dur
