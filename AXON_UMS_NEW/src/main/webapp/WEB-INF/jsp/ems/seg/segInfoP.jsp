@@ -25,7 +25,7 @@ function goSearch() {
 		type : "GET",
 		url : url + "?" + param,
 		dataType : "html",
-		async: false,
+		//async: false,
 		success : function(pageHtml){
 			$("#divSegInfo").html(pageHtml);
 		},
@@ -51,7 +51,7 @@ function goPageNum(page) {
 		type : "GET",
 		url : url + "?" + param,
 		dataType : "html",
-		async: false,
+		//async: false,
 		success : function(pageHtml){
 			$("#divSegInfo").html(pageHtml);
 		},
@@ -86,7 +86,7 @@ function goPageNum(page) {
         <td class="td_body">
         	<c:choose>
         		<c:when test="${'003' eq segmentVO.createTy}">
-	        		<c:out value="${segmentVO.segFlPath}"/>
+	        		<c:out value="${uploadPath}/${segmentVO.segFlPath}"/>
         		</c:when>
         		<c:when test="${'002' eq segmentVO.createTy }">
         			<c:out value="${segmentVO.query}"/>

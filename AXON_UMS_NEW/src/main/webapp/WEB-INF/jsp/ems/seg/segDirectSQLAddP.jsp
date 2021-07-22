@@ -49,7 +49,7 @@ function getMetaFrameContent() {
 		type : "GET",
 		url : "<c:url value='/ems/seg/metatableListP.ums'/>?dbConnNo=" + dbConnNo,
 		dataType : "html",
-		async: false,
+		//async: false,
 		success : function(pageHtml){
 			$("#divMetaTableInfo").html(pageHtml);
 		},
@@ -71,7 +71,7 @@ function goColumnInfo(tblNm) {
 		type : "GET",
 		url : "<c:url value='/ems/seg/metacolumnListP.ums'/>?dbConnNo=" + dbConnNo + "&tblNm=" + tblNm,
 		dataType : "html",
-		async: false,
+		//async: false,
 		success : function(pageHtml){
 			$("#divMetaColumnInfo").html(pageHtml);
 		},

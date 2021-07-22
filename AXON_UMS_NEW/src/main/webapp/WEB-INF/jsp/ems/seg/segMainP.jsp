@@ -42,11 +42,11 @@ function getUserList(deptNo) {
 
 function goSearch() {
 	$("#searchForm input[name='page']").val("1");
-	$("#searchForm").submit();
+	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
 }
 
 function goAddf() {
-	$("#searchForm").attr("action","<c:url value='/ems/seg/segFileAddP.ums'/>").submit();
+	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/seg/segFileAddP.ums'/>").submit();
 }
 
 // 사용중지 EVENT 구현
@@ -69,7 +69,7 @@ function goDisable() {
 	$.getJSON("<c:url value='/ems/seg/segDelete.json'/>?" + param, function(data) {
 		if(data.result == 'Success') {
 			alert("<spring:message code='CAMJSALT028'/>");		// 사용중지성공
-			$("#searchForm").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
+			$("#searchForm").attr("target","").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
 		} else if(data.result == 'Fail') {
 			alert("<spring:message code='CAMJSALT030'/>");		// 사용중지실패
 		}
@@ -96,7 +96,7 @@ function goDelete() {
 	$.getJSON("<c:url value='/ems/seg/segDelete.json'/>?" + param, function(data) {
 		if(data.result == 'Success') {
 			alert("<spring:message code='COMJSALT012'/>");		// 삭제 성공
-			$("#searchForm").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
+			$("#searchForm").attr("target","").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
 		} else if(data.result == 'Fail') {
 			alert("<spring:message code='COMJSALT013'/>");		// 삭제 실패
 		}
@@ -119,8 +119,32 @@ function goDeleteClick() {
     alert("<spring:message code='CAMJSALT019'/>");	// 삭제된 목록은 선택할 수 없습니다.
     return false;
 }
-</script>
 
+//수정 EVENT 구현
+function goUpdatef(segNo,createTy,filePath) {
+    $("#searchForm input[name='segNo']").val(segNo);
+    $("#searchForm input[name='createTy']").val(createTy);
+    
+	var actionUrl = "";
+    if(createTy == '000') actionUrl = "<c:url value='/ems/seg/segToolUpdateP.ums'/>";
+    if(createTy == '001') actionUrl = "<c:url value='/ems/seg/segOneClickUpdateP.ums'/>";
+    if(createTy == '002') actionUrl = "<c:url value='/ems/seg/segDirectSQLUpdateP.ums'/>";
+    if(createTy == '003') actionUrl = "<c:url value='/ems/seg/segFileUpdateP.ums'/>";
+    if(createTy == '004') { 
+    	if(filePath.substring(0,4)=="PUSH")	actionUrl = "<c:url value='/ems/seg/segRemarketUpdatePushP.ums'/>";
+    	else actionUrl = "<c:url value='/ems/seg/segRemarketUpdateP.jsp'/>";
+    }	
+
+    $("#searchForm").attr("target","").attr("action",actionUrl).submit();
+}
+
+function goSegInfo(segNo) {
+    $("#searchForm input[name='segNo']").val(segNo);
+    window.open("","segInfo", "width=1100, height=683,status=yes,scrollbars=no,resizable=no");
+    $("#searchForm").attr("target","segInfo").attr("action","<c:url value='/ems/seg/segInfoP.ums'/>").submit();
+}
+</script>
+<c:url value=''/>
 <div class="ex-layout">
 	<div class="gnb">
 		<!-- 상단메뉴화면 -->
@@ -137,6 +161,8 @@ function goDeleteClick() {
 			<!-- 검색 Start -->
 			<form id="searchForm" name="searchForm" method="post">
 			<input type="hidden" name="page" value="${searchVO.page}"/>
+			<input type="hidden" name="segNo" value="0"/>
+			<input type="hidden" name="createTy"/>
 			<table border="1" cellspacing="0" style="width:900px;">
 				<colgroup>
 					<col style="width:15%">
@@ -269,11 +295,11 @@ function goDeleteClick() {
 				    		<a href="#" onclick="goUpdatef('<c:out value='${segment.segNo}'/>','<c:out value='${segment.createTy}'/>','<c:out value='${segment.segFlPath}'/>')"><c:out value="${segment.segNm}"/></a>
 				    	</td>
 				    	<td>
-		    				<div style="width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+		    				<div style="width:350px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
 				    		<c:choose>
 				    			<c:when test="${segment.createTy eq '003'}">
-				    				<a href="#" onclick="goSegInfo('<c:out value='${segment.segNo}'/>')" title="<c:out value='${segment.segFlPath}'/>">
-		                			<c:out value='${segment.segFlPath}'/>
+				    				<a href="#" onclick="goSegInfo('<c:out value='${segment.segNo}'/>')" title="<c:out value='${uploadPath}/${segment.segFlPath}'/>">
+		                			<c:out value='${uploadPath}/${segment.segFlPath}'/>
 		            				</a>
 				    			</c:when>
 				    			<c:when test="${segment.createTy eq '002'}">

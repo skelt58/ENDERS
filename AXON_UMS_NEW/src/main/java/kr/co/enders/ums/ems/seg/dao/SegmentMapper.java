@@ -42,4 +42,12 @@ public interface SegmentMapper {
 	 * @throws Exception
 	 */
 	public List<DbConnVO> getDbConnList(DbConnVO dbConnVO) throws Exception;
+	
+	/**
+	 * 발송대상(세그먼트) 정보 조회
+	 * @param segmentVO
+	 * @return
+	 * @throws Exception
+	 */
+	public SegmentVO getSegmentInfo(SegmentVO segmentVO) throws Exception;
 }

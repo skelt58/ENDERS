@@ -39,13 +39,24 @@ function loadMailList() {
 		type : "GET",
 		url : "<c:url value='/ems/seg/segRemarketMailListP.ums'/>?" + param,
 		dataType : "html",
-		async: false,
+		//async: false,
 		success : function(pageHtml){
 			$("#divMailList").html(pageHtml);
 		},
 		error : function(){
 			alert("Error!!");
 		}
+	});
+}
+
+//사용자그룹 선택시 사용자 목록 설정
+function getUserList(deptNo) {
+	$.getJSON("<c:url value='/com/getUserList.json'/>?deptNo=" + deptNo, function(data) {
+		$("#searchUserId").children("option:not(:first)").remove();
+		$.each(data.userList, function(idx,item){
+			var option = new Option(item.cdNm,item.cd);
+			$("#searchUserId").append(option);
+		});
 	});
 }
 </script>
@@ -70,7 +81,7 @@ function loadMailList() {
 				</select>   	
 	        </c:if>
 	        <c:if test="${'N' eq NEO_ADMIN_YN}">
-	        	<select name="searchDeptNo">
+	        	<select id="searchDeptNo" name="searchDeptNo">
 					<c:if test="${fn:length(deptList) > 0}">
 						<c:forEach items="${deptList}" var="dept">
 							<c:if test="${dept.deptNo == NEO_DEPT_NO}">
@@ -83,7 +94,7 @@ function loadMailList() {
         </td>
         <td width='70' class="td_title">사용자</td>
         <td width='180' class="td_body">
-            <select name="p_search_user_id">
+            <select id="searchUserId" name="searchUserId">
                 <option value=''>:: 사용자 선택 ::</option>
                 	<c:if test="${fn:length(userList) > 0}">
                 		<c:forEach items="${userList}" var="user">

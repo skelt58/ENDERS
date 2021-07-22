@@ -2,7 +2,7 @@
 	/**********************************************************
 	*	작성자 : 김상진
 	*	작성일시 : 2021.07.20
-	*	설명 : 추출도구 입력폼 화면
+	*	설명 : 발송대상(세그먼트) 추출도구이용 등록 화면
 	**********************************************************/
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -88,7 +88,7 @@ function getMetaFrameContent() {
 		type : "GET",
 		url : "<c:url value='/ems/seg/segMetaFrameP.ums'/>?dbConnNo=" + dbConnNo,
 		dataType : "html",
-		async: false,
+		//async: false,
 		success : function(pageHtml){
 			$("#divMetaTableInfo").html(pageHtml);
 		},

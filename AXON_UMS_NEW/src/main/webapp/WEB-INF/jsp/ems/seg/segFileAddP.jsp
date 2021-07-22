@@ -80,7 +80,7 @@ function fncSep() {
 		type : "GET",
 		url : "<c:url value='/ems/seg/segFileMemberListP.ums'/>?" + param,
 		dataType : "html",
-		async: false,
+		//async: false,
 		success : function(pageHtml){
 			$("#fileContentView").html(pageHtml);
 		},
@@ -97,7 +97,7 @@ function goPageNum(page) {
 		type : "GET",
 		url : "<c:url value='/ems/seg/segFileMemberListP.ums'/>?" + param,
 		dataType : "html",
-		async: false,
+		//async: false,
 		success : function(pageHtml){
 			$("#fileContentView").html(pageHtml);
 		},
@@ -277,7 +277,7 @@ function goSegList() {
 			    <!-- 커리문 -->
 			    <div class="btn">
 			    	<div class="left">
-				    	<input type="button" class="btn_style" value="<spring:message code="SEGBTN006"/>" onClick="fSegCnt()"><!-- 대상자수추출 -->
+				    	<input type="button" class="btn_style" value="<spring:message code="SEGBTN006"/>"><!-- 대상자수추출 -->
 				    	<input type="text" id="totCnt" name="totCnt" size="9" value="0" class="readonly_style" readonly> <spring:message code="SEGTBLLB015"/><!-- 명 --> 
 			    	</div>
 			    	<div class="right">

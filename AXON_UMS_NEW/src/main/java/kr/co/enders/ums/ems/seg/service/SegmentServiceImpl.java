@@ -53,4 +53,8 @@ public class SegmentServiceImpl implements SegmentService {
 		return result;
 	}
 
+	@Override
+	public SegmentVO getSegmentInfo(SegmentVO segmentVO) throws Exception {
+		return segmentDAO.getSegmentInfo(segmentVO);
+	}
 }

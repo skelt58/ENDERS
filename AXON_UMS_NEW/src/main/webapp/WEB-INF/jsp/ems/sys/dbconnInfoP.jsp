@@ -206,7 +206,7 @@ function getContentPageHtml(idx) {
 		type : "GET",
 		url : url + "?dbConnNo=" + dbConnNo,
 		dataType : "html",
-		async: false,
+		//async: false,
 		success : function(pageHtml){
 			$("#divTabContent").html(pageHtml);
 		},
@@ -305,7 +305,7 @@ function showMetaColumnInfo(tblNo, tblNm) {
 		type : "GET",
 		url : "<c:url value='/ems/sys/metacolumnListP.ums'/>?dbConnNo=<c:out value='${dbConnInfo.dbConnNo}'/>&tblNo=" + tblNo + "&tblNm=" + tblNm,
 		dataType : "html",
-		async: false,
+		//async: false,
 		success : function(pageHtml){
 			$("#divMetaColumnInfo").html(pageHtml);
 		},
@@ -509,7 +509,7 @@ function goMetaOperation(colNo, colNm) {
 		type : "GET",
 		url : "<c:url value='/ems/sys/metaoperMainP.ums'/>?colNo=" + colNo + "&colNm=" + colNm,
 		dataType : "html",
-		async: false,
+		//async: false,
 		success : function(pageHtml){
 			$("#divMetaOperValueInfo").html(pageHtml);
 		},

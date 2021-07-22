@@ -170,8 +170,9 @@ public class SegmentController {
 		model.addAttribute("statusList", statusList);		// 발송그룹상태
 		model.addAttribute("deptList", deptList);			// 부서번호
 		model.addAttribute("userList", userList);			// 사용자
-		model.addAttribute("segmentList", segmentList);
-		model.addAttribute("pageUtil", pageUtil);
+		model.addAttribute("segmentList", segmentList);		// 발송대상(세그먼트) 목록
+		model.addAttribute("pageUtil", pageUtil);			// 페이징
+		model.addAttribute("uploadPath", properties.getProperty("FILE.UPLOAD_PATH"));	// 업로드경로
 		
 		return "ems/seg/segMainP";
 	}
@@ -428,6 +429,97 @@ public class SegmentController {
 		return "ems/seg/segToolAddP";
 	}
 	
+	@RequestMapping(value="/segToolUpdateP")
+	public String goSegToolUpdate(@ModelAttribute SegmentVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goSegToolUpdate segNo = " + searchVO.getSegNo());
+		logger.debug("goSegToolUpdate searchSegNm = " + searchVO.getSearchSegNm());
+		logger.debug("goSegToolUpdate searchCreateTy = " + searchVO.getSearchCreateTy());
+		logger.debug("goSegToolUpdate searchStatus = " + searchVO.getSearchStatus());
+		logger.debug("goSegToolUpdate searchStartDt = " + searchVO.getSearchStartDt());
+		logger.debug("goSegToolUpdate searchEndDt = " + searchVO.getSearchEndDt());
+		logger.debug("goSegToolUpdate searchDeptNo = " + searchVO.getSearchDeptNo());
+		logger.debug("goSegToolUpdate searchUserId = " + searchVO.getSearchUserId());
+		logger.debug("goSegToolUpdate createTy = " + searchVO.getCreateTy());
+		String createTy =  searchVO.getCreateTy()==null||"".equals(searchVO.getCreateTy())?"000":searchVO.getCreateTy();
+		
+		// DB Connection 목록 조회
+		DbConnVO dbConnVO = new DbConnVO();
+		dbConnVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		dbConnVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
+		dbConnVO.setUserId((String)session.getAttribute("NEO_USER_ID"));
+		List<DbConnVO> dbConnList = null;
+		try {
+			dbConnList = segmentService.getDbConnList(dbConnVO);
+		} catch(Exception e) {
+			logger.error("segmentService.getDbConnList error = " + e);
+		}
+		
+		
+		// 부서목록(코드성) 조회
+		CodeVO deptVO = new CodeVO();
+		deptVO.setStatus("000"); // 정상
+		List<CodeVO> deptList = null;
+		try {
+			deptList = codeService.getDeptList(deptVO);
+		} catch(Exception e) {
+			logger.error("codeService.getDeptList error = " + e);
+		}
+		
+		int dbConnNo = 0;
+		if(searchVO.getDbConnNo() == 0) {
+			if(dbConnList != null && dbConnList.size() > 0) {
+				dbConnNo = ((DbConnVO)dbConnList.get(0)).getDbConnNo();
+			}
+		} else {
+			dbConnNo = searchVO.getDbConnNo();
+		}
+
+		// 메타 테이블 목록 조회
+		List<MetaTableVO> metaTableList = null;
+		DbConnVO metaDbConn = new DbConnVO();
+		metaDbConn.setDbConnNo(dbConnNo);
+		try {
+			metaTableList = systemService.getMetaTableList(metaDbConn);
+		} catch(Exception e) {
+			logger.error("systemService.getMetaTableList error = " + e);
+		}
+		
+		
+		// 페이지 설정
+		MetaJoinVO metaJoinVO = new MetaJoinVO();
+		metaJoinVO.setPage(1);
+		metaJoinVO.setRows(100);
+		metaJoinVO.setDbConnNo(dbConnNo);
+		metaJoinVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+
+		// 메타 조인 목록 조회
+		List<MetaJoinVO> metaJoinList = null;
+		try {
+			metaJoinList = systemService.getMetaJoinList(metaJoinVO);
+		} catch(Exception e) {
+			logger.error("systemService.getMetaJoinList error = " + e);
+		}
+		
+		// 발송대상(세그먼트) 정보 조회
+		SegmentVO segmentInfo = null;
+		try {
+			searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+			segmentInfo = segmentService.getSegmentInfo(searchVO);
+		} catch(Exception e) {
+			logger.error("");
+		}
+		
+		model.addAttribute("searchVO", searchVO);			// 검색 항목
+		model.addAttribute("createTy", createTy);			// 생성 유형
+		model.addAttribute("dbConnList", dbConnList);		// DB연결 목록
+		model.addAttribute("deptList", deptList);			// 부서 목록
+		model.addAttribute("metaTableList", metaTableList);	// 메타테이블 목록
+		model.addAttribute("metaJoinList", metaJoinList);	// 메타조인 목록
+		model.addAttribute("segmentInfo", segmentInfo);		// 발송대상(세그먼트) 정보
+		
+		return "ems/seg/segToolUpdateP";
+	}
+	
 	@RequestMapping(value="/segMetaFrameP")
 	public String goSegMetaFrame(@ModelAttribute MetaColumnVO columnVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("goSegMetaFrame dbConnNo = " + columnVO.getDbConnNo());
@@ -522,10 +614,16 @@ public class SegmentController {
 		model.addAttribute("segmentVO", segmentVO);
 		
 		if(segmentVO.getSegNo() != 0) {
-			
+			try {
+				segmentVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+				segmentVO = segmentService.getSegmentInfo(segmentVO);
+			} catch(Exception e) {
+				logger.error("segmentService.getSegmentInfo error = " + e);
+			}
 		}
 		
 		model.addAttribute("segmentVO", segmentVO);
+		model.addAttribute("uploadPath", properties.getProperty("FILE.UPLOAD_PATH"));	// 업로드경로
 		
 		return "ems/seg/segInfoP";
 	}
