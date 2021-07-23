@@ -30,6 +30,11 @@ public class SegmentDAO implements SegmentMapper {
 	}
 
 	@Override
+	public int updateSegmentInfo(SegmentVO segmentvO) throws Exception {
+		return sqlSessionEms.getMapper(SegmentMapper.class).updateSegmentInfo(segmentvO);
+	}
+	
+	@Override
 	public List<DbConnVO> getDbConnList(DbConnVO dbConnVO) throws Exception {
 		return sqlSessionEms.getMapper(SegmentMapper.class).getDbConnList(dbConnVO);
 	}
@@ -43,5 +48,6 @@ public class SegmentDAO implements SegmentMapper {
 	public SegmentVO getSegmentInfo(SegmentVO segmentVO) throws Exception {
 		return sqlSessionEms.getMapper(SegmentMapper.class).getSegmentInfo(segmentVO);
 	}
+
 
 }

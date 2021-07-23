@@ -30,6 +30,7 @@ $(document).ready(function() {
 	});
 });
 
+// 사용자그룹 선택시 사용자 목록 조회 
 function getUserList(deptNo) {
 	$.getJSON("<c:url value='/com/getUserList.json'/>?deptNo=" + deptNo, function(data) {
 		$("#searchForm select[name='searchUserId']").children("option:not(:first)").remove();
@@ -40,11 +41,13 @@ function getUserList(deptNo) {
 	});
 }
 
+// 조회
 function goSearch() {
 	$("#searchForm input[name='page']").val("1");
 	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
 }
 
+// 등록
 function goAddf() {
 	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/seg/segFileAddP.ums'/>").submit();
 }
@@ -103,6 +106,7 @@ function goDelete() {
 	});
 }
 
+// 목록에서 전체 체크박스 클릭시
 function goSelectAll() {
     if($("#segInfoForm input[name='isAll']").is(":checked")) {
     	$("#segInfoForm input[name='segNos']").each(function(idx,item){
@@ -115,12 +119,13 @@ function goSelectAll() {
     }
 }
 
+// 삭제된 항목의 체크박스 클릭시
 function goDeleteClick() {
     alert("<spring:message code='CAMJSALT019'/>");	// 삭제된 목록은 선택할 수 없습니다.
     return false;
 }
 
-//수정 EVENT 구현
+// 목록에서 발송대상(세그먼트) 클릭시 수정화면 이동
 function goUpdatef(segNo,createTy,filePath) {
     $("#searchForm input[name='segNo']").val(segNo);
     $("#searchForm input[name='createTy']").val(createTy);
@@ -133,15 +138,22 @@ function goUpdatef(segNo,createTy,filePath) {
     if(createTy == '004') { 
     	if(filePath.substring(0,4)=="PUSH")	actionUrl = "<c:url value='/ems/seg/segRemarketUpdatePushP.ums'/>";
     	else actionUrl = "<c:url value='/ems/seg/segRemarketUpdateP.jsp'/>";
-    }	
+    }
 
     $("#searchForm").attr("target","").attr("action",actionUrl).submit();
 }
 
+// 목록에서 질의문 클릭 시 대상자보기(미리보기)
 function goSegInfo(segNo) {
     $("#searchForm input[name='segNo']").val(segNo);
     window.open("","segInfo", "width=1100, height=683,status=yes,scrollbars=no,resizable=no");
     $("#searchForm").attr("target","segInfo").attr("action","<c:url value='/ems/seg/segInfoP.ums'/>").submit();
+}
+
+// 페이지 이동
+function goPageNum(page) {
+	$("#searchForm input[name='page']").val(page);
+	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
 }
 </script>
 <c:url value=''/>
@@ -214,7 +226,7 @@ function goSegInfo(segNo) {
 						<!-- 관리자의 경우 전체 요청부서를 전시하고 그 외의 경우에는 해당 부서만 전시함 -->
 						<c:if test="${not empty deptList}">
 							<c:if test="${NEO_ADMIN_YN eq 'Y'}">
-								<select name="searchDeptNo" class="wBig" onchange="javascript:getUserList(this.value);">
+								<select name="searchDeptNo" class="wBig" onchange="getUserList(this.value);">
 									<option value='0'>::::<spring:message code="COMTBLLB004"/>::::</option><!-- 그룹 선택 -->
 									<c:forEach items="${deptList}" var="dept">
 										<option value="<c:out value='${dept.deptNo}'/>"<c:if test="${dept.deptNo == searchVO.searchDeptNo}"> selected</c:if>><c:out value='${dept.deptNm}'/></option>

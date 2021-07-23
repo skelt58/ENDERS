@@ -32,6 +32,7 @@ $(document).ready(function() {
 	loadMailList();
 });
 
+// 메일 목록 로딩
 function loadMailList() {
 	//divMailList
 	var param = $("#searchForm").serialize();
@@ -59,12 +60,38 @@ function getUserList(deptNo) {
 		});
 	});
 }
+
+// 페이지 이동
+function goPageNum(page) {
+	$("#page").val(page);
+	var param = $("#searchForm").serialize();
+	$.ajax({
+		type : "GET",
+		url : "<c:url value='/ems/seg/segRemarketMailListP.ums'/>?" + param,
+		dataType : "html",
+		//async: false,
+		success : function(pageHtml){
+			$("#divMailList").html(pageHtml);
+		},
+		error : function(){
+			alert("Error!!");
+		}
+	});
+}
+
+function goMailSelect(taskNo, subTaskNo, taskNm) {
+	$(opener.document).find("#taskNo").val(taskNo);
+	$(opener.document).find("#subTaskNo").val(subTaskNo);
+	$(opener.document).find("#taskNm").val(taskNm);
+	
+	window.close();
+}
 </script>
 
 <div  class="popWrap">
 <h1>발송 대상 그룹 보기</h1>
 <div class="inWrap">
-    <form id="searchForm" name="searchForm">
+    <form id="searchForm" name="searchForm" method="post">
     <input type="hidden" id="page" name="page" value="1">
     <table border="1" cellspacing="0" cellpadding="0" class="table_line_outline" style="width:100%;">
     <tr height="20">

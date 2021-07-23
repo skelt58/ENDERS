@@ -24,7 +24,7 @@
 	            	<c:out value="${mail.campNm }"/>
 	            </td>
 	            <td align=left>
-	                <a href="JavaScript:window.opener.goMailSelect('<c:out value='${mail.taskNo}'/>','<c:out value='${mail.subTaskNo}'/>','<c:out value='${mail.taskNm}'/>');JavaScript:top.window.close();" title="<c:out value='${mail.taskNm}'/>">
+	                <a href="#" onclick="goMailSelect('<c:out value='${mail.taskNo}'/>','<c:out value='${mail.subTaskNo}'/>','<c:out value='${mail.taskNm}'/>');" title="<c:out value='${mail.taskNm}'/>">
 	                	<c:if test="${mail.sendRepeat ne '000'}">[<c:out value="${mail.subTaskNo}"/>차]</c:if> <c:out value="${mail.taskNm}"/>
 	                </a>
 	            </td>
@@ -41,4 +41,9 @@
 	        </tr>
     	</c:forEach>
     </c:if>
+</table>
+<table style="width:100%;">
+	<tr>
+		<td align="center">${pageUtil.pageHtml} </td>
+	</tr>
 </table>

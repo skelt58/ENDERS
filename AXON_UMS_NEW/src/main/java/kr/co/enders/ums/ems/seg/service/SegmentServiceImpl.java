@@ -30,6 +30,11 @@ public class SegmentServiceImpl implements SegmentService {
 	}
 
 	@Override
+	public int updateSegmentInfo(SegmentVO segmentvO) throws Exception {
+		return segmentDAO.updateSegmentInfo(segmentvO);
+	}
+
+	@Override
 	public List<DbConnVO> getDbConnList(DbConnVO dbConnVO) throws Exception {
 		return segmentDAO.getDbConnList(dbConnVO);
 	}
@@ -49,6 +54,15 @@ public class SegmentServiceImpl implements SegmentService {
 				
 				result += segmentDAO.updateSegmentStatus(segment);
 			}
+		} else {
+			SegmentVO segment = new SegmentVO();
+			
+			segment.setSegNo(segmentVO.getSegNo());
+			segment.setStatus(segmentVO.getStatus());
+			segment.setUpId(segmentVO.getUpId());
+			segment.setUpDt(segmentVO.getUpDt());
+			
+			result += segmentDAO.updateSegmentStatus(segment);
 		}
 		return result;
 	}
@@ -57,4 +71,5 @@ public class SegmentServiceImpl implements SegmentService {
 	public SegmentVO getSegmentInfo(SegmentVO segmentVO) throws Exception {
 		return segmentDAO.getSegmentInfo(segmentVO);
 	}
+
 }

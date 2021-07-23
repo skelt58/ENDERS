@@ -41,6 +41,197 @@ function openInfo() {
     window.open("","mailInfo", "width=1090, height=588");
     $("#segInfoForm").attr("target","mailInfo").attr("action","<c:url value='/ems/seg/segRemarketMailMainP.ums'/>").submit();
 }
+
+// 모든 조건 선택 해제
+function fAllClose() {
+	$("#segInfoForm input[name='firstWhere']").each(function(idx,item){
+		$(item).prop("checked", false);
+	});
+    fSecondClose();
+}
+
+// 2차 조건 모두 선택 해제
+function fSecondClose() {
+    var frm = window.document.segform;
+	
+    $("#segInfoForm input[name='secondWhere']").each(function(idx,item){
+    	$(item).prop("checked", false);
+    });
+}
+
+// Select 절 구하기(1차 조건 클릭)
+function goSelect() {
+    var frm = window.document.segform;
+    var fromSql = "";
+    var whereSql = "";
+    var firstWhere = "";
+
+    if($("#taskNm").val() == "") {
+        fAllClose();
+        alert("<spring:message code='SEGJSALT017'/>");		// 먼저 메일명을 선택해 주세요!!
+        return;
+    }
+
+    firstWhere = $("#segInfoForm input[name='firstWhere']:checked").val();
+    if(firstWhere == '001') {   // 성공
+        fSecondClose();
+        fromSql = "NEO_SENDLOG";
+        whereSql  = "NEO_SENDLOG.SEND_RCODE = '000' AND NEO_SENDLOG.TASK_NO =  " + $("#taskNo").val();
+        $("#segFlPath").val("1|0");
+    } else if(firstWhere == '002') { // 오픈
+        fSecondClose();
+        fromSql = "NEO_SENDLOG, NEO_RESPLOG";
+        whereSql  = "NEO_RESPLOG.TASK_NO =  " + $("#taskNo").val();
+        whereSql += " AND NEO_SENDLOG.CUST_ID = NEO_RESPLOG.CUST_ID";
+        $("#segFlPath").val("2|0");
+    }
+
+    $("#fromSql").val( fromSql );
+    $("#whereSql").val( whereSql );
+}
+
+// 실패 구하기(2차 조건 클릭)
+function fFail() {
+    var fromSql = "NEO_SENDLOG";
+    var whereSql = "";
+    var firstWhere = "";
+    var segFlPath = "";
+
+    if($("#taskNm").val() == "") {
+        fAllClose();
+        alert("<spring:message code='SEGJSALT017'/>");		// 먼저 메일명을 선택해 주세요!!
+        return;
+    }
+    
+    firstWhere = $("#segInfoForm input[name='firstWhere']:checked").val();
+    if(firstWhere != "003") {
+        fSecondClose();
+        alert("<spring:message code='SEGJSALT018'/>");		// 2차 조건은 1차 조건의 실패를 선택해야만 가능합니다.
+        return;
+    }
+
+    segFlPath = "3|";
+
+    var j = 0;
+    $("#segInfoForm input[name='secondWhere']").each(function(idx,item){
+    	if($(item).is(":checked") == true) {
+    		if(j != 0) {
+    			whereSql += ", ";
+    		} else {
+    			whereSql += "NEO_SENDLOG.SEND_RCODE IN (";
+    		}
+    		whereSql += "'"+ $(item).val() +"'";
+    		segFlPath += $(item).val() + "|";
+    		j++;
+    	}
+    });
+
+    if(j > 0) whereSql += ") AND NEO_SENDLOG.TASK_NO =  " + $("#taskNo").val();
+
+    $("#fromSql").val( fromSql );
+    $("#whereSql").val( whereSql );
+    $("#segFlPath").val( segFlPath );
+}
+
+// 대상수 구하기
+function goSegCnt() {
+    var obj = document.segform;
+
+    if($("#dbConnNo").val() == "") {
+        alert("<spring:message code='SEGJSALT008'/>");		// Connection 을 선택해 주세요.
+        return;
+    }
+
+    if($("#selectSql").val() == "" || $("#fromSql").val() == "") {
+        alert("<spring:message code='SEGJSALT009'/>");		// 쿼리문을 잘못 입력하셨습니다.
+        return;
+    }
+
+    var param = $("#segInfoForm").serialize();
+	$.getJSON("<c:url value='/ems/seg/segCount.json'/>?" + param, function(data) {
+		$("#totCnt").val(data.totCnt);
+	});
+}
+
+// 등록
+function goRemarketAdd() {
+    var errflag = false;
+    var errstr = "";
+
+    if(typeof $("#deptNo").val() != "undefined") {
+        if($("#deptNo").val() != "0" && $("#userId").val() == "") {
+            errflag = true;
+            errstr += " [ <spring:message code='COMTBLTL005'/> ] ";		// 사용자
+        }
+    }
+    if($("#segNm").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='SEGTBLTL002'/> ] ";			// 발송대상그룹명
+    }
+
+    if($("#taskNm").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='SEGTBLTL016'/> ] ";			// 메일명
+    }
+
+    if($("#selectSql").val() == "" || $("#fromSql").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='SEGTBLTL004'/> ] ";			// 질의문
+    }
+
+    if(errflag) {
+        alert("<spring:message code='COMJSALT001'/>\n" + errstr);		// 입력값 에러\\n다음 정보를 확인하세요.
+        return;
+    }
+
+    if($("#totCnt").val() == "0") {
+        var a = confirm("<spring:message code='SEGJSALT010'/>");		// 대상자수 추출을 하지 않았습니다.\\n계속 실행을 하겠습니까?
+        if ( a ) {
+        	var param = $("#segInfoForm").serialize();
+        	$.getJSON("<c:url value='/ems/seg/segAdd.json'/>?" + param, function(data) {
+        		if(data.result == "Success") {
+        			alert("<spring:message code='COMJSALT008'/>");	// 등록 성공
+        			
+        			$("#searchForm").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
+        		} else if(data.result == "Fail") {
+        			alert("<spring:message code='COMJSALT009'/>");	// 등록 실패
+        		}
+        	});
+        } else return;
+    } else {
+    	var param = $("#segInfoForm").serialize();
+    	$.getJSON("<c:url value='/ems/seg/segAdd.json'/>?" + param, function(data) {
+    		if(data.result == "Success") {
+    			alert("<spring:message code='COMJSALT008'/>");	// 등록 성공
+    			
+    			$("#searchForm").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
+    		} else if(data.result == "Fail") {
+    			alert("<spring:message code='COMJSALT009'/>");	// 등록 실패
+    		}
+    	});
+    }
+}
+
+// 대상자보기
+function goSegInfo() {
+    var obj = document.segform;
+     if($("#dbConnNo").val() == "") {
+        alert("<spring:message code='SEGJSALT008'/>");		// Connection 을 선택해 주세요.
+        return;
+    }
+
+    if($("#selectSql").val() == "" || $("#fromSql").val() == "") {
+        alert("<spring:message code='SEGJSALT009'/>");		// 쿼리문을 잘못 입력하셨습니다.
+        return;
+    }
+
+    window.open("","segInfo", "width=1100, height=683,status=yes,scrollbars=no,resizable=no");
+    $("#segInfoForm").attr("target","segInfo").attr("action","<c:url value='/ems/seg/segInfoP.ums'/>").submit();
+}
+
+//리스트 이동 EVENT 구현
+function goList() {
+	$("#searchForm").attr("action", "<c:url value='/ems/seg/segMainP.ums'/>").submit();}
 </script>
 
 <c:set var="ID"/>
@@ -218,17 +409,17 @@ function openInfo() {
 							<input type="text" id="totCnt" name="totCnt" value="0" class='readonly_style' size="9" readonly> <spring:message code='SEGTBLLB015'/><!-- 명 -->
 						</div>
 						<div class="right">
-							<input type="hidden" name="dbConnNo" value="0">
-							<input type="hidden" name="segNo" value="0">
-							<input type="hidden" name="mergeKey" value="<c:out value='${ID}'/>,<c:out value='${EMAIL}'/>,<c:out value='${NAME}'/>">
-							<input type="hidden" name="createTy"  value='004'>
-							<input type="hidden" name="taskNo" value="0" readonly  >
-							<input type="hidden" name="subTaskNo" value="0" readonly  >
-							<input type="hidden" name="orderbySql" value="" readonly  >
-							<input type="hidden" name="segFlPath" value="" readonly  >
-							<input type="hidden" name="mergeCol" value='NEO_SENDLOG.CUST_ID,NEO_SENDLOG.CUST_EM,NEO_SENDLOG.CUST_NM' readonly>
-							<input type="hidden" name="srcWhere"  readonly>
-							<input type="button" class="btn_typeC" value="<spring:message code='COMBTN005'/>" onClick="goAdd()"><!-- 등록 -->
+							<input type="hidden" id="dbConnNo" name="dbConnNo" value="0">
+							<input type="hidden" id="segNo" name="segNo" value="0">
+							<input type="hidden" id="mergeKey" name="mergeKey" value="<c:out value='${ID}'/>,<c:out value='${EMAIL}'/>,<c:out value='${NAME}'/>">
+							<input type="hidden" id="createTy" name="createTy"  value='004'>
+							<input type="hidden" id="taskNo" name="taskNo" value="0">
+							<input type="hidden" id="subTaskNo" name="subTaskNo" value="0">
+							<input type="hidden" id="orderbySql" name="orderbySql" value="">
+							<input type="hidden" id="segFlPath" name="segFlPath" value="">
+							<input type="hidden" id="mergeCol" name="mergeCol" value='NEO_SENDLOG.CUST_ID,NEO_SENDLOG.CUST_EM,NEO_SENDLOG.CUST_NM'>
+							<input type="hidden" id="srcWhere" name="srcWhere"  readonly>
+							<input type="button" class="btn_typeC" value="<spring:message code='COMBTN005'/>" onClick="goRemarketAdd()"><!-- 등록 -->
 							<input type="button" class="btn_typeG" value="<spring:message code='SEGBTN007'/>" onClick="goSegInfo()"><!-- 대상자보기 -->
 							<input type="button" class="btn_typeG" value="<spring:message code='COMBTN010'/>" onClick="goList()"><!-- 리스트 -->
 						</div>

@@ -8,7 +8,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/inc/taglib.jsp" %>
 
-
 <table border="0" cellspacing="25" cellpadding="0">
 	<tr>
     	<td colspan="3" height="5"></td>
@@ -23,8 +22,15 @@
 	    		<table border="1">
 	    			<tr>
 		    			<td colspan="2" align="center">
+		    				<c:set var="tblChecked" value=""/>
+		    				<c:if test="${fn:length(mergeCol) > 0}">
+		    					<c:forEach items="${mergeCol}" var="col">
+		    						<c:set var="colTbl" value='${fn:substring(col, 0, fn:indexOf(col,"."))}'/>
+		    						<c:if test="${metaTable.tblNm eq colTbl}"><c:set var="tblChecked" value=" checked"/></c:if>
+		    					</c:forEach>
+		    				</c:if>
 		    				<c:out value="${metaTable.tblAlias}"/>
-		    				<input type="checkbox" name="metaTblNm" style="width:0px;" value="<c:out value="${metaTable.tblNm}"/>">
+		    				<input type="checkbox" name="metaTblNm" style="width:0px;" value="<c:out value="${metaTable.tblNm}"/>"<c:out value="${tblChecked}"/>>
 		    			</td>
 		    		</tr>
 		    		<c:if test="${fn:length(metaColumnList) > 0}">
@@ -32,7 +38,13 @@
 		    				<c:if test="${metaTable.tblNo == metaColumn.tblNo}">
 		    					<tr>
 		    						<td width="25">
-		    							<input type="checkbox" name="metaColInfo" value="<c:out value="${metaTable.tblNm}"/>.<c:out value="${metaColumn.colNm}"/> AS <c:out value="${metaColumn.colAlias}"/>" onclick='goColumnClick()'>
+					    				<c:set var="colChecked" value=""/>
+					    				<c:if test="${fn:length(mergeCol) > 0}">
+					    					<c:forEach items="${mergeCol}" var="col">
+					    						<c:if test="${col eq (metaTable.tblNm += '.' +=metaColumn.colNm)}"><c:set var="colChecked" value=" checked"/></c:if>
+					    					</c:forEach>
+					    				</c:if>
+		    							<input type="checkbox" name="metaColInfo" value="<c:out value="${metaTable.tblNm}"/>.<c:out value="${metaColumn.colNm}"/> AS <c:out value="${metaColumn.colAlias}"/>" onclick='goColumnClick()'<c:out value="${colChecked}"/>>
 		    						</td>
 		    						<td width="230"><c:out value="${metaColumn.colAlias}"/></td>
 		    					</tr>

@@ -32,6 +32,14 @@ public interface SegmentService {
 	public int insertSegmentInfo(SegmentVO segmentVO) throws Exception;
 	
 	/**
+	 * 발송대상(세그먼트) 정보 수정
+	 * @param segmentvO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateSegmentInfo(SegmentVO segmentvO) throws Exception;
+	
+	/**
 	 * 발송대상(세그먼트) 상태 수정(중지,삭제)
 	 * @param segmentVO
 	 * @return

@@ -139,6 +139,7 @@ function goColumnClick() {
     $("#selectSql").val(selectSql);
 }
 
+// 조회조건 테이블 선택시
 function goTblSelect() {
 	
 	var tempStr = $("#tblInfo").val();
@@ -164,6 +165,7 @@ function goTblSelect() {
 	});
 }
 
+// 조회조건 컬럼 선택시
 function goColSelect() {
     var tempStr = $("#colInfo").val();
     if(tempStr == "") {
@@ -216,6 +218,7 @@ function goColSelect() {
 	});
 }
 
+// 조회조건 추출값 선택시
 function goValueSelect() {
 
     var tempStr = $("#valueInfo").val();
@@ -234,7 +237,7 @@ function goValueSelect() {
     }
 }
 
-
+// 조회조건 조건식 선택시
 function goOperSelect() {
     var tempStr = $("#operInfo").val();
     if(tempStr == "") {
@@ -249,39 +252,41 @@ function goOperSelect() {
 
     if($("#valueNm").val() == "") {
         alert("<spring:message code='SEGJSALT011'/>");		// 추출값을 선택해 주세요.
-        oobj.oper_info.selectedIndex = 0;
+        $("#operInfo option:eq(0)").prop("selected",true);
+
         return;
     }
 }
 
-// Sort를 선택하였을 경우
+// 조회조건 정렬 선택하였을 경우
 function goSortSelect() {
 
     if($("#tblInfo").val() == "") {
         alert("<spring:message code='SEGJSALT012'/>");		// 테이블을 선택해 주세요.
-        frm.sort.selectedIndex = 0;
+        $("#sort option:eq(0)").prop("selected",true);
         return;
     }
 
     if($("#colInfo").val() == "") {
         alert("<spring:message code='SEGJSALT013'/>");		// 컬럼을 선택해 주세요.
-        frm.sort.selectedIndex = 0;
+        $("#sort option:eq(0)").prop("selected",true);
         return;
     }
 
     if($("#valueInfo").val() == "") {
         alert("<spring:message code='SEGJSALT011'/>");		// 추출값을 선택해 주세요.
-        frm.sort.selectedIndex = 0;
+        $("#sort option:eq(0)").prop("selected",true);
         return;
     }
 
     if($("#operInfo").val() == "") {
         alert("<spring:message code='SEGJSALT014'/>");		// 조건식을 선택해 주세요.
-        frm.sort.selectedIndex = 0;
+        $("#sort option:eq(0)").prop("selected",true);
         return;
     }
 }
 
+// 조회조건 등록 클릭시
 function fRelSelect() {
     var temp = "";
     var sort = "";
@@ -815,22 +820,18 @@ function goSegToolAdd() {
             errstr += " [ <spring:message code='COMTBLTL005'/> ] ";			// 사용자
         }
     }
-
     if($("#dbConnNo").val() == "") {
         errflag = true;
         errstr += " [ DB Connection ] ";
     }
-
     if($("#segNm").val() == "") {
         errflag = true;
         errstr += " [ <spring:message code='SEGTBLTL002'/> ] ";			// 발송대상그룹명
     }
-
     if($("#selectSql").val() == "" || $("#fromSql").val() == "") {
         errflag = true;
         errstr += " [ <spring:message code='SEGTBLTL004'/> ] ";			// 질의문
     }
-
     if(errflag) {
         alert("<spring:message code='COMJSALT001'/>\n" + errstr);		// 입력값 에러\\n다음 정보를 확인하세요.
         return;
@@ -1014,7 +1015,7 @@ function goSegList() {
                             <option value="">------- 선택-------</option>
                             <c:if test="${fn:length(metaTableList) > 0}">
                             	<c:forEach items="${metaTableList}" var="metaTable">
-                            		<option value="<c:out value='${metaTable.tblNo}'/>|<c:out value='${metaTable.tblNm}'/>|<c:out value='${metaTable.tblAlias}'/>"><c:out value='${metaTable.tblAlias}'/></option>
+                            		<option value="<c:out value='${metaTable.tblNo}|${metaTable.tblNm}|${metaTable.tblAlias}'/>"><c:out value='${metaTable.tblAlias}'/></option>
                             	</c:forEach>
                             </c:if>
                     </select>

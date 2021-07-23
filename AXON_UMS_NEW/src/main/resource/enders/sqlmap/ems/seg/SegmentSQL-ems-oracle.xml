@@ -112,6 +112,29 @@
 		)
 	</insert>
 	
+	<update id="updateSegmentInfo" parameterType="segmentVO">
+		UPDATE NEO_SEGMENT
+		   SET USER_ID     = #{userId}
+			 , DB_CONN_NO  = #{dbConnNo}
+			 , SEG_NM      = #{segNm}
+			 , CREATE_TY   = #{createTy}
+			 , SELECT_     = #{selectSql}
+			 , FROM_       = #{fromSql}
+			 , WHERE_      = #{whereSql}
+			 , ORDERBY_    = #{orderbySql}
+			 , QUERY       = #{query}
+			 , SEPARATOR_  = #{separatorChar}
+			 , MERGE_KEY   = #{mergeKey}
+			 , MERGE_COL   = #{mergeCol}
+			 , SEG_FL_PATH = #{segFlPath}
+			 , SRC_WHERE   = #{srcWhere}
+			 , TOT_CNT     = #{totCnt}
+			 , UP_ID       = #{upId}
+			 , UP_DT       = #{upDt}
+			 , STATUS      = #{status}
+		 WHERE SEG_NO      = #{segNo}
+	</update>
+	
 	<update id="updateSegmentStatus" parameterType="segmentVO">
 		UPDATE NEO_SEGMENT
 		   SET STATUS 	= #{status}

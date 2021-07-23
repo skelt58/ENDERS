@@ -1000,7 +1000,8 @@ public class SystemController {
 		String dbDriver = dbConnInfo.getDbDriver();
 		String dbUrl = dbConnInfo.getDbUrl();
 		String loginId = dbConnInfo.getLoginId();
-		String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd());
+		String loginPwd = dbConnInfo.getLoginPwd();  // =====================================> TEST
+		//String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd());
 		realTableList = dbUtil.getRealTableList(dbTy, dbDriver, dbUrl, loginId, loginPwd);
 		
 		// 메타 테이블 목록 조회
@@ -1197,7 +1198,8 @@ public class SystemController {
 		String dbDriver = dbConnInfo.getDbDriver();
 		String dbUrl = dbConnInfo.getDbUrl();
 		String loginId = dbConnInfo.getLoginId();
-		String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd());
+		String loginPwd = dbConnInfo.getLoginPwd();	// ==================================================>> TEST
+		//String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd());
 		realColumnList = dbUtil.getRealColumnList(dbTy, dbDriver, dbUrl, loginId, loginPwd, metaTableVO.getTblNm());
 
 		
@@ -1677,7 +1679,8 @@ public class SystemController {
 		String dbDriver = dbConnInfo.getDbDriver();
 		String dbUrl = dbConnInfo.getDbUrl();
 		String loginId = dbConnInfo.getLoginId();
-		String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd());
+		String loginPwd = dbConnInfo.getLoginPwd();
+		//String loginPwd = EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd());
 		realColumnList = dbUtil.getRealColumnList(dbTy, dbDriver, dbUrl, loginId, loginPwd, metaJoinVO.getTblNm());
 
 		// jsonView 생성

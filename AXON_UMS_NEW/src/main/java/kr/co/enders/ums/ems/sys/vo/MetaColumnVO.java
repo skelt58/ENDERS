@@ -19,6 +19,7 @@ public class MetaColumnVO {
 	
 	// 부가정보
 	private int dbConnNo;			// DB 연결 번호
+	private String mergeCol;		// 머지컬럼
 	
 	public int getColNo() {
 		return colNo;
@@ -85,5 +86,11 @@ public class MetaColumnVO {
 	}
 	public void setDbConnNo(int dbConnNo) {
 		this.dbConnNo = dbConnNo;
+	}
+	public String getMergeCol() {
+		return mergeCol;
+	}
+	public void setMergeCol(String mergeCol) {
+		this.mergeCol = mergeCol;
 	}
 }

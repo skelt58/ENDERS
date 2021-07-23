@@ -37,96 +37,98 @@
 	</select>
 	
 	<select id="getMailList" parameterType="taskVO" resultType="taskVO">
-		SELECT NEO_TASK.TASK_NO
-			 , NEO_SUBTASK.SUB_TASK_NO
-			 , TASK_NM
-			 , NEO_TASK.SEG_NO
-			 , SEG_NM
-			 , SEND_REPEAT_CD.CD_NM SEND_REPEAT_NM
-			 , SEND_REPEAT_CD.CD SEND_REPEAT
-			 , NEO_TASK.USER_ID
-			 , SEND_DT
-			 , WORK_STATUS_CD.CD_NM WORK_STATUS_NM
-			 , WORK_STATUS_CD.CD WORK_STATUS
-			 , WORK_STATUS_CD.CD_DTL WORK_STATUS_DTL
-			 , STATUS_CD.CD STATUS
-			 , STATUS_CD.CD_NM STATUS_NM
-			 , DB_CONN_NO
-			 , SELECT_ SELECT_SQL
-			 , FROM_ FROM_SQL
-			 , WHERE_ WHERE_SQL
-			 , ORDERBY_ ORDERBY_SQL
-			 , MERGE_KEY
-			 , MERGE_COL
-			 , SEG_FL_PATH
-			 , DEPT_NM
-			 , NEO_CAMPAIGN.CAMP_NO
-			 , CAMP_NM
-			 , SUB_STATUS_CD.CD SUB_STATUS
-			 , SUB_STATUS_CD.CD_NM SUB_STATUS_NM
-		  FROM NEO_TASK
-			 , NEO_SUBTASK
-			 , NEO_SEGMENT
-			 , NEO_CAMPAIGN
-			 , NEO_CD SEND_REPEAT_CD
-			 , NEO_CD WORK_STATUS_CD
-			 , NEO_CD STATUS_CD
-			 , NEO_DEPT
-			 , NEO_CD SUB_STATUS_CD
-		 WHERE SEND_REPEAT_CD.CD_GRP = 'C017'
-		   AND SEND_REPEAT_CD.UILANG = #{uilang}
-		   AND WORK_STATUS_CD.CD_GRP = 'C034'
-		   AND WORK_STATUS_CD.UILANG = #{uilang}
-		   AND STATUS_CD.CD_GRP = 'C023'
-		   AND STATUS_CD.UILANG = #{uilang}
-		   AND SUB_STATUS_CD.CD_GRP = 'C023'
-		   AND SUB_STATUS_CD.UILANG = #{uilang}
-		   AND NEO_SUBTASK.SEND_TEST_YN = 'N'
-		   AND NEO_TASK.TASK_NO = NEO_SUBTASK.TASK_NO
-		   AND NEO_TASK.SEG_NO = NEO_SEGMENT.SEG_NO
-		   AND NEO_TASK.SEND_REPEAT = SEND_REPEAT_CD.CD
-		   AND NEO_TASK.STATUS = STATUS_CD.CD
-		   AND NEO_SUBTASK.STATUS = SUB_STATUS_CD.CD
-		   AND NEO_SUBTASK.WORK_STATUS = WORK_STATUS_CD.CD
-		   AND NEO_TASK.DEPT_NO = NEO_DEPT.DEPT_NO
-		   AND NEO_TASK.CAMP_NO = NEO_CAMPAIGN.CAMP_NO
-		   <if test='adminYn == "N"'>
-		   AND NEO_TASK.DEPT_NO = #{searchDeptNo}
-		   </if>
-		   <if test="searchCampNo != 0">
-		   AND NEO_TASK.CAMP_NO = #{searchCampNo}
-		   </if>
-		   <if test="searchTaskNm != null and searchTaskNm != ''">
-		   AND NEO_TASK.TASK_NM LIKE '%' || #{searchTaskNm} || '%'
-		   </if>
-		   <if test="searchDeptNo != 0">
-		   AND NEO_TASK.DEPT_NO = #{searchDeptNo}
-		   </if>
-		   <if test='searchStatus != null and searchStatus != "ALL"'>
-		   AND NEO_TASK.STATUS = #{searchStatus}
-		   </if>
-		   
-		   <!-- work status 작업필요 -->
-		   <if test="searchWorkStatus != null and searchWorkStatus != ''">
-		   		<if test='searchWorkStatus == "004"'>
-		   		AND NEO_SUBTASK.WORK_STATUS NOT IN ('000', '001', '002', '003')
-		   		</if>
-		   		<if test='searchWorkStatus != "004"'>
-		   			AND NEO_SUBTASK.WORK_STATUS IN
-		   			<foreach collection="searchWorkStatusList" item="item" open="(" close=")" separator=",">
-		   			#{item}
-		   			</foreach>
-		   		</if>
-		   </if>
-		   
-		   <if test="searchStartDt != '' and searchEndDt != ''">
-		   AND NEO_SUBTASK.SEND_DT &gt;= #{searchStartDt} || '000000'
-		   AND NEO_SUBTASK.SEND_DT &lt; #{searchEndDt} || '240000'
-		   </if>
-		   <if test="searchUserId != null and searchUserId != ''">
-		   AND NEO_TASK.USER_ID = #{searchUserId}
-		   </if>
-		 ORDER BY NEO_TASK.TASK_NO DESC, NEO_SUBTASK.SUB_TASK_NO DESC
+		SELECT *
+		  FROM (
+				SELECT NEO_TASK.TASK_NO
+					 , NEO_SUBTASK.SUB_TASK_NO
+					 , TASK_NM
+					 , NEO_TASK.SEG_NO
+					 , SEG_NM
+					 , SEND_REPEAT_CD.CD_NM SEND_REPEAT_NM
+					 , SEND_REPEAT_CD.CD SEND_REPEAT
+					 , NEO_TASK.USER_ID
+					 , SEND_DT
+					 , WORK_STATUS_CD.CD_NM WORK_STATUS_NM
+					 , WORK_STATUS_CD.CD WORK_STATUS
+					 , WORK_STATUS_CD.CD_DTL WORK_STATUS_DTL
+					 , STATUS_CD.CD STATUS
+					 , STATUS_CD.CD_NM STATUS_NM
+					 , DB_CONN_NO
+					 , SELECT_ SELECT_SQL
+					 , FROM_ FROM_SQL
+					 , WHERE_ WHERE_SQL
+					 , ORDERBY_ ORDERBY_SQL
+					 , MERGE_KEY
+					 , MERGE_COL
+					 , SEG_FL_PATH
+					 , DEPT_NM
+					 , NEO_CAMPAIGN.CAMP_NO
+					 , CAMP_NM
+					 , SUB_STATUS_CD.CD SUB_STATUS
+					 , SUB_STATUS_CD.CD_NM SUB_STATUS_NM
+					 , ROW_NUMBER() OVER (ORDER BY NEO_TASK.TASK_NO DESC, NEO_SUBTASK.SUB_TASK_NO DESC) SEQ
+					 , COUNT(1) OVER() TOTAL_COUNT
+				  FROM NEO_TASK
+					 , NEO_SUBTASK
+					 , NEO_SEGMENT
+					 , NEO_CAMPAIGN
+					 , NEO_CD SEND_REPEAT_CD
+					 , NEO_CD WORK_STATUS_CD
+					 , NEO_CD STATUS_CD
+					 , NEO_DEPT
+					 , NEO_CD SUB_STATUS_CD
+				 WHERE SEND_REPEAT_CD.CD_GRP = 'C017'
+				   AND SEND_REPEAT_CD.UILANG = #{uilang}
+				   AND WORK_STATUS_CD.CD_GRP = 'C034'
+				   AND WORK_STATUS_CD.UILANG = #{uilang}
+				   AND STATUS_CD.CD_GRP = 'C023'
+				   AND STATUS_CD.UILANG = #{uilang}
+				   AND SUB_STATUS_CD.CD_GRP = 'C023'
+				   AND SUB_STATUS_CD.UILANG = #{uilang}
+				   AND NEO_SUBTASK.SEND_TEST_YN = 'N'
+				   AND NEO_TASK.TASK_NO = NEO_SUBTASK.TASK_NO
+				   AND NEO_TASK.SEG_NO = NEO_SEGMENT.SEG_NO
+				   AND NEO_TASK.SEND_REPEAT = SEND_REPEAT_CD.CD
+				   AND NEO_TASK.STATUS = STATUS_CD.CD
+				   AND NEO_SUBTASK.STATUS = SUB_STATUS_CD.CD
+				   AND NEO_SUBTASK.WORK_STATUS = WORK_STATUS_CD.CD
+				   AND NEO_TASK.DEPT_NO = NEO_DEPT.DEPT_NO
+				   AND NEO_TASK.CAMP_NO = NEO_CAMPAIGN.CAMP_NO
+				   <if test='adminYn == "N"'>
+				   AND NEO_TASK.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchCampNo != 0">
+				   AND NEO_TASK.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchTaskNm != null and searchTaskNm != ''">
+				   AND NEO_TASK.TASK_NM LIKE '%' || #{searchTaskNm} || '%'
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND NEO_TASK.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test='searchStatus != null and searchStatus != "ALL"'>
+				   AND NEO_TASK.STATUS = #{searchStatus}
+				   </if>
+				   <if test="searchWorkStatus != null and searchWorkStatus != ''">
+				   		<if test='searchWorkStatus == "004"'>
+				   		AND NEO_SUBTASK.WORK_STATUS NOT IN ('000', '001', '002', '003')
+				   		</if>
+				   		<if test='searchWorkStatus != "004"'>
+				   			AND NEO_SUBTASK.WORK_STATUS IN
+				   			<foreach collection="searchWorkStatusList" item="item" open="(" close=")" separator=",">
+				   			#{item}
+				   			</foreach>
+				   		</if>
+				   </if>
+				   <if test="searchStartDt != '' and searchEndDt != ''">
+				   AND NEO_SUBTASK.SEND_DT &gt;= #{searchStartDt} || '000000'
+				   AND NEO_SUBTASK.SEND_DT &lt; #{searchEndDt} || '240000'
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND NEO_TASK.USER_ID = #{searchUserId}
+				   </if>
+				)
+		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
 	</select>
 
 </mapper>
