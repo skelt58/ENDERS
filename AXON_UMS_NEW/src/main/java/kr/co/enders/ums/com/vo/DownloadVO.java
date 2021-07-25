@@ -9,6 +9,8 @@ public class DownloadVO {
 	private String divVal;
 	private int seqNo;				// 순번
 	private String downType;		// 다운로드 유형
+	private String tempFlPath;		// 임시파일경로명
+	private String segFlPath;		// 실제파일경로명
 	public String getDivVal() {
 		return divVal;
 	}
@@ -26,5 +28,17 @@ public class DownloadVO {
 	}
 	public void setDownType(String downType) {
 		this.downType = downType;
+	}
+	public String getTempFlPath() {
+		return tempFlPath;
+	}
+	public void setTempFlPath(String tempFlPath) {
+		this.tempFlPath = tempFlPath;
+	}
+	public String getSegFlPath() {
+		return segFlPath;
+	}
+	public void setSegFlPath(String segFlPath) {
+		this.segFlPath = segFlPath;
 	}
 }

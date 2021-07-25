@@ -53,10 +53,15 @@ public class EncryptUtil {
 	 * @return
 	 */
 	public static String getJasyptEncryptedString(String algorithm, String password, String str) {
-		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-		encryptor.setAlgorithm(algorithm);
-		encryptor.setPassword(password);
-		return encryptor.encrypt(str);
+		try {
+			StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+			encryptor.setAlgorithm(algorithm);
+			encryptor.setPassword(password);
+			return encryptor.encrypt(str);
+		} catch(Exception e) {
+			logger.error("getJasyptEncryptedString error = " + e);
+			return "";
+		}
 	}
 
 	/**
@@ -67,10 +72,15 @@ public class EncryptUtil {
 	 * @return
 	 */
 	public static String getJasyptDecryptedString(String algorithm, String password, String str) {
-		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-		encryptor.setAlgorithm(algorithm);
-		encryptor.setPassword(password);
-		return encryptor.decrypt(str);
+		try {
+			StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+			encryptor.setAlgorithm(algorithm);
+			encryptor.setPassword(password);
+			return encryptor.decrypt(str);
+		} catch(Exception e) {
+			logger.error("getJasyptDecryptedString error = " + e);
+			return "";
+		}
 	}
 	
 	/**

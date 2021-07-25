@@ -42,6 +42,12 @@ function getUserList(deptNo) {
 	});
 }
 
+function goReload() {
+	//getMetaFrameContent();
+	$("#searchForm input[name='dbConnNo']").val($("#dbConnNo").val());
+	$("#searchForm").attr("action","<c:url value='/ems/seg/segDirectSQLAddP.ums'/>").submit();
+}
+
 //메타 테이블 컨텐츠 생성
 function getMetaFrameContent() {
 	var dbConnNo = $("#dbConnNo").val();
@@ -59,12 +65,7 @@ function getMetaFrameContent() {
 	});
 }
 
-function goReload() {
-	//getMetaFrameContent();
-	$("#searchForm input[name='dbConnNo']").val($("#dbConnNo").val());
-	$("#searchForm").attr("action","<c:url value='/ems/seg/segDirectSQLAddP.ums'/>").submit();
-}
-
+// 메타 컬럼 컨텐츠 생성
 function goColumnInfo(tblNm) {
 	var dbConnNo = $("#dbConnNo").val();
 	$.ajax({
@@ -133,8 +134,6 @@ function goQueryTest(type) {
 				goDirectSQLAdd();
 			} else if(type == "002") {
 				goSegInfo();
-			} else if(type == "003") {
-				alert("goUpdate");
 			}
 		} else if(data.result == 'Fail') {
 			alert("<spring:message code='COMJSALT015'/>\n" + data.message);	// 실패
@@ -142,6 +141,7 @@ function goQueryTest(type) {
 	});
 }
 
+//   직접 SQL 이용 발송대상(세그먼트) 등록
 function goDirectSQLAdd() {
     var errflag = false;
     var errstr = "";
@@ -166,12 +166,12 @@ function goDirectSQLAdd() {
     }
 
     if(errflag) {
-        alert("<spring:message code='SEGTBLTL004'/>\n" + errstr);	// 입력값 에러\\n다음 정보를 확인하세요.
+        alert("<spring:message code='COMJSALT001'/>\n" + errstr);	// 입력값 에러\\n다음 정보를 확인하세요.
         return;
     }
 
     if($("#totCnt").val() == "0") {
-        var a = confirm("<spring:message code='SEGTBLTL004'/>");	// 대상자수 추출을 하지 않았습니다.\\n계속 실행을 하겠습니까?
+        var a = confirm("<spring:message code='SEGJSALT010'/>");	// 대상자수 추출을 하지 않았습니다.\\n계속 실행을 하겠습니까?
         if ( a ) {
         	var param = $("#segInfoForm").serialize();
         	$.getJSON("<c:url value='/ems/seg/segAdd.json'/>?" + param, function(data) {
@@ -222,6 +222,7 @@ function goSegInfo() {
     $("#segInfoForm").attr("target","segInfo").attr("action","<c:url value='/ems/seg/segInfoP.ums'/>").submit();
 }
 
+// 리스트로 이동
 function goSegList() {
 	$("#searchForm").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
 }

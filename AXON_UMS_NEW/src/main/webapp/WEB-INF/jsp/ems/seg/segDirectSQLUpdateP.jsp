@@ -12,6 +12,249 @@
 .tArea { width:700px;height:50px; }
 </style>
 
+<script type="text/javascript">
+$(document).ready(function() {
+	//메타 테이블 컨텐츠 생성
+	getMetaFrameContent();
+});
+
+//사용자그룹 선택시 사용자 목록 설정
+function getUserList(deptNo) {
+	$.getJSON("<c:url value='/com/getUserList.json'/>?deptNo=" + deptNo, function(data) {
+		$("#userId").children("option:not(:first)").remove();
+		$.each(data.userList, function(idx,item){
+			var option = new Option(item.cdNm,item.cd);
+			$("#userId").append(option);
+		});
+	});
+}
+
+//메타 테이블 컨텐츠 생성
+function getMetaFrameContent() {
+	var dbConnNo = $("#dbConnNo").val();
+	$.ajax({
+		type : "GET",
+		url : "<c:url value='/ems/seg/metatableListP.ums'/>?dbConnNo=" + dbConnNo,
+		dataType : "html",
+		//async: false,
+		success : function(pageHtml){
+			$("#divMetaTableInfo").html(pageHtml);
+		},
+		error : function(){
+			alert("Error!!");
+		}
+	});
+}
+
+//메타 컬럼 컨텐츠 생성
+function goColumnInfo(tblNm) {
+	var dbConnNo = $("#dbConnNo").val();
+	$.ajax({
+		type : "GET",
+		url : "<c:url value='/ems/seg/metacolumnListP.ums'/>?dbConnNo=" + dbConnNo + "&tblNm=" + tblNm,
+		dataType : "html",
+		//async: false,
+		success : function(pageHtml){
+			$("#divMetaColumnInfo").html(pageHtml);
+		},
+		error : function(){
+			alert("Error!!");
+		}
+	});
+}
+
+//대상수 구하기
+function goSegCnt() {
+    var errflag = false;
+    var errstr = "";
+
+    if($("#dbConnNo").val() == "") {
+        errflag = true;
+        errstr += " [DB CONNECTION NO] ";
+
+    }
+    if($("#query").val() == "") {
+        errflag = true;
+        errstr += " [QUERY] ";
+    }
+	if(errflag) {
+		alert("<spring:message code='COMJSALT016'/>\n"+errstr);		// 다음 정보를 확인하세요.
+		return;
+	}
+    var param = $("#segInfoForm").serialize();
+	$.getJSON("<c:url value='/ems/seg/segCount.json'/>?" + param, function(data) {
+		$("#totCnt").val(data.totCnt);
+	});
+}
+
+//쿼리 테스트 EVENT 구현
+//SQL 문 유효성 체크및 필수 머지키 (ID, NAME, EMAIL) 확인,
+//MERGY_KEY 정보 설정
+function goQueryTest(type) {
+	var errflag = false;
+	var errstr = "";
+
+	if($("#query").val() == "") {
+		errflag = true;
+		errstr += "[QUERY] ";
+	}
+	
+	if(errflag) {
+		alert("<spring:message code='COMJSALT016'/>\n"+errstr);	// 다음 정보를 확인하세요.
+		return;
+	}
+
+	var param = $("#segInfoForm").serialize();
+	$.getJSON("<c:url value='/ems/seg/segDirectSQLTest.json'/>?" + param, function(data) {
+		if(data.result == 'Success') {
+			$("#mergeKey").val(data.mergeKey);
+			$("#mergeCol").val(data.mergeKey);
+			if(type == "000") {
+				alert("<spring:message code='COMJSALT014'/>.\n[MERGE_KEY : " + data.mergeKey + "]");	// 성공
+			} else if(type == "002") {
+				goSegInfo();
+			} else if(type == "003") {
+				goDirectSQLUpdate();
+			}
+		} else if(data.result == 'Fail') {
+			alert("<spring:message code='COMJSALT015'/>\n" + data.message);	// 실패
+		}
+	});
+}
+
+//수정버튼 클릭시(삭제된 발송대상)
+function isStatus() {
+    alert("<spring:message code='SEGTBLLB020'/>.");		// 삭제된 발송대상그룹입니다!!\\n삭제된 발송대상그룹은 수정을 할 수 없습니다!!
+}
+
+//수정버튼 클릭시(발송대상(세그먼트) 정보 수정)
+function goDirectSQLUpdate() {
+    var errflag = false;
+    var errstr = "";
+
+    if(typeof $("#deptNo").val() != "undefined") {
+        if($("#deptNo").val() != "0" && $("#userId").val() == "") {
+            errflag = true;
+            errstr += " [ <spring:message code='COMTBLTL005'/> ] ";		// 사용자
+        }
+    }
+    if($("#dbConnNo").val() == "") {
+        errflag = true;
+        errstr += " [ DB Connection ] ";
+    }
+    if($("#segNm").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='SEGTBLTL002'/> ] ";			// 발송대상그룹명
+    }
+    if($("#query").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='SEGTBLTL004'/> ] ";			// 질의문
+    }
+
+    if(errflag) {
+        alert("<spring:message code='COMJSALT001'/>\n" + errstr);	// 입력값 에러\\n다음 정보를 확인하세요.
+        return;
+    }
+
+    if($("#totCnt").val() == "0") {
+    	var a = confirm("<spring:message code='SEGJSALT010'/>");		// 대상자수 추출을 하지 않았습니다.\\n계속 실행을 하겠습니까?
+        if ( a ) {
+        	var param = $("#segInfoForm").serialize();
+        	$.getJSON("<c:url value='/ems/seg/segUpdate.json'/>?" + param, function(data) {
+        		if(data.result == "Success") {
+        			alert("<spring:message code='COMJSALT010'/>");	// 수정 성공
+        			
+        			$("#searchForm").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
+        		} else if(data.result == "Fail") {
+        			alert("<spring:message code='COMJSALT011'/>");	// 수정 실패
+        		}
+        	});
+        } else return;
+    } else {
+    	var param = $("#segInfoForm").serialize();
+    	$.getJSON("<c:url value='/ems/seg/segUpdate.json'/>?" + param, function(data) {
+    		if(data.result == "Success") {
+    			alert("<spring:message code='COMJSALT010'/>");	// 수정 성공
+    			
+    			$("#searchForm").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
+    		} else if(data.result == "Fail") {
+    			alert("<spring:message code='COMJSALT011'/>");	// 수정 실패
+    		}
+    	});
+    }
+}
+
+//복구 버튼 클릭시
+function goEnable() {
+	$("#status").val("000");
+    var param = $("#segInfoForm").serialize();
+	$.getJSON("<c:url value='/ems/seg/segDelete.json'/>?" + param, function(data) {
+		if(data.result == 'Success') {
+			alert("<spring:message code='CAMJSALT027'/>");		// 복구성공
+			$("#searchForm").attr("target","").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
+		} else if(data.result == 'Fail') {
+			alert("<spring:message code='CAMJSALT029'/>");		// 복구실패
+		}
+	});
+}
+
+//사용중지 버튼 클릭 시
+function goDisable() {
+	$("#status").val("001");
+    var param = $("#segInfoForm").serialize();
+	$.getJSON("<c:url value='/ems/seg/segDelete.json'/>?" + param, function(data) {
+		if(data.result == 'Success') {
+			alert("<spring:message code='CAMJSALT028'/>");		// 사용중지성공
+			$("#searchForm").attr("target","").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
+		} else if(data.result == 'Fail') {
+			alert("<spring:message code='CAMJSALT030'/>");		// 사용중지실패
+		}
+	});
+}
+
+//삭제 버튼 클릭 시
+function goDelete() {
+	$("#status").val("002");
+    var param = $("#segInfoForm").serialize();
+	$.getJSON("<c:url value='/ems/seg/segDelete.json'/>?" + param, function(data) {
+		if(data.result == 'Success') {
+			alert("<spring:message code='COMJSALT012'/>");		// 삭제 성공
+			$("#searchForm").attr("target","").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
+		} else if(data.result == 'Fail') {
+			alert("<spring:message code='COMJSALT013'/>");		// 삭제 실패
+		}
+	});
+}
+
+//대상자보기(미리보기)
+function goSegInfo() {
+    var errflag = false;
+    var errstr = "";
+
+     if($("#dbConnNo").val() == "") {
+        errflag = true;
+        errstr += " [DB CONNECTION NO] ";
+    }
+    if($("#query").val() == "") {
+        errflag = true;
+        errstr += " [QUERY] ";
+    }
+
+	if(errflag) {
+		alert("<spring:message code='COMJSALT016'/>\n" + errstr);	// 다음 정보를 확인하세요.
+		return;
+	}
+
+    window.open("","segInfo", "width=1100, height=683,status=yes,scrollbars=no,resizable=no");
+    $("#segInfoForm").attr("target","segInfo").attr("action","<c:url value='/ems/seg/segInfoP.ums'/>").submit();
+}
+
+//리스트로 이동
+function goList() {
+	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
+}
+</script>
+
 <div class="ex-layout">
 	<div class="gnb">
 		<!-- 상단메뉴화면 -->
@@ -34,6 +277,7 @@
 			<input type="hidden" name="searchEndDt" value="<c:out value='${searchVO.searchEndDt}'/>">
 			<input type="hidden" name="dbConnNo" value="<c:out value='${searchVO.dbConnNo}'/>">
 			</form>
+			
 			<form id="segInfoForm" name="segInfoForm">
 			<input type="hidden" id="segNo"    name="segNo"    value="<c:out value='${segmentInfo.segNo}'/>">
 			<input type="hidden" id="dbConnNo" name="dbConnNo" value="<c:out value='${segmentInfo.dbConnNo}'/>">
@@ -66,7 +310,7 @@
 					</colgroup>
 					<!-- DB Connection -->
 					<tr>
-						<td class="td_title" width="100" align=right>Connection&nbsp;</td>
+						<td class="td_title" width="100">Connection&nbsp;</td>
 						<td class="td_body" width="300">
 							<c:set var="dbConnNm" value=""/>
 							<c:if test="${fn:length(dbConnList) > 0}">
@@ -79,7 +323,7 @@
 							<c:out value="${dbConnNm}"/>
 			
 						</td>
-						<td class="td_title" width="100" align=right><spring:message code='SEGTBLTL002'/>&nbsp;</td><!-- 발송대상그룹명 -->
+						<td class="td_title" width="100"><spring:message code='SEGTBLTL002'/>&nbsp;</td><!-- 발송대상그룹명 -->
 						<td class="td_body" width="300">
 							<input type="text" id="segNm" name="segNm" value="<c:out value='${segmentInfo.segNm}'/>">
 						</td>
@@ -138,7 +382,7 @@
 								<tr>
 									<td class="td_title" width="150">Select</td>
 									<td class="td_body">
-										<div id='divSelect'><textarea id="query" name="query" style="width:870;height:200;"><c:out value="${segmentInfo.query}"/></textarea></div>
+										<div id='divSelect'><textarea id="query" name="query" style="width:870px;height:200px;"><c:out value="${segmentInfo.query}"/></textarea></div>
 									</td>
 								</tr>
 							</table>
@@ -154,7 +398,7 @@
 					</div>
 					<div class="right">
 						<input type="button" class="btn_typeC" value="QUERY TEST" onClick="goQueryTest('000')">
-						<c:if test="${'002' eq segmentInfo.stauts}">
+						<c:if test="${'002' eq segmentInfo.status}">
 							<input type="button" class="btn_typeC" value="<spring:message code='COMBTN007'/>" onClick="isStatus()"><!-- 수정 -->
 						</c:if>
 						<c:if test="${'002' ne segmentInfo.status}">

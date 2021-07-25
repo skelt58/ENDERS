@@ -1,8 +1,8 @@
 <%--
 	/**********************************************************
 	*	작성자 : 김상진
-	*	작성일시 : 2021.07.07
-	*	설명 : 메인화면
+	*	작성일시 : 2021.07.19
+	*	설명 : 파일연동 등록화면
 	**********************************************************/
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -13,9 +13,6 @@
 </style>
 
 <script type="text/javascript">
-var x = 0;
-var y = 0;
-
 function goCreateTy(no) {
     var actionUrl;
     
@@ -29,15 +26,13 @@ function goCreateTy(no) {
     $("#searchForm").attr("action", actionUrl).submit();
 }
 
+// 찾기 버튼 클릭(파일 업로드)
 function fileUpload(rFileName,vFileName) {
-	var obj = document.segform;
-	$("#segInfoForm input[name='totCnt']").val("0");
-	$("#segInfoForm input[name='separatorChar']").val("");
+	$("#totCnt").val("0");
+	$("#separatorChar").val("");
 	$("#fileContentView").empty();
 
-
-	var tmp = (y > screen.height/2) ? (y - 165) : (y + 15);
-	window.open("<c:url value='/com/uploadP.ums'/>?folder=addressfile/<c:out value='${NEO_USER_ID}'/>&inputType=text&ext=txt,csv&formName=segInfoForm&title=Address&charset=UTF-8&rFileName="+rFileName+"&vFileName="+vFileName, "window", "width=640, height=120, left="+(x-300) + ", top="+ tmp);
+	window.open("<c:url value='/com/uploadP.ums'/>?folder=addressfile/<c:out value='${NEO_USER_ID}'/>&inputType=text&ext=txt,csv&formName=segInfoForm&title=Address&charset=UTF-8&rFileName="+rFileName+"&vFileName="+vFileName, "window", "width=640, height=120");
 }
 
 function goNoticeParamPop() {
@@ -57,23 +52,21 @@ function getUserList(deptNo) {
 
 // 구분자 확인
 function fncSep() {
-    var frm = $("#segInfoForm")[0];
-
-    if($("#segInfoForm input[name='segFlPath']").val() == "") {
-    	$("#segInfoForm input[name='separatorChar']").val("");
+    if($("#segFlPath").val() == "") {
+    	$("#separatorChar").val("");
         alert("<spring:message code='SEGJSALT002'/>");		// 파일이 입력되어 있지 않습니다.\\n파일을 입력하신 후 구분자를 입력해 주세요.
         fileUpload("segFlPath", "tempFlPath");
         return;
     }
     
-    if($("#segInfoForm input[name='separatorChar']").val() == "") {
+    if($("#separatorChar").val() == "") {
     	alert("구분자를 입력하세요.");
     	return;
     }
 
-    var tmp = $("#segInfoForm input[name='segFlPath']").val().substring($("#segInfoForm input[name='segFlPath']").val().lastIndexOf("/")+1);
+    var tmp = $("#segFlPath").val().substring($("#segFlPath").val().lastIndexOf("/")+1);
 
-    $("#segInfoForm input[name='segFlPath']").val("addressfile/<c:out value='${NEO_USER_ID}'/>/" + tmp);
+    $("#segFlPath").val("addressfile/<c:out value='${NEO_USER_ID}'/>/" + tmp);
 	
 	var param = $("#segInfoForm").serialize();
 	$.ajax({
@@ -107,6 +100,7 @@ function goPageNum(page) {
 	});
 }
 
+// 발송대상(세그먼트) 정보 등록
 function goSegFileAdd() {
     var errflag = false;
     var errstr = "";
@@ -164,6 +158,7 @@ function goSegFileAdd() {
     }
 }
 
+// 목록으로 이동
 function goSegList() {
 	$("#searchForm").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
 }
@@ -269,7 +264,7 @@ function goSegList() {
 				<table border="0" cellspacing="0" cellpadding="0" style="width:100%;height:200px">
 				    <tr class='tr_head' >
 				        <td>
-				            <div id="fileContentView"></div>
+				            <div id="fileContentView" style="width:100%;height:300px;"></div>
 				        </td>
 				    </tr>
 			    </table>

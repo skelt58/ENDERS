@@ -1273,8 +1273,7 @@ function goList() {
 						</c:if>
 						<c:if test="${'002' ne segmentInfo.status}">
 							<input type="button" class="btn_style" value="<spring:message code='COMBTN008'/>" onClick="goDelete()"><!-- 삭제 -->
-						</c:if>			
-			
+						</c:if>
 			
 						<input type="button" class="btn_style" value="<spring:message code='SEGBTN007'/>" onClick="goSegInfo()"><!-- 대상자보기 -->
 						<input type="button" class="btn_style" value="<spring:message code='COMBTN010'/>" onClick="goList()"><!-- 리스트 -->

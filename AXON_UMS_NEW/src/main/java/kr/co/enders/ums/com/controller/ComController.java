@@ -144,9 +144,19 @@ public class ComController {
 		
 		String fileName = "";
 		String filePath = "";
+		
+		// 파일연동 샘플 다운로드
 		if("003".equals(downloadVO.getDownType())) {
 			fileName = "sample01.csv";
 			filePath = properties.getProperty("FILE.UPLOAD_PATH") + "/sample/" + fileName; 
+		
+		// 파일연동 업로드한 파일 다운로드
+		} else if("002".equals(downloadVO.getDownType())) {
+			logger.debug("fileDownload tempFlPath = " + downloadVO.getTempFlPath());
+			logger.debug("fileDownload segFlPath = " + downloadVO.getSegFlPath());
+			
+			fileName = downloadVO.getTempFlPath();
+			filePath = properties.getProperty("FILE.UPLOAD_PATH") + "/" + downloadVO.getSegFlPath();
 		}
 		
 		logger.debug("fileDownload fileName = " + fileName);

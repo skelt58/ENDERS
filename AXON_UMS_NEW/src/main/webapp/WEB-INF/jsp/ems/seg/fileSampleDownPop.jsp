@@ -35,6 +35,6 @@ function closeWin() {
 	</div>
 </div>
 </form>
-<iframe name="iFrmDown" border='0' frameborder='0' scrolling='no' width='0' height='0'></iframe>
+<iframe name="iFrmDown" width='0' height='0'></iframe>
 </body>
 </html>
