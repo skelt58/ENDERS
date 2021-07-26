@@ -14,7 +14,7 @@
 <fmt:formatDate var="searchEndDt" value="${endDt}" pattern="yyyy-MM-dd"/> 
 
 <script type="text/javascript">
-var curEvent = "";
+var curEvent = "goSearch";
 
 $(document).ready(function() {
 	// 조회기간 시작일 설정
@@ -64,7 +64,7 @@ function goReset(formName) {
 	if(formName == "searchForm") {			//폼이 검색폼일 경우
 		$("#searchCampNm").val("");		//obj.p_camp_nm.value = "";
 		$("#searchCampTy").val("");		//obj.p_camp_ty.selectedIndex = 0;
-		$("#searchStatus").val("");		//obj.p_status.selectedIndex = 0;
+		$("#searchStatus").val("ALL");		//obj.p_status.selectedIndex = 0;
 		$("#searchDeptNo").val("0");	//obj.p_dept_no.selectedIndex = 0;
 		$("#searchUserId").val("");		//obj.p_user_id.selectedIndex = 0;
 		$("#searchStartDt").val("<c:out value='${searchStartDt}'/>");		//obj.p_stdt.value = "";
@@ -87,7 +87,7 @@ function nullForm() {
 	$("#campNm").val("");			//obj.p_camp_nm.value = "";
 	$("#campDesc").val("");			//obj.p_camp_desc.value = "";
 	$("#campTy").val("");			//obj.p_camp_ty.selectedIndex = 0;
-	$("#status").val("");			//obj.p_status.selectedIndex = 0;
+	$("#status").val("");		//obj.p_status.selectedIndex = 0;
 	$("#deptNo").val("0");			//obj.p_dept_no.selectedIndex = 0;
 	$("#userid").val("");			//obj.p_user_id.selectedIndex = 0;
 	$("#regDt").val("");			//obj.p_reg_dt.value = "";
@@ -133,23 +133,6 @@ function goSelect(campNo) {
 			},500);
 		}
 	});
-	/*
-		cur_event = "clickRadio";
-		cur_camp_no = camp_no;
-		getUserList("crud_form",'p_user_id',dept_no,'true');
-
-		var obj = document.crud_form;
-		obj.p_camp_no.value = camp_no;
-		obj.p_camp_nm.value = camp_nm;
-		obj.p_camp_desc.value = camp_desc;
-		obj.p_camp_ty.value = camp_ty;
-		obj.p_status.value = status;
-		obj.p_dept_no.value = dept_no;
-		obj.p_reg_nm.value = reg_nm;
-		obj.p_reg_dt.value = reg_dt;
-
-		this.p_user_id = user_id
-	*/
 }
 
 // 메일보기 클릭시

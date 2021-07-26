@@ -23,5 +23,15 @@ public class TemplateServiceImpl implements TemplateService {
 	public List<TemplateVO> getTemplateList(TemplateVO templateVO) throws Exception {
 		return templateDAO.getTemplateList(templateVO);
 	}
+
+	@Override
+	public TemplateVO getTemplateInfo(TemplateVO templateVO) throws Exception {
+		return templateDAO.getTemplateInfo(templateVO);
+	}
+
+	@Override
+	public int insertTemplateInfo(TemplateVO templateVO) throws Exception {
+		return templateDAO.insertTemplateInfo(templateVO);
+	}
 	
 }

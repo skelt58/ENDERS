@@ -17,4 +17,20 @@ public interface TemplateMapper {
 	 * @throws Exception
 	 */
 	public List<TemplateVO> getTemplateList(TemplateVO templateVO) throws Exception;
+	
+	/**
+	 * 템플릿 정보 조회
+	 * @param templateVO
+	 * @return
+	 * @throws Exception
+	 */
+	public TemplateVO getTemplateInfo(TemplateVO templateVO) throws Exception;
+	
+	/**
+	 * 템플릿 정보 등록
+	 * @param templateVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertTemplateInfo(TemplateVO templateVO) throws Exception;
 }

@@ -36,6 +36,9 @@ public class TemplateVO extends CommonVO {
 	private String uilang;			// 언어권
 	private String adminYn;			// 관리자여부
 	
+	// 추가정보
+	private String tempVal;			// 템플릿 작성내용		
+	
 	public int getTempNo() {
 		return tempNo;
 	}
@@ -185,5 +188,11 @@ public class TemplateVO extends CommonVO {
 	}
 	public void setAdminYn(String adminYn) {
 		this.adminYn = adminYn;
+	}
+	public String getTempVal() {
+		return tempVal;
+	}
+	public void setTempVal(String tempVal) {
+		this.tempVal = tempVal;
 	}
 }

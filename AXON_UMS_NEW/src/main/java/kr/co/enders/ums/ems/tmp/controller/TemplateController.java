@@ -5,6 +5,7 @@
  */
 package kr.co.enders.ums.ems.tmp.controller;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import kr.co.enders.ums.com.service.CodeService;
 import kr.co.enders.ums.com.vo.CodeVO;
@@ -40,6 +42,15 @@ public class TemplateController {
 	@Autowired
 	private TemplateService templateService;
 	
+	/**
+	 * 템플릿 목록 조회화면을 출력한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/tempListP")
 	public String goTemplateList(@ModelAttribute TemplateVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("goTemplateList searchTempNm  = " + searchVO.getSearchTempNm());
@@ -134,5 +145,53 @@ public class TemplateController {
 		model.addAttribute("pageUtil", pageUtil);			// 페이징
 		
 		return "ems/tmp/tempListP";
+	}
+	
+	/**
+	 * 템플릿 정보 조회
+	 * @param templateVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/tempInfo")
+	public ModelAndView getTempInfo(@ModelAttribute TemplateVO templateVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getTempInfo tempNo      = " + templateVO.getTempNo());
+		
+		templateVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		try {
+			templateVO = templateService.getTemplateInfo(templateVO);
+		} catch(Exception e) {
+			logger.error("templateService.getTemplateInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("template", templateVO);
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/tempAdd")
+	public ModelAndView insertTempInfo(@ModelAttribute TemplateVO templateVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getTempInfo tempNm      = " + templateVO.getTempNm());
+		logger.debug("getTempInfo tempDesc      = " + templateVO.getTempDesc());
+		
+		templateVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		try {
+			templateVO = templateService.getTemplateInfo(templateVO);
+		} catch(Exception e) {
+			logger.error("templateService.getTemplateInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("template", templateVO);
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
 	}
 }

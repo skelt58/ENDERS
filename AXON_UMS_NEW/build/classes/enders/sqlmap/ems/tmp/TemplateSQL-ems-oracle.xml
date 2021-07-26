@@ -62,5 +62,66 @@
 				)
 		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
 	</select>
+	
+	<select id="getTemplateInfo" parameterType="templateVO" resultType="templateVO">
+		SELECT A.TEMP_NO
+			 , A.TEMP_NM
+			 , A.USER_ID
+			 , A.CHANNEL
+			 , A.STATUS
+			 , A.DEPT_NO
+			 , A.TEMP_DESC
+			 , A.TEMP_FL_PATH
+			 , A.REG_DT
+			 , A.REG_ID
+			 , A.UP_ID
+			 , A.UP_DT
+			 , B.USER_NM
+			 , C.USER_NM REG_NM
+			 , D.DEPT_NM
+			 , E.CD_NM CHANNEL_NM
+			 , F.CD_NM STATUS_NM
+		  FROM NEO_TEMPLATE A
+			 , NEO_USER B
+			 , NEO_USER C
+			 , NEO_DEPT D
+			 , (SELECT CD, CD_NM FROM NEO_CD WHERE CD_GRP = 'C002' AND UILANG = #{uilang}) E
+			 , (SELECT CD, CD_NM FROM NEO_CD WHERE CD_GRP = 'C016' AND UILANG = #{uilang}) F
+		 WHERE A.USER_ID = B.USER_ID
+		   AND A.USER_ID = C.USER_ID
+		   AND A.DEPT_NO = D.DEPT_NO
+		   AND A.CHANNEL = E.CD
+		   AND A.STATUS = F.CD
+		   AND A.TEMP_NO = #{tempNo}
+	</select>
+	
+	<insert id="insertTemplateInfo" parameterType="templateVO">
+		INSERT INTO NEO_TEMPLATE
+		(
+			  TEMP_NO
+			, TEMP_NM
+			, TEMP_DESC
+			, USER_ID
+			, CHANNEL
+			, TEMP_FL_PATH
+			, STATUS
+			, DEPT_NO
+			, REG_DT
+			, REG_ID
+		)
+		VALUES
+		(
+			  NEO_TEMPLATE_SEQ.NEXTVAL
+			, #{tempNm}
+			, #{tempDesc}
+			, #{userId}
+			, #{channel}
+			, #{tempFlPath}
+			, #{status}
+			, #{deptNo}
+			, #{regDt}
+			, #{regId}
+		)
+	</insert>
 
 </mapper>
