@@ -1,8 +1,8 @@
 <%--
 	/**********************************************************
 	*	작성자 : 김상진
-	*	작성일시 : 2021.07.07
-	*	설명 : 메인화면
+	*	작성일시 : 2021.07.23
+	*	설명 : 연계서비스지정 등록화면
 	**********************************************************/
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -61,7 +61,6 @@ function fSecondClose() {
 
 // Select 절 구하기(1차 조건 클릭)
 function goSelect() {
-    var frm = window.document.segform;
     var fromSql = "";
     var whereSql = "";
     var firstWhere = "";

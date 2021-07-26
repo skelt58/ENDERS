@@ -29,4 +29,19 @@ public class CampaignServiceImpl implements CampaignService {
 		return campaignDAO.getMailList(taskVO);
 	}
 
+	@Override
+	public CampaignVO getCampaignInfo(CampaignVO campaignVO) throws Exception {
+		return campaignDAO.getCampaignInfo(campaignVO);
+	}
+
+	@Override
+	public int insertCampaignInfo(CampaignVO campaignVO) throws Exception {
+		return campaignDAO.insertCampaignInfo(campaignVO);
+	}
+
+	@Override
+	public int updateCampaignInfo(CampaignVO campaingVO) throws Exception {
+		return campaignDAO.updateCampaignInfo(campaingVO);
+	}
+
 }

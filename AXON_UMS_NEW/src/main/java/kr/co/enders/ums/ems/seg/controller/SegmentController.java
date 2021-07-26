@@ -1385,11 +1385,24 @@ public class SegmentController {
 			logger.error("codeService.getUserList erro = " + e);
 		}
 		
+		String taskNo = "";
+		String subTaskNo = "";
+		String taskNm = "";
+		String[] tasks = segmentInfo.getSrcWhere().split("\\|");
+		if(tasks != null && tasks.length == 3) {
+			taskNo = tasks[0];
+			subTaskNo = tasks[1];
+			taskNm = tasks[2];
+		}
+		
 		model.addAttribute("searchVO", searchVO);			// 검색 항목
 		model.addAttribute("segmentInfo", segmentInfo);		// 발송대상(세그먼트) 정보
 		model.addAttribute("mergeKeyList", mergeKeyList);	// 수신자정보머지키 목록
 		model.addAttribute("deptList", deptList);			// 부서목록
 		model.addAttribute("userList", userList);			// 사용자목록
+		model.addAttribute("taskNo", taskNo);				// Task번호
+		model.addAttribute("subTaskNo", subTaskNo);			// SubTask 번호
+		model.addAttribute("taskNm", taskNm);				// Task명
 		
 		return "ems/seg/segRemarketUpdateP";
 	}

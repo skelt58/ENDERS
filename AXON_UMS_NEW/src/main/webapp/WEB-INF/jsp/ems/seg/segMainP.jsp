@@ -8,6 +8,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/inc/header.jsp" %>
 
+<fmt:parseDate var="startDt" value="${searchVO.searchStartDt}" pattern="yyyyMMdd"/>
+<fmt:formatDate var="searchStartDt" value="${startDt}" pattern="yyyy-MM-dd"/> 
+<fmt:parseDate var="endDt" value="${searchVO.searchEndDt}" pattern="yyyyMMdd"/>
+<fmt:formatDate var="searchEndDt" value="${endDt}" pattern="yyyy-MM-dd"/> 
+
 <script type="text/javascript">
 $(document).ready(function() {
 	// 조회기간 시작일 설정
@@ -45,6 +50,17 @@ function getUserList(deptNo) {
 function goSearch() {
 	$("#searchForm input[name='page']").val("1");
 	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
+}
+
+// 검색조건을 초기화 함
+function goInit() {
+    $("#searchSegNm").val("");
+    $("#searchCreateTy").val("");
+    $("#searchDeptNo").val("<c:choose><c:when test="${'Y' eq NEO_ADMIN_YN}">0</c:when><c:otherwise><c:out value='${NEO_DEPT_NO}'/></c:otherwise></c:choose>");
+    $("#searchUserId").val("");
+    $("#searchStatus").val("000");
+    $("#searchStartDt").val("<c:out value='${searchStartDt}'/>");
+    $("#searchEndDt").val("<c:out value='${searchEndDt}'/>");
 }
 
 // 등록
@@ -137,7 +153,7 @@ function goUpdatef(segNo,createTy,filePath) {
     if(createTy == '003') actionUrl = "<c:url value='/ems/seg/segFileUpdateP.ums'/>";
     if(createTy == '004') { 
     	if(filePath.substring(0,4)=="PUSH")	actionUrl = "<c:url value='/ems/seg/segRemarketUpdatePushP.ums'/>";
-    	else actionUrl = "<c:url value='/ems/seg/segRemarketUpdateP.jsp'/>";
+    	else actionUrl = "<c:url value='/ems/seg/segRemarketUpdateP.ums'/>";
     }
 
     $("#searchForm").attr("target","").attr("action",actionUrl).submit();
@@ -156,7 +172,7 @@ function goPageNum(page) {
 	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/seg/segMainP.ums'/>").submit();
 }
 </script>
-<c:url value=''/>
+
 <div class="ex-layout">
 	<div class="gnb">
 		<!-- 상단메뉴화면 -->
@@ -185,11 +201,11 @@ function goPageNum(page) {
 				<tr>
 					<!-- 발송대상그룹명 -->
 					<td class="td_title"><spring:message code="SEGTBLTL002"/></td><!-- 발송대상그룹명 -->
-					<td class="td_body"><input type="text" name="searchSegNm" value="${searchVO.searchSegNm}" class="wBig"></td>
+					<td class="td_body"><input type="text" id="searchSegNm" name="searchSegNm" value="${searchVO.searchSegNm}" class="wBig"></td>
 					<!-- 발송대상그룹유형 -->
 					<td class="td_title"><spring:message code="SEGTBLTL003"/></td><!-- 유형 -->
 					<td class="td_body">
-						<select name="searchCreateTy" class="wBig">
+						<select id="searchCreateTy" name="searchCreateTy" class="wBig">
 							<option value='' selected>::::<spring:message code="SEGTBLLB001"/>::::</option><!-- 유형 선택 -->
 							<c:if test="${fn:length(createTyList) > 0}">
 								<c:forEach items="${createTyList}" var="createTy">
@@ -201,7 +217,7 @@ function goPageNum(page) {
 				</tr>
 				<tr>	
 					<td class="td_title"><spring:message code="COMTBLTL001"/></td><!-- 상태 -->
-					<td class="td_body"><select name="searchStatus" class="wBig">
+					<td class="td_body"><select id="searchStatus" name="searchStatus" class="wBig">
 							<option value='ALL'>::::<spring:message code="COMTBLLB003"/>::::</option><!-- 상태 선택 -->
 							<c:if test="${fn:length(statusList) > 0}">
 								<c:forEach items="${statusList}" var="status">
@@ -212,11 +228,7 @@ function goPageNum(page) {
 					</td>
 					<td class="td_title"><spring:message code="COMTBLTL002"/></td><!-- 등록일 -->
 					<td class="td_body">
-						<fmt:parseDate var="startDt" value="${searchVO.searchStartDt}" pattern="yyyyMMdd"/>
-						<fmt:formatDate var="searchStartDt" value="${startDt}" pattern="yyyy-MM-dd"/> 
 						<input type="text" id="searchStartDt" name="searchStartDt" value="<c:out value='${searchStartDt}'/>" style="width:100px" readonly> ~ 
-						<fmt:parseDate var="endDt" value="${searchVO.searchEndDt}" pattern="yyyyMMdd"/>
-						<fmt:formatDate var="searchEndDt" value="${endDt}" pattern="yyyy-MM-dd"/> 
 						<input type="text" id="searchEndDt" name="searchEndDt" value="<c:out value='${searchEndDt}'/>" style="width:100px" readonly>
 					</td>
 					</tr>
@@ -226,7 +238,7 @@ function goPageNum(page) {
 						<!-- 관리자의 경우 전체 요청부서를 전시하고 그 외의 경우에는 해당 부서만 전시함 -->
 						<c:if test="${not empty deptList}">
 							<c:if test="${NEO_ADMIN_YN eq 'Y'}">
-								<select name="searchDeptNo" class="wBig" onchange="getUserList(this.value);">
+								<select id="searchDeptNo" name="searchDeptNo" class="wBig" onchange="getUserList(this.value);">
 									<option value='0'>::::<spring:message code="COMTBLLB004"/>::::</option><!-- 그룹 선택 -->
 									<c:forEach items="${deptList}" var="dept">
 										<option value="<c:out value='${dept.deptNo}'/>"<c:if test="${dept.deptNo == searchVO.searchDeptNo}"> selected</c:if>><c:out value='${dept.deptNm}'/></option>
@@ -234,7 +246,7 @@ function goPageNum(page) {
 								</select>
 							</c:if>
 							<c:if test="${NEO_ADMIN_YN eq 'N'}">
-								<select name="searchDeptNo" class="wBig">
+								<select id="searchDeptNo" name="searchDeptNo" class="wBig">
 									<c:forEach items="${deptList}" var="dept">
 										<c:if test="${dept.deptNo eq NEO_DEPT_NO}">
 											<option value="<c:out value='${dept.deptNo}'/>" selected><c:out value='${dept.deptNm}'/></option>
@@ -247,7 +259,7 @@ function goPageNum(page) {
 
 					<td class="td_title"><spring:message code="COMTBLTL005"/></td><!-- 사용자 -->
 					<td class="td_body">
-						<select name="searchUserId" class="wMiddle">
+						<select id="searchUserId" name="searchUserId" class="wMiddle">
 							<option value=''>::::<spring:message code="COMTBLLB005"/>::::</option><!-- 사용자 선택 -->
 							<c:if test="${fn:length(userList) > 0}">
 								<c:forEach items="${userList}" var="user">

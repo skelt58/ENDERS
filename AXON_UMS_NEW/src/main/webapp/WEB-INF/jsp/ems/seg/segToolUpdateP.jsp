@@ -921,9 +921,6 @@ function goSegToolUpdate() {
         			alert("<spring:message code='COMJSALT011'/>");	// 수정 실패
         		}
         	});
-        	
-            obj.action = "/seg/segUpdateP.jsp";
-            obj.submit();
         } else return;
     } else {
     	var param = $("#segInfoForm").serialize();

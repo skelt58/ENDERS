@@ -26,4 +26,28 @@ public interface CampaignMapper {
 	 * @throws Exception
 	 */
 	public List<TaskVO> getMailList(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 캠페인 정보 조회
+	 * @param campaignVO
+	 * @return
+	 * @throws Exception
+	 */
+	public CampaignVO getCampaignInfo(CampaignVO campaignVO) throws Exception;
+	
+	/**
+	 * 캠페인 정보 등록
+	 * @param campaignVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertCampaignInfo(CampaignVO campaignVO) throws Exception;
+	
+	/**
+	 * 캠페인 정보 수정
+	 * @param campaingVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateCampaignInfo(CampaignVO campaingVO) throws Exception;
 }

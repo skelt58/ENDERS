@@ -29,28 +29,28 @@ function goMenu(pgmId) {
 	// 발송
 	} else if(pgmId == 2) {
 		var str = "<table width=158 border=0 cellpadding=0 cellspacing=0>";
-		str += "<tr><td width=158 height=22><a href='<c:url value='/cam/campListP.ums'/>'>캠페인관리</a></td></tr>";
-		str += "<tr><td width=158 height=22><a href='<c:url value='/tmp/tempListP.ums'/>'>템플릿관리</a></td></tr>";
-		str += "<tr><td width=158 height=22><a href='<c:url value='/cam/mailMainP.ums'/>'>메일관리</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='#' onclick=runMenu('<c:url value='/ems/cam/campListP.ums'/>')>캠페인관리</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='#' onclick=runMenu('<c:url value='/ems/tmp/tempListP.ums'/>')>템플릿관리</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='#' onclick=runMenu('<c:url value='/ems/cam/mailMainP.ums'/>')>메일관리</a></td></tr>";
 		str += "</table>";
 		$("#lnb").html(str);
 		
 	// 통계/분석
 	} else if(pgmId == 3) {
 		var str = "<table width=158 border=0 cellpadding=0 cellspacing=0>";
-		str += "<tr><td width=158 height=22><a href='<c:url value='/ana/mailListP.ums'/>'>메일별분석</a></td></tr>";
-		str += "<tr><td width=158 height=22><a href='<c:url value='/ana/taskListP.ums'/>'>정기메일분석</a></td></tr>";
-		str += "<tr><td width=158 height=22><a href='<c:url value='/ana/campListP.ums'/>'>캠페인별분석</a></td></tr>";
-		str += "<tr><td width=158 height=22><a href='<c:url value='/ana/summMainP.ums'/>'>누적분석</a></td></tr>";
-		str += "<tr><td width=158 height=22><a href='<c:url value='/ana/pushStatsMainP.ums'/>'>PUSH분석</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/ems/ana/mailListP.ums'/>'>메일별분석</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/ems/ana/taskListP.ums'/>'>정기메일분석</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/ems/ana/campListP.ums'/>'>캠페인별분석</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/ems/ana/summMainP.ums'/>'>누적분석</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/ems/ana/pushStatsMainP.ums'/>'>PUSH분석</a></td></tr>";
 		str += "</table>";
 		$("#lnb").html(str);
 		
 	// 월간일정
 	} else if(pgmId == 4) {
 		var str = "<table width=158 border=0 cellpadding=0 cellspacing=0>";
-		str += "<tr><td width=158 height=22><a href='<c:url value='/sch/scheMonthP.um'/>'>월간일정</a></td></tr>";
-		str += "<tr><td width=158 height=22><a href='<c:url value='/sch/scheWeekP.ums'/>'>주간일정</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/ems/sch/scheMonthP.um'/>'>월간일정</a></td></tr>";
+		str += "<tr><td width=158 height=22><a href='<c:url value='/ems/sch/scheWeekP.ums'/>'>주간일정</a></td></tr>";
 		str += "</table>";
 		$("#lnb").html(str);
 		

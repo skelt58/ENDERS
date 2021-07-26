@@ -79,11 +79,13 @@ function goPageNum(page) {
 	});
 }
 
+//segRemarketMailListP에서 발생하는 이벤트 : 메일 선택시 발생
 function goMailSelect(taskNo, subTaskNo, taskNm) {
 	$(opener.document).find("#taskNo").val(taskNo);
 	$(opener.document).find("#subTaskNo").val(subTaskNo);
+	$(opener.document).find("#srcWhere").val(taskNo + "|" + subTaskNo + "|" + taskNm);
 	$(opener.document).find("#taskNm").val(taskNm);
-	
+
 	window.close();
 }
 </script>

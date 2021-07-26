@@ -25,8 +25,18 @@ public class CampaignVO extends CommonVO {
 	private String upId;		// 수정자
 	private String upDt;		// 수정일자
 	
+	// 검색
+	private String searchCampNm;	// 캠페인명 검색
+	private String searchCampTy;	// 캠페인목적 검색
+	private String searchStatus;	// 상태 검색
+	private String searchStartDt;	// 검색 시작일
+	private String searchEndDt;		// 검색 종료일
+	private int searchDeptNo;		// 사용자그룹 검색
+	private String searchUserId;	// 사용자 검색
+	
 	//추가정보
-	private String uilang;		// 언어권
+	private String uilang;			// 언어권
+	private String adminYn;			// 관리자여부
 	
 	public int getCampNo() {
 		return campNo;
@@ -57,6 +67,48 @@ public class CampaignVO extends CommonVO {
 	}
 	public void setCampDesc(String campDesc) {
 		this.campDesc = campDesc;
+	}
+	public String getSearchCampNm() {
+		return searchCampNm;
+	}
+	public void setSearchCampNm(String searchCampNm) {
+		this.searchCampNm = searchCampNm;
+	}
+	public String getSearchCampTy() {
+		return searchCampTy;
+	}
+	public void setSearchCampTy(String searchCampTy) {
+		this.searchCampTy = searchCampTy;
+	}
+	public String getSearchStatus() {
+		return searchStatus;
+	}
+	public void setSearchStatus(String searchStatus) {
+		this.searchStatus = searchStatus;
+	}
+	public String getSearchStartDt() {
+		return searchStartDt;
+	}
+	public void setSearchStartDt(String searchStartDt) {
+		this.searchStartDt = searchStartDt;
+	}
+	public String getSearchEndDt() {
+		return searchEndDt;
+	}
+	public void setSearchEndDt(String searchEndDt) {
+		this.searchEndDt = searchEndDt;
+	}
+	public int getSearchDeptNo() {
+		return searchDeptNo;
+	}
+	public void setSearchDeptNo(int searchDeptNo) {
+		this.searchDeptNo = searchDeptNo;
+	}
+	public String getSearchUserId() {
+		return searchUserId;
+	}
+	public void setSearchUserId(String searchUserId) {
+		this.searchUserId = searchUserId;
 	}
 	public String getStatus() {
 		return status;
@@ -129,5 +181,11 @@ public class CampaignVO extends CommonVO {
 	}
 	public void setUilang(String uilang) {
 		this.uilang = uilang;
+	}
+	public String getAdminYn() {
+		return adminYn;
+	}
+	public void setAdminYn(String adminYn) {
+		this.adminYn = adminYn;
 	}
 }

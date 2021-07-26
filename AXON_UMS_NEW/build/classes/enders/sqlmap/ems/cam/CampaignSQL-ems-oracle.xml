@@ -5,6 +5,64 @@
 <mapper namespace="kr.co.enders.ums.ems.cam.dao.CampaignMapper">
 
 	<select id="getCampaignList" parameterType="campaignVO" resultType="campaignVO">
+		SELECT *
+		  FROM (
+				SELECT A.CAMP_NO
+					 , A.CAMP_NM
+					 , A.USER_ID
+					 , A.CAMP_TY
+					 , A.STATUS
+					 , A.DEPT_NO
+					 , A.REG_DT
+					 , A.REG_ID
+					 , A.UP_ID
+					 , A.UP_DT
+					 , A.CAMP_DESC
+					 , B.USER_NM
+					 , C.USER_NM REG_NM
+					 , D.DEPT_NM
+					 , E.CD_NM CAMP_TY_NM
+					 , F.CD_NM STATUS_NM
+					 , ROW_NUMBER() OVER (ORDER BY CAMP_NO DESC) SEQ
+					 , COUNT(1) OVER() TOTAL_COUNT
+				  FROM NEO_CAMPAIGN A
+					 , NEO_USER B
+					 , NEO_USER C
+					 , NEO_DEPT D
+					 , (SELECT CD, CD_NM FROM NEO_CD WHERE CD_GRP = 'C004' AND UILANG = #{uilang}) E
+					 , (SELECT CD, CD_NM FROM NEO_CD WHERE CD_GRP = 'C014' AND UILANG = #{uilang}) F
+				 WHERE A.USER_ID = B.USER_ID
+				   AND A.REG_ID = C.USER_ID
+				   AND A.DEPT_NO = D.DEPT_NO
+				   AND A.CAMP_TY = E.CD
+				   AND A.STATUS = F.CD
+				   <if test="searchCampNm != null and searchCampNm != ''">
+				   AND A.CAMP_NM LIKE '%' || #{searchCampNm} || '%'
+				   </if>
+				   <if test="searchCampTy != null and searchCampTy != ''">
+				   AND A.CAMP_TY = #{searchCampTy}
+				   </if>
+				   <if test='searchStatus != null and searchStatus != "ALL"'>
+				   AND A.STATUS = #{searchStatus}
+				   </if>
+				   <if test='adminYn == "N"'>
+				   AND A.DEPT_NO = #{deptNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				   <if test="searchStartDt != '' and searchEndDt != ''">
+				   AND A.REG_DT &gt;= #{searchStartDt} || '000000'
+				   AND A.REG_DT &lt; #{searchEndDt} || '240000'
+				   </if>
+				)
+		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
+	</select>
+	
+	<select id="getCampaignInfo" parameterType="campaignVO" resultType="campaignVO">
 		SELECT A.CAMP_NO
 			 , A.CAMP_NM
 			 , A.USER_ID
@@ -21,6 +79,8 @@
 			 , D.DEPT_NM
 			 , E.CD_NM CAMP_TY_NM
 			 , F.CD_NM STATUS_NM
+			 , ROW_NUMBER() OVER (ORDER BY CAMP_NO DESC) SEQ
+			 , COUNT(1) OVER() TOTAL_COUNT
 		  FROM NEO_CAMPAIGN A
 			 , NEO_USER B
 			 , NEO_USER C
@@ -32,9 +92,52 @@
 		   AND A.DEPT_NO = D.DEPT_NO
 		   AND A.CAMP_TY = E.CD
 		   AND A.STATUS = F.CD
-			<!-- 조건절 추후 적용 -->
-		 ORDER BY CAMP_NO DESC
+		   AND A.CAMP_NO = #{campNo}
 	</select>
+	
+	<insert id="insertCampaignInfo" parameterType="campaignVO">
+		INSERT INTO NEO_CAMPAIGN
+		(
+			  CAMP_NO
+			, CAMP_NM
+			, CAMP_DESC
+			, USER_ID
+			, CAMP_TY
+			, STATUS
+			, DEPT_NO
+			, REG_DT
+			, REG_ID
+			, UP_ID
+			, UP_DT 
+		)
+		VALUES
+		(
+			  NEO_CAMPAIGN_SEQ.NEXTVAL
+			, #{campNm}
+			, #{campDesc}
+			, #{userId}
+			, #{campTy}
+			, #{status}
+			, #{deptNo}
+			, #{regDt}
+			, #{regId}
+			, NULL
+			, NULL 
+		)
+	</insert>
+	
+	<update id="updateCampaignInfo" parameterType="campaignVO">
+		UPDATE NEO_CAMPAIGN
+		   SET CAMP_NM   = #{campNm}
+			 , CAMP_DESC = #{campDesc}
+			 , USER_ID   = #{userId}
+			 , CAMP_TY   = #{campTy}
+			 , STATUS    = #{status}
+			 , DEPT_NO   = #{deptNo}
+			 , UP_ID     = #{upId}
+			 , UP_DT     = #{upDt}
+		 WHERE CAMP_NO   = #{campNo}
+	</update>
 	
 	<select id="getMailList" parameterType="taskVO" resultType="taskVO">
 		SELECT *
