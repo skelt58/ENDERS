@@ -8,6 +8,7 @@ package kr.co.enders.ums.ems.cam.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
@@ -53,4 +54,13 @@ public interface CampaignService {
 	 * @throws Exception
 	 */
 	public int updateCampaignInfo(CampaignVO campaingVO) throws Exception;
+	
+	/**
+	 * 캠페인 주업무 및 보조업무 승인처리(발송대기 -> 발송승인)
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	@Transactional(value="transactionManagerEms")
+	public int updateMailAdmit(TaskVO taskVO) throws Exception; 
 }

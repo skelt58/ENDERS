@@ -43,5 +43,15 @@ public class CampaignDAO implements CampaignMapper {
 	public int updateCampaignInfo(CampaignVO campaingVO) throws Exception {
 		return sqlSessionEms.getMapper(CampaignMapper.class).updateCampaignInfo(campaingVO);
 	}
+
+	@Override
+	public int updateTaskStatus(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).updateTaskStatus(taskVO);
+	}
+
+	@Override
+	public int updateSubTaskStatus(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).updateSubTaskStatus(taskVO);
+	}
 	
 }

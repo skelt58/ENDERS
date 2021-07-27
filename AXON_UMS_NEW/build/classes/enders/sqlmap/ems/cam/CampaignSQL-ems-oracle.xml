@@ -231,5 +231,19 @@
 				)
 		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
 	</select>
+	
+	<update id="updateTaskStatus" parameterType="taskVO">
+		UPDATE NEO_TASK
+		   SET RECO_STATUS = #{recoStatus}
+			 , EXE_USER_ID = #{exeUserId}
+		 WHERE TASK_NO     = #{taskNo}
+	</update>
+	
+	<update id="updateSubTaskStatus" parameterType="taskVO">
+		UPDATE NEO_SUBTASK
+		   SET WORK_STATUS = #{workStatus}
+		 WHERE TASK_NO     = #{taskNo}
+		   AND SUB_TASK_NO = #{subTaskNo}
+	</update>
 
 </mapper>

@@ -413,4 +413,32 @@ public class CampaignController {
 		
 		return "ems/cam/mailListP";
 	}
+	
+	@RequestMapping(value="/mailAdmit")
+	public ModelAndView updateMailAdmit(@ModelAttribute TaskVO taskVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("updateMailAdmit taskNo    = " + taskVO.getTaskNo());
+		logger.debug("updateMailAdmit subTaskNo = " + taskVO.getSubTaskNo());
+		taskVO.setRecoStatus("001");	// 승인
+		taskVO.setWorkStatus("001");	// 승인
+		taskVO.setExeUserId((String)session.getAttribute("NEO_USER_ID"));
+
+		
+		int result = 0;
+		try {
+			result = campaignService.updateMailAdmit(taskVO);
+		} catch(Exception e) {
+			logger.error("campaignService.updateMailAdmit error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result", "Success");
+		} else {
+			map.put("result", "Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
 }

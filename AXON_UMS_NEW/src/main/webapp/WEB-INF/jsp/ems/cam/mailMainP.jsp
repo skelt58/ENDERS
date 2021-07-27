@@ -75,14 +75,14 @@ function goSearch() {
 // 초기화 버튼 클릭시
 function goInit() {
 	var deptNo = "<c:if test="${'Y' eq NEO_ADMIN_YN}">0</c:if><c:if test="${'N' eq NEO_ADMIN_YN}"><c:out value="${NEO_DEPT_NO}"/></c:if>";
-	$("#searchTaskNm").val("");		//obj.p_search_task_nm.value = "";
-	$("#searchCampNo").val("0");		//obj.p_search_camp_no.value = "";
-	$("#searchDeptNo").val(deptNo);	//obj.p_search_dept_no.value = "";
-	$("#searchUserId").val("");		//obj.p_search_user_id.value = "";
-	$("#searchStatus").val("000");	//obj.p_search_status.value = "";
-	$("#searchStartDt").val("<c:out value='${searchStartDt}'/>");		//obj.p_search_startdt.value = "";
-	$("#searchEndDt").val("<c:out value='${searchEndDt}'/>");		//obj.p_search_enddt.value = "";
-	$("#searchWorkStatus").val("");	//obj.p_search_work_status.value = "";
+	$("#searchTaskNm").val("");
+	$("#searchCampNo").val("0");
+	$("#searchDeptNo").val(deptNo);
+	$("#searchUserId").val("");
+	$("#searchStatus").val("000");
+	$("#searchStartDt").val("<c:out value='${searchStartDt}'/>");
+	$("#searchEndDt").val("<c:out value='${searchEndDt}'/>");
+	$("#searchWorkStatus").val("");
 }
 
 // 목록에서 전체 선택
@@ -126,27 +126,24 @@ function goSegInfo(segNo) {
 
 // 목록에서 발송상태(발송대기) 클릭시 -> 발송승인
 function goAdmit(i) {
-	var obj = document.mailform;
-	obj.method = "post";
-	obj.target = "";
-	
 	$("#taskNo").val( $("#mailListForm input[name='taskNo']").eq(i).val() );
 	$("#subTaskNo").val( $("#mailListForm input[name='subTaskNo']").eq(i).val() );
 
-	/*
-	if(obj.p_sub_task_no.value != undefined) {
-	    obj.p_sub_task_no.checked = true;
-	    obj.p_task_no.checked = true;
-	} else {
-	    obj.p_sub_task_no[i].checked = true;
-	    obj.p_task_no[i].checked = true;
-	}
-	*/
+	alert( $("#taskNo").val() + "," + $("#subTaskNo").val() );
 	
 	var a = confirm("<spring:message code='CAMJSALT020'/>");	// 승인 완료 실행을 하겠습니까?
 	if ( a ) {
-		//obj.action = "/cam/mailAdmitP.jsp";
-		//obj.submit();
+		var param = $("#searchForm").serialize();
+		$.getJSON("<c:url value='/ems/cam/mailAdmit.json'/>?" + param, function(data) {
+			if(data.result == "Success") {
+				alert("<spring:message code='CAMJSALT008'/>");	// 승인 성공
+				
+				// 메일 목록 재조회;
+				getMailList();
+			} else if(data.result == "Fail") {
+				alert("<spring:message code='CAMJSALT009'/>");	// 승인 실패
+			}
+		});
 	} else return;
 }
 
@@ -155,6 +152,9 @@ function goFail(str) {
     alert(str);
     return;
 }
+
+
+
 
 
 

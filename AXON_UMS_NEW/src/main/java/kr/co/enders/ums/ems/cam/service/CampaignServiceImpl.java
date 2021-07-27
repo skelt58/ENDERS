@@ -44,4 +44,17 @@ public class CampaignServiceImpl implements CampaignService {
 		return campaignDAO.updateCampaignInfo(campaingVO);
 	}
 
+	@Override
+	public int updateMailAdmit(TaskVO taskVO) throws Exception {
+		int result = 0;
+		
+		// 캠페인 주업무 승인
+		result += campaignDAO.updateTaskStatus(taskVO);
+		
+		// 캠페인 보조업무 승인
+		result += campaignDAO.updateSubTaskStatus(taskVO);
+		
+		return result;
+	}
+
 }

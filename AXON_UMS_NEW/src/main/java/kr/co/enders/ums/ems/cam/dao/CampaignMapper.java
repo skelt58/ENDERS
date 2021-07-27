@@ -50,4 +50,20 @@ public interface CampaignMapper {
 	 * @throws Exception
 	 */
 	public int updateCampaignInfo(CampaignVO campaingVO) throws Exception;
+	
+	/**
+	 * 캠페인 주업무 상태 수정
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateTaskStatus(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 캠페인 보조업무 상태 수정
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateSubTaskStatus(TaskVO taskVO) throws Exception;
 }

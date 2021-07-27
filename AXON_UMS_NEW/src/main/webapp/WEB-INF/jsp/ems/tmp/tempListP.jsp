@@ -166,17 +166,8 @@ function goAdd() {
 	oEditors.getById["ir1"].exec("UPDATE_CONTENTS_FIELD", []);
 	$("#tempVal").val( $("#ir1").val() );
 	
-	//$("#templateInfoForm").attr("target","").attr("action","<c:url value='/ems/tmp/tempAddP.ums'/>").submit();
-	var param = $("#templateInfoForm").serialize();
-	$.getJSON("<c:url value='/ems/tmp/tempAdd.json'/>?" + param, function(data) {
-		if(data.result == "Success") {
-			alert("<spring:message code='COMJSALT008'/>");		// 등록 성공
-			$("#page").val("1");
-			$("#searchForm").attr("target","").attr("action","<c:url value='/ems/tmp/tempListP.ums'/>").submit();
-		} else {
-			alert("<spring:message code='COMJSALT009'/>");		// 등록 실패
-		}
-	});
+	// 등록 처리
+	$("#templateInfoForm").attr("target","iFrmTemplate").attr("action","<c:url value='/ems/tmp/tempAddP.ums'/>").submit();
 }
 
 //수정 버튼 클릭시
@@ -186,16 +177,9 @@ function goUpdate() {
 		oEditors.getById["ir1"].exec("UPDATE_CONTENTS_FIELD", []);
 	    $("#tempVal").val( $("#ir1").val() );
 	    
-		var param = $("#templateInfoForm").serialize();
-		$.getJSON("<c:url value='/ems/tmp/tempUpdate.json'/>?" + param, function(data) {
-			if(data.result == "Success") {
-				alert("<spring:message code='COMJSALT010'/>");		// 수정 성공
-				$("#page").val("1");
-				$("#searchForm").attr("target","").attr("action","<c:url value='/ems/tmp/tempListP.ums'/>").submit();
-			} else {
-				alert("<spring:message code='COMJSALT011'/>");		// 수정 실패
-			}
-		});
+		// 수정 처리
+		$("#templateInfoForm").attr("target","iFrmTemplate").attr("action","<c:url value='/ems/tmp/tempUpdateP.ums'/>").submit();
+		
 	} else {
 		alert("<spring:message code='CAMTBLLB010'/>");		// 템플릿 선택
 	}
@@ -369,7 +353,7 @@ function goPageNum(page) {
 				<br/>
 				
 				<!------------------------------------------	CRUD	START	---------------------------------------------->
-				<form id="templateInfoForm" name="templateInfoForm">
+				<form id="templateInfoForm" name="templateInfoForm" method="post">
 				<input type="hidden" id="tempNo" name="tempNo" value="0">
 				<input type="hidden" id="tempVal" name="tempVal" value="">
 				<input type="hidden" id="channel" name="channel" value="000">
@@ -556,6 +540,6 @@ function goPageNum(page) {
 		<%@ include file="/WEB-INF/jsp/inc/footer.jsp" %>
 	</div>
 </div>
-
+<iframe name="iFrmTemplate" frameborder="0" width="0px" height="0px"></iframe>
 </body>
 </html>

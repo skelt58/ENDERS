@@ -234,8 +234,8 @@ public class TemplateController {
 	 * @param session
 	 * @return
 	 */
-	@RequestMapping(value="/tempAdd")
-	public ModelAndView insertTempInfo(@ModelAttribute TemplateVO templateVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	@RequestMapping(value="/tempAddP")
+	public String insertTempInfo(@ModelAttribute TemplateVO templateVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("insertTempInfo tempNm     = " + templateVO.getTempNm());
 		logger.debug("insertTempInfo tempDesc   = " + templateVO.getTempDesc());
 		logger.debug("insertTempInfo channel    = " + templateVO.getChannel());
@@ -289,16 +289,13 @@ public class TemplateController {
 			logger.error("templateService.insertTemplateInfo error = " + e);
 		}
 		
-		// jsonView 생성
-		HashMap<String, Object> map = new HashMap<String, Object>();
 		if(result > 0) {
-			map.put("result", "Success");
+			model.addAttribute("result", "Success");
 		} else {
-			map.put("result", "Fail");
+			model.addAttribute("result", "Fail");
 		}
-		ModelAndView modelAndView = new ModelAndView("jsonView", map);
 		
-		return modelAndView;
+		return "ems/tmp/tempAddP";
 	}
 	
 	/**
@@ -310,8 +307,8 @@ public class TemplateController {
 	 * @param session
 	 * @return
 	 */
-	@RequestMapping(value="/tempUpdate")
-	public ModelAndView updateTempInfo(@ModelAttribute TemplateVO templateVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	@RequestMapping(value="/tempUpdateP")
+	public String updateTempInfo(@ModelAttribute TemplateVO templateVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("updateTempInfo tempNo     = " + templateVO.getTempNo());
 		logger.debug("updateTempInfo tempNm     = " + templateVO.getTempNm());
 		logger.debug("updateTempInfo tempDesc   = " + templateVO.getTempDesc());
@@ -375,15 +372,12 @@ public class TemplateController {
 			logger.error("templateService.updateTemplateInfo error = " + e);
 		}
 		
-		// jsonView 생성
-		HashMap<String, Object> map = new HashMap<String, Object>();
 		if(result > 0) {
-			map.put("result", "Success");
+			model.addAttribute("result", "Success");
 		} else {
-			map.put("result", "Fail");
+			model.addAttribute("result", "Fail");
 		}
-		ModelAndView modelAndView = new ModelAndView("jsonView", map);
 		
-		return modelAndView;
+		return "ems/tmp/tempUpdateP";
 	}
 }
