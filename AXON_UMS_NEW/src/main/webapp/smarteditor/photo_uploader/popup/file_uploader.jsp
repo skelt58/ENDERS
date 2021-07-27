@@ -4,47 +4,39 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <%@ page import="com.oreilly.servlet.MultipartRequest,com.oreilly.servlet.multipart.DefaultFileRenamePolicy,java.util.*,java.io.*,java.text.*" %>
 <%@ page import="java.sql.*" %>
-
 <%
- request.setCharacterEncoding("utf-8");
- String realFolder = "";
- String filename1 = "";
- int maxSize = 1024*1024*5;
- String encType = "utf-8";
- String savefile = "img";
- ServletContext scontext = getServletContext();
- realFolder = scontext.getRealPath(savefile)+"\\upload";
-
-
-   
+	request.setCharacterEncoding("utf-8");
+	String realFolder = "";
+	String filename1 = "";
+	int maxSize = 1024*1024*5;
+	String encType = "utf-8";
+	String savefile = "images";
+	ServletContext scontext = getServletContext();
+	realFolder = scontext.getRealPath(savefile)+"/upload";
  
- try{
-  MultipartRequest multi=new MultipartRequest(request, realFolder, maxSize, encType, new DefaultFileRenamePolicy());
+	try {
+		MultipartRequest multi=new MultipartRequest(request, realFolder, maxSize, encType, new DefaultFileRenamePolicy());
 
-  Enumeration<?> files = multi.getFileNames();
-     String file1 = (String)files.nextElement();
-     filename1 = multi.getFilesystemName(file1);
- } catch(Exception e) {
-  e.printStackTrace();
- }
+		Enumeration<?> files = multi.getFileNames();
+		String file1 = (String)files.nextElement();
+		filename1 = multi.getFilesystemName(file1);
+	} catch(Exception e) {
+		e.printStackTrace();
+	}
 
-  String now = new SimpleDateFormat("yyyyMMddHmsS").format(new java.util.Date());  //ÇöÀç½Ã°£
-    int i = -1;
-    i = filename1.lastIndexOf("."); // ÆÄÀÏ È®ÀåÀÚ À§Ä¡
-    String realFileName = now + filename1.substring(i, filename1.length());  //ÇöÀç½Ã°£°ú È®ÀåÀÚ ÇÕÄ¡±â
-    
-    File oldFile = new File(realFolder +"\\"+ filename1);
-    File newFile = new File(realFolder +"\\"+ realFileName); 
-    
-    oldFile.renameTo(newFile); // ÆÄÀÏ¸í º¯°æ 
+	String now = new SimpleDateFormat("yyyyMMddHmsS").format(new java.util.Date());  //í˜„ìž¬ì‹œê°„
+	int i = -1;
+	i = filename1.lastIndexOf("."); // íŒŒì¼ í™•ìž¥ìž ìœ„ì¹˜
+	String realFileName = now + filename1.substring(i, filename1.length());  //í˜„ìž¬ì‹œê°„ê³¼ í™•ìž¥ìž í•©ì¹˜ê¸°
 
+	File oldFile = new File(realFolder +"/"+ filename1);
+	File newFile = new File(realFolder +"/"+ realFileName); 
 
+	oldFile.renameTo(newFile); // íŒŒì¼ëª… ë³€ê²½
  
- String fullpath = realFolder + "\\" + filename1;
+	String fullpath = realFolder + "/" + filename1;
 %>
-
 <script>
 	 window.opener.parent.pasteHTML('<%=realFileName%>');   
 	 window.close();
 </script>
-

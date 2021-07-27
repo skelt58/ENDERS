@@ -46,8 +46,8 @@
 	
 	<select id="getUserList" parameterType="codeVO" resultType="codeVO">
 		SELECT DEPT_NO
-			 , USER_ID CD
-			 , USER_NM CD_NM
+			 , USER_ID
+			 , USER_NM
 		  FROM NEO_USER
 		 WHERE STATUS = #{status}
 		 <if test="deptNo != 0">

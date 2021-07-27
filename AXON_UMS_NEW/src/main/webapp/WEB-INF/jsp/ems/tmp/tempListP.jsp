@@ -43,7 +43,7 @@ function getUserList(formId, deptNo, userObjectId) {
 	$.getJSON("<c:url value='/com/getUserList.json'/>?deptNo=" + deptNo, function(data) {
 		$("#" + formId + " select[name='" + userObjectId + "']").children("option:not(:first)").remove();
 		$.each(data.userList, function(idx,item){
-			var option = new Option(item.cdNm,item.cd);
+			var option = new Option(item.userNm,item.userId);
 			$("#" + formId + " select[name='" + userObjectId + "']").append(option);
 		});
 	});
@@ -84,6 +84,7 @@ function goReset(formName) {
 //폼 초기화
 function initForm() {
 	$("#templateInfoForm")[0].reset();		//obj.reset();						//폼 초기화
+	oEditors.getById["ir1"].exec("SET_CONTENTS", [""]);
 	getUserList('templateInfoForm',$("#deptNo").val(),"userId");	//그룹별 사용자 초기화
 }
 
@@ -118,7 +119,7 @@ function goNew() {
 	nullForm();
 }
 
-//템플릿명 클릭시 EVENT 구현
+//템플릿명 클릭시
 function goSelect(tempNo) {
 	curEvent = "goSelect";
 
@@ -141,16 +142,12 @@ function goSelect(tempNo) {
 			regDt = regDt.substring(0,4) + "-" + regDt.substring(4,6) + "-" + regDt.substring(6,8)
 			$("#regDt").val(regDt);
 			
-			$.ajax({
-				type : "GET",
-				url : "/upload/" + data.template.tempFlPath,
-				dataType : "html",
-				success : function(result){
+			$.getJSON("<c:url value='/ems/tmp/tempFileView.json'/>?tempFlPath=" + data.template.tempFlPath, function(res) {
+				if(res.result == 'Success') {
 	                  oEditors.getById["ir1"].exec("SET_CONTENTS", [""]);    //스마트에디터 초기화
-					  oEditors.getById["ir1"].exec("PASTE_HTML", [result]);   //스마트에디터 내용붙여넣기
-				},
-				error : function(){
-					alert("Template Read Error.");
+					  oEditors.getById["ir1"].exec("PASTE_HTML", [res.tempVal]);   //스마트에디터 내용붙여넣기
+				} else {
+					
 				}
 			});
 			
@@ -162,7 +159,7 @@ function goSelect(tempNo) {
 	});
 }
 
-//등록 EVENT 구현
+// 등록 버튼 클릭시
 function goAdd() {
 	if(checkForm()) return;
 	
@@ -182,8 +179,30 @@ function goAdd() {
 	});
 }
 
+//수정 버튼 클릭시
+function goUpdate() {
+	if($("#tempNo").val() != "0") {
+		if(checkForm()) return;
+		oEditors.getById["ir1"].exec("UPDATE_CONTENTS_FIELD", []);
+	    $("#tempVal").val( $("#ir1").val() );
+	    
+		var param = $("#templateInfoForm").serialize();
+		$.getJSON("<c:url value='/ems/tmp/tempUpdate.json'/>?" + param, function(data) {
+			if(data.result == "Success") {
+				alert("<spring:message code='COMJSALT010'/>");		// 수정 성공
+				$("#page").val("1");
+				$("#searchForm").attr("target","").attr("action","<c:url value='/ems/tmp/tempListP.ums'/>").submit();
+			} else {
+				alert("<spring:message code='COMJSALT011'/>");		// 수정 실패
+			}
+		});
+	} else {
+		alert("<spring:message code='CAMTBLLB010'/>");		// 템플릿 선택
+	}
+}
+
 //입력폼 체크
-function checkForm(obj) {
+function checkForm() {
 	var errstr = "";
 	var errflag = false;
 	if($("#tempNm").val() == "") {
@@ -194,7 +213,7 @@ function checkForm(obj) {
 		errstr += "[<spring:message code='COMTBLTL001'/>]";		// 상태
 		errflag = true;
 	}
-	if($("#deptNo".val() == "0") {
+	if($("#deptNo").val() == "0") {
 		errstr += "[<spring:message code='COMTBLTL004'/>]";		// 사용자그룹
 		errflag = true;
 	}
@@ -206,6 +225,12 @@ function checkForm(obj) {
 		alert("<spring:message code='COMJSALT016'/>\n" + errstr);	// 다음 정보를 확인하세요.
 	}
 	return errflag;
+}
+
+//페이징
+function goPageNum(page) {
+	$("#page").val(page);
+	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/tmp/tempListP.ums'/>").submit();
 }
 </script>
 
@@ -227,8 +252,8 @@ function checkForm(obj) {
 			<!------------------------------------------	SEARCH	START	---------------------------------------------->
 			<div class="cWrap">
 				<form id="searchForm" name="searchForm" method="post">
-				<input type="hidden" name="page" value="<c:out value='${searchVO.page}'/>">
-				<table border="0" cellspacing="1" cellpadding="0" class="table_line_outline">
+				<input type="hidden" id="page" name="page" value="<c:out value='${searchVO.page}'/>">
+				<table border="1" cellspacing="0" cellpadding="0" class="table_line_outline">
 					<colgroup>
 						<col style="width:15%">
 						<col style="width:35%">
@@ -292,7 +317,7 @@ function checkForm(obj) {
 								<option value=''>:: <spring:message code='COMTBLLB005'/> ::</option><!-- 사용자 선택 -->
 								<c:if test="${fn:length(userList) > 0}">
 									<c:forEach items="${userList}" var="user">
-										<option value="<c:out value='${user.cd}'/>"<c:if test="${user.cd eq searchVO.searchUserId}"> selected</c:if>><c:out value='${user.cdNm}'/></option>
+										<option value="<c:out value='${user.userId}'/>"<c:if test="${user.userId eq searchVO.searchUserId}"> selected</c:if>><c:out value='${user.userNm}'/></option>
 									</c:forEach>
 								</c:if>
 							</select>
@@ -312,7 +337,7 @@ function checkForm(obj) {
 
 				<!------------------------------------------	LIST	START	---------------------------------------------->
 				<form id="listForm" name="listForm">
-				<table class="table_line_outline">
+				<table class="table_line_outline" border="1" cellspacing="0" style="width:920px">
 					<tr class="tr_head">
 						<td><spring:message code='TMPTBLTL002'/></td><!-- 템플릿명 -->
 						<td><spring:message code='COMTBLTL001'/></td><!-- 상태 -->
@@ -324,13 +349,15 @@ function checkForm(obj) {
 					<c:set var="templateSize" value="${fn:length(templateList)}"/>
 					<c:if test="${fn:length(templateList) > 0}">
 						<c:forEach items="${templateList}" var="template">
+							<fmt:parseDate var="regDate" value="${template.regDt}" pattern="yyyyMMddHHmmss"/>
+							<fmt:formatDate var="regDt" value="${regDate}" pattern="yyyy-MM-dd"/> 
 							<tr class="tr_body">
 								<td><a href="javascript:goSelect('<c:out value='${template.tempNo}'/>')"><c:out value='${template.tempNm}'/></a></td>
 								<td><c:out value="${template.statusNm}"/></td>
 								<td><c:out value="${template.deptNm}"/></td>
 								<td><c:out value="${template.userNm}"/></td>
 								<td><c:out value="${template.regNm}"/></td>
-								<td><c:out value="${template.regDt}"/></td>
+								<td><c:out value="${regDt}"/></td>
 							</tr>
 						</c:forEach>
 					</c:if>
@@ -338,7 +365,9 @@ function checkForm(obj) {
 				</form>
 				<div class="center">${pageUtil.pageHtml}</div>
 				<!------------------------------------------	LIST	END		---------------------------------------------->
-
+				
+				<br/>
+				
 				<!------------------------------------------	CRUD	START	---------------------------------------------->
 				<form id="templateInfoForm" name="templateInfoForm">
 				<input type="hidden" id="tempNo" name="tempNo" value="0">
@@ -374,20 +403,20 @@ function checkForm(obj) {
 					<tr>	
 						<td class="td_title" ><spring:message code='COMTBLTL001'/></td><!-- 상태 -->
 						<td class="td_body" colspan="1">
-							<select name="p_status" style="width:200" >
+							<select id="status" name="status" style="width:200" >
 								<option value=''>:: <spring:message code='COMTBLLB003'/> ::</option><!-- 상태 선택 -->
 								<c:if test="${fn:length(statusList) > 0}">
 									<c:forEach items="${statusList}" var="status">
-										<option value="<c:out value='${status.cd}'/>"><c:out value='${status.cd}'/></option>
+										<option value="<c:out value='${status.cd}'/>"><c:out value='${status.cdNm}'/></option>
 									</c:forEach>
 								</c:if>
 							</select>
 						</td>
-						<td class="td_title"><spring:message code='COMTBLTL001'/></td><!-- 사용자그룹 -->
+						<td class="td_title"><spring:message code='COMTBLTL004'/></td><!-- 사용자그룹 -->
 						<td class="td_body" colspan="1">
 							<c:if test="${'Y' eq NEO_ADMIN_YN}">
 								<select id="deptNo" name="deptNo" style="width:95%;" onchange="getUserList('templateInfoForm',this.value,'userId');">
-									<option value=''>:::: <spring:message code='COMTBLLB004'/> ::::</option><!-- 그룹 선택 -->
+									<option value="0">:::: <spring:message code='COMTBLLB004'/> ::::</option><!-- 그룹 선택 -->
 									<c:if test="${fn:length(deptList) > 0}">
 										<c:forEach items="${deptList}" var="dept">
 											<option value="<c:out value='${dept.deptNo}'/>"><c:out value='${dept.deptNm}'/></option>
@@ -413,7 +442,7 @@ function checkForm(obj) {
 								<option value=''>:: <spring:message code='COMTBLLB005'/> ::</option><!-- 사용자 선택 -->
 								<c:if test="${fn:length(userList) > 0}">
 									<c:forEach items="${userList}" var="user">
-										<option value="<c:out value='${user.cd}'/>"><c:out value='${user.cdNm}'/></option>
+										<option value="<c:out value='${user.userId}'/>"><c:out value='${user.userNm}'/></option>
 									</c:forEach>
 								</c:if>
 							</select>
@@ -457,7 +486,7 @@ function checkForm(obj) {
 					<div class="btnR">
 						<input type="button" value="<spring:message code='COMBTN005'/>" class="btn_typeC" onClick="goAdd()" id="btnAdd"><!-- 등록 -->
 						<input type="button" value="<spring:message code='COMBTN007'/>" class="btn_typeG" onClick="goUpdate()" id="btnUpdate" style="display:none"><!-- 수정 -->
-						<input type="button" value="<spring:message code='COMBTN009'/>" class="btn_typeG" onClick="goReset(document.crud_form)"><!-- 재입력 -->
+						<input type="button" value="<spring:message code='COMBTN009'/>" class="btn_typeG" onClick="goReset('templateInfoForm')"><!-- 재입력 -->
 					</div>
 				</div>
 			<!------------------------------------------	CRUD	END		---------------------------------------------->
@@ -470,51 +499,50 @@ function checkForm(obj) {
 			//var aAdditionalFontSet = [["MS UI Gothic", "MS UI Gothic"], ["Comic Sans MS", "Comic Sans MS"],["TEST","TEST"]];
 
 			nhn.husky.EZCreator.createInIFrame({
-			oAppRef: oEditors,
-			elPlaceHolder: "ir1",
-			sSkinURI: "<c:url value='/smarteditor/SmartEditor2Skin.html'/>",	
-			htParams : {
-			bUseToolbar : true,				// 툴바 사용 여부 (true:사용/ false:사용하지 않음)
-			bUseVerticalResizer : true,		// 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
-			bUseModeChanger : true,			// 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
-			//aAdditionalFontList : aAdditionalFontSet,		// 추가 글꼴 목록
-			fOnBeforeUnload : function(){
-			//alert("완료!");
-			}
+				oAppRef: oEditors,
+				elPlaceHolder: "ir1",
+				sSkinURI: "<c:url value='/smarteditor/SmartEditor2Skin.html'/>",	
+				htParams : {
+					bUseToolbar : true,				// 툴바 사용 여부 (true:사용/ false:사용하지 않음)
+					bUseVerticalResizer : true,		// 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
+					bUseModeChanger : true,			// 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
+					//aAdditionalFontList : aAdditionalFontSet,		// 추가 글꼴 목록
+					fOnBeforeUnload : function(){
+					//alert("완료!");
+				}
 			}, //boolean
 			fOnAppLoad : function(){
-			//예제 코드
-			//oEditors.getById["ir1"].exec("PASTE_HTML", ["로딩이 완료된 후에 본문에 삽입되는 text입니다."]);
-			//body_loaded();
-
+				//예제 코드
+				//oEditors.getById["ir1"].exec("PASTE_HTML", ["로딩이 완료된 후에 본문에 삽입되는 text입니다."]);
+				//body_loaded();
 			},
 			fCreator: "createSEditor2"
 			});
 
 			function pasteHTML(obj) {
-			var sHTML = "<img src='/img/upload/"+obj+"'>";
-			oEditors.getById["ir1"].exec("PASTE_HTML", [sHTML]);
+				var sHTML = "<img src='<c:url value='/images/upload'/>/"+obj+"'>";
+				oEditors.getById["ir1"].exec("PASTE_HTML", [sHTML]);
 			}
 
 			function showHTML() {
-			var sHTML = oEditors.getById["ir1"].getIR();
-			alert(sHTML);
+				var sHTML = oEditors.getById["ir1"].getIR();
+				alert(sHTML);
 			}
 
 			function submitContents(elClickedObj) {
-			oEditors.getById["ir1"].exec("UPDATE_CONTENTS_FIELD", []);	// 에디터의 내용이 textarea에 적용됩니다.
+				oEditors.getById["ir1"].exec("UPDATE_CONTENTS_FIELD", []);	// 에디터의 내용이 textarea에 적용됩니다.
 
-			// 에디터의 내용에 대한 값 검증은 이곳에서 document.getElementById("ir1").value를 이용해서 처리하면 됩니다.
+				// 에디터의 내용에 대한 값 검증은 이곳에서 document.getElementById("ir1").value를 이용해서 처리하면 됩니다.
 
-			try {
-			elClickedObj.form.submit();
-			} catch(e) {}
-			}
+				try {
+					elClickedObj.form.submit();
+				} catch(e) {}
+				}
 
 			function setDefaultFont() {
-			var sDefaultFont = '궁서';
-			var nFontSize = 24;
-			oEditors.getById["ir1"].setDefaultFont(sDefaultFont, nFontSize);
+				var sDefaultFont = '궁서';
+				var nFontSize = 24;
+				oEditors.getById["ir1"].setDefaultFont(sDefaultFont, nFontSize);
 			}
 			</script>
 			</div>

@@ -30,7 +30,7 @@ function getUserList(deptNo) {
 	$.getJSON("<c:url value='/com/getUserList.json'/>?deptNo=" + deptNo, function(data) {
 		$("#userId").children("option:not(:first)").remove();
 		$.each(data.userList, function(idx,item){
-			var option = new Option(item.cdNm,item.cd);
+			var option = new Option(item.userNm,item.userId);
 			$("#userId").append(option);
 		});
 	});

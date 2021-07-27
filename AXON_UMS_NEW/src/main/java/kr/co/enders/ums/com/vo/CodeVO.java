@@ -17,6 +17,8 @@ public class CodeVO {
 	private String status;	// 상태
 	private int deptNo;		// 부서번호
 	private String deptNm;	// 부서명
+	private String userId;	// 사용자아이디
+	private String userNm;	// 사용자명
 	
 	public String getCdGrp() {
 		return cdGrp;
@@ -71,5 +73,17 @@ public class CodeVO {
 	}
 	public void setDeptNm(String deptNm) {
 		this.deptNm = deptNm;
+	}
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	public String getUserNm() {
+		return userNm;
+	}
+	public void setUserNm(String userNm) {
+		this.userNm = userNm;
 	}
 }

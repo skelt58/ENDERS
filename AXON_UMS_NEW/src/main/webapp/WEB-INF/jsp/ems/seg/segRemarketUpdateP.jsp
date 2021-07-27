@@ -18,7 +18,7 @@ function getUserList(deptNo) {
 	$.getJSON("<c:url value='/com/getUserList.json'/>?deptNo=" + deptNo, function(data) {
 		$("#userId").children("option:not(:first)").remove();
 		$.each(data.userList, function(idx,item){
-			var option = new Option(item.cdNm,item.cd);
+			var option = new Option(item.userNm,item.userId);
 			$("#userId").append(option);
 		});
 	});
@@ -339,7 +339,7 @@ function goList() {
 					                <option value="">::::<spring:message code="COMTBLLB005"/>::::</option><!-- 사용자 선택 -->
 					            	<c:if test="${fn:length(userList) > 0}">
 					            		<c:forEach items="${userList}" var="user">
-							                <option value="<c:out value='${user.cd}'/>"<c:if test="${user.cd == segmentInfo.userId}"> selected</c:if>><c:out value='${user.cdNm}'/></option>
+							                <option value="<c:out value='${user.userId}'/>"<c:if test="${user.userId == segmentInfo.userId}"> selected</c:if>><c:out value='${user.userNm}'/></option>
 										</c:forEach>
 					            	</c:if>
 					            </select>

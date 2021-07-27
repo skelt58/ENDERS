@@ -33,5 +33,10 @@ public class TemplateServiceImpl implements TemplateService {
 	public int insertTemplateInfo(TemplateVO templateVO) throws Exception {
 		return templateDAO.insertTemplateInfo(templateVO);
 	}
+
+	@Override
+	public int updateTemplateInfo(TemplateVO templateVO) throws Exception {
+		return templateDAO.updateTemplateInfo(templateVO);
+	}
 	
 }

@@ -5,6 +5,11 @@
  */
 package kr.co.enders.ums.ems.tmp.controller;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,6 +29,7 @@ import kr.co.enders.ums.com.service.CodeService;
 import kr.co.enders.ums.com.vo.CodeVO;
 import kr.co.enders.ums.ems.tmp.service.TemplateService;
 import kr.co.enders.ums.ems.tmp.vo.TemplateVO;
+import kr.co.enders.util.Code;
 import kr.co.enders.util.PageUtil;
 import kr.co.enders.util.PropertiesUtil;
 import kr.co.enders.util.StringUtil;
@@ -175,21 +181,207 @@ public class TemplateController {
 		return modelAndView;
 	}
 	
-	@RequestMapping(value="/tempAdd")
-	public ModelAndView insertTempInfo(@ModelAttribute TemplateVO templateVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		logger.debug("getTempInfo tempNm      = " + templateVO.getTempNm());
-		logger.debug("getTempInfo tempDesc      = " + templateVO.getTempDesc());
+	/**
+	 * 템플릿 파일 읽기
+	 * @param templateVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/tempFileView")
+	public ModelAndView goTempFileView(@ModelAttribute TemplateVO templateVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("getTempInfo tempFlPath  = " + templateVO.getTempFlPath());
 		
-		templateVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		File file = null;
+		FileReader fileReader = null;
+		BufferedReader bufferedReader = null;
+		StringBuffer sb = new StringBuffer();
 		try {
-			templateVO = templateService.getTemplateInfo(templateVO);
+			String basePath = properties.getProperty("FILE.UPLOAD_PATH");
+			String tempPath = basePath + "/" + templateVO.getTempFlPath();
+			
+			file = new File(tempPath);
+			fileReader = new FileReader(file);
+			bufferedReader = new BufferedReader(fileReader);
+			String line = "";
+			while((line = bufferedReader.readLine()) != null) {
+				sb.append(line);
+			}
 		} catch(Exception e) {
 			logger.error("templateService.getTemplateInfo error = " + e);
+		} finally {
+			if(bufferedReader != null) try { bufferedReader.close(); } catch(Exception e) {};
+			if(fileReader != null) try { fileReader.close(); } catch(Exception e) {};
 		}
 		
 		// jsonView 생성
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		map.put("template", templateVO);
+		map.put("result", "Success");
+		map.put("tempVal", sb.toString().trim());
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	/**
+	 * 템플릿 정보 등록
+	 * @param templateVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/tempAdd")
+	public ModelAndView insertTempInfo(@ModelAttribute TemplateVO templateVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("insertTempInfo tempNm     = " + templateVO.getTempNm());
+		logger.debug("insertTempInfo tempDesc   = " + templateVO.getTempDesc());
+		logger.debug("insertTempInfo channel    = " + templateVO.getChannel());
+		logger.debug("insertTempInfo status     = " + templateVO.getStatus());
+		logger.debug("insertTempInfo deptNo     = " + templateVO.getDeptNo());
+		logger.debug("insertTempInfo userId     = " + templateVO.getUserId());
+		logger.debug("insertTempInfo tempVal    = " + templateVO.getTempVal());
+
+		templateVO.setRegId((String)session.getAttribute("NEO_USER_ID"));
+		templateVO.setRegDt(StringUtil.getDate(Code.TM_YMDHMS));
+		
+		// 템플릿 파일 생성
+		String basePath = properties.getProperty("FILE.UPLOAD_PATH") + "/template";
+		String deptPath = basePath + "/" + templateVO.getDeptNo();
+		long curTime = System.currentTimeMillis();
+		String filePath = deptPath + "/" + curTime + ".tmp";
+		String tempFlPath = "template/" + templateVO.getDeptNo() + "/" + curTime + ".tmp";
+		templateVO.setTempFlPath(tempFlPath);
+		logger.debug("insertTempInfo tempFlPath = " + templateVO.getTempFlPath());
+		
+		// 파일 쓰기
+		FileOutputStream fos = null;
+		OutputStreamWriter writer = null;
+		try {
+			File baseDir = new File(basePath);
+			if(!baseDir.isDirectory()) {
+				baseDir.mkdir();
+			}
+			
+			File deptDir = new File(deptPath);
+			if(!deptDir.isDirectory()) {
+				deptDir.mkdir();
+			}
+			
+			File file = new File(filePath);
+			fos = new FileOutputStream(file);
+			writer = new OutputStreamWriter(fos, "UTF-8");
+			writer.write(templateVO.getTempVal());
+			writer.flush();
+		} catch(Exception e) {
+			logger.error("insertTempInfo file write error = " + e);
+		} finally {
+			if(writer != null) try { writer.close(); } catch(Exception e) {};
+			if(fos != null) try { fos.close(); } catch(Exception e) {};
+		}
+		
+		int result = 0;
+		try {
+			result = templateService.insertTemplateInfo(templateVO);
+		} catch(Exception e) {
+			logger.error("templateService.insertTemplateInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result", "Success");
+		} else {
+			map.put("result", "Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	/**
+	 * 템플릿 정보 등록
+	 * @param templateVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/tempUpdate")
+	public ModelAndView updateTempInfo(@ModelAttribute TemplateVO templateVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("updateTempInfo tempNo     = " + templateVO.getTempNo());
+		logger.debug("updateTempInfo tempNm     = " + templateVO.getTempNm());
+		logger.debug("updateTempInfo tempDesc   = " + templateVO.getTempDesc());
+		logger.debug("updateTempInfo channel    = " + templateVO.getChannel());
+		logger.debug("updateTempInfo status     = " + templateVO.getStatus());
+		logger.debug("updateTempInfo deptNo     = " + templateVO.getDeptNo());
+		logger.debug("updateTempInfo userId     = " + templateVO.getUserId());
+		logger.debug("updateTempInfo tempVal    = " + templateVO.getTempVal());
+		logger.debug("updateTempInfo tempFlPath = " + templateVO.getTempFlPath());
+
+		templateVO.setUpId((String)session.getAttribute("NEO_USER_ID"));
+		templateVO.setUpDt(StringUtil.getDate(Code.TM_YMDHMS));
+		
+		// 기존 템플릿 파일 삭제
+		String oldFilePath = properties.getProperty("FILE.UPLOAD_PATH") + "/" + templateVO.getTempFlPath();
+		File oldFile = new File(oldFilePath);
+		if(oldFile.exists()) {
+			oldFile.delete();
+		}
+
+		// 템플릿 파일 생성
+		String basePath = properties.getProperty("FILE.UPLOAD_PATH") + "/template";
+		String deptPath = basePath + "/" + templateVO.getDeptNo();
+		long curTime = System.currentTimeMillis();
+		String filePath = deptPath + "/" + curTime + ".tmp";
+		String tempFlPath = "template/" + templateVO.getDeptNo() + "/" + curTime + ".tmp";
+		templateVO.setTempFlPath(tempFlPath);
+		logger.debug("updateTempInfo new tempFlPath = " + templateVO.getTempFlPath());
+		
+		// 파일 쓰기
+		FileOutputStream fos = null;
+		OutputStreamWriter writer = null;
+		try {
+			
+			File baseDir = new File(basePath);
+			if(!baseDir.isDirectory()) {
+				baseDir.mkdir();
+			}
+			
+			File deptDir = new File(deptPath);
+			if(!deptDir.isDirectory()) {
+				deptDir.mkdir();
+			}
+			
+			File file = new File(filePath);
+			fos = new FileOutputStream(file);
+			writer = new OutputStreamWriter(fos, "UTF-8");
+			writer.write(templateVO.getTempVal());
+			writer.flush();
+		} catch(Exception e) {
+			logger.error("updateTempInfo file write error = " + e);
+		} finally {
+			if(writer != null) try { writer.close(); } catch(Exception e) {};
+			if(fos != null) try { fos.close(); } catch(Exception e) {};
+		}
+		
+		int result = 0;
+		try {
+			result = templateService.updateTemplateInfo(templateVO);
+		} catch(Exception e) {
+			logger.error("templateService.updateTemplateInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result", "Success");
+		} else {
+			map.put("result", "Fail");
+		}
 		ModelAndView modelAndView = new ModelAndView("jsonView", map);
 		
 		return modelAndView;

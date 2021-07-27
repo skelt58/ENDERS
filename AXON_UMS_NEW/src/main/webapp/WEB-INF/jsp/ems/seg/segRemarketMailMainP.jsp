@@ -55,7 +55,7 @@ function getUserList(deptNo) {
 	$.getJSON("<c:url value='/com/getUserList.json'/>?deptNo=" + deptNo, function(data) {
 		$("#searchUserId").children("option:not(:first)").remove();
 		$.each(data.userList, function(idx,item){
-			var option = new Option(item.cdNm,item.cd);
+			var option = new Option(item.userNm,item.userId);
 			$("#searchUserId").append(option);
 		});
 	});
@@ -127,7 +127,7 @@ function goMailSelect(taskNo, subTaskNo, taskNm) {
                 <option value=''>:: 사용자 선택 ::</option>
                 	<c:if test="${fn:length(userList) > 0}">
                 		<c:forEach items="${userList}" var="user">
-                			<option value="<c:out value='${user.cd}'/>"><c:out value='${user.cdNm}'/></option>
+                			<option value="<c:out value='${user.userId}'/>"><c:out value='${user.userNm}'/></option>
                 		</c:forEach>
                 	</c:if>
             </select>

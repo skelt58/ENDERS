@@ -33,4 +33,9 @@ public class TemplateDAO implements TemplateMapper {
 		return sqlSessionEms.getMapper(TemplateMapper.class).insertTemplateInfo(templateVO);
 	}
 
+	@Override
+	public int updateTemplateInfo(TemplateVO templateVO) throws Exception {
+		return sqlSessionEms.getMapper(TemplateMapper.class).updateTemplateInfo(templateVO);
+	}
+
 }

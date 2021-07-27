@@ -123,5 +123,19 @@
 			, #{regId}
 		)
 	</insert>
+	
+	<update id="updateTemplateInfo" parameterType="templateVO">
+		UPDATE NEO_TEMPLATE
+		   SET TEMP_NM      = #{tempNm}
+			 , TEMP_DESC    = #{tempDesc}
+			 , USER_ID      = #{userId}
+			 , CHANNEL      = #{channel}
+			 , TEMP_FL_PATH = #{tempFlPath}
+			 , STATUS       = #{status}
+			 , DEPT_NO      = #{deptNo}
+			 , UP_ID        = #{upId}
+			 , UP_DT        = #{upDt}
+		 WHERE TEMP_NO      = #{tempNo}
+	</update>
 
 </mapper>

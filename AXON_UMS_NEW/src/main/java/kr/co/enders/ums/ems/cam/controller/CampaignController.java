@@ -5,6 +5,7 @@
  */
 package kr.co.enders.ums.ems.cam.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,6 +25,7 @@ import kr.co.enders.ums.com.service.CodeService;
 import kr.co.enders.ums.com.vo.CodeVO;
 import kr.co.enders.ums.ems.cam.service.CampaignService;
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
+import kr.co.enders.ums.ems.cam.vo.TaskVO;
 import kr.co.enders.util.Code;
 import kr.co.enders.util.PageUtil;
 import kr.co.enders.util.PropertiesUtil;
@@ -229,6 +231,15 @@ public class CampaignController {
 		return modelAndView;
 	}
 	
+	/**
+	 * 캠페인 정보 수정
+	 * @param campaignVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/campUpdate")
 	public ModelAndView updateCampInfo(@ModelAttribute CampaignVO campaignVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("updateCampInfo campNo      = " + campaignVO.getCampNo());
@@ -259,5 +270,147 @@ public class CampaignController {
 		
 		return modelAndView;
 	}
+	
+	@RequestMapping(value="/mailMainP")
+	public String goMailMain(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goMailMain searchTaskNm     = " + searchVO.getSearchTaskNm());
+		logger.debug("goMailMain searchCampNo     = " + searchVO.getSearchCampNo());
+		logger.debug("goMailMain searchDeptNo     = " + searchVO.getSearchDeptNo());
+		logger.debug("goMailMain searchUserId     = " + searchVO.getSearchUserId());
+		logger.debug("goMailMain searchStartDt    = " + searchVO.getSearchStartDt());
+		logger.debug("goMailMain searchEndDt      = " + searchVO.getSearchEndDt());
+		logger.debug("goMailMain searchStatus     = " + searchVO.getSearchStatus());
+		logger.debug("goMailMain searchWorkStatus = " + searchVO.getSearchWorkStatus());
+		
+		// 검색 기본값 설정
+		if(searchVO.getSearchStartDt() == null || "".equals(searchVO.getSearchStartDt())) {
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
+		} else {
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("-", ""));
+		}
+		if(searchVO.getSearchEndDt() == null || "".equals(searchVO.getSearchEndDt())) {
+			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
+		} else {
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("-", ""));
+		}
+		if(searchVO.getSearchStatus() == null || "".equals(searchVO.getSearchStatus())) searchVO.setSearchStatus("000");
+		if(searchVO.getSearchDeptNo() == 0) {
+			if("Y".equals((String)session.getAttribute("NEO_ADMIN_YN"))) {
+				searchVO.setSearchDeptNo(0);
+			} else {
+				searchVO.setSearchDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+			}
+		}
+		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		searchVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
+		
+		// 캠페인 목록 조회
+		CampaignVO campVO = new CampaignVO();
+		campVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		campVO.setSearchStatus("000");
+		campVO.setPage(1);
+		campVO.setRows(1000);
+		campVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
+		campVO.setSearchStartDt("");
+		campVO.setSearchEndDt("");
+		List<CampaignVO> campaignList = null;
+		try {
+			campaignList = campaignService.getCampaignList(campVO);
+		} catch(Exception e) {
+			logger.error("campaignService.getCampaignList error = " + e);
+		}
+		
+		// 부서목록(코드성) 조회
+		CodeVO dept = new CodeVO();
+		dept.setStatus("000"); // 정상
+		List<CodeVO> deptList = null;
+		try {
+			deptList = codeService.getDeptList(dept);
+		} catch(Exception e) {
+			logger.error("codeService.getDeptList error = " + e);
+		}
+		
+		// 사용자 목록 조회
+		CodeVO user = new CodeVO();
+		user.setDeptNo(searchVO.getSearchDeptNo());
+		user.setStatus("000");
+		List<CodeVO> userList = null;
+		try {
+			userList = codeService.getUserList(user);
+		} catch(Exception e) {
+			logger.error("codeService.getUserList error = " + e);
+		}
+		
+		// 메일상태 목록 조회
+		CodeVO status = new CodeVO();
+		status.setUilang((String)session.getAttribute("NEO_UILANG"));
+		status.setCdGrp("C023");
+		status.setUseYn("Y");
+		List<CodeVO> statusList = null;
+		try {
+			statusList = codeService.getCodeList(status);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList[C023] error = " + e);
+		}
 
+		model.addAttribute("searchVO", searchVO);			// 검색 항목
+		model.addAttribute("campaignList", campaignList);	// 캠페인 목록
+		model.addAttribute("deptList", deptList);			// 부서 목록
+		model.addAttribute("userList", userList);			// 사용자 목록
+		model.addAttribute("statusList", statusList);		// 메일상태 목록
+		
+		return "ems/cam/mailMainP";
+	}
+	
+	
+	@RequestMapping(value="/mailListP")
+	public String goMailList(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goMailMain searchTaskNm     = " + searchVO.getSearchTaskNm());
+		logger.debug("goMailMain searchCampNo     = " + searchVO.getSearchCampNo());
+		logger.debug("goMailMain searchDeptNo     = " + searchVO.getSearchDeptNo());
+		logger.debug("goMailMain searchUserId     = " + searchVO.getSearchUserId());
+		logger.debug("goMailMain searchStartDt    = " + searchVO.getSearchStartDt());
+		logger.debug("goMailMain searchEndDt      = " + searchVO.getSearchEndDt());
+		logger.debug("goMailMain searchStatus     = " + searchVO.getSearchStatus());
+		logger.debug("goMailMain searchWorkStatus = " + searchVO.getSearchWorkStatus());
+		
+		// 검색 기본값 설정
+		searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("-", ""));
+		searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("-", ""));
+		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		searchVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
+		List<String> workStatusList = new ArrayList<String>();
+		String[] workStatus = searchVO.getSearchWorkStatus().split(",");
+		for(int i=0;i<workStatus.length;i++) {
+			workStatusList.add(workStatus[i]);
+		}
+		searchVO.setSearchWorkStatusList(workStatusList);
+		
+		// 페이지 설정
+		int page = StringUtil.setNullToInt(searchVO.getPage(), 1);
+		int rows = StringUtil.setNullToInt(searchVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE")));
+		searchVO.setPage(page);
+		searchVO.setRows(rows);
+		int totalCount = 0;
+
+		// 메일 목록 조회
+		List<TaskVO> mailList = null;
+		try {
+			mailList = campaignService.getMailList(searchVO);
+		} catch(Exception e) {
+			logger.error("campaignService.getCampaignList error = " + e);
+		}
+		
+		if(mailList != null && mailList.size() > 0) {
+			totalCount = mailList.get(0).getTotalCount();
+		}
+		PageUtil pageUtil = new PageUtil();
+		pageUtil.init(request, searchVO.getPage(), totalCount, rows);
+		
+		model.addAttribute("searchVO", searchVO);	// 검색 항목
+		model.addAttribute("mailList", mailList);	// 메일 목록
+		model.addAttribute("pageUtil", pageUtil);	// 페이징
+		
+		return "ems/cam/mailListP";
+	}
 }

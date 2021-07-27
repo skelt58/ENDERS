@@ -43,7 +43,7 @@ function getUserList(formId, deptNo, userObjectId) {
 	$.getJSON("<c:url value='/com/getUserList.json'/>?deptNo=" + deptNo, function(data) {
 		$("#" + formId + " select[name='" + userObjectId + "']").children("option:not(:first)").remove();
 		$.each(data.userList, function(idx,item){
-			var option = new Option(item.cdNm,item.cd);
+			var option = new Option(item.userNm,item.userId);
 			$("#" + formId + " select[name='" + userObjectId + "']").append(option);
 		});
 	});
@@ -320,7 +320,7 @@ function checkForm() {
 								<option value=''>:: <spring:message code='COMTBLLB005'/> ::</option><!-- 사용자 선택 -->
 								<c:if test="${fn:length(userList) > 0}">
 									<c:forEach items="${userList}" var="user">
-										<option value="<c:out value='${user.cd}'/>"<c:if test="${user.cd eq searchVO.searchUserId}"> selected</c:if>><c:out value='${user.cdNm}'/></option>
+										<option value="<c:out value='${user.userId}'/>"<c:if test="${user.userId eq searchVO.searchUserId}"> selected</c:if>><c:out value='${user.userNm}'/></option>
 									</c:forEach>
 								</c:if>
 							</select>
@@ -448,7 +448,7 @@ function checkForm() {
 								<option value=''>:::::::: <spring:message code='COMTBLLB005'/> ::::::::</option><!-- 사용자 선택 -->
 								<c:if test="${fn:length(userList) > 0}">
 									<c:forEach items="${userList}" var="user">
-										<option value="<c:out value='${user.cd}'/>"><c:out value='${user.cdNm}'/></option>
+										<option value="<c:out value='${user.userId}'/>"><c:out value='${user.userNm}'/></option>
 									</c:forEach>
 								</c:if>
 							</select>

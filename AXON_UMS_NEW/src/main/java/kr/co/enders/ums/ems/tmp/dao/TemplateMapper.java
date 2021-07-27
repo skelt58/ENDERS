@@ -33,4 +33,12 @@ public interface TemplateMapper {
 	 * @throws Exception
 	 */
 	public int insertTemplateInfo(TemplateVO templateVO) throws Exception;
+	
+	/**
+	 * 템플릿 정보 수정
+	 * @param templateVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateTemplateInfo(TemplateVO templateVO) throws Exception;
 }

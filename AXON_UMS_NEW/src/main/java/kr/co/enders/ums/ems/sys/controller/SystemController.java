@@ -687,7 +687,7 @@ public class SystemController {
 		logger.debug("insertDbConnInfo loginPwd = " + dbConnVO.getLoginPwd());
 		logger.debug("insertDbConnInfo dbConnDesc = " + dbConnVO.getDbConnDesc());
 		
-		dbConnVO.setLoginPwd(EncryptUtil.getJasyptEncryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnVO.getLoginPwd()));
+		//dbConnVO.setLoginPwd(EncryptUtil.getJasyptEncryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnVO.getLoginPwd()));
 		dbConnVO.setRegId((String)session.getAttribute("NEO_USER_ID"));
 		dbConnVO.setRegDt(StringUtil.getDate(Code.TM_YMDHMS));
 		
@@ -765,8 +765,6 @@ public class SystemController {
 	 */
 	@RequestMapping(value="/dbconnInfoP")
 	public String goDbConnInfo(@ModelAttribute DbConnVO dbConnVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		logger.debug("SystemController goDbConnInfo Start...");
-		
 		logger.debug("goDbConnInfo searchDbConnNo = " + dbConnVO.getSearchDbConnNo());
 		logger.debug("goDbConnInfo searchDbConnNm = " + dbConnVO.getSearchDbConnNm());
 		logger.debug("goDbConnInfo searchDbTy = " + dbConnVO.getSearchDbTy());
@@ -818,7 +816,7 @@ public class SystemController {
 		try {
 			dbConnVO.setUilang((String)session.getAttribute("NEO_UILANG"));
 			dbConnInfo = systemService.getDbConnInfo(dbConnVO);
-			dbConnInfo.setLoginPwd(EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd()));
+			//dbConnInfo.setLoginPwd(EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd()));
 			dbConnInfo.setRegDt(StringUtil.getFDate(dbConnInfo.getRegDt(), Code.DT_FMT2));
 			dbConnInfo.setUpDt(StringUtil.getFDate(dbConnInfo.getUpDt(), Code.DT_FMT2));
 			
@@ -859,7 +857,7 @@ public class SystemController {
 		logger.debug("updateDbConnInfo loginPwd = " + dbConnVO.getLoginPwd());
 		logger.debug("updateDbConnInfo dbConnDesc = " + dbConnVO.getDbConnDesc());
 		
-		dbConnVO.setLoginPwd(EncryptUtil.getJasyptEncryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnVO.getLoginPwd()));
+		//dbConnVO.setLoginPwd(EncryptUtil.getJasyptEncryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnVO.getLoginPwd()));
 		dbConnVO.setUpId((String)session.getAttribute("NEO_USER_ID"));
 		dbConnVO.setUpDt(StringUtil.getDate(Code.TM_YMDHMS));
 		
@@ -878,7 +876,7 @@ public class SystemController {
 		try {
 			dbConnVO.setUilang((String)session.getAttribute("NEO_UILANG"));
 			dbConnInfo = systemService.getDbConnInfo(dbConnVO);
-			dbConnInfo.setLoginPwd(EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd()));
+			//dbConnInfo.setLoginPwd(EncryptUtil.getJasyptDecryptedString(properties.getProperty("JASYPT.ALGORITHM"), properties.getProperty("JASYPT.KEYSTRING"), dbConnInfo.getLoginPwd()));
 			dbConnInfo.setRegDt(StringUtil.getFDate(dbConnInfo.getRegDt(), Code.DT_FMT2));
 			dbConnInfo.setUpDt(StringUtil.getFDate(dbConnInfo.getUpDt(), Code.DT_FMT2));
 		} catch(Exception e) {
