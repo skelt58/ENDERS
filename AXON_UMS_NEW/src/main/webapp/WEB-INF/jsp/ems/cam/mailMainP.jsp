@@ -129,8 +129,6 @@ function goAdmit(i) {
 	$("#taskNo").val( $("#mailListForm input[name='taskNo']").eq(i).val() );
 	$("#subTaskNo").val( $("#mailListForm input[name='subTaskNo']").eq(i).val() );
 
-	alert( $("#taskNo").val() + "," + $("#subTaskNo").val() );
-	
 	var a = confirm("<spring:message code='CAMJSALT020'/>");	// 승인 완료 실행을 하겠습니까?
 	if ( a ) {
 		var param = $("#searchForm").serialize();
@@ -153,6 +151,10 @@ function goFail(str) {
     return;
 }
 
+//등록 버튼 클릭
+function goMailAdd() {
+	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/cam/mailAddP.ums'/>").submit();
+}
 
 
 

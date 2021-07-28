@@ -57,8 +57,10 @@
 				   <if test='searchStatus != null and searchStatus != "ALL"'>
 				   AND NEO_SEGMENT.STATUS = #{searchStatus}
 				   </if>
-				   <if test="searchStartDt != '' and searchEndDt != ''">
+				   <if test="searchStartDt != null and searchStartDt != ''">
 				   AND NEO_SEGMENT.REG_DT &gt;= #{searchStartDt} || '000000'
+				   </if>
+				   <if test="searchEndDt != null and searchEndDt != ''">
 				   AND NEO_SEGMENT.REG_DT &lt; #{searchEndDt} || '240000'
 				   </if>
 				)

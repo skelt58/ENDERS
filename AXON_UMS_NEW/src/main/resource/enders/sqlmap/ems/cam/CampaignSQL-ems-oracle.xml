@@ -54,8 +54,10 @@
 				   <if test="searchUserId != null and searchUserId != ''">
 				   AND A.USER_ID = #{searchUserId}
 				   </if>
-				   <if test="searchStartDt != null and searchStartDt != '' and searchEndDt != null and searchEndDt != ''">
+				   <if test="searchStartDt != null and searchStartDt != ''">
 				   AND A.REG_DT &gt;= #{searchStartDt} || '000000'
+				   </if>
+				   <if test="searchEndDt != null and searchEndDt != ''">
 				   AND A.REG_DT &lt; #{searchEndDt} || '240000'
 				   </if>
 				)
@@ -221,8 +223,10 @@
 				   			</foreach>
 				   		</if>
 				   </if>
-				   <if test="searchStartDt != null and searchStartDt != '' and searchEndDt != null and searchEndDt != ''">
+				   <if test="searchStartDt != null and searchStartDt != ''">
 				   AND NEO_SUBTASK.SEND_DT &gt;= #{searchStartDt} || '000000'
+				   </if>
+				   <if test="searchEndDt != null and searchEndDt != ''">
 				   AND NEO_SUBTASK.SEND_DT &lt; #{searchEndDt} || '240000'
 				   </if>
 				   <if test="searchUserId != null and searchUserId != ''">

@@ -55,8 +55,10 @@
 				   <if test="searchUserId != null and searchUserId != ''">
 				   AND A.USER_ID = #{searchUserId}
 				   </if>
-				   <if test="searchStartDt != '' and searchEndDt != ''">
+				   <if test="searchStartDt != null and searchStartDt != ''">
 				   AND A.REG_DT &gt;= #{searchStartDt} || '000000'
+				   </if>
+				   <if test="searchEndDt != null and searchEndDt != ''">
 				   AND A.REG_DT &lt; #{searchEndDt} || '240000'
 				   </if>
 				)
