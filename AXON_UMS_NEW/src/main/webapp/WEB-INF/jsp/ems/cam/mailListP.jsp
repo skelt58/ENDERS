@@ -116,7 +116,7 @@
 <div class="center">${pageUtil.pageHtml}</div>
 <div class="btn">
 	<div class="btnR">
-		<input type="button" class="btn_typeC" value="<spring:message code='COMBTN005'/>" onClick="goAddf()"><!-- 등록 -->
+		<input type="button" class="btn_typeC" value="<spring:message code='COMBTN005'/>" onClick="goMailAdd()"><!-- 등록 -->
 		<input type="button" class="btn_typeG" value="<spring:message code='COMBTN006'/>" onClick="goDisable()"><!-- 사용중지 -->
 		<input type="button" class="btn_typeG" value="<spring:message code='COMBTN008'/>" onClick="goDelete()"><!-- 삭제 -->
 		<input type="button" class="btn_typeG" value="<spring:message code='CAMBTN001'/>" onClick="goCopy()"><!-- 복사 -->

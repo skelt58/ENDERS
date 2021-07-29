@@ -85,12 +85,13 @@ public class ComController {
 	
 	@RequestMapping(value = "/upload")
 	public String goUploadProc(MultipartHttpServletRequest multipartRequest, @ModelAttribute UploadVO uploadVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		logger.debug("goUploadProc folder = " + uploadVO.getFolder());
-		logger.debug("goUploadProc title = " + uploadVO.getTitle());
-		logger.debug("goUploadProc charset = " + uploadVO.getCharset());
-		logger.debug("goUploadProc formName = " + uploadVO.getFormName());
+		logger.debug("goUploadProc folder    = " + uploadVO.getFolder());
+		logger.debug("goUploadProc title     = " + uploadVO.getTitle());
+		logger.debug("goUploadProc charset   = " + uploadVO.getCharset());
+		logger.debug("goUploadProc formName  = " + uploadVO.getFormName());
 		logger.debug("goUploadProc rFileName = " + uploadVO.getrFileName());
 		logger.debug("goUploadProc vFileName = " + uploadVO.getvFileName());
+		logger.debug("goUploadProc inputType = " + uploadVO.getInputType());
 		
 		// 업로드 폴더
 		String folder = uploadVO.getFolder();

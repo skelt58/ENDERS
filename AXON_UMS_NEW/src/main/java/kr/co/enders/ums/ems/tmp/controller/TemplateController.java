@@ -90,7 +90,7 @@ public class TemplateController {
 		
 		// 페이지 설정
 		int page = StringUtil.setNullToInt(searchVO.getPage(), 1);
-		int rows = StringUtil.setNullToInt(searchVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE")));
+		int rows = StringUtil.setNullToInt(searchVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE_TEMP")));
 		searchVO.setPage(page);
 		searchVO.setRows(rows);
 		int totalCount = 0;
@@ -149,6 +149,11 @@ public class TemplateController {
 		model.addAttribute("deptList", deptList);			// 부서 목록
 		model.addAttribute("userList", userList);			// 사용자 목록
 		model.addAttribute("pageUtil", pageUtil);			// 페이징
+		
+		// 설정파일내용
+		model.addAttribute("TAGFREE_CLASSID", properties.getProperty("TAGFREE_CLASSID"));
+		model.addAttribute("TAGFREE_CODEBASE", properties.getProperty("TAGFREE_CODEBASE"));
+		model.addAttribute("MP_FULL_URL", properties.getProperty("MP_FULL_URL"));
 		
 		return "ems/tmp/tempListP";
 	}

@@ -7,7 +7,9 @@ package kr.co.enders.ums.ems.cam.dao;
 
 import java.util.List;
 
+import kr.co.enders.ums.ems.cam.vo.AttachVO;
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
+import kr.co.enders.ums.ems.cam.vo.LinkVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
 
 public interface CampaignMapper {
@@ -66,4 +68,52 @@ public interface CampaignMapper {
 	 * @throws Exception
 	 */
 	public int updateSubTaskStatus(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 주업무 정보 등록
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertTaskInfo(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 등록한 주업무 번호 조회
+	 * @return
+	 * @throws Exception
+	 */
+	public int getTaskNo() throws Exception;
+	
+	/**
+	 * 보조업무 번호 조회
+	 * @param taskNo
+	 * @return
+	 * @throws Exception
+	 */
+	public int getSubTaskNo(int taskNo) throws Exception;
+	
+	/**
+	 * 보조업무 정보 등록
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertSubTaskInfo(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 첨부파일 정보 등록
+	 * @param attachVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertAttachInfo(AttachVO attachVO) throws Exception;
+	
+	/**
+	 * 링크 정보 등록
+	 * @param linkVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertLinkInfo(LinkVO linkVO) throws Exception;
+	
 }

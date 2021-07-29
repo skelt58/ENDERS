@@ -54,8 +54,10 @@
 				   <if test="searchUserId != null and searchUserId != ''">
 				   AND A.USER_ID = #{searchUserId}
 				   </if>
-				   <if test="searchStartDt != null and searchStartDt != '' and searchEndDt != null and searchEndDt != ''">
+				   <if test="searchStartDt != null and searchStartDt != ''">
 				   AND A.REG_DT &gt;= #{searchStartDt} || '000000'
+				   </if>
+				   <if test="searchEndDt != null and searchEndDt != ''">
 				   AND A.REG_DT &lt; #{searchEndDt} || '240000'
 				   </if>
 				)
@@ -221,8 +223,10 @@
 				   			</foreach>
 				   		</if>
 				   </if>
-				   <if test="searchStartDt != null and searchStartDt != '' and searchEndDt != null and searchEndDt != ''">
+				   <if test="searchStartDt != null and searchStartDt != ''">
 				   AND NEO_SUBTASK.SEND_DT &gt;= #{searchStartDt} || '000000'
+				   </if>
+				   <if test="searchEndDt != null and searchEndDt != ''">
 				   AND NEO_SUBTASK.SEND_DT &lt; #{searchEndDt} || '240000'
 				   </if>
 				   <if test="searchUserId != null and searchUserId != ''">
@@ -245,5 +249,170 @@
 		 WHERE TASK_NO     = #{taskNo}
 		   AND SUB_TASK_NO = #{subTaskNo}
 	</update>
+	
+	
+	<insert id="insertTaskInfo" parameterType="taskVO">
+		INSERT INTO NEO_TASK
+		(
+			  TASK_NO
+			, PLAN_USER_ID
+			, USER_ID
+			, MAIL_FROM_NM
+			, MAIL_FROM_EM
+			, REPLY_TO_EM
+			, RETURN_EM
+			, NM_MERGE
+			, ATT_CNT
+			, SEND_REPEAT
+			, CHANNEL
+			, RESP_LOG
+			, CONT_TY
+			, SEND_TERM_END_DT
+			, SEND_TERM_LOOP
+			, SEND_TERM_LOOP_TY
+			, SOCKET_TIMEOUT
+			, CONN_PER_CNT
+			, RETRY_CNT
+			, SEND_MODE
+			, HEADER_ENC
+			, BODY_ENC
+			, CHARSET
+			, SEG_NO
+			, CAMP_TY
+			, CAMP_NO
+			, DEPT_NO
+			, CONT_FL_PATH
+			, SEND_UNIT_COST
+			, STATUS
+			, RECO_STATUS
+			, MAIL_TITLE
+			, SURVEYNO
+			, REG_ID
+			, REG_DT
+			, TASK_NM
+			, RESP_YN
+			, LINK_YN
+		)
+		VALUES
+		(
+			  NEO_TASK_SEQ.NEXTVAL
+			, #{planUserId}
+			, #{userId}
+			, #{mailFromNm}
+			, #{mailFromEm}
+			, #{replyToEm}
+			, #{returnEm}
+			, #{nmMerge}
+			, #{attCnt}
+			, #{sendRepeat}
+			, #{channel}
+			, #{respLog}
+			, #{contTy}
+			, #{sendTermEndDt}
+			, #{sendTermLoop}
+			, #{sendTermLoopTy}
+			, #{socketTimeout}
+			, #{connPerCnt}
+			, #{retryCnt}
+			, #{sendMode}
+			, #{headerEnc}
+			, #{bodyEnc}
+			, #{charset}
+			, #{segNo}
+			, #{campTy}
+			, #{campNo}
+			, #{deptNo}
+			, #{contFlPath}
+			, #{sendUnitCost}
+			, #{status}
+			, #{recoStatus}
+			, #{mailTitle}
+			, #{surveyno}
+			, #{regId}
+			, #{regDt}
+			, #{taskNm}
+			, #{respYn}
+			, #{linkYn}
+		)
+	</insert>
+	<select id="getTaskNo" resultType="_int">
+		SELECT NEO_TASK_SEQ.CURRVAL SEQ FROM DUAL
+	</select>
+	<select id="getSubTaskNo" parameterType="_int" resultType="_int">
+		SELECT NVL(MAX(SUB_TASK_NO),0)+1 I_MAX 
+		  FROM NEO_SUBTASK
+		 WHERE TASK_NO = #{taskNo}
+	</select>
+	<insert id="insertSubTaskInfo" parameterType="taskVO">
+		INSERT INTO NEO_SUBTASK
+		(
+			  TASK_NO
+			, SUB_TASK_NO
+			, SEND_DT
+			, RESP_END_DT
+			, WORK_STATUS
+			, RETRY_CNT
+			, SEND_TEST_YN
+			, SEND_TEST_EM
+			, SEND_IP
+			, CHANNEL
+			, STATUS
+		)
+		VALUES
+		(
+			  #{taskNo}
+			, #{subTaskNo}
+			, #{sendDt}
+			, #{respEndDt}
+			, #{workStatus}
+			, #{retryCnt}
+			, #{sendTestYn}
+			, #{sendTestEm}
+			, #{sendIp}
+			, #{channel}
+			, #{status}
+		)
+	</insert>
+	<insert id="insertAttachInfo" parameterType="attachVO">
+		INSERT INTO NEO_ATTACH
+		(
+			  ATT_NO
+			, ATT_NM
+			, ATT_FL_PATH
+			, TASK_NO
+			, ATT_FL_SIZE
+		)
+		VALUES
+		(
+			  NEO_ATTACH_SEQ.NEXTVAL
+			, #{attNm}
+			, #{attFlPath}
+			, #{taskNo}
+			, #{attFlSize}
+		)
+	</insert>
+	<insert id="insertLinkInfo" parameterType="linkVO">
+		INSERT INTO NEO_LINK
+		(
+			  LINK_NO
+			, LINK_URL
+			, LINK_NM
+			, ALIAS_NM
+			, LINK_TY
+			, REG_ID
+			, REG_DT
+		)
+		VALUES
+		(
+			  #{linkNo}
+			, #{linkUrl}
+			, #{linkNm}
+			, #{aliasNm}
+			, #{linkTy}
+			, #{regId}
+			, #{regDt}
+		)
+	</insert>
+	
 
 </mapper>

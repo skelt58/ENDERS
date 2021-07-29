@@ -51,6 +51,36 @@ public class StringUtil {
 	}
 	
 	/**
+	 * 문자(한자리 숫자)를 두자리 문자(숫자)로 변환하여 반환한다.
+	 * @param str
+	 * @return
+	 */
+	public static String setTwoDigitsString(String str) {
+		try {
+			int i = Integer.parseInt(str);
+			if(i < 10)
+				return "0" + i;
+			else
+				return "" + i ;
+		} catch(Exception e) {
+			return "";
+		}
+	}
+	
+	/**
+	 * 값이 NULL인지 체크한다.
+	 * @param str
+	 * @return
+	 */
+	public static boolean isNull(String str) {
+		if(str == null || "".equals(str)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
 	 * 현재 날짜에서 기간을 계산한 날짜를 지정한 양식(format)으로 반환한다.
 	 * durType => D:Date, M:Month, Y:Year<br/>
 	 * @param dur
@@ -539,6 +569,27 @@ public class StringUtil {
 			}
 			return fdate;
 		}
+	}
+	
+	/**
+	 * 해당 문자열을 변형한다.
+	 * 
+	 * @param input
+	 *            변형할 문자열 전체 dest 변형할 문자열
+	 * @return retstr 리턴 데이터
+	 */
+	public static String repStr(String input, String target, String dest) {
+		String s_Data = "";
+		String s_Tmp = input;
+		int i = s_Tmp.indexOf(target);
+
+		while (i != -1) {
+			s_Data = s_Data + s_Tmp.substring(0, i) + dest;
+			s_Tmp = s_Tmp.substring(i + target.length());
+			i = s_Tmp.indexOf(target);
+		}
+		s_Data = s_Data + s_Tmp;
+		return s_Data;
 	}
 
 }
