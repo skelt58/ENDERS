@@ -53,12 +53,12 @@ function goCamp() {
 function goMerge() {
     var obj = document.mailform;
 
-    if($("#segNo").val() == "0") {
+    if($("#segNoc").val() == "0") {
         $("#divMerge").html("* <spring:message code='CAMTBLLB006'/>!!");	// 발송대상그룹을 선택하세요.
         return;
     }
 
-    var merge = $("#segNo").val().substring($("#segNo").val().indexOf("|")+1);
+    var merge = $("#segNoc").val().substring($("#segNoc").val().indexOf("|")+1);
 
     var condHTML = "<select id='mergeKey' name='mergeKey'>";
 
@@ -75,11 +75,11 @@ function goMerge() {
 
 // 발송대상그룹 상세보기
 function goSegInfo() {
-	if($("#segNo").val() == "0") {
+	if($("#segNoc").val() == "0") {
 		alert("<spring:message code='CAMTBLLB006'/>!!");	// 발송대상그룹을 선택하세요.
 		return;
 	} else {
-		var segNo = $("#segNo").val();
+		var segNo = $("#segNoc").val();
 		segNo = segNo.substring(0, segNo.indexOf("|"));
 		
 	    window.open("<c:url value='/ems/seg/segInfoP.ums'/>?segNo=" + segNo,"segInfo", "width=1100, height=683,status=yes,scrollbars=no,resizable=no");
@@ -148,14 +148,10 @@ function goWebAgent() {
         window.open("<c:url value='/ems/cam/mailWebAgentP.ums'/>", "webAgent", "width=500, height=280");
     }
 }
-// 웹에이전트 내용 첨부
+// 웹에이전트 내용 첨부(팝업 창에서 실행됨)
 function setWebAgent(webAgentUrl) {
-	oEditors.getById["ir1"].exec("UPDATE_CONTENTS_FIELD", []);
-	var contents = $("#ir1").val();
-	contents = contents + "^:" + webAgentUrl + ":^";
-	
-	oEditors.getById["ir1"].exec("SET_CONTENTS", [""]);    //스마트에디터 초기화
-	oEditors.getById["ir1"].exec("PASTE_HTML", [contents]);   //스마트에디터 내용붙여넣기
+	var contents = "^:" + webAgentUrl + ":^";
+	oEditors.getById["ir1"].exec("PASTE_HTML", [webAgentUrl]);   //스마트에디터 내용붙여넣기
 }
 
 // 환경설성 클릭시(발송모드, 발송엔진셋팅, 인코딩 정보, 발신자 정보)
@@ -167,30 +163,172 @@ function goOption() {
 function goReject() {
     window.open("<c:url value='/ems/cam/mailRejectP.ums'/>", "mailReject", "width=450, height=200");
 }
-// 수신거부 내용추가
+// 수신거부 내용추가(팝업 창에서 실행됨)
 function setReject(rejectMsg) {
+	oEditors.getById["ir1"].exec("PASTE_HTML", [rejectMsg]);   //스마트에디터 내용붙여넣기	
+}
+
+// 제목 클릭시(메일제목 내용 추가)
+function goTitleMerge() {
+    if(typeof $("#mergeKey").val() == "undefined") {
+    	alert("<spring:message code='CAMTBLLB006'/>!!");	// 발송대상그룹을 선택하세요.
+    	return;
+    }
+    
+    $("#mailTitle").val( $("#mailTitle").val() + $("#mergeKey").val() );
+}
+
+//본문 클릭시(메일 내용 추가)
+function goContMerge() {
+	if(typeof $("#mergeKey").val() == "undefined") {
+		alert("<spring:message code='CAMTBLLB006'/>!!");	// 발송대상그룹을 선택하세요.
+		return;
+	}
+	
+	// 기존오류.. 내용 동일 적용
+    if($("#contType").val() == "000") {  // HTML
+		oEditors.getById["ir1"].exec("PASTE_HTML", [$("#mergeKey").val()]);   
+    } else {
+		oEditors.getById["ir1"].exec("PASTE_HTML", [$("#mergeKey").val()]);
+    }
+
+}
+
+// 첨부파일을 추가(파일 업로드 해준다. rFileName=attachPath,vFileName=attachNm)
+function uploadFile(rFileName, vFileName){
+    window.open("<c:url value='/com/uploadP.ums'/>?folder=attach&inputType=select&ext=&formName=mailInfoForm&title=&rFileName="+rFileName+"&vFileName="+vFileName, "window", "width=640,height=135");
+}
+// 첨부파일리스트에 파일명을 추가해준다.(업로드 팝업창에서 실행됨)
+function appendOption(form, oldFileUrl, newFileUrl, rFileName, vFileName) {
+    var i = oldFileUrl.lastIndexOf("/");
+
+    var oldOption = new Option(oldFileUrl.substring(i+1), oldFileUrl.substring(i+1));
+    var newOption = new Option(newFileUrl.substring(i+1), newFileUrl.substring(i+1));
+
+    $("#" + rFileName).append( newOption );
+    $("#" + vFileName).append( oldOption );
+    //form[RfileName].options[form[RfileName].length] = new_option;
+    //form[VfileName].options[form[VfileName].length] = old_option;
+}
+
+// 첨부파일 삭제(리스트에서 파일명을 삭제한다. rFileName=attachPath,vFileName=attachNm)
+function deleteFile(rFileName, vFileName) {
+	var selected = false;
+	$("#attachNm option:selected").each(function(idx,item) {
+		selected = true;
+	});
+	
+    if(!selected) {
+        alert("<spring:message code='CAMJSALT001'/>");	// 삭제할 파일을 선택하세요.
+        return;
+    }
+    
+    for(var i = $("#attachNm option").length - 1; i>=0; i--) {
+    	if($("#attachNm option").eq(i).is(":selected")) {
+    		$("#attachNm option").eq(i).remove();
+    		$("#attachPath option").eq(i).remove();
+    	}
+    }    
+}
+
+
+
+function goMailAdd() {
+    var obj = document.mailform;
+    obj.method = "post";
+
+    var errflag = false;
+    var errstr = "";
+    
+    if(typeof $("#deptNo").val() != "undefined") {
+        if($("#deptNo").val() != "0" && $("#userId").val() == "") {
+            errflag = true;
+            errstr += " [ <spring:message code='COMTBLTL005'/> ] ";		// 사용자
+        }
+    }
+    if($("#campInfo").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLTL006'/> ] ";			// 캠페인
+    }
+    if($("#segNoc").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLTL014'/> ] ";			// 발송대상그룹
+    }
+    if($("#taskNm").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLTL011'/> ] ";			// 메일명
+    }
+    if($("#mailTitle").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLTL025'/> ] ";			// 메일제목
+    }
+    if($("#mailFromNm").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLTL018'/> ] ";			// 발송자 성명
+    }
+    if($("#mailFromEm").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLTL019'/> ] ";			// 발송자 이메일
+    }
+    if($("#replyToEm").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLLB002'/> ] ";			// 수신거부
+    }
+
+    if($("#returnEm").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLLB003'/> ] ";			// 링크클릭
+    }
+
+    if($("#socketTimeout").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLLB004'/> ] ";			// 발송일로부터
+    }
+
+    if($("#connPerCnt").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLLB005'/> ] ";			// 일까지 추적
+    }
+
+    if($("#retryCnt").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLLB006'/> ] ";			// 발송대상그룹을 선택하세요.
+    }
+
+    if(errflag) {
+            alert("<spring:message code='COMJSALT001'/>.\n" + errstr);	// 입력값 에러\\n다음 정보를 확인하세요.
+            return;
+    }
+
 	oEditors.getById["ir1"].exec("UPDATE_CONTENTS_FIELD", []);
-	var contents = $("#ir1").val();
-	contents = contents + rejectMsg;
-	
-	alert(rejectMsg);
-	
-	oEditors.getById["ir1"].exec("SET_CONTENTS", [""]);    //스마트에디터 초기화
-	oEditors.getById["ir1"].exec("PASTE_HTML", [contents]);   //스마트에디터 내용붙여넣기	
+	$("#composerValue").val( $("#ir1").val() );
+
+    // 첨부파일을 모두 선택되도록 함.
+    $("#attachNm option").each(function(idx,item){
+    	$(item).prop("selected", true);
+    });
+    $("#attachPath option").each(function(idx,item){
+    	$(item).prop("selected", true);
+    });
+
+    $("#mailInfoForm").attr("target","iFrmMail").attr("action","<c:url value='/ems/cam/mailAdd.ums'/>").submit();
 }
 
 
 
 
-
-
+// 리스트로 이동
+function goList() {
+	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/cam/mailMainP.ums'/>").submit();
+}
 
 
 // 화면에서 예약시간 시, 분을 처리한다.
 function getDate(Date, selectedNum, minNum, maxNum, plusNum) {
     document.write("<select id='", Date," name='", Date, "'>");
-    for(i = minNum; i <= maxNum; i += plusNum)
+    for(i = minNum; i <= maxNum; i += plusNum) {
     	document.write("<option value=",i, i == selectedNum ? " selected>":">", i, "</option>");
+    }
     document.write("</select>");
 }
 </script>
@@ -298,7 +436,7 @@ function getDate(Date, selectedNum, minNum, maxNum, plusNum) {
 									</c:if>
 								</c:forEach>
 							</c:if>
-							<input type='hidden' id="composerValue" name="composerValue">
+							<input type='hidden' id="composerValue"   name="composerValue">
 							<input type='hidden' id="channel"         name='channel'         value='<c:out value='${channel}'/>'>
 							<input type='hidden' id="campNo"          name='campNo'          value="0">
 							<input type='hidden' id="campTy"          name='campTy'          value="">
@@ -334,7 +472,7 @@ function getDate(Date, selectedNum, minNum, maxNum, plusNum) {
 					<tr>
 						<td class="td_title"><spring:message code='CAMTBLTL014'/></td><!-- 발송대상그룹 -->
 						<td class="td_body">
-							<select id="segNo" name="segNo" onchange='goMerge()' class="wMiddle">
+							<select id="segNoc" name="segNoc" onchange='goMerge()' class="wMiddle">
 								<option value="0">::::<spring:message code='CAMTBLLB009'/>::::</option><!-- 발송그룹 선택 -->
 								<c:if test="${fn:length(segList) > 0}">
 									<c:forEach items="${segList}" var="seg">
@@ -459,7 +597,7 @@ function getDate(Date, selectedNum, minNum, maxNum, plusNum) {
 					<tr>
 						<td class="td_title"><spring:message code='CAMTBLTL028'/></td><!-- 정기발송종료일 -->
 						<td class="td_body">
-							<input type="checkbox" id="sendTerm" name="sendTerm" value="Y">
+							<input type="checkbox" id="isSendTerm" name="isSendTerm" value="Y">
 							<input type="text" id="sendTermEndDt" name="sendTermEndDt" style="width: 70;" class="readonly_style" value="<c:out value='${ymd}'/>" readonly>
 						</td>
 						<td class="td_title"><spring:message code='CAMTBLTL029'/></td><!-- 정기발송주기 -->
@@ -494,7 +632,7 @@ function getDate(Date, selectedNum, minNum, maxNum, plusNum) {
 					<tr>
 						<td class="td_title"><spring:message code='CAMTBLTL030'/></td><!-- 파일첨부 -->
 						<td class="td_body" colspan="3">
-							<select id="attachNm" name="attachNm" class="wTbig" multiple></select>
+							<select id="attachNm" name="attachNm" class="wTbig" style="width:600px;height:40px;" multiple></select>
 							<select id="attachPath" name="attachPath" style="display:none;" size="4" multiple></select>
 							<p class="right">
 								<input type="button" class="btn_style" value="<spring:message code='CAMBTN006'/>" onClick="uploadFile('attachPath','attachNm')"><!-- 추가 -->
@@ -507,7 +645,7 @@ function getDate(Date, selectedNum, minNum, maxNum, plusNum) {
 
 				<div class="btn">
 					<div class="btnR">
-						<input type="button" class="btn_style" value="<spring:message code='COMBTN005'/>" onClick="goAdd()"><!-- 등록 -->
+						<input type="button" class="btn_style" value="<spring:message code='COMBTN005'/>" onClick="goMailAdd()"><!-- 등록 -->
 						<input type="button" class="btn_style" value="<spring:message code='COMBTN010'/>" onClick="goList()"><!-- 리스트 -->
 					</div>
 				</div>
@@ -575,6 +713,6 @@ function getDate(Date, selectedNum, minNum, maxNum, plusNum) {
 		<%@ include file="/WEB-INF/jsp/inc/footer.jsp" %>
 	</div>
 </div>
-
+<iframe id="iFrmMail" name="iFrmMail" width="0" height="0" frameborder="0"></iframe>
 </body>
 </html>

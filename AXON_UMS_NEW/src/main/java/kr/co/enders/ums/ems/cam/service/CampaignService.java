@@ -6,12 +6,17 @@
 package kr.co.enders.ums.ems.cam.service;
 
 import java.util.List;
+import java.util.Vector;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import kr.co.enders.ums.com.vo.CodeVO;
+import kr.co.enders.ums.ems.cam.vo.AttachVO;
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
+import kr.co.enders.ums.ems.cam.vo.LinkVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
+import kr.co.enders.util.PropertiesUtil;
 
 @Service
 public interface CampaignService {
@@ -63,4 +68,17 @@ public interface CampaignService {
 	 */
 	@Transactional(value="transactionManagerEms")
 	public int updateMailAdmit(TaskVO taskVO) throws Exception; 
+	
+	public List<Vector<String>> mailAliasParser(TaskVO taskVO, List<CodeVO> mergeList, PropertiesUtil properties) throws Exception;
+	
+	/**
+	 * 메일 정보를 등록한다.(주업무 -> 보조업무 -> 첨부파일 -> 링크)
+	 * @param taskVO
+	 * @param attachList
+	 * @param linkList
+	 * @return
+	 * @throws Exception
+	 */
+	@Transactional(value="transactionManagerEms")
+	public int insertMailInfo(TaskVO taskVO, List<AttachVO> attachList, List<LinkVO> linkList) throws Exception;
 }

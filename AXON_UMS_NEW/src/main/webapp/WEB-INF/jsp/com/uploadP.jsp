@@ -19,9 +19,9 @@ function uploadFile() {
 	var lastFileName = fileFormat.substring(fileFormat.lastIndexOf("\\")+1);
 
 	var ext = fileFormat.substring(fileFormat.lastIndexOf(".")+1); // 확장자 체크
-
+	
 	if((extParam != null && extParam != "null" && extParam != "") && extParam.toLowerCase().indexOf(ext.toLowerCase()) == -1) {
-		alert(extParam+'<spring:message code="COMJSALT005"/>');		// 올바른 확장자가 아닙니다. 오로지 파일만 없로드할 수 있습니다.
+		alert(extParam+'<spring:message code="COMJSALT005"/>');		// 올바른 확장자가 아닙니다. 오로지 파일만 업로드할 수 있습니다.
 		return;
 	}
 	
@@ -29,8 +29,8 @@ function uploadFile() {
 		alert('<spring:message code="COMJSALT006"/>');		// 업로드할 파일을 선택해 주세요.
 		return;
 	} else {
-		for(i = 0; i < window.opener.document.<c:out value="${upload.formName}"/>.<c:out value="${upload.rFileName}"/>.length; i++) {
-			if(window.opener.document.<c:out value="${upload.formName}"/>.<c:out value="${upload.rFileName}"/>.options[i].value == lastFileName) {
+		for(i = 0; i < window.opener.document.<c:out value="${upload.formName}"/>.<c:out value="${upload.vFileName}"/>.length; i++) {
+			if(window.opener.document.<c:out value="${upload.formName}"/>.<c:out value="${upload.vFileName}"/>.options[i].value == lastFileName) {
 				alert("<spring:message code="COMJSALT007"/>");		// 같은 파일이 존재합니다.
 				return;
 			}
@@ -51,6 +51,7 @@ function uploadFile() {
 <input type="hidden" name="formName" value="<c:out value='${upload.formName}'/>"/>
 <input type="hidden" name="rFileName" value="<c:out value='${upload.rFileName}'/>"/>
 <input type="hidden" name="vFileName" value="<c:out value='${upload.vFileName}'/>"/>
+<input type="hidden" name="inputType" value="<c:out value='${upload.inputType}'/>"/>
 
 <table width="630" border="0" cellspacing="1" cellpadding="0" class="">
   <tr>

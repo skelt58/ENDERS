@@ -39,6 +39,7 @@ public class TaskVO extends CommonVO {
 	private String sendMode;
 	private int dbConnNo;
 	private int segNo;
+	private String segNoc;		// 번호가 캐릭터로 사용되는경우 segno + mergekey
 	private String segNm;
 	private String selectSql;
 	private String fromSql;
@@ -63,15 +64,26 @@ public class TaskVO extends CommonVO {
 	private String planUserId;
 	private String channel;
 	private String recoStatus;
+	private String idMerge;
 	private String nmMerge;
 	private String respYn;
 	private String linkYn;
-	private int survayno;
+	private int surveyno;
 	private String targetGrpTy;
 	private String regId;
 	private String regDt;
 	private String upId;
 	private String upDt;
+	
+	private String sendYmd;
+	private String sendHour;
+	private String sendMin;
+	private String isSendTerm;
+	private String respEndDt;
+	
+	//첨부파일
+	private String attachNm;
+	private String attachPath;
 	
 	// 추가정보
 	private int searchDeptNo;
@@ -84,8 +96,9 @@ public class TaskVO extends CommonVO {
 	private String searchWorkStatus;
 	private List<String> searchWorkStatusList;
 	private String adminYn;
-	
 	private String uilang;
+	private String composerValue;
+	private String campInfo;
 	
 	public int getTaskNo() {
 		return taskNo;
@@ -261,6 +274,12 @@ public class TaskVO extends CommonVO {
 	public void setSegNo(int segNo) {
 		this.segNo = segNo;
 	}
+	public String getSegNoc() {
+		return segNoc;
+	}
+	public void setSegNoc(String segNoc) {
+		this.segNoc = segNoc;
+	}
 	public String getSegNm() {
 		return segNm;
 	}
@@ -405,6 +424,12 @@ public class TaskVO extends CommonVO {
 	public void setRecoStatus(String recoStatus) {
 		this.recoStatus = recoStatus;
 	}
+	public String getIdMerge() {
+		return idMerge;
+	}
+	public void setIdMerge(String idMerge) {
+		this.idMerge = idMerge;
+	}
 	public String getNmMerge() {
 		return nmMerge;
 	}
@@ -423,11 +448,11 @@ public class TaskVO extends CommonVO {
 	public void setLinkYn(String linkYn) {
 		this.linkYn = linkYn;
 	}
-	public int getSurvayno() {
-		return survayno;
+	public int getSurveyno() {
+		return surveyno;
 	}
-	public void setSurvayno(int survayno) {
-		this.survayno = survayno;
+	public void setSurveyno(int surveyno) {
+		this.surveyno = surveyno;
 	}
 	public String getTargetGrpTy() {
 		return targetGrpTy;
@@ -524,5 +549,59 @@ public class TaskVO extends CommonVO {
 	}
 	public void setAdminYn(String adminYn) {
 		this.adminYn = adminYn;
+	}
+	public String getComposerValue() {
+		return composerValue;
+	}
+	public void setComposerValue(String composerValue) {
+		this.composerValue = composerValue;
+	}
+	public String getCampInfo() {
+		return campInfo;
+	}
+	public void setCampInfo(String campInfo) {
+		this.campInfo = campInfo;
+	}
+	public String getAttachNm() {
+		return attachNm;
+	}
+	public void setAttachNm(String attachNm) {
+		this.attachNm = attachNm;
+	}
+	public String getAttachPath() {
+		return attachPath;
+	}
+	public void setAttachPath(String attachPath) {
+		this.attachPath = attachPath;
+	}
+	public String getSendYmd() {
+		return sendYmd;
+	}
+	public void setSendYmd(String sendYmd) {
+		this.sendYmd = sendYmd;
+	}
+	public String getSendHour() {
+		return sendHour;
+	}
+	public void setSendHour(String sendHour) {
+		this.sendHour = sendHour;
+	}
+	public String getSendMin() {
+		return sendMin;
+	}
+	public void setSendMin(String sendMin) {
+		this.sendMin = sendMin;
+	}
+	public String getRespEndDt() {
+		return respEndDt;
+	}
+	public void setRespEndDt(String respEndDt) {
+		this.respEndDt = respEndDt;
+	}
+	public String getIsSendTerm() {
+		return isSendTerm;
+	}
+	public void setIsSendTerm(String isSendTerm) {
+		this.isSendTerm = isSendTerm;
 	}
 }

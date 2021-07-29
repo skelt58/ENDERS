@@ -20,8 +20,10 @@
 			</c:when>
 			<c:otherwise>
 	            <script type="text/javascript">
-	                window.opener.document.<c:out value="${uploadVO.formName}"/>.<c:out value="${uploadVO.rFileName}"/>.value = "<c:out value='${newFileName}'/>";
-	                window.opener.document.<c:out value="${uploadVO.formName}"/>.<c:out value="${uploadVO.vFileName}"/>.value = "<c:out value='${oldFileName}'/>";
+	            	$("#<c:out value='${uploadVO.rFileName}'/>", opener.document).val( "<c:out value='${newFileName}'/>" );
+	            	$("#<c:out value='${uploadVO.vFileName}'/>", opener.document).val( "<c:out value='${oldFileName}'/>" );
+	                //window.opener.document.<c:out value="${uploadVO.formName}"/>.<c:out value="${uploadVO.rFileName}"/>.value = "<c:out value='${newFileName}'/>";
+	                //window.opener.document.<c:out value="${uploadVO.formName}"/>.<c:out value="${uploadVO.vFileName}"/>.value = "<c:out value='${oldFileName}'/>";
 	                alert("<spring:message code='COMJSALT008'/>");		// 등록 성공
 	                self.close();
 	            </script>
