@@ -63,10 +63,6 @@
 	</session-config>
 
 	<error-page>
-		<error-code>404</error-code>
-		<location>/err/error404.ums</location>
-	</error-page>
-	<error-page>
 		<error-code>500</error-code>
 		<location>/err/error500.ums</location>
 	</error-page>

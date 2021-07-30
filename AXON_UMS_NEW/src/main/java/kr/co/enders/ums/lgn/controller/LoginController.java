@@ -47,7 +47,7 @@ public class LoginController {
 		
 		logger.debug("## goLogin Form Start");
 		
-		return "/lgn/lgnP";
+		return "lgn/lgnP";
 	}
 	
 	/**
@@ -126,11 +126,11 @@ public class LoginController {
 			}
 			
 			model.addAttribute("result","Y");
-			return "/lgn/lgn";
+			return "lgn/lgn";
 			
 		} else {
 			model.addAttribute("result","N");
-			return "/lgn/lgnP";
+			return "lgn/lgnP";
 		}
 	}
 	
@@ -140,6 +140,6 @@ public class LoginController {
 		// 세션정보 초기화
 		session.invalidate();
 		
-		return "/lgn/logout";
+		return "lgn/logout";
 	}
 }

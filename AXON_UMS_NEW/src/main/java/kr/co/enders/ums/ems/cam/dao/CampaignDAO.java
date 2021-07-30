@@ -15,6 +15,7 @@ import kr.co.enders.ums.ems.cam.vo.AttachVO;
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 import kr.co.enders.ums.ems.cam.vo.LinkVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
+import kr.co.enders.ums.ems.cam.vo.TestUserVO;
 
 @Repository
 public class CampaignDAO implements CampaignMapper {
@@ -47,13 +48,13 @@ public class CampaignDAO implements CampaignMapper {
 	}
 
 	@Override
-	public int updateTaskStatus(TaskVO taskVO) throws Exception {
-		return sqlSessionEms.getMapper(CampaignMapper.class).updateTaskStatus(taskVO);
+	public int updateTaskStatusAdmit(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).updateTaskStatusAdmit(taskVO);
 	}
 
 	@Override
-	public int updateSubTaskStatus(TaskVO taskVO) throws Exception {
-		return sqlSessionEms.getMapper(CampaignMapper.class).updateSubTaskStatus(taskVO);
+	public int updateSubTaskStatusAdmit(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).updateSubTaskStatusAdmit(taskVO);
 	}
 
 	@Override
@@ -84,6 +85,61 @@ public class CampaignDAO implements CampaignMapper {
 	@Override
 	public int insertLinkInfo(LinkVO linkVO) throws Exception {
 		return sqlSessionEms.getMapper(CampaignMapper.class).insertLinkInfo(linkVO);
+	}
+
+	@Override
+	public int updateTaskStatus(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).updateTaskStatus(taskVO);
+	}
+
+	@Override
+	public int updateSubTaskStatus(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).updateSubTaskStatus(taskVO);
+	}
+
+	@Override
+	public TaskVO getTaskInfo(int seq) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).getTaskInfo(seq);
+	}
+
+	@Override
+	public TaskVO getSubTaskInfo(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).getSubTaskInfo(taskVO);
+	}
+
+	@Override
+	public int insertTaskInfoForCopy(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).insertTaskInfoForCopy(taskVO);
+	}
+
+	@Override
+	public int insertSubTaskInfoForCopy(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).insertSubTaskInfoForCopy(taskVO);
+	}
+
+	@Override
+	public List<AttachVO> getAttachList(int taskNo) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).getAttachList(taskNo);
+	}
+
+	@Override
+	public List<TestUserVO> getTestUserList(String userId) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).getTestUserList(userId);
+	}
+
+	@Override
+	public int insertTestUserInfo(TestUserVO testUserVO) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).insertTestUserInfo(testUserVO);
+	}
+
+	@Override
+	public int updateTestUserInfo(TestUserVO testUserVO) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).updateTestUserInfo(testUserVO);
+	}
+
+	@Override
+	public int deleteTestUserInfo(TestUserVO testUserVO) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).deleteTestUserInfo(testUserVO);
 	}
 	
 }

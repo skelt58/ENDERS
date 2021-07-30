@@ -34,6 +34,7 @@ import kr.co.enders.ums.ems.cam.vo.AttachVO;
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 import kr.co.enders.ums.ems.cam.vo.LinkVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
+import kr.co.enders.ums.ems.cam.vo.TestUserVO;
 import kr.co.enders.ums.ems.seg.service.SegmentService;
 import kr.co.enders.ums.ems.seg.vo.SegmentVO;
 import kr.co.enders.ums.ems.sys.service.SystemService;
@@ -683,24 +684,25 @@ public class CampaignController {
 		logger.debug("goMailAdd linkYn     = " + taskVO.getLinkYn());
 		logger.debug("goMailAdd attachNm   = " + taskVO.getAttachNm());
 		logger.debug("goMailAdd attachPath = " + taskVO.getAttachPath());
+		logger.debug("goMailAdd sendHour   = " + taskVO.getSendHour());
+		logger.debug("goMailAdd sendMin    = " + taskVO.getSendMin());
 		
-		List<AttachVO> attachList = null;
-		List<LinkVO> linkList = null;
+		List<AttachVO> attachList = null;		// 첨부파일 목록
+		List<LinkVO> linkList = null;			// 링크 목록
 		
 		// 파일 사이즈 체크
 		if(taskVO.getAttachPath() != null && !"".equals(taskVO.getAttachPath())) {
 			attachList = new ArrayList<AttachVO>();
 			
 			File attachFile = null;
-			String basePath = properties.getProperty("C:/mpv3/AXON_UMS/front/upload") + "/attach";
+			String basePath = properties.getProperty("FILE.UPLOAD_PATH") + "/attach";
 			
 			long fileSize = 0;
 			String[] fileNm = taskVO.getAttachNm().split(",");
 			String[] filePath = taskVO.getAttachPath().split(",");
-			long[] attachSize = new long[filePath.length];
+			taskVO.setAttCnt(filePath.length);		// 첨부파일 수 설정
 			for(int i=0;i<filePath.length;i++) {
 				attachFile = new File(basePath + "/" + filePath[i]);
-				attachSize[i] = attachFile.length();
 				fileSize += attachFile.length();
 				
 				AttachVO attach = new AttachVO();
@@ -722,21 +724,59 @@ public class CampaignController {
 		// 기본값 설정
 		if(taskVO.getDeptNo() == 0) taskVO.setDeptNo((int)session.getAttribute("NEO_DEPT_NO"));						// 부서번호
 		if(StringUtil.isNull(taskVO.getUserId())) taskVO.setUserId((String)session.getAttribute("NEO_USER_ID"));	// 사용자아이디
+		if(StringUtil.isNull(taskVO.getPlanUserId())) taskVO.setPlanUserId("");
+		if(StringUtil.isNull(taskVO.getCampTy())) taskVO.setCampTy("");												// 캠페인유형
+		if(StringUtil.isNull(taskVO.getNmMerge())) taskVO.setNmMerge("");											// $:nm_merge:$형태로 넘어옴
+		if(StringUtil.isNull(taskVO.getIdMerge())) taskVO.setIdMerge("");											// $:id_merge:$형태로 넘어옴
 		if(StringUtil.isNull(taskVO.getChannel())) taskVO.setChannel("000");										// 채널코드
-		if(taskVO.getSegNoc() != "0") taskVO.setSegNo(Integer.parseInt( taskVO.getSegNoc().substring(0, taskVO.getSegNoc().indexOf("|")) ));		// 세그먼트번호
-		if(StringUtil.isNull(taskVO.getRespYn())) taskVO.setRespYn("0");											// 수신여부
-		String sendHour = StringUtil.setTwoDigitsString(taskVO.getSendHour());
-		String sendMin = StringUtil.setTwoDigitsString(taskVO.getSendMin());
+		if(StringUtil.isNull(taskVO.getContTy())) taskVO.setContTy("000");											// 편집모드(기본 HTML형식)
+		if(!StringUtil.isNull(taskVO.getSegNoc())) taskVO.setSegNo(Integer.parseInt( taskVO.getSegNoc().substring(0, taskVO.getSegNoc().indexOf("|")) ));		// 세그먼트번호(발송대상그룹)
+		if(StringUtil.isNull(taskVO.getRespYn())) taskVO.setRespYn("0");											// 수신확인
+		if(StringUtil.isNull(taskVO.getTaskNm())) taskVO.setTaskNm("");												// 메일명
+		if(StringUtil.isNull(taskVO.getMailTitle())) taskVO.setMailTitle("");										// 메일제목
+		if(StringUtil.isNull(taskVO.getSendYmd())) taskVO.setSendYmd("0000-00-00");									// 예약시간(예약일)
+		String sendHour = StringUtil.setTwoDigitsString(taskVO.getSendHour());										// 예약시간(시)
+		String sendMin = StringUtil.setTwoDigitsString(taskVO.getSendMin());										// 예약시간(분)
 		taskVO.setSendDt( taskVO.getSendYmd().replaceAll("-", "") + sendHour + sendMin );							// 예약일시
 		taskVO.setRespEndDt("999999999999");
+		if(StringUtil.isNull(taskVO.getIsSendTerm())) taskVO.setIsSendTerm("N");									// 정기발송체크여부
+		if(StringUtil.isNull(taskVO.getSendTermEndDt())) taskVO.setSendTermEndDt("0000-00-00");						// 정기발송종료일
+		if(StringUtil.isNull(taskVO.getSendTermLoop())) taskVO.setSendTermLoop("");									// 정기발송주기
+		if(StringUtil.isNull(taskVO.getSendTermLoopTy())) taskVO.setSendTermLoopTy("");								// 정기발송주기유형
+		if(StringUtil.isNull(taskVO.getSendTestYn())) taskVO.setSendTestYn("N");
+		if(StringUtil.isNull(taskVO.getSendTestEm())) taskVO.setSendTestEm("N");
+		if(StringUtil.isNull(taskVO.getComposerValue())) taskVO.setComposerValue("");								// 메일내용
 		if("Y".equals(taskVO.getIsSendTerm())) {
-			taskVO.setSendTermEndDt( taskVO.getSendTermEndDt().replaceAll("-", "") + "2400" );							// 정기발송종료일
+			taskVO.setSendTermEndDt( taskVO.getSendTermEndDt().replaceAll("-", "") + "2400" );						// 정기발송종료일
 			taskVO.setSendRepeat("001");
 		} else {
 			taskVO.setSendTermEndDt("");
 			taskVO.setSendTermLoop("");
 			taskVO.setSendTermLoopTy("");
+			taskVO.setSendRepeat("000");
 		}
+		if(StringUtil.isNull(taskVO.getLinkYn())) taskVO.setLinkYn("N");											// 링크클릭
+		taskVO.setRegId((String)session.getAttribute("NEO_USER_ID"));
+		taskVO.setRegDt(StringUtil.getDate(Code.TM_YMDHMS));
+		
+		
+		if(StringUtil.isNull(taskVO.getSendMode())) taskVO.setSendMode("");
+		if(StringUtil.isNull(taskVO.getMailFromNm())) taskVO.setMailFromNm("");
+		if(StringUtil.isNull(taskVO.getMailFromEm())) taskVO.setMailFromEm("");
+		if(StringUtil.isNull(taskVO.getReplyToEm())) taskVO.setReplyToEm("");
+		if(StringUtil.isNull(taskVO.getReturnEm())) taskVO.setReturnEm("");
+		
+		if(StringUtil.isNull(taskVO.getHeaderEnc())) taskVO.setHeaderEnc("");
+		if(StringUtil.isNull(taskVO.getBodyEnc())) taskVO.setBodyEnc("");
+		if(StringUtil.isNull(taskVO.getCharset())) taskVO.setCharset("");
+		
+		
+		taskVO.setStatus("000");
+		taskVO.setRecoStatus("000");
+		taskVO.setWorkStatus("000");
+		taskVO.setSendIp(properties.getProperty("SEND_IP"));
+		
+		
 		
 		List<Vector<String>> dataList = null; //[LINK_TY, LINK_NM, LINK_URL, LINK_NO]
 		// 링크클릭 체크한 경우
@@ -757,6 +797,7 @@ public class CampaignController {
 			}
 			
 			try {
+				// 링크 클릭 알리아스 처리
 				dataList = campaignService.mailAliasParser(taskVO, mergeList, properties);
 			} catch(Exception e) {
 				logger.error("campaignService.mailAliasParser error = "+ e);
@@ -771,6 +812,8 @@ public class CampaignController {
 					link.setLinkNm((String)vec.get(1));
 					link.setLinkUrl((String)vec.get(2));
 					link.setLinkNo(Integer.parseInt((String)vec.get(3)));
+					link.setRegId((String)session.getAttribute("NEO_USER_ID"));
+					link.setRegDt(StringUtil.getDate(Code.TM_YMDHMS));
 					linkList.add(link);
 				}
 			}
@@ -828,10 +871,12 @@ public class CampaignController {
 			if(fos != null) try { fos.close(); } catch(Exception e) {}
 		}
 		
+		
+		
 		int result = 0;
 		// 메일 정보 등록(NEO_TASK, NEO_SUBTASK, NEO_ATTACH, NEO_LINK)
 		try {
-			campaignService.insertMailInfo(taskVO, attachList, linkList);
+			result = campaignService.insertMailInfo(taskVO, attachList, linkList);
 		} catch(Exception e) {
 			logger.error("campaignService.insertMailInfo error = " + e);
 		}
@@ -928,5 +973,200 @@ public class CampaignController {
 		model.addAttribute("RES_REJECT_URL", properties.getProperty("RES_REJECT_URL"));
 		
 		return "ems/cam/mailRejectP";
+	}
+	
+	/**
+	 * 메일(캠페인 주업무, 보조업무) 상태를 업데이트 한다.
+	 * @param taskVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/mailDelete")
+	public ModelAndView updateMailStatus(@ModelAttribute TaskVO taskVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("updateMailStatus taskNos    = " + taskVO.getTaskNos());
+		logger.debug("updateMailStatus subTaskNos = " + taskVO.getSubTaskNos());
+		logger.debug("updateMailStatus status     = " + taskVO.getStatus());
+		
+		taskVO.setUpId((String)session.getAttribute("NEO_USER_ID"));
+		taskVO.setUpDt(StringUtil.getDate(Code.TM_YMDHMS));
+
+		int result = 0;
+		try {
+			result = campaignService.updateMailStatus(taskVO);
+		} catch(Exception e) {
+			logger.error("campaignService.updateMailStatus error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result", "Success");
+		} else {
+			map.put("result", "Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	/**
+	 * 메일을 복사한다.(주업무, 보조업무, 첨부파일)
+	 * @param taskVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/mailCopy")
+	public ModelAndView copyMailInfo(@ModelAttribute TaskVO taskVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("copyMailInfo taskNos    = " + taskVO.getTaskNos());
+		logger.debug("copyMailInfo subTaskNos = " + taskVO.getSubTaskNos());
+		
+		taskVO.setTaskNo( Integer.parseInt(taskVO.getTaskNos()) );
+		taskVO.setSubTaskNo( Integer.parseInt(taskVO.getSubTaskNos()) );
+		taskVO.setUserId((String)session.getAttribute("NEO_USER_ID"));
+		taskVO.setDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+		taskVO.setRegId((String)session.getAttribute("NEO_USER_ID"));
+		
+		int result = 0;
+		try {
+			result = campaignService.copyMailInfo(taskVO, properties);
+		} catch(Exception e) {
+			logger.error("campaignService.copyMailInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result", "Success");
+		} else {
+			map.put("result", "Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	/**
+	 * 테스트발송 팝업창을 출력한다.
+	 * @param testUserVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/mailTestListP")
+	public String goTestUserList(@ModelAttribute TestUserVO testUserVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goTestUserList taskNos    = " + testUserVO.getTaskNos());
+		logger.debug("goTestUserList subTaskNos = " + testUserVO.getSubTaskNos());
+		
+		String userId = (String)session.getAttribute("NEO_USER_ID");
+		List<TestUserVO> testUserList = null;
+		try {
+			testUserList = campaignService.getTestUserList(userId);
+		} catch(Exception e) {
+			logger.error("campaignService.getTestUserList error = " + e);
+		}
+		
+		model.addAttribute("testUserVO", testUserVO);
+		model.addAttribute("testUserList", testUserList);	// 테스트유저 목록
+		
+		return "ems/cam/mailTestListP";
+	}
+	
+	/**
+	 * 테스트 사용자 정보 등록
+	 * @param testUserVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/mailTestAdd")
+	public ModelAndView insertTestUserInfo(@ModelAttribute TestUserVO testUserVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("insertTestUserInfo testUserNm = " + testUserVO.getTestUserNm());
+		logger.debug("insertTestUserInfo testUserEm = " + testUserVO.getTestUserEm());
+		
+		testUserVO.setUserId((String)session.getAttribute("NEO_USER_ID"));
+		int result = 0;
+		try {
+			result = campaignService.insertTestUserInfo(testUserVO);
+		} catch(Exception e) {
+			logger.error("campaignService.insertTestUserInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result", "Success");
+		} else {
+			map.put("result", "Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	/**
+	 * 테스트 사용자 정보 수정
+	 * @param testUserVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/mailTestUpdate")
+	public ModelAndView updateTestUserInfo(@ModelAttribute TestUserVO testUserVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("updateTestUserInfo testUserNm = " + testUserVO.getTestUserNm());
+		logger.debug("updateTestUserInfo testUserEm = " + testUserVO.getTestUserEm());
+		logger.debug("updateTestUserInfo testUserNo = " + testUserVO.getTestUserNo());
+		
+		int result = 0;
+		try {
+			result = campaignService.updateTestUserInfo(testUserVO);
+		} catch(Exception e) {
+			logger.error("campaignService.updateTestUserInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result", "Success");
+		} else {
+			map.put("result", "Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/mailTestDelete")
+	public ModelAndView deleteTestUserInfo(@ModelAttribute TestUserVO testUserVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("deleteTestUserInfo testUserNo = " + testUserVO.getTestUserNo());
+		
+		int result = 0;
+		try {
+			result = campaignService.deleteTestUserInfo(testUserVO);
+		} catch(Exception e) {
+			logger.error("campaignService.deleteTestUserInfo error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result", "Success");
+		} else {
+			map.put("result", "Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
 	}
 }

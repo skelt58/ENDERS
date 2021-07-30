@@ -24,6 +24,7 @@ public class TaskVO extends CommonVO {
 	private String userId;
 	private int attCnt;
 	private String sendDt;
+	private String endDt;
 	private String sendRepeat;
 	private String sendRepeatNm;
 	private String sendTermLoop;
@@ -99,6 +100,11 @@ public class TaskVO extends CommonVO {
 	private String uilang;
 	private String composerValue;
 	private String campInfo;
+	private String sendTestYn;
+	private String sendTestEm;
+	private String sendIp;
+	private String taskNos;
+	private String subTaskNos;
 	
 	public int getTaskNo() {
 		return taskNo;
@@ -183,6 +189,12 @@ public class TaskVO extends CommonVO {
 	}
 	public void setSendDt(String sendDt) {
 		this.sendDt = sendDt;
+	}
+	public String getEndDt() {
+		return endDt;
+	}
+	public void setEndDt(String endDt) {
+		this.endDt = endDt;
 	}
 	public String getSendRepeat() {
 		return sendRepeat;
@@ -603,5 +615,35 @@ public class TaskVO extends CommonVO {
 	}
 	public void setIsSendTerm(String isSendTerm) {
 		this.isSendTerm = isSendTerm;
+	}
+	public String getSendTestYn() {
+		return sendTestYn;
+	}
+	public void setSendTestYn(String sendTestYn) {
+		this.sendTestYn = sendTestYn;
+	}
+	public String getSendTestEm() {
+		return sendTestEm;
+	}
+	public void setSendTestEm(String sendTestEm) {
+		this.sendTestEm = sendTestEm;
+	}
+	public String getSendIp() {
+		return sendIp;
+	}
+	public void setSendIp(String sendIp) {
+		this.sendIp = sendIp;
+	}
+	public String getTaskNos() {
+		return taskNos;
+	}
+	public void setTaskNos(String taskNos) {
+		this.taskNos = taskNos;
+	}
+	public String getSubTaskNos() {
+		return subTaskNos;
+	}
+	public void setSubTaskNos(String subTaskNos) {
+		this.subTaskNos = subTaskNos;
 	}
 }

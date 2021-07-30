@@ -8,8 +8,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/inc/taglib.jsp" %>
 
-<form id="mailListForm" name="mailListForm">
+<form id="mailListForm" name="mailListForm" method="post">
 <input type="hidden" name="locPos" value="list">
+<input type="hidden" id="status" name="status"/>
 <table class="table_line_outline" border="1" cellspacing="0">
 	<colgroup>
 		<col style="width: 3%;" />
@@ -44,13 +45,13 @@
 				<td style="text-align: center;">
 					<c:choose>
 						<c:when test="${'002' eq mail.status}">
-							<input type="checkbox" name="taskNo" value="<c:out value='${mail.taskNo}'/>" style="border:0" onclick='return goDeleteClick()'>
-							<input type="checkbox" name="subTaskNo" value="<c:out value='${mail.subTaskNo}'/>" style="display:none;" readonly>
+							<input type="checkbox" name="taskNos" value="<c:out value='${mail.taskNo}'/>" onclick='return goDeleteClick()'>
+							<input type="checkbox" name="subTaskNos" value="<c:out value='${mail.subTaskNo}'/>" style="display:none;" readonly>
 							<input type="checkbox" name="workStatus" value="<c:out value='${mail.workStatus}'/>" style="display:none;" readonly>
 						</c:when>
 						<c:otherwise>
-							<input type="checkbox" name="taskNo" value="<c:out value='${mail.taskNo}'/>" style="border 0" onclick='goTaskNo(<c:out value='${mailStatus.index}'/>)'>
-							<input type="checkbox" name="subTaskNo" value="<c:out value='${mail.subTaskNo}'/>" style="display:none;" readonly>
+							<input type="checkbox" name="taskNos" value="<c:out value='${mail.taskNo}'/>" onclick='goTaskNo(<c:out value='${mailStatus.index}'/>)'>
+							<input type="checkbox" name="subTaskNos" value="<c:out value='${mail.subTaskNo}'/>" style="display:none;" readonly>
 							<input type="checkbox" name="workStatus" value="<c:out value='${mail.workStatus}'/>" style="display:none;" readonly>
 						</c:otherwise>
 					</c:choose>
@@ -59,16 +60,22 @@
 					<c:out value="${mail.campNm}"/>
 				</td>
 				<td class="td_body">
+					<div style="width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
 					<a href="JavaScript:goUpdatef('<c:out value='${mail.taskNo}'/>','<c:out value='${mail.subTaskNo}'/>')" title="<c:out value='${mail.taskNm}'/>">
 					<c:if test="${'000' ne mail.sendRepeat}">[<c:out value='${mail.subTaskNo}'/><spring:message code='COMTBLLB006'/>]</c:if> <c:out value="${mail.taskNm}"/>
 					</a><!-- COMTBLLB006:차 -->
+					</div>
 				</td>
 				<td class="td_body">
 					<a href="javascript:goSegInfo('<c:out value='${mail.segNo}'/>')"> <c:out value="${mail.segNm}"/></a>
 				</td>
 				<td><c:out value="${mail.sendRepeatNm}"/></td>
 				<td><c:out value="${mail.userId}"/></td>
-				<td><c:out value="${mail.sendDt}"/></td>
+				<td>
+					<fmt:parseDate var="sendDate" value="${mail.sendDt}" pattern="yyyyMMddHHmm"/>
+					<fmt:formatDate var="sendDt" value="${sendDate}" pattern="yyyy-MM-dd HH:mm"/> 
+					<c:out value="${sendDt}"/>
+				</td>
 				<td><c:out value="${mail.subStatusNm}"/></td>
 				<td style="word-break: break-all;">
 					<c:choose>

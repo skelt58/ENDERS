@@ -236,14 +236,14 @@
 		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
 	</select>
 	
-	<update id="updateTaskStatus" parameterType="taskVO">
+	<update id="updateTaskStatusAdmit" parameterType="taskVO">
 		UPDATE NEO_TASK
 		   SET RECO_STATUS = #{recoStatus}
 			 , EXE_USER_ID = #{exeUserId}
 		 WHERE TASK_NO     = #{taskNo}
 	</update>
 	
-	<update id="updateSubTaskStatus" parameterType="taskVO">
+	<update id="updateSubTaskStatusAdmit" parameterType="taskVO">
 		UPDATE NEO_SUBTASK
 		   SET WORK_STATUS = #{workStatus}
 		 WHERE TASK_NO     = #{taskNo}
@@ -413,6 +413,257 @@
 			, #{regDt}
 		)
 	</insert>
+	
+	<update id="updateTaskStatus" parameterType="taskVO">
+		UPDATE NEO_TASK
+		   SET STATUS  = #{status}
+			 , UP_ID   = #{upId}
+			 , UP_DT   = #{upDt}
+		 WHERE TASK_NO = #{taskNo}
+	</update>
+	<update id="updateSubTaskStatus" parameterType="taskVO">
+		UPDATE NEO_SUBTASK
+		   SET STATUS = #{status}
+		 WHERE TASK_NO     = #{taskNo}
+		   AND SUB_TASK_NO = #{subTaskNo}
+	</update>
+	
+	<select id="getTaskInfo" parameterType="_int" resultType="taskVO">
+		SELECT TASK_NO
+			 , PLAN_USER_ID
+			 , USER_ID
+			 , EXE_USER_ID
+			 , MAIL_FROM_NM
+			 , MAIL_FROM_EM
+			 , REPLY_TO_EM
+			 , RETURN_EM
+			 , NM_MERGE
+			 , ATT_CNT
+			 , SEND_REPEAT
+			 , CHANNEL
+			 , RESP_LOG
+			 , CONT_TY
+			 , SEND_TERM_END_DT
+			 , SEND_TERM_LOOP
+			 , SEND_TERM_LOOP_TY
+			 , SOCKET_TIMEOUT
+			 , CONN_PER_CNT
+			 , RETRY_CNT
+			 , SEND_MODE
+			 , HEADER_ENC
+			 , BODY_ENC
+			 , SEG_NO,CAMP_TY
+			 , CAMP_NO
+			 , DEPT_NO
+			 , CONT_FL_PATH
+			 , SEND_UNIT_COST
+			 , STATUS
+			 , RECO_STATUS
+			 , MAIL_TITLE
+			 , SURVEYNO
+			 , REG_ID
+			 , REG_DT
+			 , UP_ID
+			 , UP_DT
+			 , TASK_NM
+			 , CHARSET
+			 , RESP_YN
+			 , LINK_YN
+		  FROM NEO_TASK
+		 WHERE TASK_NO = #{taskNo}
+	</select>
+	
+	<select id="getSubTaskInfo" parameterType="taskVO" resultType="taskVO">
+		SELECT SUB_TASK_NO
+			 , TASK_NO
+			 , SEND_DT
+			 , END_DT
+			 , RESP_END_DT
+			 , WORK_STATUS
+			 , RETRY_CNT
+			 , SEND_TEST_YN
+			 , SEND_TEST_EM
+			 , SEND_IP
+			 , CHANNEL
+		  FROM NEO_SUBTASK
+		 WHERE TASK_NO     = #{taskNo}
+		   AND SUB_TASK_NO = #{subTaskNo}
+	</select>
+	
+	<insert id="insertTaskInfoForCopy" parameterType="taskVO">
+		INSERT INTO NEO_TASK
+		(
+			  TASK_NO
+			, PLAN_USER_ID
+			, USER_ID
+			, EXE_USER_ID
+			, MAIL_FROM_NM
+			, MAIL_FROM_EM
+			, REPLY_TO_EM
+			, RETURN_EM
+			, NM_MERGE
+			, ATT_CNT
+			, SEND_REPEAT
+			, CHANNEL
+			, RESP_LOG
+			, CONT_TY
+			, SEND_TERM_END_DT
+			, SEND_TERM_LOOP
+			, SEND_TERM_LOOP_TY
+			, SOCKET_TIMEOUT
+			, CONN_PER_CNT
+			, RETRY_CNT
+			, SEND_MODE
+			, HEADER_ENC
+			, BODY_ENC
+			, SEG_NO
+			, CAMP_TY
+			, CAMP_NO
+			, DEPT_NO
+			, CONT_FL_PATH
+			, SEND_UNIT_COST
+			, STATUS
+			, RECO_STATUS
+			, MAIL_TITLE
+			, SURVEYNO
+			, REG_ID
+			, REG_DT
+			, UP_ID
+			, UP_DT
+			, TASK_NM
+			, CHARSET
+			, RESP_YN
+			, LINK_YN
+		)
+		VALUES
+		(
+			  NEO_TASK_SEQ.NEXTVAL
+			, #{planUserId}
+			, #{userId}
+			, #{exeUserId}
+			, #{mailFromNm}
+			, #{mailFromEm}
+			, #{replyToEm}
+			, #{returnEm}
+			, #{nmMerge}
+			, #{attCnt}
+			, #{sendRepeat}
+			, #{channel}
+			, #{respLog}
+			, #{contTy}
+			, #{sendTermEndDt}
+			, #{sendTermLoop}
+			, #{sendTermLoopTy}
+			, #{socketTimeout}
+			, #{connPerCnt}
+			, #{retryCnt}
+			, #{sendMode}
+			, #{headerEnc}
+			, #{bodyEnc}
+			, #{segNo}
+			, #{campTy}
+			, #{campNo}
+			, #{deptNo}
+			, #{contFlPath}
+			, #{sendUnitCost}
+			, #{status}
+			, #{recoStatus}
+			, #{mailTitle}
+			, #{surveyno}
+			, #{regId}
+			, #{regDt}
+			, #{upId}
+			, #{upDt}
+			, #{taskNm}
+			, #{charset}
+			, #{respYn}
+			, #{linkYn}
+		)
+	</insert>
+	
+	<insert id="insertSubTaskInfoForCopy" parameterType="taskVO">
+		INSERT INTO NEO_SUBTASK
+		(
+			  SUB_TASK_NO
+			, TASK_NO
+			, SEND_DT
+			, END_DT
+			, RESP_END_DT
+			, WORK_STATUS
+			, RETRY_CNT
+			, SEND_TEST_YN
+			, SEND_TEST_EM
+			, SEND_IP
+			, CHANNEL
+			, STATUS
+		)
+		VALUES
+		(
+			  #{subTaskNo}
+			, #{taskNo}
+			, #{sendDt}
+			, #{endDt}
+			, #{respEndDt}
+			, #{workStatus}
+			, #{retryCnt}
+			, #{sendTestYn}
+			, #{sendTestEm}
+			, #{sendIp}
+			, #{channel}
+			, #{status}
+		)
+	</insert>
+	
+	<select id="getAttachList" parameterType="_int" resultType="attachVO">
+		SELECT ATT_NM
+			 , ATT_FL_PATH
+			 , TASK_NO
+			 , ATT_FL_SIZE
+			 , ATT_FL_TY
+			 , ENCRYPT_YN
+			 , ENCRYPT_KEY
+			 , ENCRYPT_TY
+		  FROM NEO_ATTACH
+		 WHERE TASK_NO = #{taskNo}
+	</select>
+	
+	<select id="getTestUserList" parameterType="string" resultType="testUserVO">
+		SELECT TEST_USER_NO
+			 , TEST_USER_NM
+			 , TEST_USER_EM
+			 , USER_ID
+		  FROM NEO_TEST_USER
+		 WHERE USER_ID = #{userId}
+	</select>
+	
+	<insert id="insertTestUserInfo" parameterType="testUserVO">
+		INSERT INTO NEO_TEST_USER
+		(
+			  TEST_USER_NO
+			, TEST_USER_NM
+			, TEST_USER_EM
+			, USER_ID
+		)
+		VALUES
+		(
+			  NEO_TEST_USER_SEQ.NEXTVAL
+			, #{testUserNm}
+			, #{testUserEm}
+			, #{userId}
+		)
+	</insert>
+	
+	<update id="updateTestUserInfo" parameterType="testUserVO">
+		UPDATE NEO_TEST_USER
+		   SET TEST_USER_NM = #{testUserNm}
+			 , TEST_USER_EM = #{testUserEm}
+		 WHERE TEST_USER_NO = #{testUserNo}
+	</update>
+	
+	<delete id="deleteTestUserInfo" parameterType="testUserVO">
+		DELETE FROM NEO_TEST_USER
+		 WHERE TEST_USER_NO = #{testUserNo}
+	</delete>
 	
 
 </mapper>

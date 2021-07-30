@@ -151,7 +151,7 @@ function goWebAgent() {
 // 웹에이전트 내용 첨부(팝업 창에서 실행됨)
 function setWebAgent(webAgentUrl) {
 	var contents = "^:" + webAgentUrl + ":^";
-	oEditors.getById["ir1"].exec("PASTE_HTML", [webAgentUrl]);   //스마트에디터 내용붙여넣기
+	oEditors.getById["ir1"].exec("PASTE_HTML", [contents]);   //스마트에디터 내용붙여넣기
 }
 
 // 환경설성 클릭시(발송모드, 발송엔진셋팅, 인코딩 정보, 발신자 정보)
@@ -234,9 +234,6 @@ function deleteFile(rFileName, vFileName) {
 
 
 function goMailAdd() {
-    var obj = document.mailform;
-    obj.method = "post";
-
     var errflag = false;
     var errstr = "";
     
@@ -272,27 +269,27 @@ function goMailAdd() {
     }
     if($("#replyToEm").val() == "") {
         errflag = true;
-        errstr += " [ <spring:message code='CAMTBLLB002'/> ] ";			// 수신거부
+        errstr += " [ <spring:message code='CAMTBLLB002'/> ] ";			// 수신거부(이전 소스 경고 메시지 잘못된 듯)
     }
 
     if($("#returnEm").val() == "") {
         errflag = true;
-        errstr += " [ <spring:message code='CAMTBLLB003'/> ] ";			// 링크클릭
+        errstr += " [ <spring:message code='CAMTBLLB003'/> ] ";			// 링크클릭(이전 소스 경고 메시지 잘못된 듯)
     }
 
     if($("#socketTimeout").val() == "") {
         errflag = true;
-        errstr += " [ <spring:message code='CAMTBLLB004'/> ] ";			// 발송일로부터
+        errstr += " [ <spring:message code='CAMTBLLB004'/> ] ";			// 발송일로부터(이전 소스 경고 메시지 잘못된 듯)
     }
 
     if($("#connPerCnt").val() == "") {
         errflag = true;
-        errstr += " [ <spring:message code='CAMTBLLB005'/> ] ";			// 일까지 추적
+        errstr += " [ <spring:message code='CAMTBLLB005'/> ] ";			// 일까지 추적(이전 소스 경고 메시지 잘못된 듯)
     }
 
     if($("#retryCnt").val() == "") {
         errflag = true;
-        errstr += " [ <spring:message code='CAMTBLLB006'/> ] ";			// 발송대상그룹을 선택하세요.
+        errstr += " [ <spring:message code='CAMTBLLB006'/> ] ";			// 발송대상그룹을 선택하세요.(이전 소스 경고 메시지 잘못된 듯)
     }
 
     if(errflag) {
@@ -325,7 +322,7 @@ function goList() {
 
 // 화면에서 예약시간 시, 분을 처리한다.
 function getDate(Date, selectedNum, minNum, maxNum, plusNum) {
-    document.write("<select id='", Date," name='", Date, "'>");
+    document.write("<select id='", Date,"' name='", Date, "'>");
     for(i = minNum; i <= maxNum; i += plusNum) {
     	document.write("<option value=",i, i == selectedNum ? " selected>":">", i, "</option>");
     }
@@ -473,7 +470,7 @@ function getDate(Date, selectedNum, minNum, maxNum, plusNum) {
 						<td class="td_title"><spring:message code='CAMTBLTL014'/></td><!-- 발송대상그룹 -->
 						<td class="td_body">
 							<select id="segNoc" name="segNoc" onchange='goMerge()' class="wMiddle">
-								<option value="0">::::<spring:message code='CAMTBLLB009'/>::::</option><!-- 발송그룹 선택 -->
+								<option value="">::::<spring:message code='CAMTBLLB009'/>::::</option><!-- 발송그룹 선택 -->
 								<c:if test="${fn:length(segList) > 0}">
 									<c:forEach items="${segList}" var="seg">
 										<option value="<c:out value='${seg.segNo}|${seg.mergeKey}'/>"><c:out value='${seg.segNm}'/></option>
