@@ -88,20 +88,20 @@ function goInit() {
 // 목록에서 전체 선택
 function goAll() {
 	if($("#mailListForm input[name='isAll']").is(":checked") == true) {
-		$("#mailListForm input[name='taskNo']").prop("checked", true);
-		$("#mailListForm input[name='subTaskNo']").prop("checked", true);
+		$("#mailListForm input[name='taskNos']").prop("checked", true);
+		$("#mailListForm input[name='subTaskNos']").prop("checked", true);
 		$("#mailListForm input[name='workStatus']").prop("checked", true);
 	} else {
-		$("#mailListForm input[name='taskNo']").prop("checked", false);
-		$("#mailListForm input[name='subTaskNo']").prop("checked", false);
+		$("#mailListForm input[name='taskNos']").prop("checked", false);
+		$("#mailListForm input[name='subTaskNos']").prop("checked", false);
 		$("#mailListForm input[name='workStatus']").prop("checked", false);
 	}
 }
 
 // 목록에서 체크박스 클릭시 taskNo와 subTaskNo, workStatus를 같이 체크해 준다.
 function goTaskNo(i) {
-	var isChecked = $("#mailListForm input[name='taskNo']").eq(i).is(":checked");
-	$("#mailListForm input[name='subTaskNo']").eq(i).prop("checked", isChecked);
+	var isChecked = $("#mailListForm input[name='taskNos']").eq(i).is(":checked");
+	$("#mailListForm input[name='subTaskNos']").eq(i).prop("checked", isChecked);
 	$("#mailListForm input[name='workStatus']").eq(i).prop("checked", isChecked);
 }
 
@@ -126,8 +126,8 @@ function goSegInfo(segNo) {
 
 // 목록에서 발송상태(발송대기) 클릭시 -> 발송승인
 function goAdmit(i) {
-	$("#taskNo").val( $("#mailListForm input[name='taskNo']").eq(i).val() );
-	$("#subTaskNo").val( $("#mailListForm input[name='subTaskNo']").eq(i).val() );
+	$("#taskNo").val( $("#mailListForm input[name='taskNos']").eq(i).val() );
+	$("#subTaskNo").val( $("#mailListForm input[name='subTaskNos']").eq(i).val() );
 
 	var a = confirm("<spring:message code='CAMJSALT020'/>");	// 승인 완료 실행을 하겠습니까?
 	if ( a ) {
@@ -157,10 +157,115 @@ function goMailAdd() {
 }
 
 
+// 사용중지 클릭시
+function goDisable() {
+	var isChecked = false;
+	$("#mailListForm input[name='taskNos']").each(function(idx,item){
+		if($(item).is(":checked")) isChecked = true;
+	});
+    
+    if(!isChecked) {
+        alert("<spring:message code='CAMJSALT013'/>!!");		// 사용중지 할 목록을 선택해 주세요.
+        return;
+    }
 
+    $("#status").val("001");
+	var param = $("#mailListForm").serialize();
+	$.getJSON("<c:url value='/ems/cam/mailDelete.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='CAMJSALT028'/>");	// 사용중지성공
+			
+			// 메일 목록 재조회;
+			getMailList();
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='CAMJSALT030'/>");	// 사용중지실패
+		}
+	});
+}
 
+// 삭제 클릭시
+function goDelete() {
+	var isChecked = false;
+	$("#mailListForm input[name='taskNos']").each(function(idx,item){
+		if($(item).is(":checked")) isChecked = true;
+	});
+    
+    if(!isChecked) {
+        alert("<spring:message code='CAMJSALT025'/>!!");		// 삭제할 목록을 선택해 주세요!!
+        return;
+    }
 
+    $("#status").val("002");
+	var param = $("#mailListForm").serialize();
+	$.getJSON("<c:url value='/ems/cam/mailDelete.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='COMJSALT012'/>");	// 삭제 성공
+			
+			// 메일 목록 재조회;
+			getMailList();
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='COMJSALT013'/>");	// 삭제 실패
+		}
+	});
+}
 
+// 복사 클릭시
+function goCopy() {
+	var checkedCount = 0;
+	
+	$("#mailListForm input[name='taskNos']").each(function(idx,item){
+		if($(item).is(":checked")) checkedCount++;
+	});
+    
+    if(checkedCount == 0 || checkedCount > 1) {
+        alert("<spring:message code='CAMJSALT014'/>!!");		// 복사할 목록을 하나만 선택해 주세요.
+        return;
+    }
+
+    $("#status").val("002");
+	var param = $("#mailListForm").serialize();
+	$.getJSON("<c:url value='/ems/cam/mailCopy.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='CAMJSALT011'/>");	// 복사 성공
+			
+			// 메일 목록 재조회;
+			getMailList();
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='CAMJSALT012'/>");	// 복사 실패
+		}
+	});
+}
+
+// 테스트발송 클릭시
+function goTestSend(){
+	var checkedCount = 0;
+	var statusError = false;
+	
+	$("#mailListForm input[name='taskNos']").each(function(idx,item){
+		if($(item).is(":checked")) {
+			if($("#mailListForm input[name='workStatus']").eq(idx).val() != "000") {
+				$("#mailListForm input[name='taskNos']").eq(idx).prop("checked", false);
+				$("#mailListForm input[name='subTaskNos']").eq(idx).prop("checked", false);
+				$("#mailListForm input[name='workStatus']").eq(idx).prop("checked", false);
+				statusError = true;
+			}
+			checkedCount++;
+		}
+	});
+	
+	if(statusError) {
+		alert("<spring:message code='CAMJSALT015'/>");			// 테스트 발송은 발송대기 상태만 가능합니다.
+		return;
+	}
+	
+    if(checkedCount == 0 || checkedCount > 1) {
+        alert("<spring:message code='CAMJSALT017'/>!!");		// 테스트 발송할 목록을 하나만 선택해 주세요.
+        return;
+    }
+
+	window.open("","preView", " width=1012, height=230, scrollbars=yes");
+	$("#mailListForm").attr("target","preView").attr("action","/ems/cam/mailTestListP.ums").submit();
+}
 
 
 // 페이징

@@ -150,11 +150,6 @@ public class TemplateController {
 		model.addAttribute("userList", userList);			// 사용자 목록
 		model.addAttribute("pageUtil", pageUtil);			// 페이징
 		
-		// 설정파일내용
-		model.addAttribute("TAGFREE_CLASSID", properties.getProperty("TAGFREE_CLASSID"));
-		model.addAttribute("TAGFREE_CODEBASE", properties.getProperty("TAGFREE_CODEBASE"));
-		model.addAttribute("MP_FULL_URL", properties.getProperty("MP_FULL_URL"));
-		
 		return "ems/tmp/tempListP";
 	}
 	

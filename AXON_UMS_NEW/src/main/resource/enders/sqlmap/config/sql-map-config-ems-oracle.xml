@@ -17,12 +17,14 @@
 		<typeAlias alias="loginVO"			type="kr.co.enders.ums.lgn.vo.LoginVO" />
 		<typeAlias alias="lgnHistVO"		type="kr.co.enders.ums.lgn.vo.LoginHistVO" />
 		
+		<!-- 메뉴조회 -->
+		<typeAlias alias="menuVO"			type="kr.co.enders.ums.main.vo.MenuVO" />
+		
 		<!-- 시스템 관리 -->
 		<typeAlias alias="codeVO"			type="kr.co.enders.ums.com.vo.CodeVO" />
 		<typeAlias alias="codeGrpVO"		type="kr.co.enders.ums.com.vo.CodeGroupVO" />
 		<typeAlias alias="userVO"			type="kr.co.enders.ums.ems.sys.vo.UserVO" />
 		<typeAlias alias="userProgVO"		type="kr.co.enders.ums.ems.sys.vo.UserProgVO" />
-		<typeAlias alias="menuVO"			type="kr.co.enders.ums.main.vo.MenuVO" />
 		<typeAlias alias="deptVO"			type="kr.co.enders.ums.ems.sys.vo.DeptVO" />
 		<typeAlias alias="dbConnVO"			type="kr.co.enders.ums.ems.sys.vo.DbConnVO" />
 		<typeAlias alias="dbConnPermVO"		type="kr.co.enders.ums.ems.sys.vo.DbConnPermVO" />
@@ -34,14 +36,15 @@
 		<typeAlias alias="loginHistVO"		type="kr.co.enders.ums.ems.sys.vo.LoginHistVO" />
 		<typeAlias alias="userCodeVO"		type="kr.co.enders.ums.ems.sys.vo.UserCodeVO" />
 		
-		
-		
 		<!-- 발송관리 -->
 		<typeAlias alias="segmentVO"		type="kr.co.enders.ums.ems.seg.vo.SegmentVO" />
 		
 		<!-- 캠페인 -->
 		<typeAlias alias="campaignVO"		type="kr.co.enders.ums.ems.cam.vo.CampaignVO" />
 		<typeAlias alias="taskVO"			type="kr.co.enders.ums.ems.cam.vo.TaskVO" />
+		<typeAlias alias="attachVO"			type="kr.co.enders.ums.ems.cam.vo.AttachVO" />
+		<typeAlias alias="linkVO"			type="kr.co.enders.ums.ems.cam.vo.LinkVO" />
+		<typeAlias alias="testUserVO"		type="kr.co.enders.ums.ems.cam.vo.TestUserVO" />
 		
 		<!-- 템플릿 -->
 		<typeAlias alias="templateVO"			type="kr.co.enders.ums.ems.tmp.vo.TemplateVO" />

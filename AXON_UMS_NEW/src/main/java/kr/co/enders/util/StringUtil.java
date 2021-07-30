@@ -57,13 +57,17 @@ public class StringUtil {
 	 */
 	public static String setTwoDigitsString(String str) {
 		try {
-			int i = Integer.parseInt(str);
-			if(i < 10)
-				return "0" + i;
-			else
-				return "" + i ;
+			if(str == null || "".equals(str)) {
+				return "00";
+			} else {
+				int i = Integer.parseInt(str);
+				if(i < 10)
+					return "0" + i;
+				else
+					return "" + i ;
+			}
 		} catch(Exception e) {
-			return "";
+			return "00";
 		}
 	}
 	

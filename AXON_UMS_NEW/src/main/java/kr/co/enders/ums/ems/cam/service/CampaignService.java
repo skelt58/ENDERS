@@ -16,6 +16,7 @@ import kr.co.enders.ums.ems.cam.vo.AttachVO;
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 import kr.co.enders.ums.ems.cam.vo.LinkVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
+import kr.co.enders.ums.ems.cam.vo.TestUserVO;
 import kr.co.enders.util.PropertiesUtil;
 
 @Service
@@ -81,4 +82,54 @@ public interface CampaignService {
 	 */
 	@Transactional(value="transactionManagerEms")
 	public int insertMailInfo(TaskVO taskVO, List<AttachVO> attachList, List<LinkVO> linkList) throws Exception;
+	
+	/**
+	 * 캠페인 주업무 및 보조업무 상태변경(사용중지, 삭제)
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	@Transactional(value="transactionManagerEms")
+	public int updateMailStatus(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 메일 정보를 복사한다.(주업무, 보조업무, 첨부파일 복사)
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	@Transactional(value="transactionManagerEms")
+	public int copyMailInfo(TaskVO taskVO, PropertiesUtil properties) throws Exception;
+	
+	/**
+	 * 테스트 사용자 목록 조회
+	 * @param userId
+	 * @return
+	 * @throws Exception
+	 */
+	public List<TestUserVO> getTestUserList(String userId) throws Exception;
+	
+	/**
+	 * 테스트 사용자 정보 등록
+	 * @param testUserVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertTestUserInfo(TestUserVO testUserVO) throws Exception;
+	
+	/**
+	 * 테스트 사용자 정보 수정
+	 * @param testUserVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateTestUserInfo(TestUserVO testUserVO) throws Exception;
+	
+	/**
+	 * 테스트 사용자 정보 삭제
+	 * @param testUserVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int deleteTestUserInfo(TestUserVO testUserVO) throws Exception;
 }

@@ -11,6 +11,7 @@ import kr.co.enders.ums.ems.cam.vo.AttachVO;
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 import kr.co.enders.ums.ems.cam.vo.LinkVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
+import kr.co.enders.ums.ems.cam.vo.TestUserVO;
 
 public interface CampaignMapper {
 	/**
@@ -54,20 +55,20 @@ public interface CampaignMapper {
 	public int updateCampaignInfo(CampaignVO campaingVO) throws Exception;
 	
 	/**
-	 * 캠페인 주업무 상태 수정
+	 * 캠페인 주업무 발송승인
 	 * @param taskVO
 	 * @return
 	 * @throws Exception
 	 */
-	public int updateTaskStatus(TaskVO taskVO) throws Exception;
+	public int updateTaskStatusAdmit(TaskVO taskVO) throws Exception;
 	
 	/**
-	 * 캠페인 보조업무 상태 수정
+	 * 캠페인 보조업무 발송승인
 	 * @param taskVO
 	 * @return
 	 * @throws Exception
 	 */
-	public int updateSubTaskStatus(TaskVO taskVO) throws Exception;
+	public int updateSubTaskStatusAdmit(TaskVO taskVO) throws Exception;
 	
 	/**
 	 * 주업무 정보 등록
@@ -116,4 +117,91 @@ public interface CampaignMapper {
 	 */
 	public int insertLinkInfo(LinkVO linkVO) throws Exception;
 	
+	/**
+	 * 캠페인 주업무 상태변경(사용중지, 삭제)
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateTaskStatus(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 캠페인 보조업무 상태변경(사용중지, 삭제)
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateSubTaskStatus(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 캠페인 주업무 정보 조회
+	 * @param seq
+	 * @return
+	 * @throws Exception
+	 */
+	public TaskVO getTaskInfo(int seq) throws Exception;
+	
+	/**
+	 * 캠페인 보조업무 정보 조회
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public TaskVO getSubTaskInfo(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 캠페인 주업무 등록(복사용)
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertTaskInfoForCopy(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 캠페인 보조업무 등록(복사용)
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertSubTaskInfoForCopy(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 첨부파일 목록 조회
+	 * @param taskNo
+	 * @return
+	 * @throws Exception
+	 */
+	public List<AttachVO> getAttachList(int taskNo) throws Exception;
+	
+	/**
+	 * 테스트 사용자 목록 조회
+	 * @param userId
+	 * @return
+	 * @throws Exception
+	 */
+	public List<TestUserVO> getTestUserList(String userId) throws Exception;
+	
+	/**
+	 * 테스트 사용자 정보 등록
+	 * @param testUserVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertTestUserInfo(TestUserVO testUserVO) throws Exception;
+	
+	/**
+	 * 테스트 사용자 정보 수정
+	 * @param testUserVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateTestUserInfo(TestUserVO testUserVO) throws Exception;
+	
+	/**
+	 * 테스트 사용자 정보 삭제
+	 * @param testUserVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int deleteTestUserInfo(TestUserVO testUserVO) throws Exception;
 }

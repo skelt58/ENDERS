@@ -5,6 +5,9 @@
  */
 package kr.co.enders.ums.ems.cam.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -13,15 +16,14 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tagfree.util.Constant;
-import com.tagfree.util.MimeUtil;
-
 import kr.co.enders.ums.com.vo.CodeVO;
 import kr.co.enders.ums.ems.cam.dao.CampaignDAO;
 import kr.co.enders.ums.ems.cam.vo.AttachVO;
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 import kr.co.enders.ums.ems.cam.vo.LinkVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
+import kr.co.enders.ums.ems.cam.vo.TestUserVO;
+import kr.co.enders.util.Code;
 import kr.co.enders.util.PropertiesUtil;
 import kr.co.enders.util.StringUtil;
 
@@ -62,10 +64,10 @@ public class CampaignServiceImpl implements CampaignService {
 		int result = 0;
 		
 		// 캠페인 주업무 승인
-		result += campaignDAO.updateTaskStatus(taskVO);
+		result += campaignDAO.updateTaskStatusAdmit(taskVO);
 		
 		// 캠페인 보조업무 승인
-		result += campaignDAO.updateSubTaskStatus(taskVO);
+		result += campaignDAO.updateSubTaskStatusAdmit(taskVO);
 		
 		return result;
 	}
@@ -86,18 +88,6 @@ public class CampaignServiceImpl implements CampaignService {
 		String TM = Long.toString(System.currentTimeMillis());
 		
 		try {
-			MimeUtil mimeUtil = new MimeUtil();											// com.tagfree.util.MimeUtil 생성
-			mimeUtil.setMimeValue(composerValue);										// 작성된 본문 + 포함된 이진 파일의 MIME 값 지정
-			mimeUtil.setInCharEncoding("utf-8");
-			mimeUtil.setOutCharEncoding("utf-8");
-			mimeUtil.setRename(true);													// 파일을 저장 시에 새로운 이름을 생성할 것인지를 설정
-			mimeUtil.setHtmlRange(Constant.HTML_INNER_BODY);							// well-form 변환 시 완전한 html 문서를 만들어냄으로
-																						// Inner Body나 Outer Body의 값을 가져오기 위해서는 이를 설정해야 한다.
-																						// HTML_INNER_BODY : body 태그 제외한 값
-																						// HTML_OUTER_BODY : body 태그까지 합친 값
-																						// 기본 값 : <html> ~ </html>
-			mimeUtil.processDecoding();													// MIME 값의 디코딩 -> 이 때 포함된 파일은 모두 웹 서버에 저장된다.
-			composerValue = mimeUtil.getDecodedHtml(false);
 			composerValue = StringUtil.repStr(composerValue, "\r\n", "_NEOCR_");
 
 			String strTag = "";				// <a ... <map.. 테그의 처음에서 끝까지 모든 값(<a href.....>내용</a>)
@@ -284,7 +274,6 @@ public class CampaignServiceImpl implements CampaignService {
             }
 
 
-
             temp = StringUtil.repStr(returnValue.toString() + tmpCV, "_NEOCR_", "\r\n");
 
 			temp = StringUtil.repStr(temp,"<!--NEO__REJECT__CONVERT__START-->","<!--NEO__REJECT__START--><a");
@@ -319,6 +308,7 @@ public class CampaignServiceImpl implements CampaignService {
 		// 첨부파일 등록
 		if(attachList != null && attachList.size() > 0) {
 			for(AttachVO attach:attachList) {
+				attach.setTaskNo(taskNo);
 				result +=campaignDAO.insertAttachInfo(attach);
 			}
 		}
@@ -331,5 +321,139 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		
 		return result;
+	}
+
+	@Override
+	public int updateMailStatus(TaskVO taskVO) throws Exception {
+		int result = 0;
+		if(!StringUtil.isNull(taskVO.getTaskNos())) {
+			String[] taskNo = taskVO.getTaskNos().split(",");
+			String[] subTaskNo = taskVO.getSubTaskNos().split(",");
+			for(int i=0;i<taskNo.length;i++) {
+				TaskVO task = new TaskVO();
+				task.setTaskNo(Integer.parseInt(taskNo[i]));
+				task.setSubTaskNo(Integer.parseInt(subTaskNo[i]));
+				task.setStatus(taskVO.getStatus());
+				task.setUpId(taskVO.getUpDt());
+				task.setUpDt(taskVO.getUpDt());
+				
+				result += campaignDAO.updateTaskStatus(task);		// 주업무 업데이트
+				result += campaignDAO.updateSubTaskStatus(task);	// 보조업무 업데이트
+			}
+		}
+		
+		return result;
+	}
+
+	@Override
+	public int copyMailInfo(TaskVO taskVO, PropertiesUtil properties) throws Exception {
+		int result = 0;
+		
+		// 기존 주업무 읽기
+		TaskVO copyTask = campaignDAO.getTaskInfo(taskVO.getTaskNo());
+		
+		// Content 파일 복사
+		String currDtm = StringUtil.getDate(Code.TM_YMDHMS);
+		String newFlPath = copyTask.getContFlPath().substring(0, copyTask.getContFlPath().lastIndexOf("/")+1) + currDtm + ".tmp";
+		String oldFullFlPath = properties.getProperty("FILE.UPLOAD_PATH") + "/" + copyTask.getContFlPath();
+		String newFullFlPath = properties.getProperty("FILE.UPLOAD_PATH") + "/" + newFlPath;
+		
+		File oldFile = new File(oldFullFlPath);
+		File newFile = new File(newFullFlPath);
+		
+		FileInputStream input = new FileInputStream(oldFile);
+		FileOutputStream output = new FileOutputStream(newFile);
+		
+		byte[] buff = new byte[1024];
+		int read;
+		while((read = input.read(buff)) > 0) {
+			output.write(buff, 0, read);
+			output.flush();
+		}
+		input.close();
+		output.close();
+		
+		// 복사한 주업무 값 설정(설정하지 않은 경우 기존값 사용) 및 등록
+		copyTask.setUserId(taskVO.getUserId());
+		copyTask.setExeUserId("");
+		copyTask.setDeptNo(taskVO.getDeptNo());
+		copyTask.setContFlPath(newFlPath);
+		copyTask.setStatus("000");
+		copyTask.setRecoStatus("000");
+		copyTask.setRegId(taskVO.getRegId());
+		copyTask.setRegDt(currDtm);
+		copyTask.setTaskNm( copyTask.getTaskNm() + (copyTask.getTaskNm().indexOf(" - [copy]")> 0 ? "": " - [copy]") );
+		
+		result += campaignDAO.insertTaskInfoForCopy(copyTask);
+		
+		
+		// 신규 등록 업무번호 조회
+		int taskNo = campaignDAO.getTaskNo();
+		
+		// 기존 보조업무 읽기
+		TaskVO copySubTask = campaignDAO.getSubTaskInfo(taskVO);
+		
+		// 복사한 보조업무 값 설정(설정하지 않은 경우 기존값 사용) 및 등록
+		copySubTask.setSubTaskNo(1);
+		copySubTask.setTaskNo(taskNo);
+		copySubTask.setEndDt("");
+		copySubTask.setWorkStatus("000");
+		copySubTask.setStatus("000");
+		
+		result += campaignDAO.insertSubTaskInfoForCopy(copySubTask);
+		
+		// 첨부파일 목록 읽기
+		List<AttachVO> copyAttachList = campaignDAO.getAttachList(taskVO.getTaskNo());
+		if(copyAttachList != null && copyAttachList.size() > 0) {
+			for(AttachVO attach:copyAttachList) {
+				
+				// 첨부파일 복사
+				String newAttachPath = "attach/" + System.currentTimeMillis() + "_" + attach.getAttNm();
+				String oldFullAttachPath = properties.getProperty("FILE.UPLOAD_PATH") + "/" + attach.getAttFlPath();
+				String newFullAttachPath = properties.getProperty("FILE.UPLOAD_PATH") + "/" + newAttachPath;
+				
+				File oldAttachFile = new File(oldFullAttachPath);
+				File newAttachFile = new File(newFullAttachPath);
+				
+				FileInputStream inputAttach = new FileInputStream(oldAttachFile);
+				FileOutputStream outputAttach = new FileOutputStream(newAttachFile);
+				
+				buff = new byte[1024];
+				while((read = inputAttach.read(buff)) > 0) {
+					outputAttach.write(buff, 0, read);
+					outputAttach.flush();
+				}
+				inputAttach.close();
+				outputAttach.close();
+				
+				// 복사한 첨부파일 값 설정(설정하지 않은 경우 기존값 사용) 및 등록
+				attach.setAttFlPath(newAttachPath);
+				attach.setTaskNo(taskNo);
+				
+				result += campaignDAO.insertAttachInfo(attach);
+			}
+		}
+		
+		return result;
+	}
+
+	@Override
+	public List<TestUserVO> getTestUserList(String userId) throws Exception {
+		return campaignDAO.getTestUserList(userId);
+	}
+
+	@Override
+	public int insertTestUserInfo(TestUserVO testUserVO) throws Exception {
+		return campaignDAO.insertTestUserInfo(testUserVO);
+	}
+
+	@Override
+	public int updateTestUserInfo(TestUserVO testUserVO) throws Exception {
+		return campaignDAO.updateTestUserInfo(testUserVO);
+	}
+
+	@Override
+	public int deleteTestUserInfo(TestUserVO testUserVO) throws Exception {
+		return campaignDAO.deleteTestUserInfo(testUserVO);
 	}
 }

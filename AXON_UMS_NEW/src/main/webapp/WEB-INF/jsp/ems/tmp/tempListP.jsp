@@ -455,11 +455,6 @@ function goPageNum(page) {
 				<table>
 					<tr>
 						<td align="center" width="1015">
-							<!--
-							<script>
-							editor("<c:out value='${TAGFREE_CLASSID}'/>", "<c:out value='${TAGFREE_CODEBASE}'/>", "<c:out value='${NEO_UILANG}'/>", "<c:out value='${MP_FULL_URL}'/>");
-							</script>
-							-->
 							<textarea name="ir1" id="ir1" rows="10" cols="100" style="text-align: center; width: 1007px; height: 412px; display: none; border: none;" ></textarea>
 						</td>
 					</tr>

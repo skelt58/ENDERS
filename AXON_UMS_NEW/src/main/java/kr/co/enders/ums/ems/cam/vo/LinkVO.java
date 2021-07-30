@@ -6,7 +6,7 @@
 package kr.co.enders.ums.ems.cam.vo;
 
 public class LinkVO {
-	private int linkNo;			// 링크번호
+	private String linkNo;		// 링크번호
 	private String linkUrl;		// 링크경로
 	private String linkNm;		// 링크이름
 	private String aliasNm;		// 링크알리아스
@@ -16,10 +16,10 @@ public class LinkVO {
 	private String regDt;		// 등록일자
 	private String upId;		// 수정자
 	private String upDt;		// 수정일자
-	public int getLinkNo() {
+	public String getLinkNo() {
 		return linkNo;
 	}
-	public void setLinkNo(int linkNo) {
+	public void setLinkNo(String linkNo) {
 		this.linkNo = linkNo;
 	}
 	public String getLinkUrl() {
