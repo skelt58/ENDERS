@@ -14,6 +14,8 @@ public class TestUserVO {
 	// 추가정보
 	private String taskNos;			// 주업무번호
 	private String subTaskNos;		// 보조업무번호
+	private String testEmail;		// 테스트이메일주소
+	private String sendDt;			// 발송일시
 	public int getTestUserNo() {
 		return testUserNo;
 	}
@@ -49,5 +51,17 @@ public class TestUserVO {
 	}
 	public void setSubTaskNos(String subTaskNos) {
 		this.subTaskNos = subTaskNos;
+	}
+	public String getTestEmail() {
+		return testEmail;
+	}
+	public void setTestEmail(String testEmail) {
+		this.testEmail = testEmail;
+	}
+	public String getSendDt() {
+		return sendDt;
+	}
+	public void setSendDt(String sendDt) {
+		this.sendDt = sendDt;
 	}
 }

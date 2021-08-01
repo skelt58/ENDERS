@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -455,5 +457,72 @@ public class CampaignServiceImpl implements CampaignService {
 	@Override
 	public int deleteTestUserInfo(TestUserVO testUserVO) throws Exception {
 		return campaignDAO.deleteTestUserInfo(testUserVO);
+	}
+
+	@Override
+	public int sendTestMail(TestUserVO testUserVO, HttpSession session) throws Exception {
+		int result = 0;
+		
+		// 기존 주업무 읽기
+		TaskVO sendTask = campaignDAO.getTaskInfo(Integer.parseInt(testUserVO.getTaskNos()));
+		
+		// 테스트발송 주업무 값 설정(설정하지 않은 경우 기존값 사용) 및 등록
+		sendTask.setUserId((String)session.getAttribute("NEO_USER_ID"));
+		sendTask.setExeUserId((String)session.getAttribute("NEO_USER_ID"));
+		sendTask.setDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+		sendTask.setStatus("000");
+		sendTask.setRecoStatus("001");
+		sendTask.setRegId((String)session.getAttribute("NEO_USER_ID"));
+		sendTask.setRegDt(testUserVO.getSendDt()+"00");
+		sendTask.setTaskNm(sendTask.getTaskNm() + " - [test]");
+		
+		result += campaignDAO.insertTaskInfoForTestSend(sendTask);
+		
+		// 신규 등록 업무번호 조회
+		int taskNo = campaignDAO.getTaskNo();
+		
+		// 기존 보조업무 읽기
+		TaskVO taskVO = new TaskVO();
+		taskVO.setTaskNo(Integer.parseInt(testUserVO.getTaskNos()));
+		taskVO.setSubTaskNo(Integer.parseInt(testUserVO.getSubTaskNos()));
+		
+		TaskVO sendSubTask = campaignDAO.getSubTaskInfo(taskVO);
+		
+		// 테스트발송 보조업무 값 설정(설정하지 않은 경우 기존값 사용) 및 등록
+		sendSubTask.setTaskNo(taskNo);
+		sendSubTask.setSubTaskNo(1);
+		sendSubTask.setSendDt(testUserVO.getSendDt());
+		sendSubTask.setEndDt("");
+		sendSubTask.setWorkStatus("001");
+		sendSubTask.setSendTestYn("Y");
+		sendSubTask.setSendTestEm(testUserVO.getTestEmail());
+		sendSubTask.setSendTestTaskNo(taskVO.getTaskNo());
+		sendSubTask.setSendTestSubTaskNo(taskVO.getSubTaskNo());
+		
+		result += campaignDAO.insertSubTaskInfoForTestSend(sendSubTask);
+		
+		
+		// 첨부파일 목록 읽기
+		List<AttachVO> copyAttachList = campaignDAO.getAttachList(taskVO.getTaskNo());
+		if(copyAttachList != null && copyAttachList.size() > 0) {
+			for(AttachVO attach : copyAttachList) {
+				// 복사한 첨부파일 값 설정(설정하지 않은 경우 기존값 사용) 및 등록
+				attach.setTaskNo(taskNo);
+				
+				result += campaignDAO.insertAttachInfo(attach);
+			}
+		}
+		
+		return result;
+	}
+
+	@Override
+	public TaskVO getMailInfo(TaskVO taskVO) throws Exception {
+		return campaignDAO.getMailInfo(taskVO);
+	}
+
+	@Override
+	public List<AttachVO> getAttachList(int taskNo) throws Exception {
+		return campaignDAO.getAttachList(taskNo);
 	}
 }

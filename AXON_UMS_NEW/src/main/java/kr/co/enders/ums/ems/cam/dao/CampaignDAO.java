@@ -141,5 +141,20 @@ public class CampaignDAO implements CampaignMapper {
 	public int deleteTestUserInfo(TestUserVO testUserVO) throws Exception {
 		return sqlSessionEms.getMapper(CampaignMapper.class).deleteTestUserInfo(testUserVO);
 	}
+
+	@Override
+	public int insertTaskInfoForTestSend(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).insertTaskInfoForTestSend(taskVO);
+	}
+
+	@Override
+	public int insertSubTaskInfoForTestSend(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).insertSubTaskInfoForTestSend(taskVO);
+	}
+
+	@Override
+	public TaskVO getMailInfo(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).getMailInfo(taskVO);
+	}
 	
 }

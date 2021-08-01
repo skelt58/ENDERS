@@ -5,8 +5,10 @@
  */
 package kr.co.enders.ums.ems.cam.controller;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -704,7 +706,7 @@ public class CampaignController {
 				
 				AttachVO attach = new AttachVO();
 				attach.setAttNm(fileNm[i]);
-				attach.setAttFlPath(filePath[i]);
+				attach.setAttFlPath("attach/" + filePath[i]);
 				attach.setAttFlSize(attachFile.length());
 				
 				attachList.add(attach);
@@ -773,7 +775,7 @@ public class CampaignController {
 		taskVO.setWorkStatus("000");
 		taskVO.setSendIp(properties.getProperty("SEND_IP"));
 		
-		List<Vector<String>> dataList = null; //[LINK_TY, LINK_NM, LINK_URL, LINK_NO]
+		List<Vector<String>> dataList = null; //[LINK_TY, LINK_URL, LINK_NM, LINK_NO]
 		// 링크클릭 체크한 경우
 		if("Y".equals(taskVO.getLinkYn()) && "000".equals(taskVO.getContTy())) {
 			
@@ -884,6 +886,194 @@ public class CampaignController {
 		
 		return "ems/cam/mailAdd";
 	}
+	
+	/**
+	 * 메일 정보 수정 화면을 출력한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="mailUpdateP")
+	public String goMailUpdateP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goMailUpdateP searchTaskNm     = " + searchVO.getSearchTaskNm());
+		logger.debug("goMailUpdateP searchCampNo     = " + searchVO.getSearchCampNo());
+		logger.debug("goMailUpdateP searchDeptNo     = " + searchVO.getSearchDeptNo());
+		logger.debug("goMailUpdateP searchUserId     = " + searchVO.getSearchUserId());
+		logger.debug("goMailUpdateP searchStartDt    = " + searchVO.getSearchStartDt());
+		logger.debug("goMailUpdateP searchEndDt      = " + searchVO.getSearchEndDt());
+		logger.debug("goMailUpdateP searchStatus     = " + searchVO.getSearchStatus());
+		logger.debug("goMailUpdateP searchWorkStatus = " + searchVO.getSearchWorkStatus());
+		logger.debug("goMailUpdateP taskNo           = " + searchVO.getTaskNo());
+		logger.debug("goMailUpdateP subTaskNo        = " + searchVO.getSubTaskNo());
+		
+		// 수신자정보머지키코드 목록
+		CodeVO merge = new CodeVO();
+		merge.setUilang((String)session.getAttribute("NEO_UILANG"));
+		merge.setCdGrp("C001");
+		merge.setUseYn("Y");
+		List<CodeVO> mergeList = null;
+		try {
+			mergeList = codeService.getCodeList(merge);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList[C001] error = " + e);
+		}
+		
+		// 채널코드 목록
+		CodeVO channel = new CodeVO();
+		channel.setUilang((String)session.getAttribute("NEO_UILANG"));
+		channel.setCdGrp("C002");
+		channel.setUseYn("Y");
+		List<CodeVO> channelList = null;
+		try {
+			channelList = codeService.getCodeList(channel);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList[C002] error = " + e);
+		}
+		
+		// 발송주기타입코드 목록
+		CodeVO period = new CodeVO();
+		period.setUilang((String)session.getAttribute("NEO_UILANG"));
+		period.setCdGrp("C019");
+		period.setUseYn("Y");
+		List<CodeVO> periodList = null;
+		try {
+			periodList = codeService.getCodeList(period);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList[C019] error = " + e);
+		}
+		
+		// 메일 상세정보 조회
+		TaskVO mailInfo = new TaskVO();
+		mailInfo.setTaskNo(searchVO.getTaskNo());
+		mailInfo.setSubTaskNo(searchVO.getSubTaskNo());
+		try {
+			mailInfo = campaignService.getMailInfo(mailInfo);
+		} catch(Exception e) {
+			logger.error("campaignService.getMailInfo error = " + e);
+		}
+		
+		// 캠페인정보
+		CampaignVO campaignInfo = new CampaignVO();
+		campaignInfo.setUilang((String)session.getAttribute("NEO_UILANG"));
+		campaignInfo.setCampNo(mailInfo.getCampNo());
+		try {
+			campaignInfo = campaignService.getCampaignInfo(campaignInfo);
+		} catch(Exception e) {
+			logger.error("campaignService.getCampaignInfo error = " + e);
+		}
+		
+		// 캠페인 목록 조회
+		CampaignVO camp = new CampaignVO();
+		camp.setUilang((String)session.getAttribute("NEO_UILANG"));
+		camp.setSearchStatus("000");
+		camp.setPage(1);
+		camp.setRows(1000);
+		camp.setSearchDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+		List<CampaignVO> campList = null;
+		try {
+			campList = campaignService.getCampaignList(camp);
+		} catch(Exception e) {
+			logger.error("campaignService.getCampaignList error = " + e);
+		}
+		
+		// 발송대상(세그먼트) 목록
+		SegmentVO seg = new SegmentVO();
+		seg.setUilang((String)session.getAttribute("NEO_UILANG"));
+		seg.setSearchStatus("000");
+		seg.setPage(1);
+		seg.setRows(1000);
+		seg.setSearchDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+		List<SegmentVO> segList = null;
+		try {
+			segList = segmentService.getSegmentList(seg);
+		} catch(Exception e) {
+			logger.error("segmentService.getSegmentList error = " + e);
+		}
+		
+		// 템플릿 목록
+		TemplateVO temp = new TemplateVO();
+		temp.setUilang((String)session.getAttribute("NEO_UILANG"));
+		temp.setSearchStatus("000");
+		temp.setPage(1);
+		temp.setRows(1000);
+		temp.setSearchDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+		List<TemplateVO> tempList = null;
+		try {
+			tempList = templateService.getTemplateList(temp);
+		} catch(Exception e) {
+			logger.error("templateService.getTemplateList error = " + e);
+		}
+		
+		// 첨부파일 목록
+		List<AttachVO> attachList = null;
+		try {
+			attachList = campaignService.getAttachList(searchVO.getTaskNo());
+		} catch(Exception e) {
+			logger.error("campaignService.getAttachList error = " + e);
+		}
+		
+		// 부서목록(코드성) 조회
+		CodeVO dept = new CodeVO();
+		dept.setStatus("000"); // 정상
+		List<CodeVO> deptList = null;
+		try {
+			deptList = codeService.getDeptList(dept);
+		} catch(Exception e) {
+			logger.error("codeService.getDeptList error = " + e);
+		}
+		
+		// 사용자 목록 조회
+		CodeVO user = new CodeVO();
+		user.setDeptNo(mailInfo.getDeptNo());
+		user.setStatus("000");
+		List<CodeVO> userList = null;
+		try {
+			userList = codeService.getUserList(user);
+		} catch(Exception e) {
+			logger.error("codeService.getUserList error = " + e);
+		}
+		
+		// 메일 내용
+		String compVal = getContFileText(mailInfo.getContFlPath());
+		
+		
+		model.addAttribute("searchVO", searchVO);			// 검색항목
+		model.addAttribute("mergeList", mergeList);			// 수신자정보머지키코드
+		model.addAttribute("channelList", channelList);		// 채널코드
+		model.addAttribute("periodList", periodList);		// 발송주기타입코드
+		model.addAttribute("mailInfo", mailInfo);			// 메일상세정보
+		model.addAttribute("campaignInfo", campaignInfo);	// 캠페인정보
+		model.addAttribute("campList", campList);			// 캠페인목록
+		model.addAttribute("segList", segList);				// 발송대상(세그먼트) 목록
+		model.addAttribute("tempList", tempList);			// 템플릿 목록
+		model.addAttribute("attachList", attachList);		// 첨부파일 목록
+		model.addAttribute("deptList", deptList);			// 부서 목록
+		model.addAttribute("userList", userList);			// 사용자 목록
+		model.addAttribute("compVal", compVal);				// 메일 내용
+		
+		return "ems/cam/mailUpdateP";
+	}
+	
+	/**
+	 * 메일 정보를 수정한다.
+	 * @param taskVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/mailUpdate")
+	public String goMailUpdate(@ModelAttribute TaskVO taskVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		
+		return "ems/cam/mailUpdate";
+	}
+
+	
 	
 	/**
 	 * 웹에이전트 팝업 화면을 출력한다.
@@ -1141,6 +1331,15 @@ public class CampaignController {
 		return modelAndView;
 	}
 	
+	/**
+	 * 테스트 사용자 정보 삭제
+	 * @param testUserVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/mailTestDelete")
 	public ModelAndView deleteTestUserInfo(@ModelAttribute TestUserVO testUserVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("deleteTestUserInfo testUserNo = " + testUserVO.getTestUserNo());
@@ -1162,5 +1361,74 @@ public class CampaignController {
 		ModelAndView modelAndView = new ModelAndView("jsonView", map);
 		
 		return modelAndView;
+	}
+	
+	/**
+	 * 테스트발송 등록
+	 * @param testUserVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/mailTestSend")
+	public ModelAndView sendTestMail(@ModelAttribute TestUserVO testUserVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("sendTestMail taskNos    = " + testUserVO.getTaskNos());
+		logger.debug("sendTestMail subTaskNos = " + testUserVO.getSubTaskNos());
+		logger.debug("sendTestMail testEmail  = " + testUserVO.getTestEmail());
+		
+		testUserVO.setSendDt(StringUtil.getDate(Code.TM_YMDHM));
+		
+		int result = 0;
+		try {
+			result = campaignService.sendTestMail(testUserVO, session);
+		} catch(Exception e) {
+			logger.error("campaignService.sendTestMail error = " + e);
+		}
+		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(result > 0) {
+			map.put("result", "Success");
+		} else {
+			map.put("result", "Fail");
+		}
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		
+		return modelAndView;
+	}
+	
+	public String getContFileText(String contFlPath) {
+		logger.debug("getContFileText contFlPath  = " + contFlPath);
+		
+		File file = null;
+		FileReader fileReader = null;
+		BufferedReader bufferedReader = null;
+		StringBuffer sb = new StringBuffer();
+		try {
+			String basePath = properties.getProperty("FILE.UPLOAD_PATH");
+			String contPath = basePath + "/" + contFlPath;
+			
+			file = new File(contPath);
+			fileReader = new FileReader(file);
+			bufferedReader = new BufferedReader(fileReader);
+			String line = "";
+			while((line = bufferedReader.readLine()) != null) {
+				sb.append(line);
+			}
+		} catch(Exception e) {
+			logger.error("goContFileView error = " + e);
+		} finally {
+			if(bufferedReader != null) try { bufferedReader.close(); } catch(Exception e) {};
+			if(fileReader != null) try { fileReader.close(); } catch(Exception e) {};
+		}
+		
+		String fileContent = sb.toString().trim();
+		fileContent = fileContent.replaceAll("\"", "'");
+		fileContent = fileContent.replaceAll("\n", " ");
+		fileContent = fileContent.replaceAll("\r", " ");
+		
+		return fileContent;
 	}
 }

@@ -6,6 +6,9 @@
 	**********************************************************/
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<jsp:useBean id="util" class="com.mp.util.InitApp" scope="application" />
+<jsp:useBean id="resp" class="com.mp.util.RespLog" scope="application" />
+
 <%@ include file="/WEB-INF/jsp/inc/header.jsp" %>
 
 <div class="ex-layout">

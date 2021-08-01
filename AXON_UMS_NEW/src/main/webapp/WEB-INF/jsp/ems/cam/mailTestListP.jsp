@@ -9,7 +9,7 @@
 <%@ include file="/WEB-INF/jsp/inc/header.jsp" %>
 
 <script type="text/javascript">
-// 등록 버튼 클릭시
+//등록 버튼 클릭시
 function goAdd() {
 	var param = $("#testUserForm").serialize();
 	$.getJSON("<c:url value='/ems/cam/mailTestAdd.json'/>?" + param, function(data) {
@@ -21,6 +21,13 @@ function goAdd() {
 		} else if(data.result == "Fail") {
 			alert("<spring:message code='COMJSALT009'/>");	// 등록 실패
 		}
+	});
+}
+
+// 목록에서 전체 선택 체크박스 클릭시
+function goAll(){
+	$("#listForm input[name='testEmail']").each(function(idx,item){
+		$(item).prop("checked", $("#listForm input[name='isAll']").is(":checked"));
 	});
 }
 
@@ -58,11 +65,45 @@ function goDelete(no) {
 		}
 	});
 }
+
+// 테스트발송 클릭시
+function goTestSend(){
+    var addCheck = false;
+    $("#listForm input[name='testEmail']").each(function(idx,item){
+    	if($(item).is(":checked")) {
+    		addCheck = true;
+    	}
+    });
+
+    if(!addCheck) {
+        alert("<spring:message code='CAMJSALT016'/>!");		// 테스트발송 할 목록을 선택해 주세요.
+        return;
+    }
+
+    var a = confirm("<spring:message code='CAMJSALT018'/>?");	// 선택한 목록을 테스트 발송을 하시겠습니까?
+    if(a) {
+    	var param = $("#listForm").serialize();
+    	$.getJSON("<c:url value='/ems/cam/mailTestSend.json'/>?" + param, function(data) {
+    		if(data.result == "Success") {
+    			alert("<spring:message code='COMJSALT008'/>");	// 등록 성공
+    			
+    			// 목록 재조회;
+    			$("#dataForm").attr("target","").attr("action","<c:url value='/ems/cam/mailTestListP.ums'/>").submit();
+    		} else if(data.result == "Fail") {
+    			alert("<spring:message code='COMJSALT009'/>");	// 등록 실패
+    		}
+    	});
+    	
+    } else {
+    	return;
+    }
+
+}
 </script>
 
 <form id="dataForm" name="dataForm" method="post">
-<input type='hidden' name='subTaskNos' value='<c:out value='${testUserVO.subTaskNos}'/>'>
 <input type='hidden' name='taskNos' value='<c:out value='${testUserVO.taskNos}'/>'>
+<input type='hidden' name='subTaskNos' value='<c:out value='${testUserVO.subTaskNos}'/>'>
 <input type="hidden" id="testUserNo" name="testUserNo" value="0">
 <input type="hidden" id="testUserNm" name="testUserNm">
 <input type="hidden" id="testUserEm" name="testUserEm">
@@ -89,6 +130,8 @@ function goDelete(no) {
 
 <!-- 수정 -->
 <form id="listForm" name="listForm" method="post">
+<input type='hidden' name='taskNos' value='<c:out value='${testUserVO.taskNos}'/>'>
+<input type='hidden' name='subTaskNos' value='<c:out value='${testUserVO.subTaskNos}'/>'>
 <table width="900" border="1" cellspacing="0" cellpadding="0" class="table_line_outline">
 	<tr>
 		<td class="td_line" colspan="5"></td>
@@ -122,6 +165,8 @@ function goDelete(no) {
 		</c:forEach>
 	</c:if>
 </table>
+</form>
+
 <table width="900" border="1" cellspacing="0" cellpadding="0">
 	<tr><td height=5></td></tr>
 	<tr>
@@ -131,7 +176,6 @@ function goDelete(no) {
 		</td>
 	</tr>
 </table>
-</form>
 
 </body>
 </html>

@@ -204,4 +204,28 @@ public interface CampaignMapper {
 	 * @throws Exception
 	 */
 	public int deleteTestUserInfo(TestUserVO testUserVO) throws Exception;
+	
+	/**
+	 * 캠페인 주업무 등록(테스트발송용)
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertTaskInfoForTestSend(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 캠페인 보조업무 등록(테스트발송용)
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertSubTaskInfoForTestSend(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 메일 정보(캠페인 주업무,보조업무) 정보 조회
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public TaskVO getMailInfo(TaskVO taskVO) throws Exception;
 }

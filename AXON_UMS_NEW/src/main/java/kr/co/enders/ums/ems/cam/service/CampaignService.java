@@ -8,6 +8,8 @@ package kr.co.enders.ums.ems.cam.service;
 import java.util.List;
 import java.util.Vector;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -132,4 +134,29 @@ public interface CampaignService {
 	 * @throws Exception
 	 */
 	public int deleteTestUserInfo(TestUserVO testUserVO) throws Exception;
+	
+	/**
+	 * 테스트메일 발송 정보 등록
+	 * @param testUserVO
+	 * @return
+	 * @throws Exception
+	 */
+	@Transactional(value="transactionManagerEms")
+	public int sendTestMail(TestUserVO testUserVO, HttpSession session) throws Exception;
+	
+	/**
+	 * 메일 정보(캠페인 주업무,보조업무) 정보 조회
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public TaskVO getMailInfo(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 첨부파일 목록 조회
+	 * @param taskNo
+	 * @return
+	 * @throws Exception
+	 */
+	public List<AttachVO> getAttachList(int taskNo) throws Exception;
 }

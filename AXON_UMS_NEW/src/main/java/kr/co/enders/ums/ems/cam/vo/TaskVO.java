@@ -102,6 +102,9 @@ public class TaskVO extends CommonVO {
 	private String campInfo;
 	private String sendTestYn;
 	private String sendTestEm;
+	private int sendTestTaskNo;
+	private int sendTestSubTaskNo;
+	private int testCnt;
 	private String sendIp;
 	private String taskNos;
 	private String subTaskNos;
@@ -645,5 +648,23 @@ public class TaskVO extends CommonVO {
 	}
 	public void setSubTaskNos(String subTaskNos) {
 		this.subTaskNos = subTaskNos;
+	}
+	public int getSendTestTaskNo() {
+		return sendTestTaskNo;
+	}
+	public void setSendTestTaskNo(int sendTestTaskNo) {
+		this.sendTestTaskNo = sendTestTaskNo;
+	}
+	public int getSendTestSubTaskNo() {
+		return sendTestSubTaskNo;
+	}
+	public void setSendTestSubTaskNo(int sendTestSubTaskNo) {
+		this.sendTestSubTaskNo = sendTestSubTaskNo;
+	}
+	public int getTestCnt() {
+		return testCnt;
+	}
+	public void setTestCnt(int testCnt) {
+		this.testCnt = testCnt;
 	}
 }

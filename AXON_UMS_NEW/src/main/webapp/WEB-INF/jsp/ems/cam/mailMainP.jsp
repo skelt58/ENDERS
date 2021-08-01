@@ -115,7 +115,7 @@ function goDeleteClick() {
 function goUpdatef(taskNo, subTaskNo) {
 	$("#taskNo").val(taskNo);
 	$("#subTaskNo").val(subTaskNo);
-	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/cam/mailUpdateP'/>").submit();
+	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/cam/mailUpdateP.ums'/>").submit();
 }
 
 // 목록에서 발송대상그룹 클릭시 (미리보기)

@@ -210,7 +210,7 @@ public class TemplateController {
 				sb.append(line);
 			}
 		} catch(Exception e) {
-			logger.error("templateService.getTemplateInfo error = " + e);
+			logger.error("goTempFileView error = " + e);
 		} finally {
 			if(bufferedReader != null) try { bufferedReader.close(); } catch(Exception e) {};
 			if(fileReader != null) try { fileReader.close(); } catch(Exception e) {};
