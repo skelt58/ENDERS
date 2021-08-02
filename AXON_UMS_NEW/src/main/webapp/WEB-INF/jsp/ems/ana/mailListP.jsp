@@ -218,18 +218,20 @@
 										<div id="click_tab1" style="display : none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><%=btn_summ%><!--결과요약--></td>
-													<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><spring:message code='ANABTN003'/></td><!-- 결과요약 -->
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
 												</tr>
 											</table>
 										</div>
 										<div id="tab1" style="display=">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab1','/ana/mailSummP.jsp')" class="tab"><%=btn_summ%><!--결과요약--></a></td>
-													<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif">
+														<a href="javascript:goOzTab('tab1','/ana/mailSummP.jsp')" class="tab"><spring:message code='ANABTN003'/><!--결과요약--></a><!-- 결과요약 -->
+													</td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
 												</tr>
 											</table>
 										</div>
@@ -239,18 +241,20 @@
 										<div id="click_tab2" style="display : none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><%=btn_err%><!--세부에러--></td>
-													<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><spring:message code='ANABTN004'/></td><!-- 세부에러 -->
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
 												</tr>
 											</table>
 										</div>
 										<div id="tab2" style="display=">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab2','/ana/mailErrorP.jsp')" class="tab"><%=btn_err%><!--세부에러--></a></td>
-													<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif">
+														<a href="javascript:goOzTab('tab2','/ana/mailErrorP.jsp')" class="tab"><spring:message code='ANABTN004'/></a><!-- 세부에러 -->
+													</td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
 												</tr>
 											</table>
 										</div>
@@ -260,18 +264,20 @@
 										<div id="click_tab3" style="display : none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><%=btn_domain%><!--도메인별--></td>
-													<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><spring:message code='ANABTN005'/></td><!-- 도메인별 -->
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
 												</tr>
 											</table>
 										</div>
 										<div id="tab3" style="display=">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab3','/ana/mailDomainP.jsp')" class="tab"><%=btn_domain%><!--도메인별--></a></td>
-													<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif">
+														<a href="javascript:goOzTab('tab3','/ana/mailDomainP.jsp')" class="tab"><spring:message code='ANABTN005'/></a><!-- 도메인별 -->
+													</td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
 												</tr>
 											</table>
 										</div>
@@ -281,18 +287,20 @@
 										<div id="click_tab4" style="display : none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><%=btn_send%><!--발송시간별--></td>
-													<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><spring:message code='ANABTN006'/></td><!-- 발송시간별 -->
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
 												</tr>
 											</table>
 										</div>
 										<div id="tab4" style="display=">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab4','/ana/mailSendP.jsp')" class="tab"><%=btn_send%><!--발송시간별--></a></td>
-													<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif">
+														<a href="javascript:goOzTab('tab4','/ana/mailSendP.jsp')" class="tab"><spring:message code='ANABTN006'/></a><!-- 발송시간별 -->
+													</td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
 												</tr>
 											</table>
 										</div>
@@ -302,18 +310,20 @@
 										<div id="click_tab5" style="display : none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><%=btn_resp%><!--응답시간별--></td>
-													<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><spring:message code='ANABTN007'/></td><!-- 응답시간별 -->
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
 												</tr>
 											</table>
 										</div>
 										<div id="tab5" style="display=">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab5','/ana/mailRespP.jsp')" class="tab"><%=btn_resp%><!--응답시간별--></a></td>
-													<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif">
+														<a href="javascript:goOzTab('tab5','/ana/mailRespP.jsp')" class="tab"><spring:message code='ANABTN007'/></a><!-- 응답시간별 -->
+													</td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
 												</tr>
 											</table>
 										</div>
@@ -323,367 +333,328 @@
 										<div id="click_tab6" style="display : none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><div id="cust_title"><%=btn_cust_list%></div></td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><spring:message code='ANABTN015'/></td><!-- 고객별 -->
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="tab6" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif">
+														<a href="javascript:goOzTab('tab6','/ana/logListP.jsp')" class="tab"><spring:message code='ANABTN015'/></a><!-- 고객별 -->
+													</td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td align="right">&nbsp;
+										<c:if test="${'Y' eq WIZ_USE_YN && 'Y' eq WIZ_DISPLAY_YN}">
+											<a href="javascript:reportScript(ifrm_report.report_form,'print')"><img src="/images/ana/oz_print.jpg" border='0' alt="<spring:message code='ANAJSALT003'/>" align="absbottom"></a><!-- 출력 -->
+											<a href="javascript:reportScript(ifrm_report.report_form,'save',form_report.save_nm.value)"><img src="/images/ana/oz_save.jpg" border='0' alt="<spring:message code='ANAJSALT004'/>" align="absbottom"></a><!-- 저장 -->
+											<a href="javascript:reportScript(ifrm_report.report_form,'vprev')"><img src="/images/ana/oz_prev.jpg" border='0' alt="<spring:message code='ANAJSALT005'/>" align="absbottom"></a><!-- 이전페이지 -->
+											<a href="javascript:reportScript(ifrm_report.report_form,'vnext')"><img src="/images/ana/oz_next.jpg" border='0' alt="<spring:message code='ANAJSALT006'/>" align="absbottom"></a><!-- 다음페이지 -->
+										</c:if>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div id="notab" style="display:none">
+							<table width="100%" border="0" cellspacing="0" cellpadding="0">
+								<tr>
+									<td align="right">&nbsp;
+										<c:if test="${'Y' eq WIZ_USE_YN && 'Y' eq WIZ_DISPLAY_YN}">
+											<a href="javascript:reportScript(ifrm_report.report_form,'print')"><img src="/images/ana/oz_print.jpg" border='0' alt="<spring:message code='ANAJSALT003'/>" align="absbottom"></a><!-- 출력 -->
+											<a href="javascript:reportScript(ifrm_report.report_form,'save',form_report.save_nm.value)"><img src="/images/ana/oz_save.jpg" border='0' alt="<spring:message code='ANAJSALT004'/>" align="absbottom"></a><!-- 저장 -->
+											<a href="javascript:reportScript(ifrm_report.report_form,'vprev')"><img src="/images/ana/oz_prev.jpg" border='0' alt="<spring:message code='ANAJSALT005'/>" align="absbottom"></a><!-- 이전페이지 -->
+											<a href="javascript:reportScript(ifrm_report.report_form,'vnext')"><img src="/images/ana/oz_next.jpg" border='0' alt="<spring:message code='ANAJSALT006'/>" align="absbottom"></a><!-- 다음페이지 -->
+										</c:if>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td height=5 background="/img/com/Content_tab_bar.gif"><img src="/images/com/Content_tab_bar.gif" width="3" height="5"></td>
+				</tr>
+				<tr>
+					<td>
+						<div id="cust_menu" style="display:none">
+							<table width="100%" border="0" cellspacing="0" cellpadding="0">
+								<tr>
+									<td>
+										<div id="click_age" style="display=none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">AGE</td>
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="age" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('01')" class="tab" title='age'>AGE</a></td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td>
+										<div id="click_wedding" style="display=none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">WEDDING</td>
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="wedding" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('02')" class="tab" title='wedding'>WEDDING</a></td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td>
+										<div id="click_gender" style="display=none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">GENDER</td>
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="gender" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('03')" class="tab" title='gender'>GENDER</a></td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td>
+										<div id="click_zip" style="display=none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">ZIP</td>
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="zip" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('04')" class="tab" title='zip'>ZIP</a></td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td>
+										<div id="click_job" style="display=none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">JOB</td>
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="job" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('05')" class="tab" title='job'>JOB</a></td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td>
+										<div id="click_regyr" style="display=none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">REGYR</td>
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="regyr" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('06')" class="tab" title='registration year'>REGYR</a></td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td>
+										<div id="click_regst" style="display=none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">REGST</td>
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="regst" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('07')" class="tab" title='first registration site'>REGST</a></td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td>
+										<div id="click_phmk" style="display=none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">PHMK</td>
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="phmk" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('08')" class="tab" title='phone maker'>PHMK</a></td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td>
+										<div id="click_cyonphmd" style="display=none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">CYONPHMD</td>
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="cyonphmd" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('09')" class="tab" title='cyon phone model'>CYONPHMD</a></td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td>
+										<div id="click_wowphmd" style="display=none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">WOWPHMD</td>
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="wowphmd" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('10')" class="tab" title='wowlg phone model'>WOWPHMD</a></td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td>
+										<div id="click_telcom" style="display=none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">TELCOM</td>
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="telcom" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('11')" class="tab" title='telecom'>TELCOM</a></td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td>
+										<div id="click_bizty" style="display=none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">BIZTY</td>
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="bizty" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('12')" class="tab" title='business type'>BIZTY</a></td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td>
+										<div id="click_mlvl" style="display=none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">MLVL</td>
+													<td width="6"><img src="/images/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="mlvl" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/images/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('13')" class="tab" title='member level'>MLVL</a></td>
+													<td width="6"><img src="/images/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<iframe name="ifrm_report" border='0' frameborder='1' scrolling='no' width='100%' height='1070'></iframe>
+					</td>
+				</tr>
 			</table>
-			</div>
-			<div id="tab6" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab6','/ana/logListP.jsp')" class="tab"><%=btn_cust_list%></a></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<!--
-			<td width="1"></td>
-			<td width="90">
-			<div id="click_tab7" style="display=none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><div id="cust_title"><%=btn_cust_ana%></div></td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="tab7" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab7','/ana/mailArP.jsp')" class="tab"><%=btn_cust_ana%></a></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			-->
-			<td align="right">&nbsp;
-			<%	if(util.getEnv("WIZ_USE_YN").equals("Y") && util.getEnv("WIZ_DISPLAY_YN").equals("Y") ) {	%>
-			<a href="javascript:reportScript(ifrm_report.report_form,'print')"><img src="/img/ana/oz_print.jpg" border='0' alt="<%=jsalt_print%>" align="absbottom"></a><!--프린트-->
-			<a href="javascript:reportScript(ifrm_report.report_form,'save',form_report.save_nm.value)"><img src="/img/ana/oz_save.jpg" border='0' alt="<%=jsalt_save%>" align="absbottom"></a><!--저장-->
-			<a href="javascript:reportScript(ifrm_report.report_form,'vprev')"><img src="/img/ana/oz_prev.jpg" border='0' alt="<%=jsalt_prev%>" align="absbottom"></a><!--이전페이지-->
-			<a href="javascript:reportScript(ifrm_report.report_form,'vnext')"><img src="/img/ana/oz_next.jpg" border='0' alt="<%=jsalt_next%>" align="absbottom"></a><!--다음페이지-->
-			<!--
-			<a href="javascript:reportScript(ifrm_report.report_form,'zoomin')"><img src="/img/ana/oz_zoom_in.jpg" border='0' alt="<%=jsalt_in%>" align="absbottom"></a>
-			<a href="javascript:reportScript(ifrm_report.report_form,'zoomout')"><img src="/img/ana/oz_zoom_out.jpg" border='0' alt="<%=jsalt_out%>" align="absbottom"></a>
-			-->
-			<%	}	%>
-			</td>
-			</tr>
-			</table>
-			</div>
-			<div id="notab" style="display:none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td align="right">&nbsp;
-			<%	if(util.getEnv("WIZ_USE_YN").equals("Y") && util.getEnv("WIZ_DISPLAY_YN").equals("Y") ) {	%>
-			<a href="javascript:reportScript(ifrm_report.report_form,'print')"><img src="/img/ana/oz_print.jpg" border='0' alt="<%=jsalt_print%>" align="absbottom"></a><!--프린트-->
-			<a href="javascript:reportScript(ifrm_report.report_form,'save',form_report.save_nm.value)"><img src="/img/ana/oz_save.jpg" border='0' alt="<%=jsalt_save%>" align="absbottom"></a><!--저장-->
-			<a href="javascript:reportScript(ifrm_report.report_form,'vprev')"><img src="/img/ana/oz_prev.jpg" border='0' alt="<%=jsalt_prev%>" align="absbottom"></a><!--이전페이지-->
-			<a href="javascript:reportScript(ifrm_report.report_form,'vnext')"><img src="/img/ana/oz_next.jpg" border='0' alt="<%=jsalt_next%>" align="absbottom"></a><!--다음페이지-->
-			<!--
-			<a href="javascript:reportScript(ifrm_report.report_form,'zoomin')"><img src="/img/ana/oz_zoom_in.jpg" border='0' alt="<%=jsalt_in%>" align="absbottom"></a>
-			<a href="javascript:reportScript(ifrm_report.report_form,'zoomout')"><img src="/img/ana/oz_zoom_out.jpg" border='0' alt="<%=jsalt_out%>" align="absbottom"></a>
-			-->
-			<%	}	%>
-			</td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			</tr>
-			<tr>
-			<td height=5 background="/img/com/Content_tab_bar.gif"><img src="/img/com/Content_tab_bar.gif" width="3" height="5"></td>
-			</tr>
-			<tr>
-			<td>
-			<div id="cust_menu" style="display:none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td>
-			<div id="click_age" style="display=none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">AGE</td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="age" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('01')" class="tab" title='age'>AGE</a></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<td>
-			<div id="click_wedding" style="display=none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">WEDDING</td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="wedding" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('02')" class="tab" title='wedding'>WEDDING</a></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<td>
-			<div id="click_gender" style="display=none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">GENDER</td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="gender" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('03')" class="tab" title='gender'>GENDER</a></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<td>
-			<div id="click_zip" style="display=none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">ZIP</td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="zip" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('04')" class="tab" title='zip'>ZIP</a></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<td>
-			<div id="click_job" style="display=none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">JOB</td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="job" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('05')" class="tab" title='job'>JOB</a></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<td>
-			<div id="click_regyr" style="display=none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">REGYR</td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="regyr" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('06')" class="tab" title='registration year'>REGYR</a></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<td>
-			<div id="click_regst" style="display=none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">REGST</td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="regst" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('07')" class="tab" title='first registration site'>REGST</a></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<td>
-			<div id="click_phmk" style="display=none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">PHMK</td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="phmk" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('08')" class="tab" title='phone maker'>PHMK</a></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<td>
-			<div id="click_cyonphmd" style="display=none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">CYONPHMD</td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="cyonphmd" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('09')" class="tab" title='cyon phone model'>CYONPHMD</a></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<td>
-			<div id="click_wowphmd" style="display=none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">WOWPHMD</td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="wowphmd" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('10')" class="tab" title='wowlg phone model'>WOWPHMD</a></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<td>
-			<div id="click_telcom" style="display=none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">TELCOM</td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="telcom" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('11')" class="tab" title='telecom'>TELCOM</a></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<td>
-			<div id="click_bizty" style="display=none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">BIZTY</td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="bizty" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('12')" class="tab" title='business type'>BIZTY</a></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<td>
-			<div id="click_mlvl" style="display=none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab">MLVL</td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="mlvl" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzCustTab('13')" class="tab" title='member level'>MLVL</a></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			</tr>
-			</table>
-			</div>
-			<iframe name="ifrm_report" border='0' frameborder='1' scrolling='no' width='100%' height='1070'></iframe>
-			</td>
-			</tr>
-			<!------------------------------------------------------------------------------------------------------------>
 			<!------------------------------------------	OZREPORT	END		------------------------------------------>
 			<!------------------------------------------------------------------------------------------------------------>
-
-			<!------------------------------------------------------------------------------------------------------------>
-			<!------------------------------------------	USER LIST IFRAME START	-------------------------------------->
-			<!------------------------------------------------------------------------------------------------------------>
-			<iframe name="ifrm_user" border='0' frameborder='0' scrolling='no' width='0' height='0'></iframe>
-			<!------------------------------------------------------------------------------------------------------------>
-			<!------------------------------------------	USER LIST IFRAME END	-------------------------------------->
-			<!------------------------------------------------------------------------------------------------------------>
-
-			</table>
 
 			<form name="form_report">
 			<input type="hidden" name="save_nm" value="">

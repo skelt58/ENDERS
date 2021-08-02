@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.enders.ums.ems.ana.dao.AnalysisMapper">
+
+	<select id="getMailList" parameterType="taskVO" resultType="taskVO">
+		SELECT A.SUB_TASK_NO
+			 , A.SEND_DT
+			 , A.END_DT
+			 , A.WORK_STATUS
+			 , B.TASK_NO
+			 , B.TASK_NM
+			 , B.CHANNEL
+			 , B.SEND_REPEAT
+			 , B.STATUS
+			 , B.SEG_NO
+			 , B.SEND_TERM_END_DT
+			 , B.SEND_TERM_LOOP
+			 , B.REG_DT
+			 , B.CONT_FL_PATH
+			 , B.SURVEYNO
+			 , C.SEG_NM
+			 , D.USER_NM
+			 , E.CAMP_NM
+			 , F.CD_NM CHANNEL_NM
+			 , G.CD_NM SEND_REPEAT_NM
+			 , H.CD_NM STATUS_NM
+		  FROM NEO_SUBTASK A
+			 , NEO_TASK B
+			 , NEO_SEGMENT C
+			 , NEO_USER D
+			 , NEO_CAMPAIGN E
+			 , (SELECT CD, CD_NM FROM NEO_CD WHERE CD_GRP = 'C002' AND UILANG = '000') F
+			 , (SELECT CD, CD_NM FROM NEO_CD WHERE CD_GRP = 'C017' AND UILANG = '000') G
+			 , (SELECT CD, CD_NM FROM NEO_CD WHERE CD_GRP = 'C034' AND UILANG = '000') H
+		 WHERE A.SEND_TEST_YN != 'Y'
+		   AND A.WORK_STATUS IN ('002','003')
+		   AND A.TASK_NO = B.TASK_NO
+		   AND B.SEG_NO = C.SEG_NO
+		   AND B.USER_ID = D.USER_ID
+		   AND B.CAMP_NO = E.CAMP_NO
+		   AND B.CHANNEL = F.CD
+		   AND B.SEND_REPEAT = G.CD
+		   AND A.WORK_STATUS = H.CD
+		   <if test="searchTaskNm != null and searchTaskNm != ''">
+		   AND UPPER(B.TASK_NM) LIKE '%' || #{searchTaskNm} || '%'
+		   </if>
+		   <if test='adminYn == "N"'>
+		   AND B.DEPT_NO = #{searchDeptNo}
+		   </if>
+		   <if test="searchDeptNo != 0">
+		   AND B.DEPT_NO = #{searchDeptNo}
+		   </if>
+		   <if test="searchUserId != null and searchUserId != ''">
+		   AND B.USER_ID = #{searchUserId}
+		   </if>
+		   <if test="searchCampNo != 0">
+		   AND B.CAMP_NO = #{searchCampNo}
+		   </if>
+		   <if test="searchStartDt != null and searchStartDt != ''">
+		   AND A.SEND_DT &gt;= #{searchStartDt} || '000000'
+		   </if>
+		   <if test="searchEndDt != null and searchEndDt != ''">
+		   AND A.SEND_DT &lt; #{searchEndDt} ||'240000'
+		   </if>
+		   <if test="taskNo != 0">
+		   AND B.TASK_NO = #{taskNo}
+		   </if>
+	</select>
+
+</mapper>

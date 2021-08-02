@@ -11,14 +11,17 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.co.enders.ums.ems.cam.vo.TaskVO;
 
 @Controller
 @RequestMapping("/ems/ana")
 public class AnalysisController {
 	
 	@RequestMapping(value="/mailListP")
-	public String goMailListP(Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public String goMailListP(@ModelAttribute TaskVO taskVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		
 		return "ems/ana/mailListP";
 	}

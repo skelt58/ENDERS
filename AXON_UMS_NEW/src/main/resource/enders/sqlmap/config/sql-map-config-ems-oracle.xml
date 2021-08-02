@@ -61,6 +61,7 @@
 		<mapper resource="enders/sqlmap/ems/seg/SegmentSQL-ems-oracle.xml"></mapper>
 		<mapper resource="enders/sqlmap/ems/cam/CampaignSQL-ems-oracle.xml"></mapper>
 		<mapper resource="enders/sqlmap/ems/tmp/TemplateSQL-ems-oracle.xml"></mapper>
+		<mapper resource="enders/sqlmap/ems/ana/AnalytisSQL-ems-oracle.xml"></mapper>
 	</mappers>
 	
 </configuration>
