@@ -228,4 +228,28 @@ public interface CampaignMapper {
 	 * @throws Exception
 	 */
 	public TaskVO getMailInfo(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 메일(캠페인 주업무) 정보 수정
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateTaskInfo(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 메일(캠페인 보조업무) 정보 수정
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateSubTaskInfo(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 첨부파일 정보 삭제
+	 * @param taskNo
+	 * @return
+	 * @throws Exception
+	 */
+	public int deleteAttachInfo(int taskNo) throws Exception;
 }

@@ -843,5 +843,66 @@
 		   AND NEO_SUBTASK.SUB_TASK_NO = #{subTaskNo}
 		   AND NEO_TASK.TASK_NO = NEO_SUBTASK.TASK_NO
 	</select>
+	
+	<update id="updateTaskInfo" parameterType="taskVO">
+		UPDATE NEO_TASK
+		   SET PLAN_USER_ID = #{planUserId}
+			 , USER_ID           = #{userId}
+			 , MAIL_FROM_NM      = #{mailFromNm}
+			 , MAIL_FROM_EM      = #{mailFromEm}
+			 , REPLY_TO_EM       = #{replyToEm}
+			 , RETURN_EM         = #{returnEm}
+			 , NM_MERGE          = #{nmMerge}
+			 , ATT_CNT           = #{attCnt}
+			 , SEND_REPEAT       = #{sendRepeat}
+			 , CHANNEL           = #{channel}
+			 , RESP_LOG          = #{respLog}
+			 , CONT_TY           = #{contTy}
+			 , SEND_TERM_END_DT  = #{sendTermEndDt}
+			 , SEND_TERM_LOOP    = #{sendTermLoop}
+			 , SEND_TERM_LOOP_TY = #{sendTermLoopTy}
+			 , SOCKET_TIMEOUT    = #{socketTimeout}
+			 , CONN_PER_CNT      = #{connPerCnt}
+			 , RETRY_CNT         = #{retryCnt}
+			 , SEND_MODE         = #{sendMode}
+			 , HEADER_ENC        = #{headerEnc}
+			 , BODY_ENC          = #{bodyEnc}
+			 , CHARSET           = #{charset}
+			 , SEG_NO            = #{segNo}
+			 , CAMP_TY           = #{campTy}
+			 , CAMP_NO           = #{campNo}
+			 , DEPT_NO           = #{deptNo}
+			 , CONT_FL_PATH      = #{contFlPath}
+			 , SEND_UNIT_COST    = #{sendUnitCost}
+			 , STATUS            = #{status}
+			 , RECO_STATUS       = #{recoStatus}
+			 , MAIL_TITLE        = #{mailTitle}
+			 , SURVEYNO          = #{surveyno}
+			 , UP_ID             = #{upId}
+			 , UP_DT             = #{upDt}
+			 , TASK_NM           = #{taskNm}
+			 , RESP_YN           = #{respYn}
+			 , LINK_YN           = #{linkYn}
+		 WHERE TASK_NO           = #{taskNo}
+	</update>
+	
+	<update id="updateSubTaskInfo" parameterType="taskVO">
+		UPDATE NEO_SUBTASK
+		   SET SEND_DT      = #{sendDt}
+			 , RESP_END_DT  = #{respEndDt}
+			 , WORK_STATUS  = #{workStatus}
+			 , RETRY_CNT    = #{retryCnt}
+			 , SEND_TEST_YN = #{sendTestYn}
+			 , SEND_TEST_EM = #{sendTestEm}
+			 , SEND_IP      = #{sendIp}
+			 , CHANNEL      = #{channel}
+		 WHERE TASK_NO      = #{taskNo}
+		   AND SUB_TASK_NO  = #{subTaskNo}
+	</update>
+	
+	<delete id="deleteAttachInfo" parameterType="_int">
+		DELETE FROM NEO_ATTACH
+		 WHERE TASK_NO = #{taskNo}
+	</delete>
 
 </mapper>

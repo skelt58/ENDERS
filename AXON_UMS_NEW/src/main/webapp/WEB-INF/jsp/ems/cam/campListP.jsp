@@ -137,18 +137,13 @@ function goSelect(campNo) {
 
 // 메일보기 클릭시
 function goMail(campNo) {
-	alert("메일 프로그램 완료 후 작성");
-	/*
-	if(p_camp_no) {
-		var obj = document.search_form;
-		obj.reset();
-		obj.p_camp_no.value = p_camp_no;
-		obj.action = "/cam/mailMainFrmP.jsp";
-		obj.submit();
+	
+	if(campNo) {
+		$("#searchForm input[name='campNo']").val(campNo);
+		$("#searchForm").attr("target","").attr("action","<c:out value='/ems/cam/mailMainP.ums'/>").submit();
 	} else {
 		alert("<spring:message code='CAMTBLLB007'/>");		// 캠페인 선택
 	}
-	*/
 }
 
 // 등록 버튼 클릭시
@@ -223,6 +218,11 @@ function checkForm() {
 	return errflag;
 }
 
+//페이징
+function goPageNum(page) {
+	$("#page").val(page);
+	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/cam/campListP.ums'/>").submit();
+}
 </script>
 
 <div class="ex-layout">
@@ -244,8 +244,8 @@ function checkForm() {
 			<div class="cWrap">
 			
 				<form id="searchForm" name="searchForm" method="post">
-				<input type="hidden" id="page" name="page" value="1">
-				<input type="hidden" name="campNo" value="0">
+				<input type="hidden" id="page" name="page" value="${searchVO.page}">
+				<input type="hidden" name="campNo" value="${searchVO.campNo}">
 				<table class="table_line_outline">
 					<colgroup>
 						<col style="width:15%" />

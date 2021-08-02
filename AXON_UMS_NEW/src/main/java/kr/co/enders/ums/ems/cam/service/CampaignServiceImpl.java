@@ -10,7 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.servlet.http.HttpSession;
 
@@ -75,12 +74,13 @@ public class CampaignServiceImpl implements CampaignService {
 	}
 
 	@Override
-	public List<Vector<String>> mailAliasParser(TaskVO taskVO, List<CodeVO> mergeList, PropertiesUtil properties) throws Exception {
+	public List<LinkVO> mailAliasParser(TaskVO taskVO, List<CodeVO> mergeList, PropertiesUtil properties) throws Exception {
 		int inc = 100;
 
-		List<Vector<String>> dataList = new ArrayList<Vector<String>>();
+		List<LinkVO> dataList = new ArrayList<LinkVO>();
 		String composerValue = taskVO.getComposerValue();
 		
+		// ID머지명칭
 		String ID = mergeList.get(2).getCdNm();
 		
 		if(inc >= 100) inc = 10;
@@ -134,9 +134,10 @@ public class CampaignServiceImpl implements CampaignService {
 			tmpCV = StringUtil.repStr(tmpCV,"<!--NEO__REJECT__START--><A","<!--NEO__REJECT__CONVERT__START-->");
 			tmpCV = StringUtil.repStr(tmpCV,"</A><!--NEO__REJECT__END-->","<!--NEO__REJECT__CONVERT__END-->");
 
+			//[LINK_TY, LINK_URL, LINK_NM, LINK_NO]
 			while( (s_pos = tmpCV.toLowerCase().indexOf("<a ")) != -1) {
 
-				Vector<String> bodyData = new Vector<String>();
+				LinkVO bodyData = new LinkVO();
 				TM = Long.toString(System.currentTimeMillis());
 				if(inc >= 100) inc = 10;
 
@@ -157,7 +158,7 @@ public class CampaignServiceImpl implements CampaignService {
 				// 이미지 인지 텍스트 링크인지 처리
 				if(strTag.toLowerCase().indexOf("<img ") != -1) tmpHTag = "000";    // 이미지(000)
 				else tmpHTag = "001";                                               // 텍스트(001)
-				bodyData.add(tmpHTag);
+				bodyData.setLinkTy(tmpHTag);
 
 				// 링크 URL 찾기
 				pos = strTag.toLowerCase().indexOf("href=") + 5;
@@ -170,11 +171,11 @@ public class CampaignServiceImpl implements CampaignService {
 					continue;
 				}
 
-				bodyData.add(temp);
+				bodyData.setLinkUrl(temp);
 
 				// 링크 내용(이미지 또는 텍스트:a테그에 둘러 싸인 부분)
 				tmpHTag = strTag.substring(strTag.indexOf(">") + 1, strTag.lastIndexOf("<"));
-				bodyData.add(tmpHTag);
+				bodyData.setLinkNm(tmpHTag);
 				
 				returnValue.append("<!--NEO__LINKCLICK__START-->"+
 									StringUtil.repStr(strTag,
@@ -189,7 +190,7 @@ public class CampaignServiceImpl implements CampaignService {
 									);
 
 				// 번호
-				bodyData.add(TM+Integer.toString(inc));
+				bodyData.setLinkNo(TM+Integer.toString(inc));
 				inc++;
 				dataList.add(bodyData);
             }
@@ -226,14 +227,14 @@ public class CampaignServiceImpl implements CampaignService {
 				returnValue.append("<MAP NAME="+mapNm+">");
 
 				while( (s_pos = strTag.toLowerCase().indexOf("<area ")) != -1 ) {
-					Vector<String> bodyData = new Vector<String>();
+					LinkVO bodyData = new LinkVO();
 					TM = Long.toString(System.currentTimeMillis());
 					if(inc >= 100) inc = 10;
 					mapNo++;
 
 					// 이미지 맵 처리
 					tmpHTag = "003";       // 이미지 맵
-					bodyData.add(tmpHTag);
+					bodyData.setLinkTy(tmpHTag);
 
 					// 링크 URL 찾기
 					pos = strTag.toLowerCase().indexOf("href=") + 5;
@@ -249,11 +250,11 @@ public class CampaignServiceImpl implements CampaignService {
 						returnValue.append(strTag);
 						continue;
 					}
-					bodyData.add(temp);
+					bodyData.setLinkUrl(temp);
 
 					// 링크 내용
 					tmpHTag = mapNm + Integer.toString(mapNo);
-					bodyData.add(tmpHTag);
+					bodyData.setLinkNm(tmpHTag);
 
 					returnValue.append("<!--NEO__LINKCLICK__START-->"+
 										StringUtil.repStr(strMap,
@@ -268,7 +269,7 @@ public class CampaignServiceImpl implements CampaignService {
 										);
 					
 					// 번호
-					bodyData.add(TM+Integer.toString(inc));
+					bodyData.setLinkNo(TM+Integer.toString(inc));
 					inc++;
 					dataList.add(bodyData);
                 }
@@ -525,4 +526,35 @@ public class CampaignServiceImpl implements CampaignService {
 	public List<AttachVO> getAttachList(int taskNo) throws Exception {
 		return campaignDAO.getAttachList(taskNo);
 	}
+
+	@Override
+	public int updateMailInfo(TaskVO taskVO, List<AttachVO> attachList, List<LinkVO> linkList) throws Exception {
+		int result = 0;
+		
+		// 주업무 정보 수정
+		result += campaignDAO.updateTaskInfo(taskVO);
+		
+		// 보조업무 정보 수정
+		result += campaignDAO.updateSubTaskInfo(taskVO);
+		
+		// 기존 첨부파일 삭제
+		result += campaignDAO.deleteAttachInfo(taskVO.getTaskNo());
+		
+		// 첨부파일 등록
+		if(attachList != null && attachList.size() > 0) {
+			for(AttachVO attach:attachList) {
+				result +=campaignDAO.insertAttachInfo(attach);
+			}
+		}
+		
+		// 링크정보 등록
+		if(linkList != null && linkList.size() > 0) {
+			for(LinkVO link:linkList) {
+				result +=campaignDAO.insertLinkInfo(link);
+			}
+		}
+		
+		return result;
+	}
+
 }

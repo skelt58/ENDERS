@@ -38,7 +38,11 @@ public class CommonSessionInterceptor extends HandlerInterceptorAdapter {
 		if(session.getAttribute("NEO_USER_ID") == null || "".equals((String)session.getAttribute("NEO_USER_ID")) || session.getAttribute("USER_PROG_LIST") == null) {
 			//session.setAttribute("requestUri", requestUri);
 			
-			response.sendRedirect(contextRoot + "/lgn/lgnP.ums");
+			if(requestUri.indexOf("/index.ums") >= 0) {
+				response.sendRedirect(contextRoot + "/lgn/lgnP.ums");
+			} else {
+				response.sendRedirect(contextRoot + "/lgn/timeout.ums");
+			}
 			result = false;
 		} else {
 			// Disable browser caching

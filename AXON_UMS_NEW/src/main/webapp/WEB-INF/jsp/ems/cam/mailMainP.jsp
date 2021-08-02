@@ -222,7 +222,6 @@ function goCopy() {
         return;
     }
 
-    $("#status").val("002");
 	var param = $("#mailListForm").serialize();
 	$.getJSON("<c:url value='/ems/cam/mailCopy.json'/>?" + param, function(data) {
 		if(data.result == "Success") {
@@ -285,6 +284,11 @@ function goPageNum(page) {
 		}
 	});
 }
+
+// 서비스으로이동 클릭시
+function goCampList() {
+	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/cam/campListP.ums'/>").submit();
+}
 </script>
 
 <div class="ex-layout">
@@ -304,9 +308,10 @@ function goPageNum(page) {
 			
 			<div class="cWrap">
 			<form id="searchForm" name="searchForm" method="post">
-			<input type="hidden" id="page" name="page" value="1">
+			<input type="hidden" id="page" name="page" value="<c:out value='${searchVO.page}'/>">
 			<input type="hidden" id="taskNo" name="taskNo" value="0">
 			<input type="hidden" id="subTaskNo" name="subTaskNo" value="0">
+			<input type="hidden" id="campNo" name="campNo" value="<c:out value='${searchVO.campNo}'/>"/>
 			<table border="1" cellspacing="0" cellpadding="0" class="table_line_outline">
 				<colgroup>
 					<col style="width:15%" />
@@ -325,7 +330,7 @@ function goPageNum(page) {
 							<option value="0">::::<spring:message code='CAMTBLLB007'/>::::</option><!-- 캠페인 선택 -->
 							<c:if test="${fn:length(campaignList) > 0}">
 								<c:forEach items="${campaignList}" var="camp">
-									<option value="<c:out value='${camp.campNo}'/>"<c:if test="${camp.campNo == searchVO.searchCampNo}"> selected</c:if>><c:out value='${camp.campNm}'/></option>
+									<option value="<c:out value='${camp.campNo}'/>"<c:if test="${camp.campNo == searchVO.campNo}"> selected</c:if>><c:out value='${camp.campNm}'/></option>
 								</c:forEach>
 							</c:if>
 						</select>

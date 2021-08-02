@@ -21,6 +21,8 @@
 <meta http-equiv="Cache-Control" content="No-Cache"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<link rel="shortcut icon" href="<c:url value='/images/favicon.ico'/>" type="image/x-icon">
+<link rel="icon" href="<c:url value='/images/favicon.ico'/>" type="image/x-icon">
 <link type="text/css" rel="stylesheet" href="<c:url value='/css/layout.css'/>"></link>
 <link type="text/css" rel="stylesheet" href="<c:url value='/css/jquery-ui.css'/>"></link>
 <link type="text/css" rel="stylesheet" href="<c:url value='/css/ui.jqgrid.css'/>"></link>

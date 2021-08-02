@@ -38,7 +38,6 @@
 		<td align=center><spring:message code='COMTBLTL001'/></td><!-- 상태 -->
 		<td align=center><spring:message code='CAMTBLTL012'/></td><!-- 발송상태 -->
 	</tr>
-	<c:set var="emptyCnt" value="${10 - fn:length(mailList)}"/>
 	<c:if test="${fn:length(mailList) > 0}">
 		<c:forEach items="${mailList}" var="mail" varStatus="mailStatus">
 			<tr class="tr_body">
@@ -104,6 +103,7 @@
 			</tr>
 		</c:forEach>
 	</c:if>
+	<c:set var="emptyCnt" value="${searchVO.rows - fn:length(mailList)}"/>
 	<c:if test="${emptyCnt > 0}">
 		<c:forEach var="i" begin="1" end="${emptyCnt}">
 			<tr class="tr_body">
@@ -129,7 +129,9 @@
 		<input type="button" class="btn_typeG" value="<spring:message code='CAMBTN001'/>" onClick="goCopy()"><!-- 복사 -->
 		<input type="button" class="btn_typeC" value="<spring:message code='CAMBTN002'/>" onClick="goTestSend()"><!-- 테스트발송 -->
 		<!------------------	MODIFY BY SEO CHANG HOON	START	------------------>
-		<input type="button" name="btn_camp_list" class="btn_style" value="<spring:message code='CAMBTN012'/>" onClick="parent.parent.goCampList()" style="display: none;"><!-- 서비스으로 이동 -->
+		<c:if test="${searchVO.campNo > 0}">
+		<input type="button" id="btnCampList" class="btn_style" value="<spring:message code='CAMBTN012'/>" onClick="goCampList()"><!-- 서비스으로 이동 -->
+		</c:if>
 		<!------------------	MODIFY BY SEO CHANG HOON	END		------------------>
 	</div>
 </div>

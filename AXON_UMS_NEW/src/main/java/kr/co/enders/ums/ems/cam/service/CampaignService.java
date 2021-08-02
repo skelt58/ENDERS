@@ -6,7 +6,6 @@
 package kr.co.enders.ums.ems.cam.service;
 
 import java.util.List;
-import java.util.Vector;
 
 import javax.servlet.http.HttpSession;
 
@@ -70,9 +69,17 @@ public interface CampaignService {
 	 * @throws Exception
 	 */
 	@Transactional(value="transactionManagerEms")
-	public int updateMailAdmit(TaskVO taskVO) throws Exception; 
+	public int updateMailAdmit(TaskVO taskVO) throws Exception;
 	
-	public List<Vector<String>> mailAliasParser(TaskVO taskVO, List<CodeVO> mergeList, PropertiesUtil properties) throws Exception;
+	/**
+	 * 메일 내용 링크 파싱 처리
+	 * @param taskVO
+	 * @param mergeList
+	 * @param properties
+	 * @return
+	 * @throws Exception
+	 */
+	public List<LinkVO> mailAliasParser(TaskVO taskVO, List<CodeVO> mergeList, PropertiesUtil properties) throws Exception;
 	
 	/**
 	 * 메일 정보를 등록한다.(주업무 -> 보조업무 -> 첨부파일 -> 링크)
@@ -159,4 +166,16 @@ public interface CampaignService {
 	 * @throws Exception
 	 */
 	public List<AttachVO> getAttachList(int taskNo) throws Exception;
+	
+	/**
+	 * 메일 정보를 수정한다.(주업무 -> 보조업무 -> 첨부파일 -> 링크)
+	 * @param taskVO
+	 * @param attachList
+	 * @param linkList
+	 * @return
+	 * @throws Exception
+	 */
+	@Transactional(value="transactionManagerEms")
+	public int updateMailInfo(TaskVO taskVO, List<AttachVO> attachList, List<LinkVO> linkList) throws Exception;
+	
 }

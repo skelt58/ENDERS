@@ -134,6 +134,14 @@ public class LoginController {
 		}
 	}
 	
+	/**
+	 * 로그아웃 처리
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/logout")
 	public String goLogout(Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		
@@ -141,5 +149,23 @@ public class LoginController {
 		session.invalidate();
 		
 		return "lgn/logout";
+	}
+	
+	/**
+	 * 세션 타임아웃 처리
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/timeout")
+	public String goSessionTimeout(Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		String requestUri = request.getRequestURI();
+		
+		model.addAttribute("requestUri", requestUri);
+		
+		return "lgn/timeout";
 	}
 }

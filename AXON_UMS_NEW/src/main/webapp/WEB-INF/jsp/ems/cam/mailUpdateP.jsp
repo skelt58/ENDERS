@@ -17,6 +17,8 @@ $(document).ready(function() {
 	// 정기발송 종료일
 	$("#sendTermEndDt").datepicker();
 	
+	showBtn();
+	
 	// 캠페인 목적 설정
 	//setTimeout(function(){
 		goCamp();
@@ -34,8 +36,21 @@ $(document).ready(function() {
 	    } else {   // TEXT
 	    	goEditSetting('001');
 	    }
-	},300);
+	},400);
 });
+
+//히스토리 이동 버튼 전시 구현
+function showBtn() {
+	var obj = document.mailform;
+	if(window.name == "cam_frm" && parent.parent) {
+		$("#btnCampList").show();
+		$("#btnMailList").show();
+	} else if(window.name == "sch_frm" && parent) {
+		$("#btnWeekList").show();
+	} else {
+		$("#btnMailList").show();
+	}
+}
 
 //에디터 초기 설정(TEXT, HTML)
 function goEditSetting(mode) {
@@ -374,9 +389,159 @@ function goUpdate() {
     $("#mailInfoForm").attr("target","iFrmMail").attr("action","<c:url value='/ems/cam/mailUpdate.ums'/>").submit();
 }
 
+// 복구 클릭시
+function goEnable() {
+    $("#status").val("000");
+	var param = $("#searchForm").serialize();
+	$.getJSON("<c:url value='/ems/cam/mailDelete.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='CAMJSALT027'/>");	// 복구성공
+			
+			// 메일 목록 페이지로 이동
+			$("#searchForm").attr("target","").attr("action","<c:url value='/ems/cam/mailMainP.ums'/>").submit();
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='CAMJSALT029'/>");	// 복구실패
+		}
+	});
+}
 
+// 사용중지 클릭시
+function goDisable() {
+    $("#status").val("001");
+	var param = $("#searchForm").serialize();
+	$.getJSON("<c:url value='/ems/cam/mailDelete.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='CAMJSALT028'/>");	// 사용중지성공
+			
+			// 메일 목록 페이지로 이동
+			$("#searchForm").attr("target","").attr("action","<c:url value='/ems/cam/mailMainP.ums'/>").submit();
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='CAMJSALT030'/>");	// 사용중지실패
+		}
+	});
+}
 
+// 삭제 클릭시
+function goDelete() {
+    $("#status").val("002");
+	var param = $("#searchForm").serialize();
+	$.getJSON("<c:url value='/ems/cam/mailDelete.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='COMJSALT012'/>");	// 삭제 성공
+			
+			// 메일 목록 페이지로 이동
+			$("#searchForm").attr("target","").attr("action","<c:url value='/ems/cam/mailMainP.ums'/>").submit();
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='COMJSALT013'/>");	// 삭제 실패
+		}
+	});
+}
 
+// 복사 클릭시
+function goCopy() {
+	var param = $("#searchForm").serialize();
+	$.getJSON("<c:url value='/ems/cam/mailCopy.json'/>?" + param, function(data) {
+		if(data.result == "Success") {
+			alert("<spring:message code='CAMJSALT011'/>");	// 복사 성공
+			
+			// 메일 목록 페이지로 이동
+			$("#searchForm").attr("target","").attr("action","<c:url value='/ems/cam/mailMainP.ums'/>").submit();
+		} else if(data.result == "Fail") {
+			alert("<spring:message code='CAMJSALT012'/>");	// 복사 실패
+		}
+	});
+}
+
+// 테스트발송 클릭시
+function goTestSend() {
+	window.open("","preView", " width=1012, height=230, scrollbars=yes");
+	$("#searchForm").attr("target","preView").attr("action","/ems/cam/mailTestListP.ums").submit();
+}
+
+// 발송승인 클릭시
+function goAdmit() {
+    var errflag = false;
+    var errstr = "";
+    
+    if(typeof $("#deptNo").val() != "undefined") {
+        if($("#deptNo").val() != "0" && $("#userId").val() == "") {
+            errflag = true;
+            errstr += " [ <spring:message code='COMTBLTL005'/> ] ";		// 사용자
+        }
+    }
+    if($("#campInfo").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLTL006'/> ] ";			// 캠페인
+    }
+    if($("#segNoc").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLTL014'/> ] ";			// 발송대상그룹
+    }
+    if($("#taskNm").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLTL011'/> ] ";			// 메일명
+    }
+    if($("#mailTitle").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLTL025'/> ] ";			// 메일제목
+    }
+    if($("#mailFromNm").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLTL018'/> ] ";			// 발송자 성명
+    }
+    if($("#mailFromEm").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLTL019'/> ] ";			// 발송자 이메일
+    }
+    if($("#replyToEm").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLLB002'/> ] ";			// 수신거부(이전 소스 경고 메시지 잘못된 듯)
+    }
+    if($("#returnEm").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLLB003'/> ] ";			// 링크클릭(이전 소스 경고 메시지 잘못된 듯)
+    }
+    if($("#socketTimeout").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLLB004'/> ] ";			// 발송일로부터(이전 소스 경고 메시지 잘못된 듯)
+    }
+    if($("#connPerCnt").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLLB005'/> ] ";			// 일까지 추적(이전 소스 경고 메시지 잘못된 듯)
+    }
+    if($("#retryCnt").val() == "") {
+        errflag = true;
+        errstr += " [ <spring:message code='CAMTBLLB006'/> ] ";			// 발송대상그룹을 선택하세요.(이전 소스 경고 메시지 잘못된 듯)
+    }
+    if(errflag) {
+        alert("<spring:message code='COMJSALT001'/>.\n" + errstr);	// 입력값 에러\\n다음 정보를 확인하세요.
+        return;
+	}
+    
+    
+	oEditors.getById["ir1"].exec("UPDATE_CONTENTS_FIELD", []);
+	$("#composerValue").val( $("#ir1").val() );
+
+    // 첨부파일을 모두 선택되도록 함.
+    $("#attachNm option").each(function(idx,item){
+    	$(item).prop("selected", true);
+    });
+    $("#attachPath option").each(function(idx,item){
+    	$(item).prop("selected", true);
+    });
+    
+    $("#mailInfoForm").attr("target","iFrmMail").attr("action","<c:url value='/ems/cam/mailUpdateAdmit.ums'/>").submit();
+}
+
+//리스트 클릭시
+function goList() {
+	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/cam/mailMainP.ums'/>").submit();
+}
+
+// 서비스으로이동 클릭시
+function goCampList() {
+	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/cam/campListP.ums'/>").submit();
+}
 
 
 
@@ -415,11 +580,11 @@ function getDate(Date, selectedNum, minNum, maxNum, plusNum) {
 			<input type="hidden" id="searchEndDt" name="searchEndDt" value="<c:out value='${searchVO.searchEndDt}'/>">
 			<input type="hidden" id="searchWorkStatus" name="searchWorkStatus" value="<c:out value='${searchVO.searchWorkStatus}'/>">
 			
-			<input type='hidden' name='taskNo' value="<c:out value='${searchVO.taskNo}'/>">
-			<input type='hidden' name='subTaskNo' value="<c:out value='${searchVO.subTaskNo}'/>">
+			<input type='hidden' name='taskNos' value="<c:out value='${searchVO.taskNo}'/>">
+			<input type='hidden' name='subTaskNos' value="<c:out value='${searchVO.subTaskNo}'/>">
 			<input type='hidden' name='sendTestTaskNo' value="0">
 			<input type='hidden' name='sendTestSubTaskNo' value="0">
-			<input type="hidden" name="status">
+			<input type="hidden" id="status" name="status">
 			</form>
 			
 			<!-- new title -->
@@ -624,16 +789,18 @@ function getDate(Date, selectedNum, minNum, maxNum, plusNum) {
 						<td class="td_body">
 							<input type="checkbox" id="isSendTerm" name="isSendTerm" value="Y"<c:if test="${not empty mailInfo.sendTermEndDt}"> checked</c:if>>
 							<c:set var="sendTermEndDt" value="${mailInfo.sendTermEndDt}"/>
-							<c:if test="${empty sendTermEndDt}">
-								<jsp:useBean id="currTime" class="java.util.Date"/>
-								<fmt:formatDate var="ymd" value="${currTime}" pattern="yyyy-MM-dd"/>
-								<c:set var="sendTermEndDt" value="${ymd}"/>
-							</c:if>
-							<c:if test="${not empty sendTermEndDt}">
-								<fmt:parseDate var="endDt" value="${sendTermEndDt}" pattern="yyyyMMddHHmm"/>
-								<fmt:formatDate var="termEndDt" value="${endDt}" pattern="yyyy-MM-dd"/> 
-								<c:set var="sendTermEndDt" value="${termEndDt}"/>
-							</c:if>
+							<c:choose>
+								<c:when test="${empty sendTermEndDt}">
+									<jsp:useBean id="currTime" class="java.util.Date"/>
+									<fmt:formatDate var="ymd" value="${currTime}" pattern="yyyy-MM-dd"/>
+									<c:set var="sendTermEndDt" value="${ymd}"/>
+								</c:when>
+								<c:otherwise>
+									<fmt:parseDate var="endDt" value="${sendTermEndDt}" pattern="yyyyMMddHHmm"/>
+									<fmt:formatDate var="termEndDt" value="${endDt}" pattern="yyyy-MM-dd"/> 
+									<c:set var="sendTermEndDt" value="${termEndDt}"/>
+								</c:otherwise>
+							</c:choose>
 							
 							<input type="text" id="sendTermEndDt" name="sendTermEndDt" value="<c:out value='${sendTermEndDt}'/>" style="width:70;cursor:hand" readonly>
 						</td>
@@ -688,40 +855,42 @@ function getDate(Date, selectedNum, minNum, maxNum, plusNum) {
 					<div class="btnR">
 						<c:choose>
 							<c:when test="${'002' eq mailInfo.status}">
-								<input type="button" class="btn_style" value="<spring:message code='COMBTN007'/>" onClick="isStatus()">
+								<input type="button" class="btn_style" value="<spring:message code='COMBTN007'/>" onClick="isStatus()"><!-- 수정 -->
 							</c:when>
 							<c:when test="${'000' ne mailInfo.workStatus && '001' ne mailInfo.workStatus}">
-								<input type="button" class="btn_style" value="<spring:message code='COMBTN007'/>" onClick="isWorkStatus()">
+								<input type="button" class="btn_style" value="<spring:message code='COMBTN007'/>" onClick="isWorkStatus()"><!-- 수정 -->
 							</c:when>
 							<c:otherwise>
-								<input type="button" class="btn_style" value="<spring:message code='COMBTN007'/>" onClick="goUpdate()">
+								<input type="button" class="btn_style" value="<spring:message code='COMBTN007'/>" onClick="goUpdate()"><!-- 수정 -->
 							</c:otherwise>
 						</c:choose>
 						
 						<c:if test="${'001' eq mailInfo.status}">
-							<input type="button" class="btn_style" value="<spring:message code='CAMBTN013'/>" onClick="goEnable()">
+							<input type="button" class="btn_style" value="<spring:message code='CAMBTN013'/>" onClick="goEnable()"><!-- 복구 -->
 						</c:if>
 						<c:if test="${'000' eq mailInfo.status}">
-							<input type="button" class="btn_style" value="<spring:message code='COMBTN006'/>" onClick="goDisable()">
+							<input type="button" class="btn_style" value="<spring:message code='COMBTN006'/>" onClick="goDisable()"><!-- 사용중지 -->
 						</c:if>
 						
 						<c:if test="${'002' ne mailInfo.status}">
-							<input type="button" class="btn_style" value="<spring:message code='COMBTN008'/>" onClick="goDelete()">
-							<input type="button" class="btn_style" value="<spring:message code='CAMBTN001'/>" onClick="goCopy()">
+							<input type="button" class="btn_style" value="<spring:message code='COMBTN008'/>" onClick="goDelete()"><!-- 삭제 -->
+							<input type="button" class="btn_style" value="<spring:message code='CAMBTN001'/>" onClick="goCopy()"><!-- 복사 -->
 						</c:if>
 						<c:if test="${'000' eq mailInfo.workStatus}">
-							<input type="button" class="btn_style" value="<spring:message code='CAMBTN002'/>" onClick="goTestSend()">
-							<input type="button" class="btn_style" value="<spring:message code='CAMBTN014'/>" onClick="goAdmit()">
+							<input type="button" class="btn_style" value="<spring:message code='CAMBTN002'/>" onClick="goTestSend()"><!-- 테스트발송 -->
+							<input type="button" class="btn_style" value="<spring:message code='CAMBTN014'/>" onClick="goAdmit()"><!-- 발송승인 -->
 						</c:if>
 
 						<c:if test="${mailInfo.testCnt > 0}">
-						<input type="button" class="btn_style" value="<spring:message code='CAMBTN015'/>" onClick="goTestSendInfo('<c:out value='${mailInfo.taskNo}'/>','<c:out value='${mailInfo.subTaskNo}'/>')">
+						<input type="button" class="btn_style" value="<spring:message code='CAMBTN015'/>" onClick="goTestSendInfo('<c:out value='${mailInfo.taskNo}'/>','<c:out value='${mailInfo.subTaskNo}'/>')"><!-- 테스트발송상세정보 -->
 						</c:if>
 			
 						<!------------------	MODIFY BY SEO CHANG HOON	START	------------------>
-						<input type="button" name="btn_mail_list" class="btn_style" value="<spring:message code='COMBTN010'/>" onClick="goList()" style="display:none;">
-						<input type="button" name="btn_camp_list" class="btn_style" value="<spring:message code='CAMBTN012'/>" onClick="goCampList()" style="display:none;">
-						<input type="button" name="btn_week_list" class="btn_style" value="<spring:message code='COMBTN010'/>" onClick="goWeekList()" style="display:none;">
+						<input type="button" id="btnMailList" name="btnMailList" class="btn_style" value="<spring:message code='COMBTN010'/>" onClick="goList()" style="display:none;"><!-- 리스트 -->
+						<c:if test="${searchVO.campNo > 0}">
+						<input type="button" id="btnCampList" name="btnCampList" class="btn_style" value="<spring:message code='CAMBTN012'/>" onClick="goCampList()"><!-- 서비스으로 이동 -->
+						</c:if>
+						<input type="button" id="btnWeekList" name="btnWeekList" class="btn_style" value="<spring:message code='COMBTN010'/>" onClick="goWeekList()" style="display:none;"><!-- 리스트 -->
 						<!------------------	MODIFY BY SEO CHANG HOON	END		------------------>
 					</div>
 				</div>

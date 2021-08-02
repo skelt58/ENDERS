@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -317,6 +316,7 @@ public class CampaignController {
 		logger.debug("goMailMain searchEndDt      = " + searchVO.getSearchEndDt());
 		logger.debug("goMailMain searchStatus     = " + searchVO.getSearchStatus());
 		logger.debug("goMailMain searchWorkStatus = " + searchVO.getSearchWorkStatus());
+		logger.debug("goMailMain campNo           = " + searchVO.getCampNo());
 		
 		// 검색 기본값 설정
 		if(searchVO.getSearchStartDt() == null || "".equals(searchVO.getSearchStartDt())) {
@@ -337,6 +337,7 @@ public class CampaignController {
 				searchVO.setSearchDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
 			}
 		}
+		searchVO.setPage(searchVO.getPage()==0?1:searchVO.getPage());
 		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
 		searchVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
 		
@@ -407,14 +408,15 @@ public class CampaignController {
 	 */
 	@RequestMapping(value="/mailListP")
 	public String goMailList(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		logger.debug("goMailMain searchTaskNm     = " + searchVO.getSearchTaskNm());
-		logger.debug("goMailMain searchCampNo     = " + searchVO.getSearchCampNo());
-		logger.debug("goMailMain searchDeptNo     = " + searchVO.getSearchDeptNo());
-		logger.debug("goMailMain searchUserId     = " + searchVO.getSearchUserId());
-		logger.debug("goMailMain searchStartDt    = " + searchVO.getSearchStartDt());
-		logger.debug("goMailMain searchEndDt      = " + searchVO.getSearchEndDt());
-		logger.debug("goMailMain searchStatus     = " + searchVO.getSearchStatus());
-		logger.debug("goMailMain searchWorkStatus = " + searchVO.getSearchWorkStatus());
+		logger.debug("goMailList searchTaskNm     = " + searchVO.getSearchTaskNm());
+		logger.debug("goMailList searchCampNo     = " + searchVO.getSearchCampNo());
+		logger.debug("goMailList searchDeptNo     = " + searchVO.getSearchDeptNo());
+		logger.debug("goMailList searchUserId     = " + searchVO.getSearchUserId());
+		logger.debug("goMailList searchStartDt    = " + searchVO.getSearchStartDt());
+		logger.debug("goMailList searchEndDt      = " + searchVO.getSearchEndDt());
+		logger.debug("goMailList searchStatus     = " + searchVO.getSearchStatus());
+		logger.debug("goMailList searchWorkStatus = " + searchVO.getSearchWorkStatus());
+		logger.debug("goMailList campNo           = " + searchVO.getCampNo());
 		
 		// 검색 기본값 설정
 		searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("-", ""));
@@ -677,14 +679,10 @@ public class CampaignController {
 		logger.debug("goMailAdd userId     = " + taskVO.getUserId());
 		logger.debug("goMailAdd campInfo   = " + taskVO.getCampInfo());
 		logger.debug("goMailAdd segNo      = " + taskVO.getSegNo());
-		logger.debug("goMailAdd mailFromNm = " + taskVO.getMailFromNm());
-		logger.debug("goMailAdd mailFromEm = " + taskVO.getMailFromEm());
 		logger.debug("goMailAdd contTy     = " + taskVO.getContTy());
 		logger.debug("goMailAdd linkYn     = " + taskVO.getLinkYn());
 		logger.debug("goMailAdd attachNm   = " + taskVO.getAttachNm());
 		logger.debug("goMailAdd attachPath = " + taskVO.getAttachPath());
-		logger.debug("goMailAdd sendHour   = " + taskVO.getSendHour());
-		logger.debug("goMailAdd sendMin    = " + taskVO.getSendMin());
 		
 		List<AttachVO> attachList = null;		// 첨부파일 목록
 		List<LinkVO> linkList = null;			// 링크 목록
@@ -743,10 +741,10 @@ public class CampaignController {
 		if(StringUtil.isNull(taskVO.getSendTermLoop())) taskVO.setSendTermLoop("");									// 정기발송주기
 		if(StringUtil.isNull(taskVO.getSendTermLoopTy())) taskVO.setSendTermLoopTy("");								// 정기발송주기유형
 		if(StringUtil.isNull(taskVO.getSendTestYn())) taskVO.setSendTestYn("N");
-		if(StringUtil.isNull(taskVO.getSendTestEm())) taskVO.setSendTestEm("N");
+		if(StringUtil.isNull(taskVO.getSendTestEm())) taskVO.setSendTestEm("");
 		if(StringUtil.isNull(taskVO.getComposerValue())) taskVO.setComposerValue("");								// 메일내용
 		if("Y".equals(taskVO.getIsSendTerm())) {
-			taskVO.setSendTermEndDt( taskVO.getSendTermEndDt().replaceAll("-", "") + "2400" );						// 정기발송종료일
+			taskVO.setSendTermEndDt( taskVO.getSendTermEndDt().replaceAll("-", "") + "2359" );						// 정기발송종료일
 			taskVO.setSendRepeat("001");
 		} else {
 			taskVO.setSendTermEndDt("");
@@ -775,11 +773,10 @@ public class CampaignController {
 		taskVO.setWorkStatus("000");
 		taskVO.setSendIp(properties.getProperty("SEND_IP"));
 		
-		List<Vector<String>> dataList = null; //[LINK_TY, LINK_URL, LINK_NM, LINK_NO]
 		// 링크클릭 체크한 경우
 		if("Y".equals(taskVO.getLinkYn()) && "000".equals(taskVO.getContTy())) {
-			
 			// 링크 클릭 알리아싱 처리(mailAliasParser.jsp 내용 처리) =============================================================================
+			List<LinkVO> dataList = null;
 
 			// 수신자정보머지키코드 목록
 			CodeVO merge = new CodeVO();
@@ -802,13 +799,13 @@ public class CampaignController {
 			
 			if(dataList != null && dataList.size() > 0) {
 				linkList = new ArrayList<LinkVO>();
-				for(Vector<String> vec:dataList) {
+				for(LinkVO data:dataList) {
 					LinkVO link = new LinkVO();
 					
-					link.setLinkTy((String)vec.get(0));
-					link.setLinkUrl((String)vec.get(1));
-					link.setLinkNm((String)vec.get(2));
-					link.setLinkNo((String)vec.get(3));
+					link.setLinkTy(data.getLinkTy());
+					link.setLinkUrl(data.getLinkUrl());
+					link.setLinkNm(data.getLinkNm());
+					link.setLinkNo(data.getLinkNo());
 					link.setRegId((String)session.getAttribute("NEO_USER_ID"));
 					link.setRegDt(StringUtil.getDate(Code.TM_YMDHMS));
 					linkList.add(link);
@@ -833,7 +830,7 @@ public class CampaignController {
 			int pos = tmpCompose.toLowerCase().indexOf("</body>");
 			
 			String strResponse = "<!--NEO__RESPONSE__START-->";
-			strResponse += "<img src='"+properties.getProperty("RESPONSE_URL")+"?$:RESP_END_DT:$&&000&&"+taskVO.getIdMerge()+"&&$:TASK_NO:$&&$:SUB_TASK_NO:$&&$:DEPT_NO:$&&$:USER_ID:$&&$:CAMP_TY:$&&$:CAMP_NO:$&&$:TARGET_GRP_TY:$' width=0 height=0 border=0>";
+			strResponse += "<img src='"+properties.getProperty("RESPONSE_URL")+"?$:RESP_END_DT:$|000|"+taskVO.getIdMerge()+"|$:TASK_NO:$|$:SUB_TASK_NO:$|$:DEPT_NO:$|$:USER_ID:$|$:CAMP_TY:$|$:CAMP_NO:$' width=0 height=0 border=0>";
 			strResponse += "<!--NEO__RESPONSE__END-->";
 			if(pos == -1) taskVO.setComposerValue(taskVO.getComposerValue() + strResponse);
 			else taskVO.setComposerValue( taskVO.getComposerValue().substring(0, pos) + strResponse + taskVO.getComposerValue().substring(pos));
@@ -1068,7 +1065,221 @@ public class CampaignController {
 	 */
 	@RequestMapping(value="/mailUpdate")
 	public String goMailUpdate(@ModelAttribute TaskVO taskVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goMailUpdate taskNo     = " + taskVO.getTaskNo());
+		logger.debug("goMailUpdate subTaskNo  = " + taskVO.getSubTaskNo());
+		logger.debug("goMailUpdate deptNo     = " + taskVO.getDeptNo());
+		logger.debug("goMailUpdate userId     = " + taskVO.getUserId());
+		logger.debug("goMailUpdate campInfo   = " + taskVO.getCampInfo());
+		logger.debug("goMailUpdate segNo      = " + taskVO.getSegNo());
+		logger.debug("goMailUpdate contTy     = " + taskVO.getContTy());
+		logger.debug("goMailUpdate linkYn     = " + taskVO.getLinkYn());
+		logger.debug("goMailUpdate attachNm   = " + taskVO.getAttachNm());
+		logger.debug("goMailUpdate attachPath = " + taskVO.getAttachPath());
 		
+		List<AttachVO> attachList = null;		// 첨부파일 목록
+		List<LinkVO> linkList = null;			// 링크 목록
+		
+		/*
+		// 파일 사이즈 체크
+		if(taskVO.getAttachPath() != null && !"".equals(taskVO.getAttachPath())) {
+			attachList = new ArrayList<AttachVO>();
+			
+			File attachFile = null;
+			String basePath = properties.getProperty("FILE.UPLOAD_PATH") + "/attach";
+			
+			long fileSize = 0;
+			String[] fileNm = taskVO.getAttachNm().split(",");
+			String[] filePath = taskVO.getAttachPath().split(",");
+			taskVO.setAttCnt(filePath.length);		// 첨부파일 수 설정
+			for(int i=0;i<filePath.length;i++) {
+				attachFile = new File(basePath + "/" + filePath[i]);
+				fileSize += attachFile.length();
+				
+				AttachVO attach = new AttachVO();
+				attach.setTaskNo(taskVO.getTaskNo());
+				attach.setAttNm(fileNm[i]);
+				attach.setAttFlPath("attach/" + filePath[i]);
+				attach.setAttFlSize(attachFile.length());
+				
+				attachList.add(attach);
+			}
+			
+			// 합계 파일 사이즈가 10MB 이상인 경우 중지 
+			if(fileSize > 10485760) {	// 10MB이상
+				model.addAttribute("result","Fail");
+				model.addAttribute("FILE_SIZE","EXCESS");
+				return "ems/cam/mailUpdate";
+			}
+		}
+		
+		// 기본값 설정
+		if(taskVO.getDeptNo() == 0) taskVO.setDeptNo((int)session.getAttribute("NEO_DEPT_NO"));						// 부서번호
+		if(StringUtil.isNull(taskVO.getUserId())) taskVO.setUserId((String)session.getAttribute("NEO_USER_ID"));	// 사용자아이디
+		if(StringUtil.isNull(taskVO.getPlanUserId())) taskVO.setPlanUserId("");
+		if(StringUtil.isNull(taskVO.getCampTy())) taskVO.setCampTy("");												// 캠페인유형
+		if(StringUtil.isNull(taskVO.getNmMerge())) taskVO.setNmMerge("");											// $:nm_merge:$형태로 넘어옴
+		if(StringUtil.isNull(taskVO.getIdMerge())) taskVO.setIdMerge("");											// $:id_merge:$형태로 넘어옴
+		if(StringUtil.isNull(taskVO.getChannel())) taskVO.setChannel("000");										// 채널코드
+		if(StringUtil.isNull(taskVO.getContTy())) taskVO.setContTy("000");											// 편집모드(기본 HTML형식)
+		if(!StringUtil.isNull(taskVO.getSegNoc())) taskVO.setSegNo(Integer.parseInt( taskVO.getSegNoc().substring(0, taskVO.getSegNoc().indexOf("|")) ));		// 세그먼트번호(발송대상그룹)
+		if(StringUtil.isNull(taskVO.getRespYn())) taskVO.setRespYn("0");											// 수신확인
+		if(StringUtil.isNull(taskVO.getTaskNm())) taskVO.setTaskNm("");												// 메일명
+		if(StringUtil.isNull(taskVO.getMailTitle())) taskVO.setMailTitle("");										// 메일제목
+		if(StringUtil.isNull(taskVO.getSendYmd())) taskVO.setSendYmd("0000-00-00");									// 예약시간(예약일)
+		String sendHour = StringUtil.setTwoDigitsString(taskVO.getSendHour());										// 예약시간(시)
+		String sendMin = StringUtil.setTwoDigitsString(taskVO.getSendMin());										// 예약시간(분)
+		taskVO.setSendDt( taskVO.getSendYmd().replaceAll("-", "") + sendHour + sendMin );							// 예약일시
+		taskVO.setRespEndDt("999999999999");
+		if(StringUtil.isNull(taskVO.getIsSendTerm())) taskVO.setIsSendTerm("N");									// 정기발송체크여부
+		if(StringUtil.isNull(taskVO.getSendTermEndDt())) taskVO.setSendTermEndDt("0000-00-00");						// 정기발송종료일
+		if(StringUtil.isNull(taskVO.getSendTermLoop())) taskVO.setSendTermLoop("");									// 정기발송주기
+		if(StringUtil.isNull(taskVO.getSendTermLoopTy())) taskVO.setSendTermLoopTy("");								// 정기발송주기유형
+		if(StringUtil.isNull(taskVO.getSendTestYn())) taskVO.setSendTestYn("N");
+		if(StringUtil.isNull(taskVO.getSendTestEm())) taskVO.setSendTestEm("");
+		if(StringUtil.isNull(taskVO.getComposerValue())) taskVO.setComposerValue("");								// 메일내용
+		if("Y".equals(taskVO.getIsSendTerm())) {
+			taskVO.setSendTermEndDt( taskVO.getSendTermEndDt().replaceAll("-", "") + "2359" );						// 정기발송종료일
+			taskVO.setSendRepeat("001");
+		} else {
+			taskVO.setSendTermEndDt("");
+			taskVO.setSendTermLoop("");
+			taskVO.setSendTermLoopTy("");
+			taskVO.setSendRepeat("000");
+		}
+		if(StringUtil.isNull(taskVO.getLinkYn())) taskVO.setLinkYn("N");											// 링크클릭
+		taskVO.setUpId((String)session.getAttribute("NEO_USER_ID"));
+		taskVO.setUpDt(StringUtil.getDate(Code.TM_YMDHMS));
+		
+		if(StringUtil.isNull(taskVO.getSendMode())) taskVO.setSendMode("");
+		if(StringUtil.isNull(taskVO.getMailFromNm())) taskVO.setMailFromNm("");
+		if(StringUtil.isNull(taskVO.getMailFromEm())) taskVO.setMailFromEm("");
+		if(StringUtil.isNull(taskVO.getReplyToEm())) taskVO.setReplyToEm("");
+		if(StringUtil.isNull(taskVO.getReturnEm())) taskVO.setReturnEm("");
+		
+		if(StringUtil.isNull(taskVO.getHeaderEnc())) taskVO.setHeaderEnc("");
+		if(StringUtil.isNull(taskVO.getBodyEnc())) taskVO.setBodyEnc("");
+		if(StringUtil.isNull(taskVO.getCharset())) taskVO.setCharset("");
+		
+		
+		taskVO.setStatus("000");
+		taskVO.setRecoStatus("000");
+		taskVO.setWorkStatus("000");
+		taskVO.setSendIp(properties.getProperty("SEND_IP"));
+		
+		// 링크클릭 체크한 경우
+		if("Y".equals(taskVO.getLinkYn())) {
+			// 링크 클릭 알리아싱 처리(mailAliasParser.jsp 내용 처리) =============================================================================
+			List<LinkVO> dataList = null;
+
+			// 수신자정보머지키코드 목록
+			CodeVO merge = new CodeVO();
+			merge.setUilang((String)session.getAttribute("NEO_UILANG"));
+			merge.setCdGrp("C001");
+			merge.setUseYn("Y");
+			List<CodeVO> mergeList = null;
+			try {
+				mergeList = codeService.getCodeList(merge);
+			} catch(Exception e) {
+				logger.error("codeService.getCodeList[C001] error = " + e);
+			}
+			
+			try {
+				// 링크 클릭 알리아스 처리
+				dataList = campaignService.mailAliasParser(taskVO, mergeList, properties);
+			} catch(Exception e) {
+				logger.error("campaignService.mailAliasParser error = "+ e);
+			}
+			
+			if(dataList != null && dataList.size() > 0) {
+				linkList = new ArrayList<LinkVO>();
+				for(LinkVO data:dataList) {
+					LinkVO link = new LinkVO();
+					
+					link.setLinkTy(data.getLinkTy());
+					link.setLinkUrl(data.getLinkUrl());
+					link.setLinkNm(data.getLinkNm());
+					link.setLinkNo(data.getLinkNo());
+					link.setRegId((String)session.getAttribute("NEO_USER_ID"));
+					link.setRegDt(StringUtil.getDate(Code.TM_YMDHMS));
+					linkList.add(link);
+				}
+			}
+		}
+		
+		// 수신확인 클릭한 경우
+		if("Y".equals(taskVO.getRespYn()) && "000".equals(taskVO.getContTy())) {
+			// send_dt와 p_resp_log를 이용하여 수신 종료 응답시간을 구한다.
+			if(taskVO.getRespLog() != 0) { // respLog : 수신확인추적기간
+				Calendar cal = Calendar.getInstance();
+				SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+				cal.set(Integer.parseInt(taskVO.getSendYmd().substring(0,4)), Integer.parseInt(taskVO.getSendYmd().substring(5,7))-1, Integer.parseInt(taskVO.getSendYmd().substring(8,10)));
+				cal.add(Calendar.DATE, taskVO.getRespLog());
+				taskVO.setRespEndDt(fmt.format(cal.getTime()) + taskVO.getSendHour() + taskVO.getSendMin()) ;
+			} else {
+				taskVO.setRespEndDt("999999999999");
+			}
+			
+			if(taskVO.getComposerValue().indexOf("<!--NEO__RESPONSE__START-->") == -1) {
+				String tmpCompose = taskVO.getComposerValue();
+				int pos = tmpCompose.toLowerCase().indexOf("</body>");
+				
+				String strResponse = "<!--NEO__RESPONSE__START-->";
+				strResponse += "<img src='"+properties.getProperty("RESPONSE_URL")+"?$:RESP_END_DT:$|000|"+taskVO.getIdMerge()+"|$:TASK_NO:$|$:SUB_TASK_NO:$|$:DEPT_NO:$|$:USER_ID:$|$:CAMP_TY:$|$:CAMP_NO:$' width=0 height=0 border=0>";
+				strResponse += "<!--NEO__RESPONSE__END-->";
+				if(pos == -1) taskVO.setComposerValue(taskVO.getComposerValue() + strResponse);
+				else taskVO.setComposerValue( taskVO.getComposerValue().substring(0, pos) + strResponse + taskVO.getComposerValue().substring(pos));
+			}
+		} else {
+			int startPos = taskVO.getComposerValue().indexOf("<!--NEO__RESPONSE__START-->");
+			int endPos = taskVO.getComposerValue().indexOf("<!--NEO__RESPONSE__END-->");
+			if(startPos != -1 && endPos != -1) {
+				taskVO.setComposerValue( taskVO.getComposerValue().substring(0, startPos) + taskVO.getComposerValue().substring(endPos+"<!--NEO__RESPONSE__END-->".length()) );
+			}
+		}
+
+		// 파일을 수정한다.
+		FileOutputStream fos = null;
+		OutputStreamWriter writer = null;
+		try {
+			File contFile = new File(properties.getProperty("FILE.UPLOAD_PATH") + "/" + taskVO.getContFlPath());
+			fos = new FileOutputStream(contFile);
+			writer = new OutputStreamWriter(fos, "UTF-8");
+			writer.write(taskVO.getComposerValue());
+			writer.flush();
+		} catch(Exception e) {
+			logger.error("mailUpdate File Write Error = " + e);
+		}
+		*/
+		
+		String res = "";
+		try {
+			res = mailUpdateProcess(taskVO, model, attachList, linkList, session);
+		} catch(Exception e) {
+			logger.error("mailUpdateProcess error = " + e);
+		}
+		
+		// 합계 파일 사이즈가 10MB 이상인 경우 중지 
+		if("FILE_SIZE".equals(res)) {
+			model.addAttribute("result","Fail");
+			model.addAttribute("FILE_SIZE","EXCESS");
+			return "ems/cam/mailUpdate";
+		}
+		
+		int result = 0;
+		if("Success".equals(res)) {
+			// 메일 정보 수정(NEO_TASK, NEO_SUBTASK, NEO_ATTACH, NEO_LINK)
+			try {
+				result = campaignService.updateMailInfo(taskVO, attachList, linkList);
+			} catch(Exception e) {
+				logger.error("campaignService.updateMailInfo error = " + e);
+			}
+		}
+		
+		if(result > 0) {
+			model.addAttribute("result","Success");
+		} else {
+			model.addAttribute("result","Fail");
+		}
 		
 		return "ems/cam/mailUpdate";
 	}
@@ -1399,6 +1610,252 @@ public class CampaignController {
 		return modelAndView;
 	}
 	
+	
+	/**
+	 * 메일업데이트 화면에서 발송승인 처리
+	 * @param taskVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/mailUpdateAdmit")
+	public String goMailUpdateAdmit(@ModelAttribute TaskVO taskVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		List<AttachVO> attachList = null;		// 첨부파일 목록
+		List<LinkVO> linkList = null;			// 링크 목록
+
+		String res = "";
+		try {
+			res = mailUpdateProcess(taskVO, model, attachList, linkList, session);
+		} catch(Exception e) {
+			logger.error("mailUpdateProcess error = " + e);
+		}
+		
+		// 합계 파일 사이즈가 10MB 이상인 경우 중지 
+		if("FILE_SIZE".equals(res)) {
+			model.addAttribute("result","Fail");
+			model.addAttribute("FILE_SIZE","EXCESS");
+			return "ems/cam/mailUpdateAdmit";
+		}
+		
+		int result = 0;
+		if("Success".equals(res)) {
+			// 메일 정보 수정(NEO_TASK, NEO_SUBTASK, NEO_ATTACH, NEO_LINK)
+			try {
+				result += campaignService.updateMailInfo(taskVO, attachList, linkList);
+			} catch(Exception e) {
+				logger.error("campaignService.updateMailInfo error = " + e);
+			}
+			
+			if(result == 0) {
+				model.addAttribute("result","Fail");
+				return "ems/cam/mailUpdateAdmit";
+			} 
+			
+			// 발송승인 처리
+			taskVO.setRecoStatus("001");	// 승인여부:승인
+			taskVO.setWorkStatus("001");	// 발송상태:발송승인
+			taskVO.setExeUserId((String)session.getAttribute("NEO_USER_ID"));
+			try {
+				result += campaignService.updateMailAdmit(taskVO);
+			} catch(Exception e) {
+				logger.error("campaignService.updateMailAdmit error = " + e);
+			}
+		}
+		
+		if(result > 0) {
+			model.addAttribute("result","Success");
+		} else {
+			model.addAttribute("result","Fail");
+		}
+		
+		return "ems/cam/mailUpdateAdmit";
+	}
+	
+	
+	
+	public String mailUpdateProcess(TaskVO taskVO, Model model, List<AttachVO> attachList, List<LinkVO> linkList, HttpSession session) throws Exception {
+		// 파일 사이즈 체크
+		if(taskVO.getAttachPath() != null && !"".equals(taskVO.getAttachPath())) {
+			attachList = new ArrayList<AttachVO>();
+			
+			File attachFile = null;
+			String basePath = properties.getProperty("FILE.UPLOAD_PATH") + "/attach";
+			
+			long fileSize = 0;
+			String[] fileNm = taskVO.getAttachNm().split(",");
+			String[] filePath = taskVO.getAttachPath().split(",");
+			taskVO.setAttCnt(filePath.length);		// 첨부파일 수 설정
+			for(int i=0;i<filePath.length;i++) {
+				attachFile = new File(basePath + "/" + filePath[i]);
+				fileSize += attachFile.length();
+				
+				AttachVO attach = new AttachVO();
+				attach.setTaskNo(taskVO.getTaskNo());
+				attach.setAttNm(fileNm[i]);
+				attach.setAttFlPath("attach/" + filePath[i]);
+				attach.setAttFlSize(attachFile.length());
+				
+				attachList.add(attach);
+			}
+			
+			// 합계 파일 사이즈가 10MB 이상인 경우 중지 
+			if(fileSize > 10485760) {	// 10MB이상
+				model.addAttribute("result","Fail");
+				model.addAttribute("FILE_SIZE","EXCESS");
+				return "FILE_SIZE";
+			}
+		}
+		
+		// 기본값 설정
+		if(taskVO.getDeptNo() == 0) taskVO.setDeptNo((int)session.getAttribute("NEO_DEPT_NO"));						// 부서번호
+		if(StringUtil.isNull(taskVO.getUserId())) taskVO.setUserId((String)session.getAttribute("NEO_USER_ID"));	// 사용자아이디
+		if(StringUtil.isNull(taskVO.getPlanUserId())) taskVO.setPlanUserId("");
+		if(StringUtil.isNull(taskVO.getCampTy())) taskVO.setCampTy("");												// 캠페인유형
+		if(StringUtil.isNull(taskVO.getNmMerge())) taskVO.setNmMerge("");											// $:nm_merge:$형태로 넘어옴
+		if(StringUtil.isNull(taskVO.getIdMerge())) taskVO.setIdMerge("");											// $:id_merge:$형태로 넘어옴
+		if(StringUtil.isNull(taskVO.getChannel())) taskVO.setChannel("000");										// 채널코드
+		if(StringUtil.isNull(taskVO.getContTy())) taskVO.setContTy("000");											// 편집모드(기본 HTML형식)
+		if(!StringUtil.isNull(taskVO.getSegNoc())) taskVO.setSegNo(Integer.parseInt( taskVO.getSegNoc().substring(0, taskVO.getSegNoc().indexOf("|")) ));		// 세그먼트번호(발송대상그룹)
+		if(StringUtil.isNull(taskVO.getRespYn())) taskVO.setRespYn("0");											// 수신확인
+		if(StringUtil.isNull(taskVO.getTaskNm())) taskVO.setTaskNm("");												// 메일명
+		if(StringUtil.isNull(taskVO.getMailTitle())) taskVO.setMailTitle("");										// 메일제목
+		if(StringUtil.isNull(taskVO.getSendYmd())) taskVO.setSendYmd("0000-00-00");									// 예약시간(예약일)
+		String sendHour = StringUtil.setTwoDigitsString(taskVO.getSendHour());										// 예약시간(시)
+		String sendMin = StringUtil.setTwoDigitsString(taskVO.getSendMin());										// 예약시간(분)
+		taskVO.setSendDt( taskVO.getSendYmd().replaceAll("-", "") + sendHour + sendMin );							// 예약일시
+		taskVO.setRespEndDt("999999999999");
+		if(StringUtil.isNull(taskVO.getIsSendTerm())) taskVO.setIsSendTerm("N");									// 정기발송체크여부
+		if(StringUtil.isNull(taskVO.getSendTermEndDt())) taskVO.setSendTermEndDt("0000-00-00");						// 정기발송종료일
+		if(StringUtil.isNull(taskVO.getSendTermLoop())) taskVO.setSendTermLoop("");									// 정기발송주기
+		if(StringUtil.isNull(taskVO.getSendTermLoopTy())) taskVO.setSendTermLoopTy("");								// 정기발송주기유형
+		if(StringUtil.isNull(taskVO.getSendTestYn())) taskVO.setSendTestYn("N");
+		if(StringUtil.isNull(taskVO.getSendTestEm())) taskVO.setSendTestEm("");
+		if(StringUtil.isNull(taskVO.getComposerValue())) taskVO.setComposerValue("");								// 메일내용
+		if("Y".equals(taskVO.getIsSendTerm())) {
+			taskVO.setSendTermEndDt( taskVO.getSendTermEndDt().replaceAll("-", "") + "2359" );						// 정기발송종료일
+			taskVO.setSendRepeat("001");
+		} else {
+			taskVO.setSendTermEndDt("");
+			taskVO.setSendTermLoop("");
+			taskVO.setSendTermLoopTy("");
+			taskVO.setSendRepeat("000");
+		}
+		if(StringUtil.isNull(taskVO.getLinkYn())) taskVO.setLinkYn("N");											// 링크클릭
+		taskVO.setUpId((String)session.getAttribute("NEO_USER_ID"));
+		taskVO.setUpDt(StringUtil.getDate(Code.TM_YMDHMS));
+		
+		if(StringUtil.isNull(taskVO.getSendMode())) taskVO.setSendMode("");
+		if(StringUtil.isNull(taskVO.getMailFromNm())) taskVO.setMailFromNm("");
+		if(StringUtil.isNull(taskVO.getMailFromEm())) taskVO.setMailFromEm("");
+		if(StringUtil.isNull(taskVO.getReplyToEm())) taskVO.setReplyToEm("");
+		if(StringUtil.isNull(taskVO.getReturnEm())) taskVO.setReturnEm("");
+		
+		if(StringUtil.isNull(taskVO.getHeaderEnc())) taskVO.setHeaderEnc("");
+		if(StringUtil.isNull(taskVO.getBodyEnc())) taskVO.setBodyEnc("");
+		if(StringUtil.isNull(taskVO.getCharset())) taskVO.setCharset("");
+		
+		
+		taskVO.setStatus("000");
+		taskVO.setRecoStatus("000");
+		taskVO.setWorkStatus("000");
+		taskVO.setSendIp(properties.getProperty("SEND_IP"));
+		
+		// 링크클릭 체크한 경우
+		if("Y".equals(taskVO.getLinkYn())) {
+			// 링크 클릭 알리아싱 처리(mailAliasParser.jsp 내용 처리) =============================================================================
+			List<LinkVO> dataList = null;
+
+			// 수신자정보머지키코드 목록
+			CodeVO merge = new CodeVO();
+			merge.setUilang((String)session.getAttribute("NEO_UILANG"));
+			merge.setCdGrp("C001");
+			merge.setUseYn("Y");
+			List<CodeVO> mergeList = null;
+			try {
+				mergeList = codeService.getCodeList(merge);
+			} catch(Exception e) {
+				logger.error("codeService.getCodeList[C001] error = " + e);
+			}
+			
+			try {
+				// 링크 클릭 알리아스 처리
+				dataList = campaignService.mailAliasParser(taskVO, mergeList, properties);
+			} catch(Exception e) {
+				logger.error("campaignService.mailAliasParser error = "+ e);
+			}
+			
+			if(dataList != null && dataList.size() > 0) {
+				linkList = new ArrayList<LinkVO>();
+				for(LinkVO data:dataList) {
+					LinkVO link = new LinkVO();
+					
+					link.setLinkTy(data.getLinkTy());
+					link.setLinkUrl(data.getLinkUrl());
+					link.setLinkNm(data.getLinkNm());
+					link.setLinkNo(data.getLinkNo());
+					link.setRegId((String)session.getAttribute("NEO_USER_ID"));
+					link.setRegDt(StringUtil.getDate(Code.TM_YMDHMS));
+					linkList.add(link);
+				}
+			}
+		}
+		
+		// 수신확인 클릭한 경우
+		if("Y".equals(taskVO.getRespYn()) && "000".equals(taskVO.getContTy())) {
+			// send_dt와 p_resp_log를 이용하여 수신 종료 응답시간을 구한다.
+			if(taskVO.getRespLog() != 0) { // respLog : 수신확인추적기간
+				Calendar cal = Calendar.getInstance();
+				SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+				cal.set(Integer.parseInt(taskVO.getSendYmd().substring(0,4)), Integer.parseInt(taskVO.getSendYmd().substring(5,7))-1, Integer.parseInt(taskVO.getSendYmd().substring(8,10)));
+				cal.add(Calendar.DATE, taskVO.getRespLog());
+				taskVO.setRespEndDt(fmt.format(cal.getTime()) + taskVO.getSendHour() + taskVO.getSendMin()) ;
+			} else {
+				taskVO.setRespEndDt("999999999999");
+			}
+			
+			if(taskVO.getComposerValue().indexOf("<!--NEO__RESPONSE__START-->") == -1) {
+				String tmpCompose = taskVO.getComposerValue();
+				int pos = tmpCompose.toLowerCase().indexOf("</body>");
+				
+				String strResponse = "<!--NEO__RESPONSE__START-->";
+				strResponse += "<img src='"+properties.getProperty("RESPONSE_URL")+"?$:RESP_END_DT:$|000|"+taskVO.getIdMerge()+"|$:TASK_NO:$|$:SUB_TASK_NO:$|$:DEPT_NO:$|$:USER_ID:$|$:CAMP_TY:$|$:CAMP_NO:$' width=0 height=0 border=0>";
+				strResponse += "<!--NEO__RESPONSE__END-->";
+				if(pos == -1) taskVO.setComposerValue(taskVO.getComposerValue() + strResponse);
+				else taskVO.setComposerValue( taskVO.getComposerValue().substring(0, pos) + strResponse + taskVO.getComposerValue().substring(pos));
+			}
+		} else {
+			int startPos = taskVO.getComposerValue().indexOf("<!--NEO__RESPONSE__START-->");
+			int endPos = taskVO.getComposerValue().indexOf("<!--NEO__RESPONSE__END-->");
+			if(startPos != -1 && endPos != -1) {
+				taskVO.setComposerValue( taskVO.getComposerValue().substring(0, startPos) + taskVO.getComposerValue().substring(endPos+"<!--NEO__RESPONSE__END-->".length()) );
+			}
+		}
+
+		// 파일을 수정한다.
+		FileOutputStream fos = null;
+		OutputStreamWriter writer = null;
+		try {
+			File contFile = new File(properties.getProperty("FILE.UPLOAD_PATH") + "/" + taskVO.getContFlPath());
+			fos = new FileOutputStream(contFile);
+			writer = new OutputStreamWriter(fos, "UTF-8");
+			writer.write(taskVO.getComposerValue());
+			writer.flush();
+		} catch(Exception e) {
+			logger.error("mailUpdate File Write Error = " + e);
+		}
+		
+		return "Success";
+	}
+	
+	
+	/**
+	 * 파일의 내용을 읽는다.
+	 * @param contFlPath
+	 * @return
+	 */
 	public String getContFileText(String contFlPath) {
 		logger.debug("getContFileText contFlPath  = " + contFlPath);
 		
