@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import kr.co.enders.ums.com.dao.CodeDAO;
 import kr.co.enders.ums.com.vo.CodeGroupVO;
 import kr.co.enders.ums.com.vo.CodeVO;
+import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 
 @Service
 public class CodeServiceImpl implements CodeService {
@@ -52,6 +53,11 @@ public class CodeServiceImpl implements CodeService {
 	@Override
 	public List<CodeVO> getProgramList(CodeVO codeVO) throws Exception {
 		return codeDAO.getProgramList(codeVO);
+	}
+
+	@Override
+	public List<CampaignVO> getCampaignList(CampaignVO campaignVO) throws Exception {
+		return codeDAO.getCampaignList(campaignVO);
 	}
 
 }

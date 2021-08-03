@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import kr.co.enders.ums.com.vo.CodeGroupVO;
 import kr.co.enders.ums.com.vo.CodeVO;
+import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 
 @Repository
 public class CodeDAO implements CodeMapper {
@@ -52,6 +53,11 @@ public class CodeDAO implements CodeMapper {
 	@Override
 	public List<CodeVO> getProgramList(CodeVO codeVO) throws Exception {
 		return sqlSessionEms.getMapper(CodeMapper.class).getProgramList(codeVO);
+	}
+
+	@Override
+	public List<CampaignVO> getCampaignList(CampaignVO campaignVO) throws Exception {
+		return sqlSessionEms.getMapper(CodeMapper.class).getCampaignList(campaignVO);
 	}
 
 }

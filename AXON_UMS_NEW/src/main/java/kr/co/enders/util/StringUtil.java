@@ -436,6 +436,44 @@ public class StringUtil {
 	/**
 	 * 
 	 * 날짜포맷으로 변환한다. <br>
+	 * 20010830 --> 2001/08/30
+	 * 
+	 * @param datestr
+	 *            날짜데이터
+	 * @return String 날짜 출력 형식 변환 데이터
+	 * 
+	 */
+	public static String getFDate(String datestr) {
+		int length = datestr.length();
+		String fdate = null;
+		switch (length) {
+		case 8:
+			fdate = datestr.substring(0, 4);
+			fdate += "/";
+			fdate += datestr.substring(4, 6);
+			fdate += "/";
+			fdate += datestr.substring(6, 8);
+			break;
+		case 12:
+			fdate = datestr.substring(0, 4);
+			fdate += "/";
+			fdate += datestr.substring(4, 6);
+			fdate += "/";
+			fdate += datestr.substring(6, 8);
+			fdate += " ";
+			fdate += datestr.substring(8, 10);
+			fdate += ":";
+			fdate += datestr.substring(10, 12);
+			break;
+		default:
+			fdate = "";
+		}
+		return fdate;
+	}
+	
+	/**
+	 * 
+	 * 날짜포맷으로 변환한다. <br>
 	 * 20010830 --> 2001/08/30 또는 2001-08-30 또는 2001년 08월 30일 로 변환한다.
 	 * 
 	 * @param datestr

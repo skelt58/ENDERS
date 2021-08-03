@@ -9,6 +9,7 @@ import java.util.List;
 
 import kr.co.enders.ums.com.vo.CodeGroupVO;
 import kr.co.enders.ums.com.vo.CodeVO;
+import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 
 public interface CodeMapper {
 	/**
@@ -65,4 +66,12 @@ public interface CodeMapper {
 	 * @throws Exception
 	 */
 	public List<CodeVO> getProgramList(CodeVO codeVO) throws Exception;
+	
+	/**
+	 * 캠페인 목록 조회
+	 * @param campaignVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<CampaignVO> getCampaignList(CampaignVO campaignVO) throws Exception;
 }

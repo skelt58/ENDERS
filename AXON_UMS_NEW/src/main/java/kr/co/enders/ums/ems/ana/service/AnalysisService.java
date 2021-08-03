@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import kr.co.enders.ums.ems.ana.vo.MailSummVO;
+import kr.co.enders.ums.ems.ana.vo.SendLogVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
 
 @Service
@@ -20,5 +22,36 @@ public interface AnalysisService {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<TaskVO> getMailList(TaskVO taskVO) throws Exception; 
+	public List<TaskVO> getMailList(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 메일 정보 조회
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public TaskVO getMailInfo(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 결과요약 메일 발송결과 조회
+	 * @param taskVO
+	 * @return
+	 */
+	public MailSummVO getMailSummResult(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 결과요약 메일 세부에러 조회
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<MailSummVO> getMailSummDetail(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 발송 실패 목록 조회
+	 * @param sendLogVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<SendLogVO> getFailList(SendLogVO sendLogVO) throws Exception;
 }

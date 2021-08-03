@@ -47,9 +47,11 @@
 		<typeAlias alias="testUserVO"		type="kr.co.enders.ums.ems.cam.vo.TestUserVO" />
 		
 		<!-- 템플릿 -->
-		<typeAlias alias="templateVO"			type="kr.co.enders.ums.ems.tmp.vo.TemplateVO" />
+		<typeAlias alias="templateVO"		type="kr.co.enders.ums.ems.tmp.vo.TemplateVO" />
 		
-		
+		<!-- 통계분석 -->
+		<typeAlias alias="mailSummVO"		type="kr.co.enders.ums.ems.ana.vo.MailSummVO" />
+		<typeAlias alias="sendLogVO"		type="kr.co.enders.ums.ems.ana.vo.SendLogVO" />
 		
 	</typeAliases>
 
@@ -61,7 +63,7 @@
 		<mapper resource="enders/sqlmap/ems/seg/SegmentSQL-ems-oracle.xml"></mapper>
 		<mapper resource="enders/sqlmap/ems/cam/CampaignSQL-ems-oracle.xml"></mapper>
 		<mapper resource="enders/sqlmap/ems/tmp/TemplateSQL-ems-oracle.xml"></mapper>
-		<mapper resource="enders/sqlmap/ems/ana/AnalytisSQL-ems-oracle.xml"></mapper>
+		<mapper resource="enders/sqlmap/ems/ana/AnalysisSQL-ems-oracle.xml"></mapper>
 	</mappers>
 	
 </configuration>

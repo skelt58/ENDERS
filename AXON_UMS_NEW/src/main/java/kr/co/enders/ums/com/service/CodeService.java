@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import kr.co.enders.ums.com.vo.CodeGroupVO;
 import kr.co.enders.ums.com.vo.CodeVO;
+import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 
 @Service
 public interface CodeService {
@@ -68,4 +69,12 @@ public interface CodeService {
 	 * @throws Exception
 	 */
 	public List<CodeVO> getProgramList(CodeVO codeVO) throws Exception;
+	
+	/**
+	 * 캠페인 목록 조회
+	 * @param campaignVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<CampaignVO> getCampaignList(CampaignVO campaignVO) throws Exception;
 }

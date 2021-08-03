@@ -96,7 +96,7 @@ function goLogout() {
 	</c:forEach>
 </c:if>
 
-<span style="margin-left:420px;font-size:9pt;" onclick="goLogout();"><b>로그아웃</b></span>
+<span style="margin-left:420px;font-size:9pt;">[<c:out value='${NEO_USER_NM}'/>] &nbsp; <a href="#" onclick="goLogout();"><b>로그아웃</b></a></span>
 <form id="topMenuExec" name="topMenuExec" method="post">
 <input type="hidden" id="topMenuId" name="topMenuId" value="<c:out value='${topMenuId}'/>"/>
 </form>

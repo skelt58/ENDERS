@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.enders.ums.ems.ana.dao.AnalysisMapper">
+
+	<select id="getMailList" parameterType="taskVO" resultType="taskVO">
+		SELECT *
+		  FROM (
+				SELECT A.SUB_TASK_NO
+					 , A.SEND_DT
+					 , A.END_DT
+					 , A.WORK_STATUS
+					 , B.TASK_NO
+					 , B.TASK_NM
+					 , B.CHANNEL
+					 , B.SEND_REPEAT
+					 , B.STATUS
+					 , B.SEG_NO
+					 , B.SEND_TERM_END_DT
+					 , B.SEND_TERM_LOOP
+					 , B.REG_DT
+					 , B.CONT_FL_PATH
+					 , B.SURVEYNO
+					 , C.SEG_NM
+					 , D.USER_NM
+					 , E.CAMP_NM
+					 , F.CD_NM CHANNEL_NM
+					 , G.CD_NM SEND_REPEAT_NM
+					 , H.CD_NM STATUS_NM
+					 , ROW_NUMBER() OVER (ORDER BY A.SEND_DT DESC, A.TASK_NO DESC, A.SUB_TASK_NO DESC) SEQ
+					 , COUNT(1) OVER() TOTAL_COUNT
+				  FROM NEO_SUBTASK A
+					 , NEO_TASK B
+					 , NEO_SEGMENT C
+					 , NEO_USER D
+					 , NEO_CAMPAIGN E
+					 , (SELECT CD, CD_NM FROM NEO_CD WHERE CD_GRP = 'C002' AND UILANG = '000') F
+					 , (SELECT CD, CD_NM FROM NEO_CD WHERE CD_GRP = 'C017' AND UILANG = '000') G
+					 , (SELECT CD, CD_NM FROM NEO_CD WHERE CD_GRP = 'C034' AND UILANG = '000') H
+				 WHERE A.SEND_TEST_YN != 'Y'
+				   AND A.WORK_STATUS IN ('002','003')
+				   AND A.TASK_NO = B.TASK_NO
+				   AND B.SEG_NO = C.SEG_NO
+				   AND B.USER_ID = D.USER_ID
+				   AND B.CAMP_NO = E.CAMP_NO
+				   AND B.CHANNEL = F.CD
+				   AND B.SEND_REPEAT = G.CD
+				   AND A.WORK_STATUS = H.CD
+				   <if test="searchTaskNm != null and searchTaskNm != ''">
+				   AND UPPER(B.TASK_NM) LIKE '%' || #{searchTaskNm} || '%'
+				   </if>
+				   <if test='adminYn == "N"'>
+				   AND B.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND B.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND B.USER_ID = #{searchUserId}
+				   </if>
+				   <if test="searchCampNo != 0">
+				   AND B.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchStartDt != null and searchStartDt != ''">
+				   AND A.SEND_DT &gt;= #{searchStartDt} || '000000'
+				   </if>
+				   <if test="searchEndDt != null and searchEndDt != ''">
+				   AND A.SEND_DT &lt; #{searchEndDt} ||'240000'
+				   </if>
+				   <if test="taskNo != 0">
+				   AND B.TASK_NO = #{taskNo}
+				   </if>
+				)
+		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
+	</select>
+	
+	<select id="getMailInfo" parameterType="taskVO" resultType="taskVO">
+		SELECT A.TASK_NM
+			 , A.MAIL_TITLE
+			 , B.CAMP_NM
+			 , C.SEG_NM
+			 , D.SEND_DT
+			 , D.END_DT
+			 , E.CD_NM CAMP_TY
+		  FROM NEO_TASK A
+			 , NEO_CAMPAIGN B
+			 , NEO_SEGMENT C
+			 , NEO_SUBTASK D
+			 , (SELECT CD, CD_NM FROM NEO_CD
+				 WHERE CD_GRP = 'C004' AND UILANG = #{uilang} AND USE_YN = 'Y') E
+		 WHERE A.CAMP_NO = B.CAMP_NO
+		   AND A.SEG_NO = C.SEG_NO
+		   AND A.TASK_NO = D.TASK_NO
+		   AND A.TASK_NO = #{taskNo}
+		   AND D.SUB_TASK_NO = #{subTaskNo}
+		   AND A.CAMP_TY = E.CD
+	</select>
+	
+	<select id="getMailSummResult" parameterType="taskVO" resultType="mailSummVO">
+		SELECT SEND_CNT
+			 , SUCC_CNT
+			 , (SEND_CNT - SUCC_CNT) AS FAIL_CNT
+			 , OPEN_CNT
+			 , VALID_CNT
+			 , CLICK_CNT
+			 , BLOCK_CNT
+		FROM	(
+					SELECT NVL(SUM(SEND_AR_AMT),0) SEND_CNT
+						 , NVL(SUM(CASE WHEN SEND_RCODE = '000' THEN SEND_AR_AMT ELSE 0 END),0) SUCC_CNT
+					  FROM NEO_AR_SENDLOG
+					 WHERE TASK_NO = #{taskNo}
+					   AND SUB_TASK_NO = #{subTaskNo}
+				) A,
+				(
+					SELECT NVL(SUM(RESP_AR_AMT),0) OPEN_CNT
+						 , NVL(SUM(CASE WHEN BLOCKED_YN = 'Y' THEN RESP_AR_AMT ELSE 0 END),0) BLOCK_CNT
+					  FROM NEO_AR_RESPLOG
+					 WHERE TASK_NO = #{taskNo}
+					   AND SUB_TASK_NO = #{subTaskNo}
+				) B,
+				(
+					SELECT NVL(SUM(CLICK_AR_AMT),0) CLICK_CNT
+						 , NVL(SUM(VALID_AR_AMT),0) VALID_CNT
+					  FROM NEO_AR_LINKLOG
+					 WHERE TASK_NO = #{taskNo}
+					   AND SUB_TASK_NO = #{subTaskNo}
+				) D
+	</select>
+	
+	<select id="getMailSummDetail" parameterType="taskVO" resultType="mailSummVO">
+		SELECT A.STEP1
+			 , A.STEP2
+			 , NVL(B.SEND_AR_AMT,0) AS CNT_STEP2
+			 , A.CD_DESC AS NM_STEP2
+		  FROM	(
+					SELECT STEP1, STEP2, CD_DESC 
+					  FROM NEO_RCODE WHERE KIND = '002' AND UILANG = #{uilang}
+				) A,
+				(
+					SELECT RCODE_STEP1, RCODE_STEP2, SUM(SEND_AR_AMT) AS SEND_AR_AMT
+					  FROM NEO_AR_SENDLOG
+					 WHERE SEND_RCODE != '000'
+					   AND TASK_NO = #{taskNo}
+					   AND SUB_TASK_NO = #{subTaskNo}
+					 GROUP BY RCODE_STEP1, RCODE_STEP2
+				) B
+		 WHERE A.STEP1 = B.RCODE_STEP1(+) AND A.STEP2 = B.RCODE_STEP2(+)
+		 ORDER BY A.STEP1, A.STEP2
+	</select>
+	
+	<select id="getFailList" parameterType="sendLogVO" resultType="sendLogVO">
+		SELECT *
+		  FROM (
+				SELECT A.CUST_ID
+					 , A.CUST_EM
+					 , A.CUST_NM
+					 , A.RETRY_CNT
+					 , A.SEND_DT
+					 , A.SEND_MSG
+					 , ROW_NUMBER() OVER (ORDER BY A.CUST_ID, A.CUST_EM, A.CUST_NM) SEQ
+					 , COUNT(1) OVER() TOTAL_COUNT
+				  FROM (
+					  		SELECT SUB_TASK_NO, CUST_ID, CUST_EM, CUST_NM, RETRY_CNT, SEND_DT, SEND_MSG
+							  FROM NEO_SENDLOG
+							 WHERE TASK_NO = #{taskNo}
+							   AND SEND_RCODE != '000'
+							   <if test="subTaskNo != 0">
+							   AND SUB_TASK_NO = ${subTaskNo}
+							   </if>
+							   <if test="step1 != null and step1 != ''">
+							   AND RCODE_STEP1 = #{step1}
+							   </if>
+							   <if test="step2 != null and step2 != ''">
+							   AND RCODE_STEP2 = #{step2}
+							   </if>
+							   <if test="step3 != null and step3 != ''">
+							   AND RCODE_STEP3 = #{step3}
+							   </if>
+							   <if test="domain != null and domain != ''">
+							   AND CUST_DOMAIN = #{domain}
+							   </if>
+						) A
+						JOIN
+						(
+							SELECT SUB_TASK_NO, CUST_ID, CUST_EM, CUST_NM, MAX(RETRY_CNT) AS MAX_RETRY_CNT
+							  FROM NEO_SENDLOG
+							 WHERE TASK_NO = #{taskNo}
+							   AND SEND_RCODE != '000'
+							   <if test="subTaskNo != 0">
+							   AND SUB_TASK_NO = ${subTaskNo}
+							   </if>
+							   <if test="step1 != null and step1 != ''">
+							   AND RCODE_STEP1 = #{step1}
+							   </if>
+							   <if test="step2 != null and step2 != ''">
+							   AND RCODE_STEP2 = #{step2}
+							   </if>
+							   <if test="step3 != null and step3 != ''">
+							   AND RCODE_STEP3 = #{step3}
+							   </if>
+							   <if test="domain != null and domain != ''">
+							   AND CUST_DOMAIN = #{domain}
+							   </if>
+							 GROUP BY SUB_TASK_NO, CUST_ID, CUST_EM, CUST_NM
+						) B
+					 ON A.CUST_ID = B.CUST_ID
+					AND A.CUST_EM = B.CUST_EM
+					AND A.CUST_NM = B.CUST_NM
+					AND A.RETRY_CNT = B.MAX_RETRY_CNT
+				)
+		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
+	</select>
+
+</mapper>

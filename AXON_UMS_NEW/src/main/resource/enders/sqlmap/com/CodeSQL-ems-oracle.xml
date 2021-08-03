@@ -72,5 +72,23 @@
 		   AND UILANG = #{uilang}
 		 ORDER BY DISP_ORDER ASC, PROG_ID DESC
 	</select>
+	
+	<select id="getCampaignList" parameterType="campaignVO" resultType="campaignVO">
+		SELECT CAMP_NO
+			 , CAMP_NM
+			 , USER_ID
+			 , CAMP_TY
+			 , STATUS
+			 , DEPT_NO
+			 , REG_DT
+			 , REG_ID
+			 , UP_ID
+			 , UP_DT
+		  FROM NEO_CAMPAIGN
+		 WHERE STATUS = #{status}
+		 <if test='adminYn == "N"'>
+		   AND DEPT_NO = #{deptNo}
+		 </if>
+	</select>
 
 </mapper>
