@@ -200,7 +200,7 @@ function goPageNum(page) {
 			<!------------------------------------------	TITLE	END		---------------------------------------------->
 
 			<!------------------------------------------	SEARCH	START	---------------------------------------------->
-			<form id="searchForm" name="search_form" method="post">
+			<form id="searchForm" name="searchForm" method="post">
 			<input type="hidden" id="page" name="page" value="<c:out value='${searchVO.page}'/>">
 			<input type="hidden" id="taskNo" name="taskNo" value="<c:out value='${searchVO.taskNo}'/>">
 			<table width="1000" border="1" cellspacing="0" cellpadding="0" class="table_line_outline">
