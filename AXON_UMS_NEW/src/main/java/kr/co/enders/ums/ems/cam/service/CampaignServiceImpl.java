@@ -22,6 +22,7 @@ import kr.co.enders.ums.ems.cam.dao.CampaignDAO;
 import kr.co.enders.ums.ems.cam.vo.AttachVO;
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 import kr.co.enders.ums.ems.cam.vo.LinkVO;
+import kr.co.enders.ums.ems.cam.vo.SendTestLogVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
 import kr.co.enders.ums.ems.cam.vo.TestUserVO;
 import kr.co.enders.util.Code;
@@ -555,6 +556,16 @@ public class CampaignServiceImpl implements CampaignService {
 		}
 		
 		return result;
+	}
+
+	@Override
+	public List<TaskVO> getMailTestTaskList(TaskVO taskVO) throws Exception {
+		return campaignDAO.getMailTestTaskList(taskVO);
+	}
+
+	@Override
+	public List<SendTestLogVO> getMailTestSendLogList(TaskVO taskVO) throws Exception {
+		return campaignDAO.getMailTestSendLogList(taskVO);
 	}
 
 }

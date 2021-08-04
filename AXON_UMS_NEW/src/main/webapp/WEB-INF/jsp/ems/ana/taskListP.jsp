@@ -46,386 +46,300 @@
 					</td>
 					<td width="10%" class="td_title"><spring:message code='ANATBLTL006'/></td><!-- 캠페인 -->
 					<td width="22%" colspan=3 class="td_body">
-						<select name="p_camp_no" style="width: 140px;" class="select" value="<%= p_camp_no%>">
-							<option value=''>::: <%=tbllb_camp%> :::</option><!--캠페인 선택-->
-							<%	while(campDs.next()) {													%>
-							<%		if(campDs.getData("CAMP_NO").equals(p_camp_no)) {					%>
-							<option value='<%=campDs.getData("CAMP_NO")%>' selected><%=campDs.getData("CAMP_NM")%></option>
-							<%		} else {															%>
-							<option value='<%=campDs.getData("CAMP_NO")%>'><%=campDs.getData("CAMP_NM")%></option>
-							<%		}																	%>
-							<%	}																		%>
+						<select id="searchCampNo" name="searchCampNo" style="width: 140px;" class="select">
+							<option value="0">::: <spring:message code='ANATBLLB001'/> :::</option><!-- 캠페인 선택 -->
+							<c:if test="${fn:length(campList) > 0}">
+								<c:forEach items="${campList}" var="camp">
+									<option value="<c:out value='${camp.campNo}'/>"<c:if test="${camp.campNo == searchVO.searchCampNo}"> selected</c:if>><c:out value='${camp.campNm}'/></option>
+								</c:forEach>
+							</c:if>
 						</select>
 					</td>
 				</tr>
 				<tr>
-					<td width="10%" class="td_title"><%=tbltl_reg_dt%><!--등록일--></td>
+					<td width="10%" class="td_title"><spring:message code='ANATBLLB001'/></td><!-- 등록일 -->
 					<td width="22%" class="td_body">
-						<input type="text" style="border:1px solid #c0c0c0;"  name="p_stdt" class="readonly_style" style="width:70;cursor:hand" value="<%=p_stdt%>" readonly onCLick="show_calendar('search_form', 'p_stdt', event.screenX, event.screenY)">
-						&nbsp;&nbsp;~&nbsp;&nbsp;
-						<input type="text" style="border:1px solid #c0c0c0;"  name="p_eddt" class="readonly_style" style="width:70;cursor:hand" value="<%=p_eddt%>" readonly onClick="show_calendar('search_form', 'p_eddt', event.screenX, event.screenY)">
+						<fmt:parseDate var="startDt" value="${searchVO.searchStartDt}" pattern="yyyyMMdd"/>
+						<fmt:formatDate var="searchStartDt" value="${startDt}" pattern="yyyy-MM-dd"/> 
+						<fmt:parseDate var="endDt" value="${searchVO.searchEndDt}" pattern="yyyyMMdd"/>
+						<fmt:formatDate var="searchEndDt" value="${endDt}" pattern="yyyy-MM-dd"/> 
+						<input type="text" id="searchStartDt"  name="searchStartDt" class="readonly_style" style="border:1px solid #c0c0c0;width:80px;" value="<c:out value='${searchStartDt}'/>" readonly> ~
+						<input type="text" id="searchEndDt"  name="searchEndDt" class="readonly_style" style="border:1px solid #c0c0c0;width:80px;" value="<c:out value='${searchEndDt}'/>" readonly>
 					</td>
-					<td width="10%" class="td_title"><%=tbltl_dept_no%><!--그룹--></td>
+					<td width="10%" class="td_title"><spring:message code='COMTBLTL004'/></td><!-- 사용자그룹 -->
 					<td width="22%" class="td_body">
-						<%	//관리자의 경우 전체 요청그룹을 전시하고 그 외의 경우에는 해당 그룹만 전시함
-						if( util.checkAdmin(request) ) {										%>
-						<select name="p_dept_no" style="width: 140px;" class="select" onchange="javascript:getUserList('search_form','p_user_id',this.value,'false');" value="<%= p_dept_no%>">
-			<option value=''>:: <%=tbllb_dept_no%> ::</option><!--그룹 선택-->
-			<%		while(deptDs.next()) {
-			if(deptDs.getData("DEPT_NO").equals(p_dept_no)) {				%>
-			<option value='<%=deptDs.getData("DEPT_NO")%>' selected><%=deptDs.getData("DEPT_NM")%></option>
-			<%			} else {														%>
-			<option value='<%=deptDs.getData("DEPT_NO")%>'><%=deptDs.getData("DEPT_NM")%></option>
-			<%			}
-			}																	%>
-			</select>
-			<%	} else {																%>
-			<select name="p_dept_no" style="width: 140px;" class="select" value="<%= p_dept_no%>">
-			<%		while(deptDs.next()) {
-			if(deptDs.getData("DEPT_NO").equals(p_dept_no)) {				%>
-			<option value='<%=deptDs.getData("DEPT_NO")%>' selected><%=deptDs.getData("DEPT_NM")%></option>
-			<%			}
-			}																	%>
-			</select>
-			<%	}																		%>
-			</td>
-			<td width="10%" class="td_title"><%=tbltl_user_id%><!--사용자--></td>
-			<td width="22%" class="td_body">
-			<select name="p_user_id" style="width: 140px;" class="select" value="<%= p_user_id%>">
-			<option value=''>:: <%=tbllb_user_id%> ::</option><!--사용자 선택-->
-			<%	while(userDs.next()) {													%>
-			<%		if(userDs.getData("USER_ID").equals(p_user_id)) {					%>
-			<option value='<%=userDs.getData("USER_ID")%>' selected><%=userDs.getData("USER_NM")%></option>
-			<%		} else {															%>
-			<option value='<%=userDs.getData("USER_ID")%>'><%=userDs.getData("USER_NM")%></option>
-			<%		}																	%>
-			<%	}																		%>
-			</select>
-			<%
-			if(!(util.getSesValue("NEO_UILANG", request)).equals("001")) {
-			out.print("&nbsp;&nbsp;&nbsp;&nbsp;");
-			}
-			%>
-
-			</td>
-			</tr>
+						<!-- 관리자의 경우 전체 요청그룹을 전시하고 그 외의 경우에는 해당 그룹만 전시함 -->
+						<c:if test="${'Y' eq NEO_ADMIN_YN}">
+							<select name="searchDeptNo" style="width: 140px;" class="select" onchange="javascript:getUserList(this.value);">
+								<option value="0">:: <spring:message code='COMTBLLB004'/> ::</option><!-- 그룹 선택 -->
+								<c:if test="${fn:length(deptList) > 0}">
+									<c:forEach items="${deptList}" var="dept">
+										<option value="<c:out value='${dept.deptNo}'/>"<c:if test="${dept.deptNo == searchVO.searchDeptNo}"> selected</c:if>><c:out value='${dept.deptNm}'/></option>
+									</c:forEach>
+								</c:if>
+							</select>
+						</c:if>
+						<c:if test="${'N' eq NEO_ADMIN_YN}">
+							<select id="searchDeptNo" name="searchDeptNo" style="width: 140px;" class="select">
+								<c:if test="${fn:length(deptList) > 0}">
+									<c:forEach items="${deptList}" var="dept">
+										<option value="<c:out value='${dept.deptNo}'/>" selected><c:out value='${dept.deptNm}'/></option>
+									</c:forEach>
+								</c:if>
+							</select>
+						</c:if>
+					</td>
+					<td width="10%" class="td_title"><spring:message code='COMTBLTL005'/></td><!-- 사용자 -->
+					<td width="22%" class="td_body">
+						<select id="searchUserId" name="searchUserId"  style="width: 140px;" class="select">
+							<option value=''>:: <spring:message code='COMTBLLB005'/> ::</option><!-- 사용자 선택 -->
+							<c:if test="${fn:length(userList) > 0}">
+								<c:forEach items="${userList}" var="user">
+									<option value="<c:out value='${user.userId}'/>"<c:if test="${user.userId eq searchVO.searchUserId}"> selected</c:if>><c:out value='${user.userNm}'/></option>
+								</c:forEach>
+							</c:if>
+						</select>
+					</td>
+				</tr>
+			</table>
 			</form>
+			
 			<!--검색/초기화 버튼-->
 			<table width="1000" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td height="3"></td>
-			</tr>
-			<tr>
-			<td align="right">
-			<input type="button" value="<%=btn_search%>" class="btn_typeC" onClick="goSearch()"><!--검색-->
-			<input type="button" value="<%=btn_init%>" class="btn_style" onClick="goReset(this.form)"><!--초기화-->
-			</td>
-			</tr>
-			<tr>
-			<td height="10"></td>
-			</tr>
+				<tr>
+					<td height="3"></td>
+				</tr>
+				<tr>
+					<td align="right">
+						<input type="button" value="<spring:message code='COMBTN002'/>" class="btn_typeC" onClick="goSearch()"><!-- 검색 -->
+						<input type="button" value="<spring:message code='COMBTN003'/>" class="btn_style" onClick="goReset(this.form)"><!-- 초기화 -->
+					</td>
+				</tr>
+				<tr>
+					<td height="10"></td>
+				</tr>
 			</table>
-			</table>
-			<!------------------------------------------------------------------------------------------------------------>
 			<!------------------------------------------	SEARCH	END		---------------------------------------------->
-			<!------------------------------------------------------------------------------------------------------------>
+			
+			
 			<table width="1000" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td align="right" height=5>
-			</td>
-			</tr>
+				<tr>
+					<td align="right" height=5></td>
+				</tr>
 			</table>
-			<!------------------------------------------------------------------------------------------------------------>
+			
+			
 			<!------------------------------------------	LIST	START	---------------------------------------------->
-			<!------------------------------------------------------------------------------------------------------------>
+			<form id="listForm" name="listForm" method="post">
 			<table width="1000" border="0" cellspacing="1" cellpadding="0" class="table_line_outline">
-			<form name="list_form">
-			<!--<tr>
-			<td class="td_line" colspan=9></td>
-			</tr>-->
-			<tr class="tr_head">
-			<!--<td width="50"><a href="javascript:goAll()"><%=tbltl_select%></a></td>--><!--전체선택-->
-			<td width="3%"><input type="checkbox" name="isAll" onclick='goAll()' style="border:0"></td>
-			<td width="10%"><%=tbltl_camp_nm%><!--캠페인명--></td>
-			<!--<td width="140">메일명</td>
-			<td width="50">채널</td>-->
-			<td width="23%"><%=tbltl_mail_nm%><!--메일명--></td>
-			<td width="24%"><%=tbltl_seg_nm%><!--Segment 명--></td>
-			<td width="10%"><%=tbltl_reg_id%><!--등록자--></td>
-			<td width="10%"><%=tbltl_reg_dt%><!--등록일--></td>
-			<td width="10%"><%=tbltl_status%><!--발송상태--></td>
-			<td width="10%"><%=tbltl_mail%></td>
-			</tr>
-			<%	if(ds != null && ds.size() > 0) {
-			String task_no = "";
-			String subtask_no = "";
-			String reg_dt = "";
-			String tz_reg_dt = "";
-			String interval = (String)util.getSesValue("NEO_TZ_TERM",request);
-
-			while(ds.next()) {
-			task_no = ds.getData("TASK_NO");
-			subtask_no = ds.getData("SUB_TASK_NO");
-			reg_dt = ds.getData("REG_DT");
-			if(reg_dt != null && !reg_dt.equals("")) {
-			tz_reg_dt = util.getIntervalTime(reg_dt, interval);
-			tz_reg_dt = util.getFDate(tz_reg_dt.substring(0,8),Code.DT_FMT2);
-			}																%>
-			<tr class="tr_body">
-			<td><input type="checkbox" name="p_task_no" value="<%=task_no%>" style="border:0"></td>
-			<td><%=util.cutStr(ds.getData("CAMP_NM"), 0, 15, "...")%></td>
-			<td><a href="javascript:goOz('tab1','/ana/taskSummP.jsp','<%=task_no%>')"><%=util.cutStr(ds.getData("TASK_NM"), 0, 15, "...")%></a></td>
-			<!--<td><%=ds.getData("CHANNEL_NM")%></td>-->
-			<td><%=util.cutStr(ds.getData("SEG_NM"), 0, 10, "...")%></td>
-			<td><%=ds.getData("USER_NM")%></td>
-			<td><%=tz_reg_dt%></td>
-			<td><%=ds.getData("STATUS_NM")%></td>
-			<td><input type="button" value="<%=tbltl_mail%>" class="btn_style" onClick="goMail('<%=task_no%>')"></td>
-			</tr>
-			<%		}
-			for(int i=0; i<util.parseInt(p_pagerow)-ds.size(); i++) {		%>
-			<tr class="tr_body">
-			<!--<td></td>-->
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			</tr>
-			<%		}
-			} else {
-			for(int i=0; i<util.parseInt(p_pagerow); i++) {								%>
-			<tr class="tr_body">
-			<!--<td></td>-->
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			</tr>
-			<%		}
-			}																		%>
+				<tr class="tr_head">
+					<td width="3%"><input type="checkbox" name="isAll" onclick='goAll()' style="border:0"></td>
+					<td width="10%"><spring:message code='ANATBLTL008'/></td><!-- 캠페인명 -->
+					<td width="23%"><spring:message code='ANATBLTL005'/></td><!-- 메일명 -->
+					<td width="24%"><spring:message code='ANATBLTL010'/></td><!-- 발송그룹명 -->
+					<td width="10%"><spring:message code='COMTBLTL003'/></td><!-- 등록자 -->
+					<td width="10%"><spring:message code='COMTBLTL002'/></td><!-- 등록일 -->
+					<td width="10%"><spring:message code='ANATBLTL011'/></td><!-- 발송상태 -->
+					<td width="10%"><spring:message code='ANATBLTL001'/></td><!-- 메일별분석 -->
+				</tr>
+				<c:if test="${fn:length(mailList) > 0}">
+					<c:forEach items="${mailList}" var="mail">
+						<tr class="tr_body">
+							<td><input type="checkbox" name="taskNo" value="<c:out value='${mailInfo.taskNo}'/>" style="border:0"></td>
+							<td><c:out value='${mailInfo.campNm}'/></td>
+							<td><a href="javascript:goOz('tab1','/ana/taskSummP.jsp','<c:out value='${mailInfo.taskNo}'/>')"><c:out value='${mailInfo.taskNm}'/></a></td>
+							<td><c:out value='${mailInfo.segNm}'/></td>
+							<td><c:out value='${mailInfo.userNm}'/></td>
+							<td>
+								<fmt:parseDate var="regDt" value="${mail.regDt}" pattern="yyyyMMddHHmm"/>
+								<fmt:formatDate var="mailRegDt" value="${regDt}" pattern="yyyy-MM-dd HH:mm"/>
+								<c:out value='${mailRegDt}'/>
+							</td>
+							<td><c:out value='${mailInfo.statusNm}'/></td>
+							<td><input type="button" value="<spring:message code='ANATBLTL001'/>" class="btn_style" onClick="goMail('<c:out value='${mailInfo.taskNo}'/>')"></td><!-- 메일별분석 -->
+						</tr>
+					</c:forEach>
+				</c:if>
+				<c:set var="emptyCnt" value="${searchVO.rows - fn:length(mailList)}"/>
+				<c:if test="${emptyCnt > 0}">
+					<c:forEach var="i" begin="1" end="${emptyCnt}">
+						<tr class="tr_body">
+							<td>&nbsp;</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+					</c:forEach>
+				</c:if>
+			</table>
 			</form>
-			</table>
-			<%
-			if(ds.getTotPage() > 1) {
-			%>
+			
 			<table width="1000" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td align="center" height=25><%= linkstr%></td>
-			</tr>
+				<tr>
+					<td align="center" height=25>${pageUtil.pageHtml}</td>
+				</tr>
 			</table>
-			<%	}	%>
-			<!------------------------------------------------------------------------------------------------------------>
 			<!------------------------------------------	LIST	END		---------------------------------------------->
-			<!------------------------------------------------------------------------------------------------------------>
+			
+			
 			<table width="1000" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td height=10>
-			</td>
-			</tr>
-			<tr>
-			<td height=30>
-			<input type="button" value="<%=btn_join%>" class="btn_typeC" onClick="goJoin()"><!--병합분석-->
-			</td>
-			</tr>
-			<tr>
-			<td height=10>
-			</td>
-			</tr>
+				<tr>
+					<td height=10></td>
+				</tr>
+				<tr>
+					<td height=30>
+						<input type="button" value="<spring:message code='ANABTN002'/>" class="btn_typeC" onClick="goJoin()"><!-- 병합분석 -->
+					</td>
+				</tr>
+				<tr>
+					<td height=10></td>
+				</tr>
 			</table>
-			<!------------------------------------------------------------------------------------------------------------>
+			
+			
 			<!------------------------------------------	OZREPORT	START		-------------------------------------->
-			<!------------------------------------------------------------------------------------------------------------>
 			<table width="1000" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td>
-			<div id="tab">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="100">
-			<div id="click_tab1" style="display : none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr height="23">
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><%=btn_summ%><!--결과요약--></td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
+				<tr>
+					<td>
+						<div id="tab">
+							<table width="100%" border="0" cellspacing="0" cellpadding="0">
+								<tr>
+									<td width="100">
+										<div id="click_tab1" style="display : none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr height="23">
+													<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" class="tab"><spring:message code='ANABTN003'/></td><!-- 결과요약 -->
+													<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="tab1" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr height="23">
+													<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab1','/ana/taskSummP.jsp')" class="tab"><spring:message code='ANABTN003'/></a><!-- 결과요약 -->
+													<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td width="1"></td>
+									<td width="100">
+										<div id="click_tab2" style="display : none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" class="tab"><spring:message code='ANABTN004'/></td><!-- 세부에러 -->
+													<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="tab2" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab2','/ana/taskErrorP.jsp')" class="tab"><spring:message code='ANABTN004'/></a><!-- 세부에러 -->
+													<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td width="1"></td>
+									<td width="100">
+										<div id="click_tab3" style="display : none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" class="tab"><spring:message code='ANABTN005'/></td><!-- 도메인별 -->
+													<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="tab3" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab3','/ana/taskDomainP.jsp')" class="tab"><spring:message code='ANABTN005'/></a><!-- 도메인별 -->
+													<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td width="1"></td>
+									<td width="100">
+										<div id="click_tab4" style="display : none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><spring:message code='ANABTN006'/></td><!-- 발송시간별 -->
+													<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="tab4" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab4','/ana/taskSendP.jsp')" class="tab"><spring:message code='ANABTN006'/></a><!-- 발송시간별 -->
+													<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td width="1"></td>
+									<td width="100">
+										<div id="click_tab5" style="display : none">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="110" align="center" class="tab"><spring:message code='ANABTN007'/></td><!-- 응답시간별 -->
+													<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+										<div id="tab5" style="display=">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
+													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab5','/ana/taskRespP.jsp')" class="tab"><spring:message code='ANABTN007'/></a><!-- 응답시간별 -->
+													<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
+												</tr>
+											</table>
+										</div>
+									</td>
+									<td align="right">&nbsp;</td>
+								</tr>
+							</table>
+						</div>
+						<div id="notab" style="display:none">
+							<table width="100%" border="0" cellspacing="0" cellpadding="0">
+								<tr>
+									<td align="right">&nbsp;
+										</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td height=5 background="/img/com/Content_tab_bar.gif"><img src="/img/com/Content_tab_bar.gif" width="3" height="5"></td>
+				</tr>
+				<tr>
+					<td>
+						<iframe name="iFrmReport" border='0' frameborder='1' scrolling='no' width='100%' height='1070'></iframe>
+					</td>
+				</tr>
 			</table>
-			</div>
-			<div id="tab1" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr height="23">
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab1','/ana/taskSummP.jsp')" class="tab"><%=btn_summ%><!--결과요약--></a></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<td width="1"></td>
-			<td width="100">
-			<div id="click_tab2" style="display : none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><%=btn_err%><!--세부에러--></td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="tab2" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab2','/ana/taskErrorP.jsp')" class="tab"><%=btn_err%><!--세부에러--></a></b></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<td width="1"></td>
-			<td width="100">
-			<div id="click_tab3" style="display : none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><%=btn_domain%><!--도메인별--></td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="tab3" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab3','/ana/taskDomainP.jsp')" class="tab"><%=btn_domain%><!--도메인별--></a></b></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<td width="1"></td>
-			<td width="100">
-			<div id="click_tab4" style="display : none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><%=btn_send%><!--발송시간별--></td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="tab4" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab4','/ana/taskSendP.jsp')" class="tab"><%=btn_send%><!--발송시간별--></a><b></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<td width="1"></td>
-			<td width="100">
-			<div id="click_tab5" style="display : none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><%=btn_resp%><!--응답시간별--></td>
-			<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			<div id="tab5" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab5','/ana/taskRespP.jsp')" class="tab"><%=btn_resp%><!--응답시간별--></a><b></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			<!--
-			<td width="1"></td>
-			<td width="89">
-			<div id="click_tab6" style="display=">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-			<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('/ana/taskSex.jsp')">성·연령별</a></td>
-			<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			-->
-			<td align="right">&nbsp;
-			<%	if(util.getEnv("WIZ_USE_YN").equals("Y") && util.getEnv("WIZ_DISPLAY_YN").equals("Y") ) {	%>
-			<a href="javascript:reportScript(ifrm_report.report_form,'print')"><img src="/img/ana/oz_print.jpg" border='0' alt="<%=jsalt_print%>" align="absbottom"></a>
-			<a href="javascript:reportScript(ifrm_report.report_form,'save',form_report.save_nm.value)"><img src="/img/ana/oz_save.jpg" border='0' alt="<%=jsalt_save%>" align="absbottom"></a>
-			<a href="javascript:reportScript(ifrm_report.report_form,'vprev')"><img src="/img/ana/oz_prev.jpg" border='0' alt="<%=jsalt_prev%>" align="absbottom"></a>
-			<a href="javascript:reportScript(ifrm_report.report_form,'vnext')"><img src="/img/ana/oz_next.jpg" border='0' alt="<%=jsalt_next%>" align="absbottom"></a>
-			<!--
-			<a href="javascript:reportScript(ifrm_report.report_form,'zoomin')"><img src="/img/ana/oz_zoom_in.jpg" border='0' alt="<%=jsalt_in%>" align="absbottom"></a>
-			<a href="javascript:reportScript(ifrm_report.report_form,'zoomout')"><img src="/img/ana/oz_zoom_out.jpg" border='0' alt="<%=jsalt_out%>" align="absbottom"></a>
-			-->
-			<%	}	%>
-			</td>
-			</tr>
-			</table>
-			</div>
-			<div id="notab" style="display:none">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td align="right">&nbsp;
-			<%	if(util.getEnv("WIZ_USE_YN").equals("Y") && util.getEnv("WIZ_DISPLAY_YN").equals("Y") ) {	%>
-			<a href="javascript:reportScript(ifrm_report.report_form,'print')"><img src="/img/ana/oz_print.jpg" border='0' alt="<%=jsalt_print%>" align="absbottom"></a>
-			<a href="javascript:reportScript(ifrm_report.report_form,'save',form_report.save_nm.value)"><img src="/img/ana/oz_save.jpg" border='0' alt="<%=jsalt_save%>" align="absbottom"></a>
-			<a href="javascript:reportScript(ifrm_report.report_form,'vprev')"><img src="/img/ana/oz_prev.jpg" border='0' alt="<%=jsalt_prev%>" align="absbottom"></a>
-			<a href="javascript:reportScript(ifrm_report.report_form,'vnext')"><img src="/img/ana/oz_next.jpg" border='0' alt="<%=jsalt_next%>" align="absbottom"></a>
-			<!--
-			<a href="javascript:reportScript(ifrm_report.report_form,'zoomin')"><img src="/img/ana/oz_zoom_in.jpg" border='0' alt="<%=jsalt_in%>" align="absbottom"></a>
-			<a href="javascript:reportScript(ifrm_report.report_form,'zoomout')"><img src="/img/ana/oz_zoom_out.jpg" border='0' alt="<%=jsalt_out%>" align="absbottom"></a>
-			-->
-			<%	}	%>
-			</td>
-			</tr>
-			</table>
-			</div>
-			</td>
-			</tr>
-			<tr>
-			<td height=5 background="/img/com/Content_tab_bar.gif"><img src="/img/com/Content_tab_bar.gif" width="3" height="5"></td>
-			</tr>
-			<tr>
-			<td>
-			<iframe name="ifrm_report" border='0' frameborder='1' scrolling='no' width='100%' height='1070'></iframe>
-			</td>
-			</tr>
-			<!------------------------------------------------------------------------------------------------------------>
 			<!------------------------------------------	OZREPORT	END		------------------------------------------>
-			<!------------------------------------------------------------------------------------------------------------>
 
-			<!------------------------------------------------------------------------------------------------------------>
-			<!------------------------------------------	USER LIST IFRAME START	-------------------------------------->
-			<!------------------------------------------------------------------------------------------------------------>
-			<iframe name="ifrm_user" border='0' frameborder='0' scrolling='no' width='0' height='0'></iframe>
-			<!------------------------------------------------------------------------------------------------------------>
-			<!------------------------------------------	USER LIST IFRAME END	-------------------------------------->
-			<!------------------------------------------------------------------------------------------------------------>
 
-			</table>
-
-			<form name="form_report">
-			<input type="hidden" name="save_nm" value="">
+			<form name="formFeport">
+			<input type="hidden" id="saveNm" name="saveNm" value="">
 			</form>
 
 			

@@ -10,6 +10,7 @@ import java.util.List;
 import kr.co.enders.ums.ems.cam.vo.AttachVO;
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 import kr.co.enders.ums.ems.cam.vo.LinkVO;
+import kr.co.enders.ums.ems.cam.vo.SendTestLogVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
 import kr.co.enders.ums.ems.cam.vo.TestUserVO;
 
@@ -252,4 +253,20 @@ public interface CampaignMapper {
 	 * @throws Exception
 	 */
 	public int deleteAttachInfo(int taskNo) throws Exception;
+	
+	/**
+	 * 테스트발송상세 목록 조회
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<TaskVO> getMailTestTaskList(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 테스트발송결과 목록 조회
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<SendTestLogVO> getMailTestSendLogList(TaskVO taskVO) throws Exception;
 }

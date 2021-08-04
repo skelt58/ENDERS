@@ -264,7 +264,6 @@ function goPageNum(page) {
 								</c:forEach>
 							</c:if>
 						</select>
-
 					</td>
 				</tr>
 			</table>
@@ -366,9 +365,9 @@ function goPageNum(page) {
 			</form>
 			
 			<table width="1000" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-			<td align="center" height=25>${pageUtil.pageHtml}</td>
-			</tr>
+				<tr>
+					<td align="center" height=25>${pageUtil.pageHtml}</td>
+				</tr>
 			</table>
 			<!------------------------------------------	LIST	END		---------------------------------------------->
 			

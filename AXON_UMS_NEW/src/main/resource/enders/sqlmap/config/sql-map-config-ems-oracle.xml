@@ -39,19 +39,23 @@
 		<!-- 발송관리 -->
 		<typeAlias alias="segmentVO"		type="kr.co.enders.ums.ems.seg.vo.SegmentVO" />
 		
-		<!-- 캠페인 -->
+		<!-- 캠페인/메일관리 -->
 		<typeAlias alias="campaignVO"		type="kr.co.enders.ums.ems.cam.vo.CampaignVO" />
 		<typeAlias alias="taskVO"			type="kr.co.enders.ums.ems.cam.vo.TaskVO" />
 		<typeAlias alias="attachVO"			type="kr.co.enders.ums.ems.cam.vo.AttachVO" />
 		<typeAlias alias="linkVO"			type="kr.co.enders.ums.ems.cam.vo.LinkVO" />
 		<typeAlias alias="testUserVO"		type="kr.co.enders.ums.ems.cam.vo.TestUserVO" />
+		<typeAlias alias="sendTestLogVO"	type="kr.co.enders.ums.ems.cam.vo.SendTestLogVO" />
 		
 		<!-- 템플릿 -->
 		<typeAlias alias="templateVO"		type="kr.co.enders.ums.ems.tmp.vo.TemplateVO" />
 		
 		<!-- 통계분석 -->
 		<typeAlias alias="mailSummVO"		type="kr.co.enders.ums.ems.ana.vo.MailSummVO" />
+		<typeAlias alias="mailErrorVO"		type="kr.co.enders.ums.ems.ana.vo.MailErrorVO" />
+		<typeAlias alias="mailDomainVO"		type="kr.co.enders.ums.ems.ana.vo.MailDomainVO" />
 		<typeAlias alias="sendLogVO"		type="kr.co.enders.ums.ems.ana.vo.SendLogVO" />
+		<typeAlias alias="respLogVO"		type="kr.co.enders.ums.ems.ana.vo.RespLogVO" />
 		
 	</typeAliases>
 

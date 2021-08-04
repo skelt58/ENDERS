@@ -26,7 +26,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import kr.co.enders.ums.com.service.CodeService;
 import kr.co.enders.ums.com.vo.CodeVO;
 import kr.co.enders.ums.ems.ana.service.AnalysisService;
+import kr.co.enders.ums.ems.ana.vo.MailDomainVO;
+import kr.co.enders.ums.ems.ana.vo.MailErrorVO;
 import kr.co.enders.ums.ems.ana.vo.MailSummVO;
+import kr.co.enders.ums.ems.ana.vo.RespLogVO;
 import kr.co.enders.ums.ems.ana.vo.SendLogVO;
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
@@ -173,7 +176,7 @@ public class AnalysisController {
 		}
 		
 		// 세부에러 조회
-		List<MailSummVO> detailList = null;
+		List<MailErrorVO> detailList = null;
 		try {
 			detailList = analysisService.getMailSummDetail(taskVO);
 		} catch(Exception e) {
@@ -203,6 +206,7 @@ public class AnalysisController {
 		logger.debug("goFailListP subTaskNo = " + sendLogVO.getSubTaskNo());
 		logger.debug("goFailListP step1     = " + sendLogVO.getStep1());
 		logger.debug("goFailListP step2     = " + sendLogVO.getStep2());
+		logger.debug("goFailListP step3     = " + sendLogVO.getStep3());
 		
 		// 페이지 설정
 		int page = StringUtil.setNullToInt(sendLogVO.getPage(), 1);
@@ -308,6 +312,187 @@ public class AnalysisController {
 		}
 	}
 
+	/**
+	 * 통계분석 세부에러 화면을 출력한다.
+	 * @param taskVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/mailErrorP")
+	public String goMailErrorP(@ModelAttribute TaskVO taskVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goMailErrorP taskNo = " + taskVO.getTaskNo());
+		logger.debug("goMailErrorP subTaskNo = " + taskVO.getSubTaskNo());
+		taskVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		
+		// 메일 정보 조회
+		TaskVO mailInfo = null;
+		try {
+			mailInfo = analysisService.getMailInfo(taskVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getMailInfo error = " + e);
+		}
+		
+		// 세부에러 목록 조회
+		List<MailErrorVO> errorList = null;
+		try {
+			errorList = analysisService.getMailErrorList(taskVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getMailErrorList error = " + e);
+		}
+		
+		model.addAttribute("taskVO", taskVO);			// 조건정보
+		model.addAttribute("mailInfo", mailInfo);		// 메일 정보
+		model.addAttribute("errorList", errorList);		// 세부에러
+
+		return "/ems/ana/mailErrorP";
+	}
+	
+	/**
+	 * 통계분석 도메인별 화면을 출력한다.
+	 * @param taskVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/mailDomainP")
+	public String goMailDomainP(@ModelAttribute TaskVO taskVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goMailDomainP taskNo = " + taskVO.getTaskNo());
+		logger.debug("goMailDomainP subTaskNo = " + taskVO.getSubTaskNo());
+		taskVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		
+		// 메일 정보 조회
+		TaskVO mailInfo = null;
+		try {
+			mailInfo = analysisService.getMailInfo(taskVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getMailInfo error = " + e);
+		}
+		
+		// 도메인별 목록 조회
+		List<MailDomainVO> domainList = null;
+		try {
+			domainList = analysisService.getMailDomainList(taskVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getMailDomainList error = " + e);
+		}
+		
+		model.addAttribute("taskVO", taskVO);			// 조건정보
+		model.addAttribute("mailInfo", mailInfo);		// 메일 정보
+		model.addAttribute("domainList", domainList);	// 도메인별
+		
+		return "ems/ana/mailDomainP";
+	}
+	
+	@RequestMapping(value="/mailSendP")
+	public String goMailSendP(@ModelAttribute TaskVO taskVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goMailSendP taskNo = " + taskVO.getTaskNo());
+		logger.debug("goMailSendP subTaskNo = " + taskVO.getSubTaskNo());
+		taskVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		
+		// 메일 정보 조회
+		TaskVO mailInfo = null;
+		try {
+			mailInfo = analysisService.getMailInfo(taskVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getMailInfo error = " + e);
+		}
+		
+		// 페이지 설정
+		int page = StringUtil.setNullToInt(taskVO.getPage(), 1);
+		int rows = StringUtil.setNullToInt(taskVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE")));
+		taskVO.setPage(page);
+		taskVO.setRows(rows);
+		int totalCount = 0;
+
+		// 발송시간별 목록 조회
+		List<SendLogVO> sendList = null;
+		try {
+			sendList = analysisService.getMailSendHourList(taskVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getMailSendHourList error = " + e);
+		}
+		
+		// 페이징 설정
+		if(sendList != null && sendList.size() > 0) {
+			totalCount = sendList.get(0).getTotalCount();
+		}
+		PageUtil pageUtil = new PageUtil();
+		pageUtil.init(request, taskVO.getPage(), totalCount, rows);
+		
+		// 발송시간별 합계 조회
+		SendLogVO sendSum = null;
+		try {
+			sendSum = analysisService.getMailSendHourSum(taskVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getMailSendHourList error = " + e);
+		}
+		
+		model.addAttribute("taskVO", taskVO);			// 조건정보
+		model.addAttribute("mailInfo", mailInfo);		// 메일 정보
+		model.addAttribute("sendList", sendList);		// 발송시간별 목록
+		model.addAttribute("sendSum", sendSum);			// 발송시간별 합계
+		model.addAttribute("pageUtil", pageUtil);		// 페이징
+		
+		return "ems/ana/mailSendP";
+	}
+	
+	@RequestMapping(value="/mailRespP")
+	public String goMailRespP(@ModelAttribute TaskVO taskVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goMailRespP taskNo = " + taskVO.getTaskNo());
+		logger.debug("goMailRespP subTaskNo = " + taskVO.getSubTaskNo());
+		taskVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		
+		// 메일 정보 조회
+		TaskVO mailInfo = null;
+		try {
+			mailInfo = analysisService.getMailInfo(taskVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getMailInfo error = " + e);
+		}
+		
+		// 페이지 설정
+		int page = StringUtil.setNullToInt(taskVO.getPage(), 1);
+		int rows = StringUtil.setNullToInt(taskVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE")));
+		taskVO.setPage(page);
+		taskVO.setRows(rows);
+		int totalCount = 0;
+
+		// 응답시간별 목록 조회
+		List<RespLogVO> respList = null;
+		try {
+			respList = analysisService.getMailRespHourList(taskVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getMailRespHourList error = " + e);
+		}
+		
+		// 페이징 설정
+		if(respList != null && respList.size() > 0) {
+			totalCount = respList.get(0).getTotalCount();
+		}
+		PageUtil pageUtil = new PageUtil();
+		pageUtil.init(request, taskVO.getPage(), totalCount, rows);
+		
+		// 응답시간별 합계 조회
+		RespLogVO respSum = null;
+		try {
+			respSum = analysisService.getMailRespHourSum(taskVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getMailRespHourSum error = " + e);
+		}
+		
+		model.addAttribute("taskVO", taskVO);			// 조건정보
+		model.addAttribute("mailInfo", mailInfo);		// 메일 정보
+		model.addAttribute("respList", respList);		// 응답시간별 목록
+		model.addAttribute("respSum", respSum);			// 응답시간별 합계
+		model.addAttribute("pageUtil", pageUtil);		// 페이징
+		
+		return "ems/ana/mailRespP";
+	}
 		
 	
 	@RequestMapping(value="/taskListP")

@@ -34,6 +34,7 @@ import kr.co.enders.ums.ems.cam.service.CampaignService;
 import kr.co.enders.ums.ems.cam.vo.AttachVO;
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 import kr.co.enders.ums.ems.cam.vo.LinkVO;
+import kr.co.enders.ums.ems.cam.vo.SendTestLogVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
 import kr.co.enders.ums.ems.cam.vo.TestUserVO;
 import kr.co.enders.ums.ems.seg.service.SegmentService;
@@ -1675,7 +1676,16 @@ public class CampaignController {
 	}
 	
 	
-	
+	/**
+	 * 메일 업데이트 처리
+	 * @param taskVO
+	 * @param model
+	 * @param attachList
+	 * @param linkList
+	 * @param session
+	 * @return
+	 * @throws Exception
+	 */
 	public String mailUpdateProcess(TaskVO taskVO, Model model, List<AttachVO> attachList, List<LinkVO> linkList, HttpSession session) throws Exception {
 		// 파일 사이즈 체크
 		if(taskVO.getAttachPath() != null && !"".equals(taskVO.getAttachPath())) {
@@ -1849,6 +1859,65 @@ public class CampaignController {
 		
 		return "Success";
 	}
+	
+	/**
+	 * 테스트발송상세정보 화면을 출력한다.
+	 * @param taskVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/mailTestTaskP")
+	public String goMailTestTaskP(@ModelAttribute TaskVO taskVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goMailTestTaskP sendTestTaskNo    = " + taskVO.getSendTestTaskNo());
+		logger.debug("goMailTestTaskP sendTestSubTaskNo = " + taskVO.getSendTestSubTaskNo());
+		taskVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		
+		// 테스트발송 목록 조회
+		List<TaskVO> testList = null;
+		try {
+			testList = campaignService.getMailTestTaskList(taskVO);
+		} catch(Exception e) {
+			logger.error("campaignService.getMailTestTaskList error = " + e);
+		}
+		
+		model.addAttribute("taskVO", taskVO);
+		model.addAttribute("testList", testList);
+		
+		return "ems/cam/mailTestTaskP";
+	}
+	
+	/**
+	 * 테스트발송결과로그 조회
+	 * @param taskVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/mailTestSendLogP")
+	public String goMailTestSendLogP(@ModelAttribute TaskVO taskVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goMailTestSendLogP taskNo    = " + taskVO.getTaskNo());
+		logger.debug("goMailTestSendLogP subTaskNo = " + taskVO.getSubTaskNo());
+		taskVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		
+		// 테스트발송로그 목록 조회
+		List<SendTestLogVO> logList = null;
+		try {
+			logList = campaignService.getMailTestSendLogList(taskVO);
+		} catch(Exception e) {
+			logger.error("campaignService.getMailTestSendLogList error = " + e);
+		}
+		
+		model.addAttribute("taskVO", taskVO);
+		model.addAttribute("testList", logList);
+		
+		return "ems/cam/mailTestSendLogP";
+	}
+	
 	
 	
 	/**

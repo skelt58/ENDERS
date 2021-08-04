@@ -11,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import kr.co.enders.ums.ems.ana.dao.AnalysisDAO;
+import kr.co.enders.ums.ems.ana.vo.MailDomainVO;
+import kr.co.enders.ums.ems.ana.vo.MailErrorVO;
 import kr.co.enders.ums.ems.ana.vo.MailSummVO;
+import kr.co.enders.ums.ems.ana.vo.RespLogVO;
 import kr.co.enders.ums.ems.ana.vo.SendLogVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
 
@@ -32,7 +35,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	}
 
 	@Override
-	public List<MailSummVO> getMailSummDetail(TaskVO taskVO) throws Exception {
+	public List<MailErrorVO> getMailSummDetail(TaskVO taskVO) throws Exception {
 		return analysisDAO.getMailSummDetail(taskVO);
 	}
 
@@ -44,6 +47,36 @@ public class AnalysisServiceImpl implements AnalysisService {
 	@Override
 	public List<SendLogVO> getFailList(SendLogVO sendLogVO) throws Exception {
 		return analysisDAO.getFailList(sendLogVO);
+	}
+
+	@Override
+	public List<MailErrorVO> getMailErrorList(TaskVO taskVO) throws Exception {
+		return analysisDAO.getMailErrorList(taskVO);
+	}
+
+	@Override
+	public List<MailDomainVO> getMailDomainList(TaskVO taskVO) throws Exception {
+		return analysisDAO.getMailDomainList(taskVO);
+	}
+
+	@Override
+	public List<SendLogVO> getMailSendHourList(TaskVO taskVO) throws Exception {
+		return analysisDAO.getMailSendHourList(taskVO);
+	}
+
+	@Override
+	public SendLogVO getMailSendHourSum(TaskVO taskVO) throws Exception {
+		return analysisDAO.getMailSendHourSum(taskVO);
+	}
+
+	@Override
+	public List<RespLogVO> getMailRespHourList(TaskVO taskVO) throws Exception {
+		return analysisDAO.getMailRespHourList(taskVO);
+	}
+
+	@Override
+	public RespLogVO getMailRespHourSum(TaskVO taskVO) throws Exception {
+		return analysisDAO.getMailRespHourSum(taskVO);
 	}
 
 }

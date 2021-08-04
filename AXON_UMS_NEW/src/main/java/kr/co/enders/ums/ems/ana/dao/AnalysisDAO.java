@@ -11,7 +11,10 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import kr.co.enders.ums.ems.ana.vo.MailDomainVO;
+import kr.co.enders.ums.ems.ana.vo.MailErrorVO;
 import kr.co.enders.ums.ems.ana.vo.MailSummVO;
+import kr.co.enders.ums.ems.ana.vo.RespLogVO;
 import kr.co.enders.ums.ems.ana.vo.SendLogVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
 
@@ -31,7 +34,7 @@ public class AnalysisDAO implements AnalysisMapper {
 	}
 
 	@Override
-	public List<MailSummVO> getMailSummDetail(TaskVO taskVO) throws Exception {
+	public List<MailErrorVO> getMailSummDetail(TaskVO taskVO) throws Exception {
 		return sqlSessionEms.getMapper(AnalysisMapper.class).getMailSummDetail(taskVO);
 	}
 
@@ -44,6 +47,35 @@ public class AnalysisDAO implements AnalysisMapper {
 	public List<SendLogVO> getFailList(SendLogVO sendLogVO) throws Exception {
 		return sqlSessionEms.getMapper(AnalysisMapper.class).getFailList(sendLogVO);
 	}
-	
+
+	@Override
+	public List<MailErrorVO> getMailErrorList(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getMailErrorList(taskVO);
+	}
+
+	@Override
+	public List<MailDomainVO> getMailDomainList(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getMailDomainList(taskVO);
+	}
+
+	@Override
+	public List<SendLogVO> getMailSendHourList(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getMailSendHourList(taskVO);
+	}
+
+	@Override
+	public SendLogVO getMailSendHourSum(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getMailSendHourSum(taskVO);
+	}
+
+	@Override
+	public List<RespLogVO> getMailRespHourList(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getMailRespHourList(taskVO);
+	}
+
+	@Override
+	public RespLogVO getMailRespHourSum(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getMailRespHourSum(taskVO);
+	}
 	
 }

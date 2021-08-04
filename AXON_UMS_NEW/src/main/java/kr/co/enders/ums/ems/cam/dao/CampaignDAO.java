@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import kr.co.enders.ums.ems.cam.vo.AttachVO;
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 import kr.co.enders.ums.ems.cam.vo.LinkVO;
+import kr.co.enders.ums.ems.cam.vo.SendTestLogVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
 import kr.co.enders.ums.ems.cam.vo.TestUserVO;
 
@@ -170,6 +171,16 @@ public class CampaignDAO implements CampaignMapper {
 	@Override
 	public int deleteAttachInfo(int taskNo) throws Exception {
 		return sqlSessionEms.getMapper(CampaignMapper.class).deleteAttachInfo(taskNo);
+	}
+
+	@Override
+	public List<TaskVO> getMailTestTaskList(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).getMailTestTaskList(taskVO);
+	}
+
+	@Override
+	public List<SendTestLogVO> getMailTestSendLogList(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(CampaignMapper.class).getMailTestSendLogList(taskVO);
 	}
 	
 }

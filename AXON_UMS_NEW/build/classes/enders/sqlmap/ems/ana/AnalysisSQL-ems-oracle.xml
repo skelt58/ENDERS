@@ -128,7 +128,7 @@
 				) D
 	</select>
 	
-	<select id="getMailSummDetail" parameterType="taskVO" resultType="mailSummVO">
+	<select id="getMailSummDetail" parameterType="taskVO" resultType="mailErrorVO">
 		SELECT A.STEP1
 			 , A.STEP2
 			 , NVL(B.SEND_AR_AMT,0) AS CNT_STEP2
@@ -211,5 +211,196 @@
 				)
 		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
 	</select>
+	
+	<select id="getMailErrorList" parameterType="taskVO" resultType="mailErrorVO">
+		SELECT AA.STEP1
+			 , AA.NM_STEP1
+			 , AA.CNT_STEP1
+			 , BB.STEP2
+			 , BB.NM_STEP2
+			 , BB.CNT_STEP2
+			 , CC.RCODE_STEP3 AS STEP3
+			 , NVL(CC.NM_STEP3,'') AS NM_STEP3
+			 , NVL(CC.CNT_STEP3,0) AS CNT_STEP3
+		  FROM (
+				SELECT A.STEP1, NVL(B.SEND_AR_AMT,0) AS CNT_STEP1, A.CD_DESC AS NM_STEP1
+				  FROM (SELECT STEP1, CD_DESC FROM NEO_RCODE WHERE KIND = '001' AND UILANG = #{uilang}) A,
+						(
+						SELECT RCODE_STEP1, SUM(SEND_AR_AMT) AS SEND_AR_AMT FROM NEO_AR_SENDLOG
+						 WHERE SEND_RCODE != '000'
+						   AND TASK_NO = #{taskNo}
+						   AND SUB_TASK_NO = #{subTaskNo}
+						 GROUP BY RCODE_STEP1
+						) B
+				 WHERE A.STEP1 = B.RCODE_STEP1(+)
+				) AA,
+				(
+				SELECT A.STEP1, A.STEP2, NVL(B.SEND_AR_AMT,0) AS CNT_STEP2, A.CD_DESC AS NM_STEP2
+				  FROM (SELECT STEP1, STEP2, CD_DESC FROM NEO_RCODE WHERE KIND = '002' AND UILANG = #{uilang}) A,
+						(
+						SELECT RCODE_STEP1, RCODE_STEP2, SUM(SEND_AR_AMT) AS SEND_AR_AMT FROM NEO_AR_SENDLOG
+						 WHERE SEND_RCODE != '000'
+						   AND TASK_NO = #{taskNo}
+						   AND SUB_TASK_NO = #{subTaskNo}
+						 GROUP BY RCODE_STEP1, RCODE_STEP2
+						) B
+				 WHERE A.STEP1 = B.RCODE_STEP1(+) AND A.STEP2 = B.RCODE_STEP2(+)
+				) BB,
+				(
+				SELECT RCODE_STEP1, RCODE_STEP2, RCODE_STEP3, SUM(CNT_STEP3) AS CNT_STEP3, NM_STEP3
+				  FROM (
+				  		SELECT A.RCODE_STEP1, A.RCODE_STEP2, A.RCODE_STEP3, NVL(A.SEND_AR_AMT,0) AS CNT_STEP3, NVL(B.CD_DESC, 'Etc') AS NM_STEP3
+						  FROM (
+								SELECT RCODE_STEP1, RCODE_STEP2, RCODE_STEP3, SUM(SEND_AR_AMT) AS SEND_AR_AMT FROM NEO_AR_SENDLOG
+								 WHERE SEND_RCODE != '000'
+								   AND TASK_NO = #{taskNo}
+								   AND SUB_TASK_NO = #{subTaskNo}
+								 GROUP BY RCODE_STEP1, RCODE_STEP2, RCODE_STEP3
+								) A,
+								(SELECT STEP1, STEP2, STEP3, CD_DESC FROM NEO_RCODE WHERE KIND = '003' AND UILANG = #{uilang}) B
+						 WHERE A.RCODE_STEP1 = B.STEP1(+) AND A.RCODE_STEP2 = B.STEP2(+) AND A.RCODE_STEP3 = B.STEP3(+)
+						) C
+				 GROUP BY RCODE_STEP1, RCODE_STEP2, RCODE_STEP3, NM_STEP3
+				 ) CC
+		 WHERE AA.STEP1 = BB.STEP1
+		   AND BB.STEP1 = CC.RCODE_STEP1(+)
+		   AND BB.STEP2 = CC.RCODE_STEP2(+)
+		 ORDER BY AA.STEP1, BB.STEP2, CC.RCODE_STEP3
+	</select>
+	
+	<select id="getMailDomainList" parameterType="taskVO" resultType="mailDomainVO">
+		SELECT CUST_DOMAIN DOMAIN_NM
+			 , SUM(SEND_AR_AMT) AS SEND_CNT
+			 , SUM(CASE WHEN SEND_RCODE = '000' THEN SEND_AR_AMT ELSE 0 END) AS SUCC_CNT
+			 , SUM(CASE WHEN (SEND_RCODE != '000' AND RCODE_STEP1 = '002') THEN SEND_AR_AMT ELSE 0 END) AS ERROR_CNT
+		  FROM NEO_AR_DOMAINLOG
+		 WHERE TASK_NO = #{taskNo}
+		   AND SUB_TASK_NO = #{subTaskNo}
+		 GROUP BY CUST_DOMAIN
+		 ORDER BY SUM(SEND_AR_AMT) DESC
+	</select>
+	
+	<select id="getMailSendHourList" parameterType="taskVO" resultType="sendLogVO">
+		SELECT *
+		  FROM (
+				SELECT TO_CHAR((TO_DATE(A.SEND_DT,'YYYYMMDDHH24MISS') + (B.TZ_TERM/60)/24), 'YYYYMMDDHH24') AS SEND_TIME
+					 , NVL(SUM(SEND_AR_AMT), 0) AS SEND_CNT
+					 , NVL(SUM((CASE WHEN A.SEND_RCODE = '000' THEN A.SEND_AR_AMT END)), 0) AS SUCC_CNT
+					 , ROW_NUMBER() OVER (ORDER BY TO_CHAR((TO_DATE(A.SEND_DT,'YYYYMMDDHH24MISS') + (B.TZ_TERM/60)/24), 'YYYYMMDDHH24')) SEQ
+					 , COUNT(1) OVER () TOTAL_COUNT
+				  FROM NEO_AR_SENDLOG A,
+						(
+						SELECT USER_ID, TZ_TERM
+						  FROM NEO_USER A, NEO_TIMEZONE B
+						 WHERE A.TZ_CD = B.TZ_CD
+						) B
+				 WHERE A.TASK_NO = #{taskNo}
+				   AND A.SUB_TASK_NO = #{subTaskNo}
+				   AND A.USER_ID = B.USER_ID
+				 GROUP BY TO_CHAR((TO_DATE(A.SEND_DT,'YYYYMMDDHH24MISS') + (B.TZ_TERM/60)/24), 'YYYYMMDDHH24')
+				)
+		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
+	</select>
+	
+	<select id="getMailSendHourSum" parameterType="taskVO" resultType="sendLogVO">
+		SELECT SUM(SEND_AR_AMT) AS SEND_CNT
+			 , SUM((CASE WHEN A.SEND_RCODE = '000' THEN A.SEND_AR_AMT END)) AS SUCC_CNT
+		  FROM NEO_AR_SENDLOG A
+			 , (
+				SELECT USER_ID, TZ_TERM
+				  FROM NEO_USER A, NEO_TIMEZONE B
+				 WHERE A.TZ_CD = B.TZ_CD
+				) B
+		 WHERE A.TASK_NO = #{taskNo}
+		   AND A.SUB_TASK_NO = #{subTaskNo}
+		   AND A.USER_ID = B.USER_ID
+	</select>
+	
+	<select id="getMailRespHourList" parameterType="taskVO" resultType="respLogVO">
+		SELECT *
+		  FROM (
+				SELECT RESP_TIME
+					 , SUCC_CNT
+					 , OPEN_CNT
+					 , CLICK_CNT
+					 , VALID_CNT
+					 , BLOCK_CNT
+		             , ROW_NUMBER() OVER (ORDER BY Y.RESP_TIME) SEQ
+		             , COUNT(1) OVER() TOTAL_COUNT
+				  FROM (
+						SELECT NVL(SUM(SEND_AR_AMT),0) AS SUCC_CNT FROM NEO_AR_SENDLOG
+						 WHERE TASK_NO = #{taskNo}
+						   AND SUB_TASK_NO = #{subTaskNo}
+						   AND SEND_RCODE = '000'
+						) X,
+						(
+						SELECT RESP_TIME, NVL(SUM(OPEN_CNT),0) AS OPEN_CNT, NVL(SUM(CLICK_CNT),0) AS CLICK_CNT, NVL(SUM(VALID_CNT),0) AS VALID_CNT, NVL(SUM(BLOCK_CNT),0) AS BLOCK_CNT
+						  FROM (
+								SELECT TO_CHAR((TO_DATE(AA.OPEN_DT,'YYYYMMDDHH24MISS') + (BB.TZ_TERM/60)/24), 'YYYYMMDDHH24') RESP_TIME
+									 , NVL(SUM(AA.RESP_AR_AMT),0) AS OPEN_CNT, 0 AS CLICK_CNT, 0 AS VALID_CNT
+									 , NVL(SUM(CASE WHEN AA.BLOCKED_YN = 'Y' THEN AA.RESP_AR_AMT ELSE 0 END),0) AS BLOCK_CNT
+								  FROM NEO_AR_RESPLOG AA,
+										(
+										SELECT USER_ID, TZ_TERM FROM NEO_USER A, NEO_TIMEZONE B
+										 WHERE A.TZ_CD = B.TZ_CD
+										) BB
+								 WHERE AA.TASK_NO = #{taskNo}
+								   AND AA.SUB_TASK_NO = #{subTaskNo}
+								   AND AA.USER_ID = BB.USER_ID
+								 GROUP BY TO_CHAR((TO_DATE(AA.OPEN_DT,'YYYYMMDDHH24MISS') + (BB.TZ_TERM/60)/24), 'YYYYMMDDHH24')
+								 UNION ALL
+								SELECT TO_CHAR((TO_DATE(AA.CLICK_DT,'YYYYMMDDHH24MISS') + (BB.TZ_TERM/60)/24), 'YYYYMMDDHH24') RESP_TIME
+									 , 0 AS OPEN_CNT, NVL(SUM(AA.CLICK_AR_AMT),0) AS CLICK_CNT, NVL(SUM(AA.VALID_AR_AMT),0) AS VALID_CNT, 0 AS BLOCK_CNT
+								  FROM NEO_AR_LINKLOG AA,
+										(
+										SELECT USER_ID, TZ_TERM FROM NEO_USER A, NEO_TIMEZONE B
+										 WHERE A.TZ_CD = B.TZ_CD
+										) BB
+								 WHERE AA.TASK_NO = #{taskNo}
+								   AND AA.SUB_TASK_NO = #{subTaskNo}
+								   AND AA.USER_ID = BB.USER_ID
+								 GROUP BY TO_CHAR((TO_DATE(AA.CLICK_DT,'YYYYMMDDHH24MISS') + (BB.TZ_TERM/60)/24), 'YYYYMMDDHH24')
+								)
+						GROUP BY RESP_TIME
+					) Y
+				)
+		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
+	</select>
+	
+	<select id="getMailRespHourSum" parameterType="taskVO" resultType="respLogVO">
+		SELECT SUCC_CNT, OPEN_CNT, CLICK_CNT, VALID_CNT, BLOCK_CNT
+		  FROM (
+				SELECT SUM(SEND_AR_AMT) AS SUCC_CNT FROM NEO_AR_SENDLOG
+				 WHERE TASK_NO = #{taskNo}
+				   AND SUB_TASK_NO = #{subTaskNo}
+				   AND SEND_RCODE = '000'
+				) X,
+				(
+				SELECT SUM(OPEN_CNT) AS OPEN_CNT, SUM(CLICK_CNT) AS CLICK_CNT, SUM(VALID_CNT) AS VALID_CNT, SUM(BLOCK_CNT) AS BLOCK_CNT
+				  FROM (
+						SELECT SUM(AA.RESP_AR_AMT) AS OPEN_CNT, 0 AS CLICK_CNT, 0 AS VALID_CNT
+							, SUM(CASE WHEN AA.BLOCKED_YN = 'Y' THEN AA.RESP_AR_AMT ELSE 0 END) AS BLOCK_CNT
+						  FROM NEO_AR_RESPLOG AA,
+								(
+								SELECT USER_ID, TZ_TERM FROM NEO_USER A, NEO_TIMEZONE B
+								 WHERE A.TZ_CD = B.TZ_CD
+								) BB
+						 WHERE AA.TASK_NO = #{taskNo}
+						   AND AA.SUB_TASK_NO = #{subTaskNo}
+						   AND AA.USER_ID = BB.USER_ID
+						 UNION ALL
+						SELECT 0 AS OPEN_CNT, SUM(AA.CLICK_AR_AMT) AS CLICK_CNT, SUM(AA.VALID_AR_AMT) AS VALID_CNT, 0 AS BLOCK_CNT
+						  FROM NEO_AR_LINKLOG AA,
+								(
+								SELECT USER_ID, TZ_TERM FROM NEO_USER A, NEO_TIMEZONE B
+								 WHERE A.TZ_CD = B.TZ_CD
+								) BB
+						 WHERE AA.TASK_NO = #{taskNo}
+						   AND AA.SUB_TASK_NO = #{taskNo}
+						   AND AA.USER_ID = BB.USER_ID
+						) YY
+				 ) Y
+	</select>
+
 
 </mapper>

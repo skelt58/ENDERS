@@ -18,12 +18,13 @@ function openError(step1, step2) {
 }
 </script>
 
-<table width="700" border="0" cellspacing="1" cellpadding="0" class="table_line_outline">
+<table width="700" border="1" cellspacing="0" cellpadding="0" class="table_line_outline">
 	<tr class="tr_head">
 		<td class="title_report" height=30><spring:message code='ANATBLTL101'/></td><!-- 결과요약 -->
 	</tr>
 </table>
 <br>
+<c:if test="${not empty mailInfo}">
 <table width="700" border="1" cellspacing="0" cellpadding="0" class="table_line_outline">
 	<tr>
 		<td class="td_line" colspan=2></td>
@@ -47,9 +48,9 @@ function openError(step1, step2) {
 		<td class="td_title"><spring:message code='ANATBLLB104'/></td><!-- 발 송 일 자 -->
 		<td class="td_body">
 			<fmt:parseDate var="mailSendDt" value="${mailInfo.sendDt}" pattern="yyyyMMddHHmm"/>
-			<fmt:formatDate var="sendDt" value="${mailSendDt}" pattern="yyyy-MM-dd HH:mm"/> 
+			<fmt:formatDate var="sendDt" value="${mailSendDt}" pattern="yyyy-MM-dd HH:mm"/>
 			<fmt:parseDate var="mailEndDt" value="${mailInfo.endDt}" pattern="yyyyMMddHHmm"/>
-			<fmt:formatDate var="endDt" value="${mailEndDt}" pattern="yyyy-MM-dd HH:mm"/> 
+			<fmt:formatDate var="endDt" value="${mailEndDt}" pattern="yyyy-MM-dd HH:mm"/>
 			<c:out value='${sendDt}'/> ~ <c:out value='${endDt}'/>
 		</td>
 	</tr>
@@ -58,6 +59,7 @@ function openError(step1, step2) {
 		<td class="td_body"><c:out value='${mailInfo.taskNm}'/></td>
 	</tr>
 </table>
+</c:if>
 
 <br>
 
@@ -78,15 +80,15 @@ function openError(step1, step2) {
 		</tr>
 		<tr>
 			<td class="td_body" rowspan=2 align="right">
-				<fmt:formatNumber var="sendCnt" type="number" maxFractionDigits="3" value="${sendResult.sendCnt}" />
+				<fmt:formatNumber var="sendCnt" type="number" value="${sendResult.sendCnt}" />
 				<c:out value='${sendCnt}'/>
 			</td>
 			<td class="td_body" align="right">
-				<fmt:formatNumber var="succCnt" type="number" maxFractionDigits="3" value="${sendResult.succCnt}" />
+				<fmt:formatNumber var="succCnt" type="number" value="${sendResult.succCnt}" />
 				<c:out value='${succCnt}'/>
 			</td>
 			<td class="td_body" align="right">
-				<fmt:formatNumber var="failCnt" type="number" maxFractionDigits="3" value="${sendResult.failCnt}" />
+				<fmt:formatNumber var="failCnt" type="number" value="${sendResult.failCnt}" />
 				<c:out value='${failCnt}'/>
 			</td>
 		</tr>
@@ -125,15 +127,15 @@ function openError(step1, step2) {
 				<c:out value='${succCnt}'/>
 			</td>
 			<td class="td_body" align="right">
-				<fmt:formatNumber var="openCnt" type="number" maxFractionDigits="3" value="${sendResult.openCnt}" />
+				<fmt:formatNumber var="openCnt" type="number" value="${sendResult.openCnt}" />
 				<c:out value='${openCnt}'/>
 			</td>
 			<td class="td_body" align="right">
-				<fmt:formatNumber var="validCnt" type="number" maxFractionDigits="3" value="${sendResult.validCnt}" />
+				<fmt:formatNumber var="validCnt" type="number" value="${sendResult.validCnt}" />
 				<c:out value='${validCnt}'/>
 			</td>
 			<td class="td_body" align="right">
-				<fmt:formatNumber var="validCnt" type="number" maxFractionDigits="3" value="${sendResult.validCnt}" />
+				<fmt:formatNumber var="validCnt" type="number" value="${sendResult.validCnt}" />
 				<c:if test="${sendResult.clickCnt > 0}">
 					<a href="#" onclick="openLink()"><c:out value='${validCnt}'/></a>
 				</c:if>
@@ -142,7 +144,7 @@ function openError(step1, step2) {
 				</c:if>
 			</td>
 			<td class="td_body" align="right">
-				<fmt:formatNumber var="blockCnt" type="number" maxFractionDigits="3" value="${sendResult.blockCnt}" />
+				<fmt:formatNumber var="blockCnt" type="number" value="${sendResult.blockCnt}" />
 				<c:out value='${blockCnt}'/>
 			</td>
 		</tr>
@@ -298,31 +300,31 @@ function openError(step1, step2) {
 		</tr>
 		<tr>
 			<td class="td_body" align="right" <c:if test="${syntaxErrCnt > 0}"> onClick="openError('001','001')" style="cursor:pointer"</c:if>>
-				<fmt:formatNumber var="syntaxErrCntNum" type="number" maxFractionDigits="3" value="${syntaxErrCnt}" />
+				<fmt:formatNumber var="syntaxErrCntNum" type="number" value="${syntaxErrCnt}" />
 				<c:out value='${syntaxErrCntNum}'/>
 			</td>
 			<td class="td_body" align="right" <c:if test="${webAgentErrCnt > 0}"> onClick="openError('001','002')" style="cursor:pointer"</c:if>>
-				<fmt:formatNumber var="webAgentErrCntNum" type="number" maxFractionDigits="3" value="${webAgentErrCnt}" />
+				<fmt:formatNumber var="webAgentErrCntNum" type="number" value="${webAgentErrCnt}" />
 				<c:out value='${webAgentErrCntNum}'/>
 			</td>
 			<td class="td_body" align="right" <c:if test="${dbAgentErrCnt > 0}"> onClick="openError('001','003')" style="cursor:pointer"</c:if>>
-				<fmt:formatNumber var="dbAgentErrCntNum" type="number" maxFractionDigits="3" value="${dbAgentErrCnt}" />
+				<fmt:formatNumber var="dbAgentErrCntNum" type="number" value="${dbAgentErrCnt}" />
 				<c:out value='${dbAgentErrCntNum}'/>
 			</td>
 			<td class="td_body" align="right" <c:if test="${mailBodyErrCnt > 0}"> onClick="openError('001','004')" style="cursor:pointer"</c:if>>
-				<fmt:formatNumber var="mailBodyErrCntNum" type="number" maxFractionDigits="3" value="${mailBodyErrCnt}" />
+				<fmt:formatNumber var="mailBodyErrCntNum" type="number" value="${mailBodyErrCnt}" />
 				<c:out value='${mailBodyErrCntNum}'/>
 			</td>
 			<td class="td_body" align="right" <c:if test="${domainErrCnt > 0}"> onClick="openError('001','005')" style="cursor:pointer"</c:if>>
-				<fmt:formatNumber var="domainErrCntNum" type="number" maxFractionDigits="3" value="${domainErrCnt}" />
+				<fmt:formatNumber var="domainErrCntNum" type="number" value="${domainErrCnt}" />
 				<c:out value='${domainErrCntNum}'/>
 			</td>
 			<td class="td_body" align="right" <c:if test="${networkErrCnt > 0}"> onClick="openError('001','006')" style="cursor:pointer"</c:if>>
-				<fmt:formatNumber var="networkErrCntNum" type="number" maxFractionDigits="3" value="${networkErrCnt}" />
+				<fmt:formatNumber var="networkErrCntNum" type="number" value="${networkErrCnt}" />
 				<c:out value='${networkErrCntNum}'/>
 			</td>
 			<td class="td_body" align="right" <c:if test="${sumStep1Err > 0}"> onClick="openError('001','')" style="cursor:pointer"</c:if>>
-				<fmt:formatNumber var="sumStep1ErrNum" type="number" maxFractionDigits="3" value="${sumStep1Err}" />
+				<fmt:formatNumber var="sumStep1ErrNum" type="number" value="${sumStep1Err}" />
 				<c:out value='${sumStep1ErrNum}'/>
 			</td>
 		</tr>
@@ -380,39 +382,39 @@ function openError(step1, step2) {
 		</tr>
 		<tr>
 			<td class="td_body" align="right" <c:if test="${connectErrCnt > 0}"> onClick="openError('002','001')" style="cursor:pointer"</c:if>>
-				<fmt:formatNumber var="connectErrCntNum" type="number" maxFractionDigits="3" value="${connectErrCnt}" />
+				<fmt:formatNumber var="connectErrCntNum" type="number" value="${connectErrCnt}" />
 				<c:out value='${connectErrCntNum}'/>
 			</td>
 			<td class="td_body" align="right" <c:if test="${heloErrCnt > 0}"> onClick="openError('002','002')" style="cursor:pointer"</c:if>>
-				<fmt:formatNumber var="heloErrCntNum" type="number" maxFractionDigits="3" value="${heloErrCnt}" />
+				<fmt:formatNumber var="heloErrCntNum" type="number" value="${heloErrCnt}" />
 				<c:out value='${heloErrCntNum}'/>
 			</td>
 			<td class="td_body" align="right" <c:if test="${mailFromErrCnt > 0}"> onClick="openError('002','003')" style="cursor:pointer"</c:if>>
-				<fmt:formatNumber var="mailFromErrCntNum" type="number" maxFractionDigits="3" value="${mailFromErrCnt}" />
+				<fmt:formatNumber var="mailFromErrCntNum" type="number" value="${mailFromErrCnt}" />
 				<c:out value='${mailFromErrCntNum}'/>
 			</td>
 			<td class="td_body" align="right" <c:if test="${rcptToErrCnt > 0}"> onClick="openError('002','004')" style="cursor:pointer"</c:if>>
-				<fmt:formatNumber var="rcptToErrCntNum" type="number" maxFractionDigits="3" value="${rcptToErrCnt}" />
+				<fmt:formatNumber var="rcptToErrCntNum" type="number" value="${rcptToErrCnt}" />
 				<c:out value='${rcptToErrCntNum}'/>
 			</td>
 			<td class="td_body" align="right" <c:if test="${resetErrCnt > 0}"> onClick="openError('002','005')" style="cursor:pointer"</c:if>>
-				<fmt:formatNumber var="resetErrCntNum" type="number" maxFractionDigits="3" value="${resetErrCnt}" />
+				<fmt:formatNumber var="resetErrCntNum" type="number" value="${resetErrCnt}" />
 				<c:out value='${resetErrCntNum}'/>
 			</td>
 			<td class="td_body" align="right" <c:if test="${dataErrCnt > 0}"> onClick="openError('002','006')" style="cursor:pointer"</c:if>>
-				<fmt:formatNumber var="dataErrCntNum" type="number" maxFractionDigits="3" value="${dataErrCnt}" />
+				<fmt:formatNumber var="dataErrCntNum" type="number" value="${dataErrCnt}" />
 				<c:out value='${dataErrCntNum}'/>
 			</td>
 			<td class="td_body" align="right" <c:if test="${dotErrCnt > 0}"> onClick="openError('002','007')" style="cursor:pointer"</c:if>>
-				<fmt:formatNumber var="dotErrCntNum" type="number" maxFractionDigits="3" value="${dotErrCnt}" />
+				<fmt:formatNumber var="dotErrCntNum" type="number" value="${dotErrCnt}" />
 				<c:out value='${dotErrCntNum}'/>
 			</td>
 			<td class="td_body" align="right" <c:if test="${quitErrCnt > 0}"> onClick="openError('002','008')" style="cursor:pointer"</c:if>>
-				<fmt:formatNumber var="quitErrCntNum" type="number" maxFractionDigits="3" value="${quitErrCnt}" />
+				<fmt:formatNumber var="quitErrCntNum" type="number" value="${quitErrCnt}" />
 				<c:out value='${quitErrCntNum}'/>
 			</td>
 			<td class="td_body" align="right" <c:if test="${sumStep2Err > 0}"> onClick="openError('002','009')" style="cursor:pointer"</c:if>>
-				<fmt:formatNumber var="sumStep2ErrNum" type="number" maxFractionDigits="3" value="${sumStep2Err}" />
+				<fmt:formatNumber var="sumStep2ErrNum" type="number" value="${sumStep2Err}" />
 				<c:out value='${sumStep2ErrNum}'/>
 			</td>
 		</tr>

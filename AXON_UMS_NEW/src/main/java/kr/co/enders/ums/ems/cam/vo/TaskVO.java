@@ -109,6 +109,8 @@ public class TaskVO extends CommonVO {
 	private String sendIp;
 	private String taskNos;
 	private String subTaskNos;
+	private int sucCnt;
+	private int failCnt;
 	
 	public int getTaskNo() {
 		return taskNo;
@@ -673,5 +675,17 @@ public class TaskVO extends CommonVO {
 	}
 	public void setTestCnt(int testCnt) {
 		this.testCnt = testCnt;
+	}
+	public int getSucCnt() {
+		return sucCnt;
+	}
+	public void setSucCnt(int sucCnt) {
+		this.sucCnt = sucCnt;
+	}
+	public int getFailCnt() {
+		return failCnt;
+	}
+	public void setFailCnt(int failCnt) {
+		this.failCnt = failCnt;
 	}
 }

@@ -7,7 +7,10 @@ package kr.co.enders.ums.ems.ana.dao;
 
 import java.util.List;
 
+import kr.co.enders.ums.ems.ana.vo.MailDomainVO;
+import kr.co.enders.ums.ems.ana.vo.MailErrorVO;
 import kr.co.enders.ums.ems.ana.vo.MailSummVO;
+import kr.co.enders.ums.ems.ana.vo.RespLogVO;
 import kr.co.enders.ums.ems.ana.vo.SendLogVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
 
@@ -42,7 +45,7 @@ public interface AnalysisMapper {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<MailSummVO> getMailSummDetail(TaskVO taskVO) throws Exception;
+	public List<MailErrorVO> getMailSummDetail(TaskVO taskVO) throws Exception;
 	
 	/**
 	 * 발송 실패 목록 조회
@@ -52,4 +55,51 @@ public interface AnalysisMapper {
 	 */
 	public List<SendLogVO> getFailList(SendLogVO sendLogVO) throws Exception;
 	
+	/**
+	 * 세부에러 목록 조회
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<MailErrorVO> getMailErrorList(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 도메인별 목록 조회
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<MailDomainVO> getMailDomainList(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 발송시간별 목록 조회
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<SendLogVO> getMailSendHourList(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 발송시간별 합계 조회
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public SendLogVO getMailSendHourSum(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 응답시간별 목록 조회
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<RespLogVO> getMailRespHourList(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 응답시간별 합계 조회
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public RespLogVO getMailRespHourSum(TaskVO taskVO) throws Exception;
 }

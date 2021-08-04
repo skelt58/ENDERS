@@ -458,7 +458,7 @@ function goTestSend() {
 	$("#searchForm").attr("target","preView").attr("action","/ems/cam/mailTestListP.ums").submit();
 }
 
-// 발송승인 클릭시
+//발송승인 클릭시
 function goAdmit() {
     var errflag = false;
     var errstr = "";
@@ -533,6 +533,15 @@ function goAdmit() {
     $("#mailInfoForm").attr("target","iFrmMail").attr("action","<c:url value='/ems/cam/mailUpdateAdmit.ums'/>").submit();
 }
 
+// 테스트발송상세정보 클릭시
+function goTestSendInfo(sendTestTaskNo, sendTestSubTaskNo) {
+	$("#sendTestTaskNo").val(sendTestTaskNo);
+	$("#sendTestSubTaskNo").val(sendTestSubTaskNo);
+	
+    window.open("","preView", "width=372, height=400, scrollbars=yes");
+    $("#searchForm").attr("target","preView").attr("action","<c:url value='/ems/cam/mailTestTaskP.ums'/>").submit();
+}
+
 //리스트 클릭시
 function goList() {
 	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/cam/mailMainP.ums'/>").submit();
@@ -542,7 +551,6 @@ function goList() {
 function goCampList() {
 	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/cam/campListP.ums'/>").submit();
 }
-
 
 
 
@@ -580,10 +588,10 @@ function getDate(Date, selectedNum, minNum, maxNum, plusNum) {
 			<input type="hidden" id="searchEndDt" name="searchEndDt" value="<c:out value='${searchVO.searchEndDt}'/>">
 			<input type="hidden" id="searchWorkStatus" name="searchWorkStatus" value="<c:out value='${searchVO.searchWorkStatus}'/>">
 			
-			<input type='hidden' name='taskNos' value="<c:out value='${searchVO.taskNo}'/>">
-			<input type='hidden' name='subTaskNos' value="<c:out value='${searchVO.subTaskNo}'/>">
-			<input type='hidden' name='sendTestTaskNo' value="0">
-			<input type='hidden' name='sendTestSubTaskNo' value="0">
+			<input type='hidden' id="taskNos" name='taskNos' value="<c:out value='${searchVO.taskNo}'/>">
+			<input type='hidden' id="subTaskNos" name='subTaskNos' value="<c:out value='${searchVO.subTaskNo}'/>">
+			<input type='hidden' id="sendTestTaskNo" name='sendTestTaskNo' value="0">
+			<input type='hidden' id="sendTestSubTaskNo" name='sendTestSubTaskNo' value="0">
 			<input type="hidden" id="status" name="status">
 			</form>
 			

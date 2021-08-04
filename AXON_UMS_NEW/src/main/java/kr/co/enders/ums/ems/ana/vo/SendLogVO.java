@@ -1,7 +1,7 @@
 /**
  * 작성자 : 김상진
  * 작성일시 : 2021.08.03
- * 설명 : 발송이력 VO
+ * 설명 : 발송로그 VO
  */
 package kr.co.enders.ums.ems.ana.vo;
 
@@ -40,6 +40,11 @@ public class SendLogVO extends CommonVO {
 	private String targetGrpTy;
 	private String userId;
 	private String userNm;
+	
+	private String sendTime;
+	private int sendCnt;
+	private int succCnt;
+	
 	public int getTaskNo() {
 		return taskNo;
 	}
@@ -225,5 +230,23 @@ public class SendLogVO extends CommonVO {
 	}
 	public void setUserNm(String userNm) {
 		this.userNm = userNm;
+	}
+	public String getSendTime() {
+		return sendTime;
+	}
+	public void setSendTime(String sendTime) {
+		this.sendTime = sendTime;
+	}
+	public int getSendCnt() {
+		return sendCnt;
+	}
+	public void setSendCnt(int sendCnt) {
+		this.sendCnt = sendCnt;
+	}
+	public int getSuccCnt() {
+		return succCnt;
+	}
+	public void setSuccCnt(int succCnt) {
+		this.succCnt = succCnt;
 	}
 }

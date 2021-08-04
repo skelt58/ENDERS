@@ -904,5 +904,47 @@
 		DELETE FROM NEO_ATTACH
 		 WHERE TASK_NO = #{taskNo}
 	</delete>
+	
+	<select id="getMailTestTaskList" parameterType="taskVO" resultType="taskVO">
+		SELECT A.SUB_TASK_NO
+			 , A.TASK_NO
+			 , A.SEND_DT
+			 , A.WORK_STATUS
+			 , B.CD_DTL WORK_STATUS_DTL
+			 , (SELECT COUNT(CUST_ID) FROM NEO_SENDTESTLOG
+			 	 WHERE TASK_NO = A.TASK_NO
+				   AND SUB_TASK_NO = A.SUB_TASK_NO
+				   AND SEND_RCODE = '000'
+				) SUC_CNT
+			 , (SELECT COUNT(CUST_ID) FROM NEO_SENDTESTLOG
+				 WHERE TASK_NO = A.TASK_NO
+				   AND SUB_TASK_NO = A.SUB_TASK_NO
+				   AND SEND_RCODE IN ('001','002','003','004','005','006','007','008','009')
+				) FAIL_CNT
+		  FROM NEO_SUBTASK A
+			 , (SELECT CD, CD_NM, CD_DTL FROM NEO_CD
+				 WHERE CD_GRP = 'C034'
+				   AND USE_YN = 'Y'
+				   AND UILANG = #{uilang}) B
+		 WHERE A.WORK_STATUS = B.CD
+		   AND A.SEND_TEST_TASK_NO = #{sendTestTaskNo}
+		   AND A.SEND_TEST_SUB_TASK_NO = #{sendTestSubTaskNo}
+		 ORDER BY A.TASK_NO DESC, A.SUB_TASK_NO DESC
+	</select>
+	
+	<select id="getMailTestSendLogList" parameterType="taskVO" resultType="sendTestLogVO">
+		SELECT A.RETRY_CNT
+			 , A.SEND_DT
+			 , A.SEND_RCODE
+			 , A.SEND_MSG
+			 , A.CUST_EM
+			 , (SELECT CD_DESC FROM NEO_RCODE
+				 WHERE RCODE = A.SEND_RCODE
+				   AND STEP1 = '000'
+				   AND UILANG = #{uilang}) SEND_RCODE_DTL
+		  FROM NEO_SENDTESTLOG A
+		 WHERE A.TASK_NO = #{taskNo}
+		   AND A.SUB_TASK_NO = #{subTaskNo}
+	</select>
 
 </mapper>
