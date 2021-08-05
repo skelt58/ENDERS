@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.enders.ums.ems.seg.dao.SegmentMapper">
+
+	<select id="getSegmentList" parameterType="segmentVO" resultType="segmentVO">
+		SELECT *
+		  FROM (
+				SELECT SEG_NO
+					 , DB_CONN_NO
+					 , SEG_NM
+					 , CREATE_TY_CD.CD_NM CREATE_TY_NM
+					 , CREATE_TY
+					 , SELECT_	SELECT_SQL
+					 , FROM_ FROM_SQL
+					 , WHERE_ WHERE_SQL
+					 , ORDERBY_ ORDERBY_SQL
+					 , QUERY
+					 , MERGE_KEY
+					 , MERGE_COL
+					 , SEG_FL_PATH
+					 , SRC_WHERE
+					 , TOT_CNT
+					 , NEO_SEGMENT.STATUS
+					 , STATUS_CD.CD_NM STATUS_NM
+					 , NEO_SEGMENT.USER_ID
+					 , NEO_USER.USER_NM
+					 , NEO_DEPT.DEPT_NM
+					 , ROW_NUMBER() OVER (ORDER BY NEO_SEGMENT.REG_DT DESC) SEQ
+					 , COUNT(1) OVER() TOTAL_COUNT
+				  FROM NEO_SEGMENT
+					 , NEO_CD CREATE_TY_CD
+					 , NEO_CD STATUS_CD
+					 , NEO_USER
+					 , NEO_DEPT
+				 WHERE CREATE_TY_CD.CD_GRP = 'C013'
+				   AND CREATE_TY_CD.UILANG = #{uilang}
+				   AND STATUS_CD.CD_GRP = 'C012'
+				   AND STATUS_CD.UILANG = #{uilang}
+				   AND NEO_SEGMENT.CREATE_TY = CREATE_TY_CD.CD
+				   AND NEO_SEGMENT.STATUS = STATUS_CD.CD
+				   AND NEO_SEGMENT.USER_ID = NEO_USER.USER_ID
+				   AND NEO_USER.DEPT_NO = NEO_DEPT.DEPT_NO
+				   <if test="searchSegNm != null and searchSegNm != ''">
+				   AND NEO_SEGMENT.SEG_NM LIKE '%' || #{searchSegNm} || '%'
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND NEO_USER.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND NEO_SEGMENT.USER_ID = #{searchUserId}
+				   </if>
+				   <if test="searchCreateTy != null and searchCreateTy != ''">
+				   AND NEO_SEGMENT.CREATE_TY = #{searchCreateTy}
+				   </if>
+				   <if test='searchStatus != null and searchStatus != "ALL"'>
+				   AND NEO_SEGMENT.STATUS = #{searchStatus}
+				   </if>
+				   <if test="searchStartDt != null and searchStartDt != ''">
+				   AND NEO_SEGMENT.REG_DT &gt;= #{searchStartDt} || '000000'
+				   </if>
+				   <if test="searchEndDt != null and searchEndDt != ''">
+				   AND NEO_SEGMENT.REG_DT &lt; #{searchEndDt} || '240000'
+				   </if>
+				)
+		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
+	</select>
+	
+	<insert id="insertSegmentInfo" parameterType="segmentVO">
+		INSERT INTO NEO_SEGMENT
+		(
+			  SEG_NO
+			, USER_ID
+			, DB_CONN_NO
+			, SEG_NM
+			, CREATE_TY
+			, QUERY
+			, SEPARATOR_
+			, SELECT_
+			, FROM_
+			, WHERE_
+			, ORDERBY_
+			, MERGE_KEY
+			, MERGE_COL
+			, SEG_FL_PATH
+			, SRC_WHERE
+			, TOT_CNT
+			, REG_ID
+			, REG_DT
+			, STATUS
+		)
+		VALUES
+		(
+			  NEO_SEGMENT_SEQ.NEXTVAL
+			, #{userId}
+			, #{dbConnNo}
+			, #{segNm}
+			, #{createTy}
+			, #{query}
+			, #{separatorChar}
+			, #{selectSql}
+			, #{fromSql}
+			, #{whereSql}
+			, #{orderbySql}
+			, #{mergeKey}
+			, #{mergeCol}
+			, #{segFlPath}
+			, #{srcWhere}
+			, #{totCnt}
+			, #{regId}
+			, #{regDt}
+			, #{status}
+		)
+	</insert>
+	
+	<update id="updateSegmentInfo" parameterType="segmentVO">
+		UPDATE NEO_SEGMENT
+		   SET USER_ID     = #{userId}
+			 , DB_CONN_NO  = #{dbConnNo}
+			 , SEG_NM      = #{segNm}
+			 , CREATE_TY   = #{createTy}
+			 , SELECT_     = #{selectSql}
+			 , FROM_       = #{fromSql}
+			 , WHERE_      = #{whereSql}
+			 , ORDERBY_    = #{orderbySql}
+			 , QUERY       = #{query}
+			 , SEPARATOR_  = #{separatorChar}
+			 , MERGE_KEY   = #{mergeKey}
+			 , MERGE_COL   = #{mergeCol}
+			 , SEG_FL_PATH = #{segFlPath}
+			 , SRC_WHERE   = #{srcWhere}
+			 , TOT_CNT     = #{totCnt}
+			 , UP_ID       = #{upId}
+			 , UP_DT       = #{upDt}
+			 , STATUS      = #{status}
+		 WHERE SEG_NO      = #{segNo}
+	</update>
+	
+	<update id="updateSegmentStatus" parameterType="segmentVO">
+		UPDATE NEO_SEGMENT
+		   SET STATUS 	= #{status}
+			 , UP_ID 	= #{upId}
+			 , UP_DT 	= #{upDt}
+		 WHERE SEG_NO 	= #{segNo}
+	</update>
+	
+	<select id="getDbConnList" parameterType="dbConnVO" resultType="dbConnVO">
+		SELECT NEO_DBCONN.DB_CONN_NO
+			 , NEO_DBCONN.DB_CONN_NM
+			 , NEO_DBCONN.DB_TY DB_TY
+			 , NEO_CD.CD_NM DB_TY_NM
+		  FROM NEO_DBCONN, NEO_CD
+		 WHERE NEO_CD.CD_GRP = 'C033'
+		   AND NEO_CD.UILANG = #{uilang}
+		   <if test='adminYn == "N"'>
+		   AND NEO_DBCONN.DB_CONN_NO IN (SELECT DB_CONN_NO FROM NEO_DBCONN_PERM WHERE USER_ID = #{userId})
+		   </if>
+		   AND NEO_DBCONN.DB_TY = NEO_CD.CD
+	</select>
+	
+	<select id="getSegmentInfo" parameterType="segmentVO" resultType="segmentVO">
+		SELECT SEG_NO
+			 , DB_CONN_NO
+			 , SEG_NM
+			 , CREATE_TY_CD.CD_NM CREATE_TY_NM
+			 , CREATE_TY
+			 , SELECT_ SELECT_SQL
+			 , FROM_ FROM_SQL
+			 , WHERE_ WHERE_SQL
+			 , ORDERBY_ ORDERBY_SQL
+			 , QUERY
+			 , SEPARATOR_ SEPARATOR_CHAR
+			 , MERGE_KEY
+			 , MERGE_COL
+			 , SEG_FL_PATH
+			 , SRC_WHERE
+			 , TOT_CNT
+			 , STATUS_CD.CD_NM STATUS_NM
+			 , NEO_SEGMENT.STATUS STATUS
+			 , NEO_SEGMENT.USER_ID
+			 , NEO_USER.USER_NM
+			 , NEO_DEPT.DEPT_NO
+			 , NEO_DEPT.DEPT_NM
+		  FROM NEO_SEGMENT
+			 , NEO_CD CREATE_TY_CD
+			 , NEO_CD STATUS_CD
+			 , NEO_USER
+			 , NEO_DEPT
+		 WHERE NEO_SEGMENT.SEG_NO = #{segNo}
+		   AND CREATE_TY_CD.CD_GRP = 'C013'
+		   AND CREATE_TY_CD.UILANG = #{uilang} 
+		   AND STATUS_CD.CD_GRP = 'C012'
+		   AND STATUS_CD.UILANG = #{uilang} 
+		   AND NEO_SEGMENT.CREATE_TY = CREATE_TY_CD.CD 
+		   AND NEO_SEGMENT.STATUS = STATUS_CD.CD 
+		   AND NEO_SEGMENT.USER_ID = NEO_USER.USER_ID 
+		   AND NEO_USER.DEPT_NO = NEO_DEPT.DEPT_NO 
+	</select>
+	
+</mapper>

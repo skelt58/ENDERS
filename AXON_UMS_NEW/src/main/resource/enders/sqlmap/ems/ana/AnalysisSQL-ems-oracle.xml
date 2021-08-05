@@ -401,6 +401,273 @@
 						) YY
 				 ) Y
 	</select>
+	
+	<select id="getCustLogList" parameterType="sendLogVO" resultType="sendLogVO">
+		SELECT *
+		  FROM (
+		  
+				<if test='searchKind == "001"'>
+				SELECT A.CUST_ID
+					 , A.CUST_EM
+					 , A.CUST_NM
+					 , A.SEND_DT
+					 , A.SEND_RCODE
+					 , A.SEND_MSG
+					 , (
+						SELECT OPEN_DT FROM NEO_RESPLOG
+						 WHERE TASK_NO = #{taskNo}
+						   AND SUB_TASK_NO = #{subTaskNo}
+						   AND CUST_ID = A.CUST_ID
+						) OPEN_DT
+					 , DENIED_TYPE
+		             , ROW_NUMBER() OVER (ORDER BY A.CUST_ID, A.SEND_DT) SEQ
+		             , COUNT(1) OVER() TOTAL_COUNT
+				  FROM NEO_SENDLOG A
+				 WHERE A.TASK_NO = #{taskNo}
+				   AND A.SUB_TASK_NO = #{subTaskNo}
+				   AND A.SEND_RCODE = '000'
+				   <if test="searchCustId != null and searchCustId != ''">
+				   AND A.CUST_ID = #{searchCustId}
+				   </if>
+				   <if test="searchCustEm != null and searchCustEm != ''">
+				   AND A.CUST_EM = #{searchCustEm}
+				   </if>
+				   <if test="searchCustNm != null and searchCustNm != ''">
+				   AND A.CUST_NM = #{searchCustNm}
+				   </if>
+				</if>
 
+				<if test='searchKind == "002"'>
+				SELECT A.CUST_ID
+					 , A.CUST_EM
+					 , A.CUST_NM
+					 , A.SEND_RCODE
+					 , A.SEND_DT
+					 , A.SEND_MSG
+					 , '' AS OPEN_DT
+		             , ROW_NUMBER() OVER (ORDER BY A.CUST_ID, A.SEND_DT) SEQ
+		             , COUNT(1) OVER() TOTAL_COUNT
+				  FROM (
+						SELECT SUB_TASK_NO, CUST_ID, CUST_EM, CUST_NM, SEND_RCODE, RETRY_CNT, SEND_DT, SEND_MSG
+						  FROM NEO_SENDLOG
+						 WHERE TASK_NO = #{taskNo}
+						   AND SUB_TASK_NO = #{subTaskNo}
+						) A,
+						(
+						SELECT SUB_TASK_NO, CUST_ID, CUST_EM, CUST_NM, MAX(RETRY_CNT) AS MAX_RETRY_CNT
+						  FROM NEO_SENDLOG
+						 WHERE TASK_NO = #{taskNo}
+						   AND SUB_TASK_NO = #{subTaskNo}
+						 GROUP BY SUB_TASK_NO, CUST_ID, CUST_EM, CUST_NM
+						) B
+				 WHERE A.SUB_TASK_NO = B.SUB_TASK_NO
+				   AND A.CUST_ID = B.CUST_ID
+				   AND A.CUST_EM = B.CUST_EM
+				   AND A.CUST_NM = B.CUST_NM
+				   AND A.RETRY_CNT = B.MAX_RETRY_CNT
+				   AND SEND_RCODE != '000'
+				   <if test="searchCustId != null and searchCustId != ''">
+				   AND A.CUST_ID = #{searchCustId}
+				   </if>
+				   <if test="searchCustEm != null and searchCustEm != ''">
+				   AND A.CUST_EM = #{searchCustEm}
+				   </if>
+				   <if test="searchCustNm != null and searchCustNm != ''">
+				   AND A.CUST_NM = #{searchCustNm}
+				   </if>
+				</if>
+
+				<if test='searchKind == "003"'>
+				SELECT A.CUST_ID
+					 , A.CUST_EM
+					 , A.CUST_NM
+					 , A.SEND_RCODE
+					 , A.SEND_DT
+					 , A.SEND_MSG
+					 , A.DENIED_TYPE
+					 , B.OPEN_DT
+		             , ROW_NUMBER() OVER (ORDER BY A.CUST_ID, A.SEND_DT) SEQ
+		             , COUNT(1) OVER() TOTAL_COUNT
+				  FROM NEO_SENDLOG A, NEO_RESPLOG B
+				 WHERE A.TASK_NO = B.TASK_NO
+				   AND A.SUB_TASK_NO = B.SUB_TASK_NO
+				   AND A.CUST_ID = B.CUST_ID
+				   AND A.TASK_NO = #{taskNo}
+				   AND A.SUB_TASK_NO = #{subTaskNo}
+				   AND A.SEND_RCODE = '000'
+				   <if test="searchCustId != null and searchCustId != ''">
+				   AND A.CUST_ID = #{searchCustId}
+				   </if>
+				   <if test="searchCustEm != null and searchCustEm != ''">
+				   AND A.CUST_EM = #{searchCustEm}
+				   </if>
+				   <if test="searchCustNm != null and searchCustNm != ''">
+				   AND A.CUST_NM = #{searchCustNm}
+				   </if>
+				</if>
+
+				<if test='searchKind == "004"'>
+				SELECT A.CUST_ID
+					 , A.CUST_EM
+					 , A.CUST_NM
+					 , A.SEND_DT
+					 , A.DENIED_TYPE
+					 , A.SEND_RCODE
+					 , '' AS OPEN_DT
+					 , A.SEND_MSG
+		             , ROW_NUMBER() OVER (ORDER BY A.CUST_ID, A.SEND_DT) SEQ
+		             , COUNT(1) OVER() TOTAL_COUNT
+				  FROM NEO_SENDLOG A
+				 WHERE A.TASK_NO = #{taskNo}
+				   AND A.SUB_TASK_NO = #{subTaskNo}
+				   AND A.SEND_RCODE = '000'
+				   AND NOT EXISTS (
+									SELECT '1' FROM NEO_RESPLOG B
+									 WHERE B.TASK_NO = #{taskNo}
+									   AND B.SUB_TASK_NO = #{subTaskNo}
+									   AND B.CUST_ID = A.CUST_ID
+								)
+				   <if test="searchCustId != null and searchCustId != ''">
+				   AND A.CUST_ID = #{searchCustId}
+				   </if>
+				   <if test="searchCustEm != null and searchCustEm != ''">
+				   AND A.CUST_EM = #{searchCustEm}
+				   </if>
+				   <if test="searchCustNm != null and searchCustNm != ''">
+				   AND A.CUST_NM = #{searchCustNm}
+				   </if>
+				</if>
+
+
+				<if test='searchKind == "005"'>
+				SELECT A.CUST_ID
+					 , A.CUST_EM
+					 , A.CUST_NM
+					 , A.SEND_DT
+					 , A.SEND_RCODE
+					 , A.SEND_MSG
+					 , (
+						SELECT OPEN_DT FROM NEO_RESPLOG
+						 WHERE TASK_NO = #{taskNo}
+						   AND SUB_TASK_NO = #{subTaskNo}
+						   AND CUST_ID = A.CUST_ID
+						) OPEN_DT
+					 , DENIED_TYPE
+		             , ROW_NUMBER() OVER (ORDER BY A.CUST_ID, A.SEND_DT) SEQ
+		             , COUNT(1) OVER() TOTAL_COUNT
+				  FROM NEO_SENDLOG A
+				 WHERE A.TASK_NO = #{taskNo}
+				   AND A.SUB_TASK_NO = #{subTaskNo}
+				   AND A.SEND_RCODE = '000'
+				   AND A.DENIED_TYPE ='Y'
+				   <if test="searchCustId != null and searchCustId != ''">
+				   AND A.CUST_ID = #{searchCustId}
+				   </if>
+				   <if test="searchCustEm != null and searchCustEm != ''">
+				   AND A.CUST_EM = #{searchCustEm}
+				   </if>
+				   <if test="searchCustNm != null and searchCustNm != ''">
+				   AND A.CUST_NM = #{searchCustNm}
+				   </if>
+				</if>
+
+				<if test='searchKind == "006"'>
+				SELECT A.CUST_ID
+					 , A.CUST_EM
+					 , A.CUST_NM
+					 , A.SEND_DT
+					 , A.SEND_RCODE
+					 , A.SEND_MSG
+					 , (
+						SELECT OPEN_DT FROM NEO_RESPLOG
+						 WHERE TASK_NO = #{taskNo}
+						   AND SUB_TASK_NO = #{subTaskNo}
+						   AND CUST_ID = A.CUST_ID
+						) OPEN_DT
+					 , DENIED_TYPE
+		             , ROW_NUMBER() OVER (ORDER BY A.CUST_ID, A.SEND_DT) SEQ
+		             , COUNT(1) OVER() TOTAL_COUNT
+				  FROM NEO_SENDLOG A
+				 WHERE A.TASK_NO = #{taskNo}
+				  AND A.SUB_TASK_NO =  #{subTaskNo}
+				  AND A.SEND_RCODE = '000'
+				  AND A.DENIED_TYPE ='N'
+				   <if test="searchCustId != null and searchCustId != ''">
+				   AND A.CUST_ID = #{searchCustId}
+				   </if>
+				   <if test="searchCustEm != null and searchCustEm != ''">
+				   AND A.CUST_EM = #{searchCustEm}
+				   </if>
+				   <if test="searchCustNm != null and searchCustNm != ''">
+				   AND A.CUST_NM = #{searchCustNm}
+				   </if>
+				</if>
+
+				<if test='searchKind == "000"'>
+				SELECT A.CUST_ID
+					 , A.CUST_EM
+					 , A.CUST_NM
+					 , A.SEND_DT
+					 , A.SEND_RCODE
+					 , A.SEND_MSG
+					 , (
+						SELECT OPEN_DT FROM NEO_RESPLOG
+						 WHERE TASK_NO = #{taskNo}
+						   AND SUB_TASK_NO = #{subTaskNo}
+						   AND CUST_ID = A.CUST_ID
+						) OPEN_DT
+					 , DENIED_TYPE
+		             , ROW_NUMBER() OVER (ORDER BY A.CUST_ID, A.SEND_DT) SEQ
+		             , COUNT(1) OVER() TOTAL_COUNT
+				  FROM NEO_SENDLOG A
+				 WHERE A.TASK_NO = #{taskNo}
+				   AND A.SUB_TASK_NO = #{subTaskNo}
+				   <if test="searchCustId != null and searchCustId != ''">
+				   AND A.CUST_ID = #{searchCustId}
+				   </if>
+				   <if test="searchCustEm != null and searchCustEm != ''">
+				   AND A.CUST_EM = #{searchCustEm}
+				   </if>
+				   <if test="searchCustNm != null and searchCustNm != ''">
+				   AND A.CUST_NM = #{searchCustNm}
+				   </if>
+				</if>		  
+		  		)
+		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
+	</select>
+	
+	<select id="getJoinMailList" parameterType="sendLogVO" resultType="taskVO">
+		SELECT NEO_AR_SENDLOG.TASK_NO
+			 , NEO_AR_SENDLOG.SUB_TASK_NO
+			 , NEO_SUBTASK.SEND_DT
+			 , NEO_TASK.TASK_NM
+			 , NEO_SEGMENT.SEG_NM
+			 , NVL(SUM(SEND_AR_AMT),0) AS TOT_CNT
+			 , NVL(SUM((CASE WHEN NEO_AR_SENDLOG.SEND_RCODE = '000' THEN SEND_AR_AMT END)),0) AS SUC_CNT
+		  FROM NEO_AR_SENDLOG
+			 , NEO_SUBTASK
+			 , NEO_TASK
+			 , NEO_SEGMENT
+		 WHERE NEO_AR_SENDLOG.TASK_NO = NEO_TASK.TASK_NO
+		   AND NEO_AR_SENDLOG.TASK_NO = NEO_SUBTASK.TASK_NO
+		   AND NEO_AR_SENDLOG.SUB_TASK_NO = NEO_SUBTASK.SUB_TASK_NO
+		   AND NEO_TASK.SEG_NO = NEO_SEGMENT.SEG_NO
+		   AND 
+				<foreach collection="mergeList" item="mergeKey" index="index"  open="(" close=")" separator=" OR ">
+					( NEO_AR_SENDLOG.TASK_NO = #{mergeKey.taskNo} AND NEO_AR_SENDLOG.SUB_TASK_NO =  #{mergeKey.subTaskNo} )
+				</foreach>
+		 GROUP BY NEO_AR_SENDLOG.TASK_NO
+			 , NEO_AR_SENDLOG.SUB_TASK_NO
+			 , NEO_SUBTASK.SEND_DT
+			 , NEO_TASK.TASK_NM
+			 , NEO_SEGMENT.SEG_NM
+		 ORDER BY NEO_AR_SENDLOG.TASK_NO DESC, NEO_AR_SENDLOG.SUB_TASK_NO DESC
+	</select>
+	
+	<select id="getJoinSendResult">
+	</select>
+	
+	<select id="getJoinErrorList">
+	</select>
 
 </mapper>

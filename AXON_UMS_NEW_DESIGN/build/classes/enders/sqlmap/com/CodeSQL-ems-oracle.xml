@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.enders.ums.com.dao.CodeMapper">
+
+	<!-- 코드 목록 조회 -->
+	<select id="getCodeList" parameterType="codeVO" resultType="codeVO">
+		SELECT CD
+			 , CD_NM
+			 , CD_DTL
+		  FROM NEO_CD
+		 WHERE UILANG = #{uilang}
+		   AND CD_GRP = #{cdGrp}
+		   AND USE_YN = #{useYn}
+		 ORDER BY CD
+	</select>
+	
+	<!-- 코드 그룹 정보 조회 -->
+	<select id="getCodeGrpInfo" parameterType="codeGrpVO" resultType="codeGrpVO">
+		SELECT CD_GRP
+			 , CD_GRP_NM
+			 , CD_GRP_DTL
+			 , USE_YN
+		  FROM NEO_CD_GRP
+		 WHERE CD_GRP = #{cdGrp}
+		   AND UILANG = #{uilang}
+
+	</select>
+	
+	<select id="getTimezoneList" parameterType="codeVO" resultType="codeVO">
+		SELECT TZ_CD CD
+			 , TZ_NM CD_NM
+		  FROM NEO_TIMEZONE
+		 WHERE USE_YN = #{useYn}
+		 ORDER BY TZ_NM
+	</select>
+	
+	<select id="getDeptList" parameterType="codeVO" resultType="codeVO">
+		SELECT DEPT_NO
+			, DEPT_NM
+		  FROM NEO_DEPT
+		 WHERE STATUS = #{status}
+		 ORDER BY DEPT_NM
+	</select>
+	
+	<select id="getUserList" parameterType="codeVO" resultType="codeVO">
+		SELECT DEPT_NO
+			 , USER_ID
+			 , USER_NM
+		  FROM NEO_USER
+		 WHERE STATUS = #{status}
+		 <if test="deptNo != 0">
+		   AND DEPT_NO = #{deptNo}
+		 </if>
+		 ORDER BY DEPT_NO, USER_NM
+	</select>
+	
+	<select id="getAuthGroupList" resultType="codeVO">
+		SELECT AUTH_GRP_ID CD
+			 , AUTH_GRP_NM CD_NM
+		  FROM NEO_AUTH_GRP
+		 WHERE USE_YN = 'Y'
+		 ORDER BY AUTH_GRP_ID DESC
+	</select>
+	
+	<select id="getProgramList" parameterType="codeVO" resultType="codeVO">
+		SELECT PROG_ID CD
+			 , PROG_NM CD_NM
+		  FROM NEO_PROG
+		 WHERE USE_YN = 'Y'
+		   AND UILANG = #{uilang}
+		 ORDER BY DISP_ORDER ASC, PROG_ID DESC
+	</select>
+	
+	<select id="getCampaignList" parameterType="campaignVO" resultType="campaignVO">
+		SELECT CAMP_NO
+			 , CAMP_NM
+			 , USER_ID
+			 , CAMP_TY
+			 , STATUS
+			 , DEPT_NO
+			 , REG_DT
+			 , REG_ID
+			 , UP_ID
+			 , UP_DT
+		  FROM NEO_CAMPAIGN
+		 WHERE STATUS = #{status}
+		 <if test='adminYn == "N"'>
+		   AND DEPT_NO = #{deptNo}
+		 </if>
+	</select>
+
+</mapper>

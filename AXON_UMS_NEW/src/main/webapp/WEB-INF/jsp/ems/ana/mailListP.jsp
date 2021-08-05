@@ -62,9 +62,9 @@ function goReset(obj) {
 
 // 목록에서 전체선택 클릭시
 function goAll() {
-	$("#listForm input[name='taskNo']").each(function(idx,item){
+	$("#listForm input[name='taskNos']").each(function(idx,item){
 		$(item).prop("checked", $("#listForm input[name='isAll']").is(":checked"));
-		$("#listForm input[name='subTaskNo']").eq(idx).prop("checked", $("#listForm input[name='isAll']").is(":checked"));
+		$("#listForm input[name='subTaskNos']").eq(idx).prop("checked", $("#listForm input[name='isAll']").is(":checked"));
 	});
 }
 
@@ -140,10 +140,6 @@ function goOzTab(tabNm, target) {
 	});
  */	
 	iFrmReport.location.href = target + "?taskNo=" + curTaskNo + "&subTaskNo=" + curSubTaskNo;
-/* 	$("#iFrmReport").ready(function(){
-		var body = $("#iFrmReport").contents().find("body");
-		body.append(target);
-	}); */
 }
 
 function custBtnNone(curDmGrpCd) {
@@ -164,7 +160,29 @@ function custBtnNone(curDmGrpCd) {
 	}
 }
 
-
+// 병합분석 클릭시
+function goJoin() {
+	var checkCnt = 0;
+	
+	$("#listForm input[name='taskNos']").each(function(idx,item){
+		if($(item).is(":checked")) {
+			$("#listForm input[name='subTaskNos']").eq(idx).prop("checked", true);
+			checkCnt++;
+		} else {
+			$("#listForm input[name='subTaskNos']").eq(idx).prop("checked", false);
+		}
+	});
+	
+	if(checkCnt < 2) {
+        alert("<spring:message code='ANAJSALT001'/>");		// 병합할 대상을 2개이상 선택하세요.
+    } else {
+		//탭을 숨김
+		$("#tab").hide();
+		$("#notab").show();
+		
+		$("#listForm").attr("target","iFrmReport").attr("action","<c:url value='/ems/ana/mailJoinP.ums'/>").submit();
+	}
+}
 
 
 
@@ -323,8 +341,8 @@ function goPageNum(page) {
 					<c:forEach items="${mailList}" var="mail">
 						<tr class="tr_body">
 							<td>
-								<input type="checkbox" name="taskNo" value="<c:out value='${mail.taskNo}'/>" style="border:0">
-								<input type="checkbox" name="subTaskNo" value="<c:out value='${mail.subTaskNo}'/>" style="display:">
+								<input type="checkbox" name="taskNos" value="<c:out value='${mail.taskNo}'/>" style="border:0">
+								<input type="checkbox" name="subTaskNos" value="<c:out value='${mail.subTaskNo}'/>" style="display:none;">
 							</td>
 							<td><c:out value='${mail.campNm}'/></td>
 							<td>

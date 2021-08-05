@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- UMS DB Type -->
+	<alias name="dataSource-ems-${Globals.DbType}" alias="dataSourceEms"/>
+	<alias name="dataSource-ts-${Globals.DbType}" alias="dataSourceTs"/>
+	
+	<!-- Oracle DB Connection -->
+	<!-- Tomcat Resource(Connection Pool) -->
+	<bean id="dataSource-ems-oracle" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="${Ems.DataSourceName}"/>
+	</bean>
+	<bean id="dataSource-ts-oracle" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="${Ts.DataSourceName}"/>
+	</bean>
+	
+	<!-- Spring Connection Pool -->
+	<!-- 
+	<bean id="dataSource-ems-oracle" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="${Ems.DriverClassName}"/>
+		<property name="url" value="${Ems.DbUrl}"/>
+		<property name="username" value="${Ems.UserName}"/>
+		<property name="password" value="${Ems.Password}"/>
+		<property name="initialSize" value="10" />
+		<property name="maxTotal" value="30" />
+		<property name="maxIdle" value="20" />
+		<property name="minIdle" value="10" />
+		<property name="maxWaitMillis" value="3000" />
+		<property name="validationQuery" value="SELECT 1 FROM DUAL" />
+	</bean>
+		<bean id="dataSource-ts-oracle" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="${Ts.DriverClassName}"/>
+		<property name="url" value="${Ts.DbUrl}"/>
+		<property name="username" value="${Ts.UserName}"/>
+		<property name="password" value="${Ts.Password}"/>
+		<property name="initialSize" value="10" />
+		<property name="maxTotal" value="30" />
+		<property name="maxIdle" value="20" />
+		<property name="minIdle" value="10" />
+		<property name="maxWaitMillis" value="3000" />
+		<property name="validationQuery" value="SELECT 1 FROM DUAL" />
+	</bean>
+	 -->
+
+	<!-- MySQL DB Connection -->
+	<!--
+	<bean id="dataSource-ems-mysql" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="${Ems.DriverClassName}"/>
+		<property name="url" value="${Ems.DbUrl}"/>
+		<property name="username" value="${Ems.UserName}"/>
+		<property name="password" value="${Ems.Password}"/>
+		<property name="initialSize" value="10" />
+		<property name="maxTotal" value="30" />
+		<property name="maxIdle" value="20" />
+		<property name="minIdle" value="10" />
+		<property name="maxWaitMillis" value="3000" />
+		<property name="validationQuery" value="SELECT 1" />
+	</bean>
+	<bean id="dataSource-ts-mysql" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="${Ts.DriverClassName}"/>
+		<property name="url" value="${Ts.DbUrl}"/>
+		<property name="username" value="${Ts.UserName}"/>
+		<property name="password" value="${Ts.Password}"/>
+		<property name="initialSize" value="10" />
+		<property name="maxTotal" value="30" />
+		<property name="maxIdle" value="20" />
+		<property name="minIdle" value="10" />
+		<property name="maxWaitMillis" value="3000" />
+		<property name="validationQuery" value="SELECT 1" />
+	</bean>
+	-->
+	
+	<!-- MS-SQL DB Connection -->
+	<!--
+	<bean id="dataSource-ems-mssql" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="${Ems.DriverClassName}"/>
+		<property name="url" value="${Ems.DbUrl}"/>
+		<property name="username" value="${Ems.UserName}"/>
+		<property name="password" value="${Ems.Password}"/>
+		<property name="initialSize" value="10" />
+		<property name="maxTotal" value="30" />
+		<property name="maxIdle" value="20" />
+		<property name="minIdle" value="10" />
+		<property name="maxWaitMillis" value="3000" />
+		<property name="validationQuery" value="SELECT 1" />
+	</bean>
+	<bean id="dataSource-ts-mssql" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="${Ts.DriverClassName}"/>
+		<property name="url" value="${Ts.DbUrl}"/>
+		<property name="username" value="${Ts.UserName}"/>
+		<property name="password" value="${Ts.Password}"/>
+		<property name="initialSize" value="10" />
+		<property name="maxTotal" value="30" />
+		<property name="maxIdle" value="20" />
+		<property name="minIdle" value="10" />
+		<property name="maxWaitMillis" value="3000" />
+		<property name="validationQuery" value="SELECT 1" />
+	</bean>
+	-->
+
+</beans>

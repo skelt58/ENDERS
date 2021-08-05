@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+		<setting name="jdbcTypeForNull" value="NULL"/>
+	</settings>
+
+	<typeAliases>
+		<typeAlias alias="string"			type="java.lang.String" />
+		<typeAlias alias="map"     			type="java.util.Map" />
+		
+		<!-- 로그인 -->
+		<typeAlias alias="loginVO"			type="kr.co.enders.ums.lgn.vo.LoginVO" />
+		<typeAlias alias="lgnHistVO"		type="kr.co.enders.ums.lgn.vo.LoginHistVO" />
+		
+		<!-- 메뉴조회 -->
+		<typeAlias alias="menuVO"			type="kr.co.enders.ums.main.vo.MenuVO" />
+		
+		<!-- 시스템 관리 -->
+		<typeAlias alias="codeVO"			type="kr.co.enders.ums.com.vo.CodeVO" />
+		<typeAlias alias="codeGrpVO"		type="kr.co.enders.ums.com.vo.CodeGroupVO" />
+		<typeAlias alias="userVO"			type="kr.co.enders.ums.ems.sys.vo.UserVO" />
+		<typeAlias alias="userProgVO"		type="kr.co.enders.ums.ems.sys.vo.UserProgVO" />
+		<typeAlias alias="deptVO"			type="kr.co.enders.ums.ems.sys.vo.DeptVO" />
+		<typeAlias alias="dbConnVO"			type="kr.co.enders.ums.ems.sys.vo.DbConnVO" />
+		<typeAlias alias="dbConnPermVO"		type="kr.co.enders.ums.ems.sys.vo.DbConnPermVO" />
+		<typeAlias alias="metaTableVO"		type="kr.co.enders.ums.ems.sys.vo.MetaTableVO" />
+		<typeAlias alias="metaColumnVO"		type="kr.co.enders.ums.ems.sys.vo.MetaColumnVO" />
+		<typeAlias alias="metaOperatorVO"	type="kr.co.enders.ums.ems.sys.vo.MetaOperatorVO" />
+		<typeAlias alias="metaValueVO"		type="kr.co.enders.ums.ems.sys.vo.MetaValueVO" />
+		<typeAlias alias="metaJoinVO"		type="kr.co.enders.ums.ems.sys.vo.MetaJoinVO" />
+		<typeAlias alias="loginHistVO"		type="kr.co.enders.ums.ems.sys.vo.LoginHistVO" />
+		<typeAlias alias="userCodeVO"		type="kr.co.enders.ums.ems.sys.vo.UserCodeVO" />
+		
+		<!-- 발송관리 -->
+		<typeAlias alias="segmentVO"		type="kr.co.enders.ums.ems.seg.vo.SegmentVO" />
+		
+		<!-- 캠페인/메일관리 -->
+		<typeAlias alias="campaignVO"		type="kr.co.enders.ums.ems.cam.vo.CampaignVO" />
+		<typeAlias alias="taskVO"			type="kr.co.enders.ums.ems.cam.vo.TaskVO" />
+		<typeAlias alias="attachVO"			type="kr.co.enders.ums.ems.cam.vo.AttachVO" />
+		<typeAlias alias="linkVO"			type="kr.co.enders.ums.ems.cam.vo.LinkVO" />
+		<typeAlias alias="testUserVO"		type="kr.co.enders.ums.ems.cam.vo.TestUserVO" />
+		<typeAlias alias="sendTestLogVO"	type="kr.co.enders.ums.ems.cam.vo.SendTestLogVO" />
+		
+		<!-- 템플릿 -->
+		<typeAlias alias="templateVO"		type="kr.co.enders.ums.ems.tmp.vo.TemplateVO" />
+		
+		<!-- 통계분석 -->
+		<typeAlias alias="mailSummVO"		type="kr.co.enders.ums.ems.ana.vo.MailSummVO" />
+		<typeAlias alias="mailErrorVO"		type="kr.co.enders.ums.ems.ana.vo.MailErrorVO" />
+		<typeAlias alias="mailDomainVO"		type="kr.co.enders.ums.ems.ana.vo.MailDomainVO" />
+		<typeAlias alias="sendLogVO"		type="kr.co.enders.ums.ems.ana.vo.SendLogVO" />
+		<typeAlias alias="respLogVO"		type="kr.co.enders.ums.ems.ana.vo.RespLogVO" />
+		
+	</typeAliases>
+
+	<mappers>
+		<mapper resource="enders/sqlmap/lgn/LoginSQL-ems-oracle.xml"></mapper>
+		<mapper resource="enders/sqlmap/main/MainSQL-ems-oracle.xml"></mapper>
+		<mapper resource="enders/sqlmap/com/CodeSQL-ems-oracle.xml"></mapper>
+		<mapper resource="enders/sqlmap/ems/sys/SystemSQL-ems-oracle.xml"></mapper>
+		<mapper resource="enders/sqlmap/ems/seg/SegmentSQL-ems-oracle.xml"></mapper>
+		<mapper resource="enders/sqlmap/ems/cam/CampaignSQL-ems-oracle.xml"></mapper>
+		<mapper resource="enders/sqlmap/ems/tmp/TemplateSQL-ems-oracle.xml"></mapper>
+		<mapper resource="enders/sqlmap/ems/ana/AnalysisSQL-ems-oracle.xml"></mapper>
+	</mappers>
+	
+</configuration>

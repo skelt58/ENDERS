@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.enders.ums.main.dao.MainMapper">
+
+	<!-- 상단 메뉴 조회 -->
+	<select id="getTopMenuList" parameterType="string" resultType="menuVO">
+		SELECT A.PROG_ID, A.PROG_NM, A.PROG_TARGET
+			 , A.PROG_DOMAIN, A.USE_YN, A.PROG_SCRIPT, A.UILANG
+		  FROM NEO_PROG A
+		 WHERE A.USE_YN = 'Y'
+		   AND A.UILANG = #{uilang}
+		 ORDER BY A.DISP_ORDER ASC, A.PROG_ID DESC
+	</select>
+
+</mapper>

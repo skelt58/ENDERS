@@ -1,0 +1,52 @@
+@charset "utf-8";
+
+/**
+ * --------------------------------
+ * style CSS
+ * creator : chowoobin, leejeha
+ * --------------------------------
+*/
+
+/* 발송현황 공통 : calendar-date */
+.calendar-date {position:relative;margin-top:40px;text-align:center;}
+.calendar-date p {display:inline-block;margin:0 33px;color:#111;font-size:24px;font-weight:500;vertical-align:middle;}
+.calendar-date button {display:inline-block;width:30px;height:30px;background-color:#fff;background-repeat:no-repeat;background-position:50% 50%;border:1px solid #E1E1E1;border-radius:3px;text-indent:-9999px;}
+.calendar-date button:hover {box-shadow:#ccc 0px 3px 6px;transition:all .4s;}
+.calendar-date .btn-prev {background-image:url("../img/ems/btn_calendarprev.png");}
+.calendar-date .btn-prev:hover {background-image:url("../img/ems/btn_calendarprev_on.png");}
+.calendar-date .btn-next {background-image:url("../img/ems/btn_calendarnext.png");}
+.calendar-date .btn-next:hover {background-image:url("../img/ems/btn_calendarnext_on.png");}
+.calendar-date .btn-calendar {position:absolute;top:3px;left:50%;background-image:url("../img/ems/btn_calendar.png");}
+.calendar-date .btn-calendar:hover {background-image:url("../img/ems/btn_calendar_on.png");}
+
+/* 발송현황 공통 : calendar-state */
+.calendar-state {margin-top:20px;text-align:right;}
+.calendar-state li {display:inline-block;margin-left:13px;padding-left:22px;background-repeat:no-repeat;background-position:0 50%;font-size:14px;font-weight:500;}
+.calendar-state li.wait {background-image:url("../img/ems/icon_week_wait.png");}
+.calendar-state li.ing {background-image:url("../img/ems/icon_week_ing.png");}
+.calendar-state li.end {background-image:url("../img/ems/icon_week_end.png");}
+
+/* 발송현황 공통 : date-list */
+.date-list {color:#666;}
+.date-list > div {margin-top:11px;padding-left:22px;background-repeat:no-repeat;background-position:0 2px;}
+.date-list > div:first-child {margin-top:0;}
+.date-list > div.wait {background-image:url("../img/ems/icon_week_wait.png");}
+.date-list > div.ing {background-image:url("../img/ems/icon_week_ing.png");}
+.date-list > div.end {background-image:url("../img/ems/icon_week_end.png");}
+.date-list p {display:inline-block;}
+.date-list p span {display:block;}
+.date-list em {color:#111;font-weight:500;}
+.date-list a {display:inline-block;margin-bottom:3px;color:#1D37FF;font-weight:600;border-bottom:1px solid #1D37FF;}
+.date-list .time {display:inline-block;vertical-align:top;}
+
+/* 발송현황 - 주간일정 */
+.week-wrap .calendar-date .btn-calendar {margin-left:210px;}
+.calendar-week {margin-top:10px;}
+.calendar-week ul {display:table;width:100%;margin-top:11px;background:#fff;box-shadow:#ccc 0px 3px 10px;border-radius:10px;}
+.calendar-week li {display:table-row;}
+.calendar-week li:first-child > div {border-top:none;}
+.calendar-week li > div {display:table-cell;vertical-align:middle;border-top:1px solid #E1E1E1;}
+.calendar-week li > div:first-child {width:90px;padding:15px 0;background:#F2F2F2;font-size:14px;font-weight:500;text-align:center;}
+.calendar-week li > div:last-child {width:calc(100% - 90px);padding:15px 20px;}
+.calendar-week .today {display:block;margin-top:-5px;color:#5668F0;font-size:9px;}
+.calendar-week .today:before {content:"";display:inline-block;width:6px;height:6px;margin-right:3px;background:#5668F0;vertical-align:middle;border-radius:100%;}
