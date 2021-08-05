@@ -7,8 +7,8 @@ package kr.co.enders.ums.lgn.dao;
 
 import java.util.List;
 
-import kr.co.enders.ums.ems.sys.vo.UserProgVO;
-import kr.co.enders.ums.ems.sys.vo.UserVO;
+import kr.co.enders.ums.sys.vo.UserProgVO;
+import kr.co.enders.ums.sys.vo.UserVO;
 import kr.co.enders.ums.lgn.vo.LoginHistVO;
 import kr.co.enders.ums.lgn.vo.LoginVO;
 

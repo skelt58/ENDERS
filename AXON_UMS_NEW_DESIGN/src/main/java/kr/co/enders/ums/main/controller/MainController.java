@@ -71,13 +71,13 @@ public class MainController {
 	public String goEmsMain(Model model, HttpServletRequest req, HttpServletResponse res, HttpSession session) {
 		logger.debug("## goEmsMain Start.");
 		
-		// 서비스 체크 필요
+		// EMS 메인화면
 			
 		return "ems/index";
 	}
 	
 	/**
-	 * EMS 메인화면
+	 * RNS 메인화면
 	 * @param model
 	 * @param req
 	 * @param res
@@ -88,7 +88,7 @@ public class MainController {
 	public String goRnsMain(Model model, HttpServletRequest req, HttpServletResponse res, HttpSession session) {
 		logger.debug("## goRnsMain Start.");
 		
-		// 서비스 체크 필요
+		// RNS 메인화면
 			
 		return "rns/index";
 	}

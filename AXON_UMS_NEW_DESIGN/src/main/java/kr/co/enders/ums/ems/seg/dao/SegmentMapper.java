@@ -8,7 +8,7 @@ package kr.co.enders.ums.ems.seg.dao;
 import java.util.List;
 
 import kr.co.enders.ums.ems.seg.vo.SegmentVO;
-import kr.co.enders.ums.ems.sys.vo.DbConnVO;
+import kr.co.enders.ums.sys.vo.DbConnVO;
 
 public interface SegmentMapper {
 	/**

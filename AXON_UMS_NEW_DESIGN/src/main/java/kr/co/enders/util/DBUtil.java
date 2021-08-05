@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
 
 import kr.co.enders.ums.ems.seg.vo.SegmentMemberVO;
 import kr.co.enders.ums.ems.seg.vo.SegmentVO;
-import kr.co.enders.ums.ems.sys.vo.MetaColumnVO;
+import kr.co.enders.ums.sys.vo.MetaColumnVO;
 
 public class DBUtil {
 	Logger logger = Logger.getLogger(this.getClass());

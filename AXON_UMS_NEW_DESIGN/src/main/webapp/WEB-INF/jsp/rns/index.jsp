@@ -14,7 +14,7 @@
 		<!-- lnb// -->
 		<div id="lnb">
 			<!-- LEFT MENU -->
-			<%@ include file="/WEB-INF/jsp/inc/menu.jsp" %>
+			<%@ include file="/WEB-INF/jsp/inc/menu_rns.jsp" %>
 			<!-- LEFT MENU -->
 		</div>
 		<!-- //lnb -->
