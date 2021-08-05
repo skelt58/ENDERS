@@ -100,34 +100,6 @@ function endEnc(str) {
  * jQuery 관련
  ********************************************************/
 (function($) {
-	$(document).ready(function(){
-		/********************************************************
-		 * datepicker 기본설정
-		 ********************************************************/
-		$.datepicker.regional['ko'] = {
-			closeText: '닫기',
-			prevText: '이전달',
-			nextText: '다음달',
-			currentText: '오늘',
-			monthNames: ['1월','2월','3월','4월','5월','6월',
-			             '7월','8월','9월','10월','11월','12월'],
-			monthNamesShort: ['1월','2월','3월','4월','5월','6월',
-			                  '7월','8월','9월','10월','11월','12월'],
-			dayNames: ['일','월','화','수','목','금','토'],
-			dayNamesShort: ['일','월','화','수','목','금','토'],
-			dayNamesMin: ['일','월','화','수','목','금','토'],
-			weekHeader: '주',
-			dateFormat: 'yy-mm-dd',
-			firstDay: 0,
-			isRTL: false,
-			showMonthAfterYear: true,
-			yearSuffix: '',
-			changeMonth: true,
-			changeYear: true
-		};
-		$.datepicker.setDefaults($.datepicker.regional['ko']);
-	});
-
 	var hangulByteLenth = 3; //한글 한글자에 대한 byte 를 지정
 
 
@@ -207,7 +179,7 @@ function endEnc(str) {
 	 * input box 문자열 길이 체크
 	 ********************************************************/
 	$.checkLength = function(strId, strName, minLen, maxLen) {
-		var text = $.trim($('#' + strId).val()); //문자열 trim 추가(하윤식 2012.10.24)
+		var text = $.trim($('#' + strId).val());
 		var textLen = $.byteString(text);
 
 		if(minLen > 0 && textLen == 0) {
@@ -227,24 +199,6 @@ function endEnc(str) {
 		} else {
 			return true;
 		}
-	};
-
-	/********************************************************
-	 * jqGrid check box 선택여부 확인
-	 ********************************************************/
-	$.gridSelectChk = function(listId) {
-		var id = $("#" + listId).getGridParam('selarrrow');
-		var ids = $("#" + listId).jqGrid('getDataIDs');
-		var isCheck = false;
-
-		for (var i = 0; i < ids.length; i++) {
-		    $.each(id, function (index, value) {
-		        if (value == ids[i]) {
-		        	isCheck = true;
-		        }
-		    });
-		}
-		return isCheck;
 	};
 
 
@@ -290,14 +244,6 @@ function endEnc(str) {
 		return Char; //최종으로 뽑아낸 문자만 리턴해준다.
 	};
 
-	/********************************************************
-	 * 설정된 value 값 초기화
-	 ********************************************************/
-	$.setInit = function(initObj) {
-		for (var i = 0; i < arguments.length; i++) {
-			$("#" + arguments[i]).val("");
-		}
-	};
 
 	$.fn.numericOnly = function(param) {
 			var allowList = "";

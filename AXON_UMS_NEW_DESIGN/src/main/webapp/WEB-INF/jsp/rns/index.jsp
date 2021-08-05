@@ -23,7 +23,16 @@
 		<div id="content">
 
 			<!-- cont-head// -->
-			<%@ include file="/WEB-INF/jsp/inc/top.jsp" %>
+			<section class="cont-head">
+				<div class="title">
+					<h2>대제목 영역</h2>
+				</div>
+				
+				<!-- 공통 표시부// -->
+				<%@ include file="/WEB-INF/jsp/inc/top.jsp" %>
+				<!-- //공통 표시부 -->
+				
+			</section>
 			<!-- //cont-head -->
 
 			<!-- cont-body// -->
