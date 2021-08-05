@@ -14,7 +14,7 @@ function goEMS() {
 }
 
 function goRNS() {
-	alert("서비스 준비중입니다.");
+	document.location.href = "<c:url value='/rns/index.ums'/>";
 }
 
 function goSMS() {

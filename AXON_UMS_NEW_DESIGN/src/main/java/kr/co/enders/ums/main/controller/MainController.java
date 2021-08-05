@@ -69,10 +69,27 @@ public class MainController {
 	 */
 	@RequestMapping(value="/ems/index")
 	public String goEmsMain(Model model, HttpServletRequest req, HttpServletResponse res, HttpSession session) {
-		logger.debug("## goService Start.");
+		logger.debug("## goEmsMain Start.");
 		
 		// 서비스 체크 필요
 			
 		return "ems/index";
+	}
+	
+	/**
+	 * EMS 메인화면
+	 * @param model
+	 * @param req
+	 * @param res
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/rns/index")
+	public String goRnsMain(Model model, HttpServletRequest req, HttpServletResponse res, HttpSession session) {
+		logger.debug("## goRnsMain Start.");
+		
+		// 서비스 체크 필요
+			
+		return "rns/index";
 	}
 }
