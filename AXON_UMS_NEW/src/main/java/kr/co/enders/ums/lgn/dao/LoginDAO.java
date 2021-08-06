@@ -11,10 +11,10 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import kr.co.enders.ums.ems.sys.vo.UserProgVO;
-import kr.co.enders.ums.ems.sys.vo.UserVO;
 import kr.co.enders.ums.lgn.vo.LoginHistVO;
 import kr.co.enders.ums.lgn.vo.LoginVO;
+import kr.co.enders.ums.sys.vo.UserProgVO;
+import kr.co.enders.ums.sys.vo.UserVO;
 
 @Repository
 public class LoginDAO implements LoginMapper {

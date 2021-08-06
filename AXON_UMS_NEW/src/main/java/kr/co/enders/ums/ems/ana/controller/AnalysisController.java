@@ -669,18 +669,20 @@ public class AnalysisController {
 	public String goMailJoinP(@ModelAttribute SendLogVO sendLogVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("goLogExcelList taskNos       = " + sendLogVO.getTaskNos());
 		logger.debug("goLogExcelList subTaskNos    = " + sendLogVO.getSubTaskNos());
+		sendLogVO.setUilang((String)session.getAttribute("NEO_UILANG"));
 		
 		String[] taskNo = sendLogVO.getTaskNos().split(",");
 		String[] subTaskNo = sendLogVO.getSubTaskNos().split(",");
-		List<HashMap<String, Integer>> mergeList = new ArrayList<HashMap<String, Integer>>();
+		List<HashMap<String, Integer>> joinList = new ArrayList<HashMap<String, Integer>>();
 		for(int i=0;i<taskNo.length;i++) {
 			HashMap<String, Integer> key = new HashMap<String, Integer>();
 			key.put("taskNo", Integer.parseInt(taskNo[i]));
 			key.put("subTaskNo", Integer.parseInt(subTaskNo[i]));
-			mergeList.add(key);
+			joinList.add(key);
 		}
-		sendLogVO.setMergeList(mergeList);
+		sendLogVO.setJoinList(joinList);
 		
+		// 병합분석 메일정보 목록 조회
 		List<TaskVO> mailList = null;
 		try {
 			mailList = analysisService.getJoinMailList(sendLogVO);
@@ -688,8 +690,26 @@ public class AnalysisController {
 			logger.error("analysisService.getJoinMailList error = " + e);
 		}
 		
-		model.addAttribute("sendLogVO", sendLogVO);
-		model.addAttribute("mailList", mailList);
+		// 병합분석 발송결과 조회
+		RespLogVO respLog = null;
+		try {
+			respLog = analysisService.getJoinSendResult(sendLogVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getJoinSendResult error = " + e);
+		}
+		
+		// 병합분석 세부에러 목록 조회
+		List<MailErrorVO> errorList = null;
+		try {
+			errorList = analysisService.getJoinErrorList(sendLogVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getJoinErrorList error = " + e);
+		}
+		
+		model.addAttribute("sendLogVO", sendLogVO);		// 조건정보
+		model.addAttribute("mailList", mailList);		// 병합분석 메일정보 목록
+		model.addAttribute("respLog", respLog);			// 병합분석 발송결과
+		model.addAttribute("errorList", errorList);		// 병합분석 세부에러 목록
 		
 		return "ems/ana/mailJoinP";
 	}

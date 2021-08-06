@@ -121,4 +121,21 @@ public interface AnalysisService {
 	 * @throws Exception
 	 */
 	public List<TaskVO> getJoinMailList(SendLogVO sendLogVO) throws Exception;
+	
+	
+	/**
+	 * 병합분석 발송결과 조회
+	 * @param sendLogVO
+	 * @return
+	 * @throws Exception
+	 */
+	public RespLogVO getJoinSendResult(SendLogVO sendLogVO) throws Exception;
+	
+	/**
+	 * 병합분석 세부에러 목록 조회
+	 * @param sendLogVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<MailErrorVO> getJoinErrorList(SendLogVO sendLogVO) throws Exception;
 }

@@ -18,7 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import kr.co.enders.ums.sys.vo.UserProgVO;
+import kr.co.enders.ums.sys.vo.SysMenuVO;
 import kr.co.enders.ums.sys.vo.UserVO;
 import kr.co.enders.ums.lgn.service.LoginService;
 import kr.co.enders.ums.lgn.vo.LoginHistVO;
@@ -85,12 +85,12 @@ public class LoginController {
 		}
 		
 		if(userVO != null) {
-			model.addAttribute("result","Y");
 			
 			// 세션값 설정
 			session.setAttribute("NEO_USER_ID", userVO.getUserId());		// 사용자ID
 			session.setAttribute("NEO_USER_NM", userVO.getUserNm());		// 사용자명
 			session.setAttribute("NEO_DEPT_NO", userVO.getDeptNo());		// 부서번호
+			session.setAttribute("NEO_DEPT_NM", userVO.getDeptNm());		// 부서명
 			session.setAttribute("NEO_TZ_CD", userVO.getTzCd());			// 타임존코드
 			session.setAttribute("NEO_TZ_TERM", userVO.getTzTerm());		// 타임존시간차
 			session.setAttribute("NEO_UILANG", userVO.getUilang());			// 언어권
@@ -103,15 +103,24 @@ public class LoginController {
 				session.setAttribute("NEO_ADMIN_YN", "N");
 			}
 			
-			// 사용자 프로그램 사용권한 조회
-			List<UserProgVO> userProgList = null;
+			// 사용자 프로그램 사용권한 조회(데이터 등록 환경에 따라 쿼리 변동 가능성 있음)
+			// 1단계 메뉴
+			List<SysMenuVO> menuLvl1List = null;
 			try {
-				userProgList = loginService.getUserProgList(userVO.getUserId());
+				menuLvl1List = loginService.getUserMenuLvl1List(userVO.getUserId());
 			} catch(Exception e) {
-				logger.error("loginService.getUserProgList Error = " + e);
+				logger.error("loginService.getUserMenuLvl1List Error = " + e);
 			}
-			session.setAttribute("USER_PROG_LIST", userProgList);
-			//model.addAttribute("userProgList", userProgList);
+			// 2단계 메뉴
+			List<SysMenuVO> menuLvl2List = null;
+			try {
+				menuLvl2List = loginService.getUserMenuLvl2List(userVO.getUserId());
+			} catch(Exception e) {
+				logger.error("loginService.getUserMenuLvl2List Error = " + e);
+			}
+			// 세션에 사용가능 메뉴 목록 저장
+			session.setAttribute("MENU_LVL1_LIST", menuLvl1List);
+			session.setAttribute("MENU_LVL2_LIST", menuLvl2List);
 			
 			// 로그인 이력 등록
 			LoginHistVO histVO = new LoginHistVO();

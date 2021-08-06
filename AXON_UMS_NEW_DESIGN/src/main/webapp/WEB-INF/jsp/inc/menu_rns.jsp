@@ -9,7 +9,7 @@
 <%@ include file="/WEB-INF/jsp/inc/taglib.jsp" %>
 
 <!-- 신규발송// -->
-<span class="logo-ums"><img src="../img/common/logo_ums.png" alt="UMS"></span>
+<span class="logo-ums"><img src="../../img/common/logo_ums.png" alt="UMS"></span>
 <h1>AXon EMS</h1>
 
 <div class="btn-mail">

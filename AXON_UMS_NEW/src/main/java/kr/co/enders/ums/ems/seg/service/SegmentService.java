@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import kr.co.enders.ums.ems.seg.vo.SegmentVO;
-import kr.co.enders.ums.ems.sys.vo.DbConnVO;
+import kr.co.enders.ums.sys.vo.DbConnVO;
 
 @Service
 public interface SegmentService {

@@ -18,4 +18,11 @@ public interface MainMapper {
 	 */
 	public List<MenuVO> getTopMenuList(String uilang) throws Exception;
 
+	/**
+	 * 기본 실행 경로 조회
+	 * @param menuId
+	 * @return
+	 * @throws Exception
+	 */
+	public String getBaseSourePath(String menuId) throws Exception;
 }

@@ -7,6 +7,7 @@ package kr.co.enders.ums.lgn.dao;
 
 import java.util.List;
 
+import kr.co.enders.ums.sys.vo.SysMenuVO;
 import kr.co.enders.ums.sys.vo.UserProgVO;
 import kr.co.enders.ums.sys.vo.UserVO;
 import kr.co.enders.ums.lgn.vo.LoginHistVO;
@@ -35,4 +36,20 @@ public interface LoginMapper {
 	 * @throws Exception
 	 */
 	public void insertLoginHist(LoginHistVO histVO) throws Exception;
+	
+	/**
+	 * 사용자 권한 매핑 1단계 메뉴 조회
+	 * @param userId
+	 * @return
+	 * @throws Exception
+	 */
+	public List<SysMenuVO> getUserMenuLvl1List(String userId) throws Exception;
+	
+	/**
+	 * 사용자 권한 매핑 1단계 메뉴 조회
+	 * @param userId
+	 * @return
+	 * @throws Exception
+	 */
+	public List<SysMenuVO> getUserMenuLvl2List(String userId) throws Exception;
 }

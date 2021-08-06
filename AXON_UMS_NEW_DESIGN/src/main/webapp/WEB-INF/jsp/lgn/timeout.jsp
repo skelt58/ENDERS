@@ -8,7 +8,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/inc/taglib.jsp" %>
 <script type="text/javascript">
-alert("Session Timeout");
+//alert("Session Timeout");
 if(opener) {
 	opener.document.location.href = "<c:url value='/lgn/lgnP.ums'/>";
 	self.close();

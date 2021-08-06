@@ -8,10 +8,7 @@ package kr.co.enders.ums.sys.vo;
 import kr.co.enders.ums.com.vo.CommonVO;
 
 public class UserVO extends CommonVO {
-	/*
-		  F.CD_NM UILANG_NM
-	 */
-	
+
 	private String userId;		// 아이디
 	private String userPwd;		// 비밀번호
 	private String userEm;		// 이메일

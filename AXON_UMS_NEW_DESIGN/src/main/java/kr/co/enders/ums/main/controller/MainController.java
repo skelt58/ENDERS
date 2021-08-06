@@ -10,14 +10,24 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.co.enders.ums.main.service.MainService;
+import kr.co.enders.util.PropertiesUtil;
 
 @Controller
 @RequestMapping(value="/")
 public class MainController {
 	private Logger logger = Logger.getLogger(this.getClass());
+	
+	@Autowired
+	private PropertiesUtil properties;
+	
+	@Autowired
+	private MainService mainService;
 	
 	/**
 	 * 메인화면
@@ -72,6 +82,20 @@ public class MainController {
 		logger.debug("## goEmsMain Start.");
 		
 		// EMS 메인화면
+		String pMenuId = properties.getProperty("MENU.EMS_INIT_P_MENU_ID");
+		String menuId = properties.getProperty("MENU.EMS_INIT_MENU_ID");
+		session.setAttribute("P_MENU_ID", pMenuId);
+		session.setAttribute("MENU_ID", menuId);
+		
+		// 기본 접속 화면 설정
+		String sourcePath = "";
+		try {
+			sourcePath = mainService.getBaseSourePath(menuId);
+		} catch(Exception e) {
+			logger.error("mainService.getBaseSourePath error = " + e);
+		}
+		
+		model.addAttribute("baseSourcePath", sourcePath);
 			
 		return "ems/index";
 	}
@@ -89,6 +113,20 @@ public class MainController {
 		logger.debug("## goRnsMain Start.");
 		
 		// RNS 메인화면
+		String pMenuId = properties.getProperty("MENU.RNS_INIT_P_MENU_ID");
+		String menuId = properties.getProperty("MENU.RNS_INIT_MENU_ID");
+		session.setAttribute("P_MENU_ID", pMenuId);
+		session.setAttribute("MENU_ID", menuId);
+		
+		// 기본 접속 화면 설정
+		String sourcePath = "";
+		try {
+			sourcePath = mainService.getBaseSourePath(menuId);
+		} catch(Exception e) {
+			logger.error("mainService.getBaseSourePath error = " + e);
+		}
+		
+		model.addAttribute("baseSourcePath", sourcePath);
 			
 		return "rns/index";
 	}

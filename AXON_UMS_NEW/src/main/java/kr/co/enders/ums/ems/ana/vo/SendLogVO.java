@@ -56,7 +56,8 @@ public class SendLogVO extends CommonVO {
 	private String searchKind;
 	private String taskNos;
 	private String subTaskNos;
-	private List<HashMap<String, Integer>> mergeList;
+	private String uilang;
+	private List<HashMap<String, Integer>> joinList;
 	
 	public int getTaskNo() {
 		return taskNo;
@@ -304,10 +305,16 @@ public class SendLogVO extends CommonVO {
 	public void setSubTaskNos(String subTaskNos) {
 		this.subTaskNos = subTaskNos;
 	}
-	public List<HashMap<String, Integer>> getMergeList() {
-		return mergeList;
+	public String getUilang() {
+		return uilang;
 	}
-	public void setMergeList(List<HashMap<String, Integer>> mergeList) {
-		this.mergeList = mergeList;
+	public void setUilang(String uilang) {
+		this.uilang = uilang;
+	}
+	public List<HashMap<String, Integer>> getJoinList() {
+		return joinList;
+	}
+	public void setJoinList(List<HashMap<String, Integer>> joinList) {
+		this.joinList = joinList;
 	}
 }

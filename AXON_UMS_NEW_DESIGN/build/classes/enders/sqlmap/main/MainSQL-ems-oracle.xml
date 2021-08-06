@@ -13,5 +13,12 @@
 		   AND A.UILANG = #{uilang}
 		 ORDER BY A.DISP_ORDER ASC, A.PROG_ID DESC
 	</select>
+	
+	<!-- 기본 실행 경로 조회 -->
+	<select id="getBaseSourePath" parameterType="string" resultType="string">
+		SELECT SOURCE_PATH
+		  FROM NEO_SYSMENU
+		 WHERE MENU_ID = #{menuId}
+	</select>
 
 </mapper>

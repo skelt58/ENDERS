@@ -11,7 +11,7 @@
 <%@ taglib prefix="fn"     uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form"   uri="http://www.springframework.org/tags/form" %>
-<c:set var="title"         value="AXON UMS DESIGN"	scope="request"></c:set>
+<c:set var="title"         value="AXon UMS"	scope="request"></c:set>
 
 <!DOCTYPE html>
 <html lang="ko">

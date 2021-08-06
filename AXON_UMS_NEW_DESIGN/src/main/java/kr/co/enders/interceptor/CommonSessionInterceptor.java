@@ -17,6 +17,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import kr.co.enders.ums.main.service.MainService;
 import kr.co.enders.ums.main.vo.MenuVO;
+import kr.co.enders.util.PropertiesUtil;
 
 
 public class CommonSessionInterceptor extends HandlerInterceptorAdapter {
@@ -24,6 +25,9 @@ public class CommonSessionInterceptor extends HandlerInterceptorAdapter {
 	
 	@Autowired
 	private MainService mainService;
+	
+	@Autowired
+	private PropertiesUtil properties;
 
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		String contextRoot = request.getContextPath();
@@ -35,9 +39,7 @@ public class CommonSessionInterceptor extends HandlerInterceptorAdapter {
 		HttpSession session = request.getSession();
 		
 		// 사용자 세션 체크
-		if(session.getAttribute("NEO_USER_ID") == null || "".equals((String)session.getAttribute("NEO_USER_ID")) || session.getAttribute("USER_PROG_LIST") == null) {
-			//session.setAttribute("requestUri", requestUri);
-			
+		if(session.getAttribute("NEO_USER_ID") == null || "".equals((String)session.getAttribute("NEO_USER_ID")) || session.getAttribute("MENU_LVL1_LIST") == null) {
 			if(requestUri.indexOf("/index.ums") >= 0 || requestUri.indexOf("/service.ums") >= 0) {
 				response.sendRedirect(contextRoot + "/lgn/lgnP.ums");
 			} else {
@@ -49,25 +51,37 @@ public class CommonSessionInterceptor extends HandlerInterceptorAdapter {
 			response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 			response.setHeader("Pragma", "no-cache");
 			response.setDateHeader("Expires", 0);
-
-			String topMenuId = (String)request.getParameter("topMenuId");
-			if(topMenuId == null || "".equals(topMenuId)) {
-				topMenuId = (String)session.getAttribute("topMenuId");
-				if(topMenuId == null || "".equals(topMenuId)) {
-					topMenuId = "4";
+			
+			// 현재 메뉴 경로 설정(메뉴 클릭시 넘어오는값으로 설정)
+			// => 메뉴에서 클릭하지 않고 화면 전환되는 경우는 세션에 남아 있는 값을 사용, 기본 경로 지정은 ums.properties 파일에 설정
+			String pMenuId = (String)request.getParameter("pMenuId");
+			String menuId = (String)request.getParameter("menuId");
+			if(pMenuId == null || "".equals(pMenuId)) {
+				pMenuId = (String)session.getAttribute("P_MENU_ID");
+				if(pMenuId == null || "".equals(pMenuId)) {
+					if(requestUri.indexOf("/ems/") >= 0) {
+						pMenuId = properties.getProperty("MENU.EMS_INIT_P_MENU_ID");
+					} else if(requestUri.indexOf("/rns/") >= 0) {
+						pMenuId = properties.getProperty("MENU.RNS_INIT_P_MENU_ID");
+					} else {
+						// 추가 작업 필요
+					}
 				}
 			}
-			session.setAttribute("topMenuId", topMenuId);
-			
-			String uilang = (String)session.getAttribute("NEO_UILANG");
-			// TOP 메뉴 조회
-			List<MenuVO> menuList = null;
-			try {
-				menuList = mainService.getTopMenuList(uilang);
-			} catch(Exception e) {
-				logger.error("mainService.getTopMenuList Error = " + e);
+			if(menuId == null || "".equals(menuId)) {
+				menuId = (String)session.getAttribute("MENU_ID");
+				if(menuId == null || "".equals(menuId)) {
+					if(requestUri.indexOf("/ems/") >= 0) {
+						menuId = properties.getProperty("MENU.EMS_INIT_MENU_ID");
+					} else if(requestUri.indexOf("/rns/") >= 0) {
+						menuId = properties.getProperty("MENU.RNS_INIT_MENU_ID");
+					} else {
+						// 추가 작업 필요
+					}
+				}
 			}
-			request.setAttribute("menuList", menuList);
+			session.setAttribute("P_MENU_ID", pMenuId);
+			session.setAttribute("MENU_ID", menuId);
 			
 			result = true;
 		}

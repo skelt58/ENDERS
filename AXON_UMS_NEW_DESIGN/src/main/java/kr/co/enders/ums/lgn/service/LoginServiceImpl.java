@@ -10,6 +10,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import kr.co.enders.ums.sys.vo.SysMenuVO;
 import kr.co.enders.ums.sys.vo.UserProgVO;
 import kr.co.enders.ums.sys.vo.UserVO;
 import kr.co.enders.ums.lgn.dao.LoginDAO;
@@ -34,6 +35,16 @@ public class LoginServiceImpl implements LoginService {
 	@Override
 	public void insertLoginHist(LoginHistVO histVO) throws Exception {
 		loginDAO.insertLoginHist(histVO);
+	}
+
+	@Override
+	public List<SysMenuVO> getUserMenuLvl1List(String userId) throws Exception {
+		return loginDAO.getUserMenuLvl1List(userId);
+	}
+
+	@Override
+	public List<SysMenuVO> getUserMenuLvl2List(String userId) throws Exception {
+		return loginDAO.getUserMenuLvl2List(userId);
 	}
 
 }

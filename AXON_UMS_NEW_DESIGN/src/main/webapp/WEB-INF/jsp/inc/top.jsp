@@ -10,9 +10,9 @@
 
 <script type="text/javascript">
 function goLogout() {
-	if(confirm("로그아웃하시겠습니까?")) {
+	//if(confirm("로그아웃하시겠습니까?")) {
 		document.location.href = "<c:url value='/lgn/logout.ums'/>";
-	}
+	//}
 }
 </script>
 
@@ -22,7 +22,7 @@ function goLogout() {
 	<div class="user">
 		<div class="info">
 			<em><c:out value='${NEO_USER_NM}'/></em>
-			<span>영업관리부</span>
+			<span><c:out value='${NEO_DEPT_NM}'/></span>
 			<button type="button">열기</button>
 		</div>
 		<div class="link">

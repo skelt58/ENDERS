@@ -11,6 +11,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import kr.co.enders.ums.sys.vo.SysMenuVO;
 import kr.co.enders.ums.sys.vo.UserProgVO;
 import kr.co.enders.ums.sys.vo.UserVO;
 import kr.co.enders.ums.lgn.vo.LoginHistVO;
@@ -34,6 +35,16 @@ public class LoginDAO implements LoginMapper {
 	@Override
 	public void insertLoginHist(LoginHistVO histVO) throws Exception {
 		sqlSessionEms.getMapper(LoginMapper.class).insertLoginHist(histVO);
+	}
+
+	@Override
+	public List<SysMenuVO> getUserMenuLvl1List(String userId) throws Exception {
+		return sqlSessionEms.getMapper(LoginMapper.class).getUserMenuLvl1List(userId);
+	}
+
+	@Override
+	public List<SysMenuVO> getUserMenuLvl2List(String userId) throws Exception {
+		return sqlSessionEms.getMapper(LoginMapper.class).getUserMenuLvl2List(userId);
 	}
 
 }

@@ -23,4 +23,9 @@ public class MainDAO implements MainMapper {
 		return sqlSessionEms.getMapper(MainMapper.class).getTopMenuList(uilang);
 	}
 
+	@Override
+	public String getBaseSourePath(String menuId) throws Exception {
+		return sqlSessionEms.getMapper(MainMapper.class).getBaseSourePath(menuId);
+	}
+
 }

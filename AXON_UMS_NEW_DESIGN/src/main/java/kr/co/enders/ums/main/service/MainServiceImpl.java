@@ -23,4 +23,9 @@ public class MainServiceImpl implements MainService {
 		return mainDAO.getTopMenuList(uilang);
 	}
 
+	@Override
+	public String getBaseSourePath(String menuId) throws Exception {
+		return mainDAO.getBaseSourePath(menuId);
+	}
+
 }
