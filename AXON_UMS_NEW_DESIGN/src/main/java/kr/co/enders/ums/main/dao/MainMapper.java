@@ -8,6 +8,7 @@ package kr.co.enders.ums.main.dao;
 import java.util.List;
 
 import kr.co.enders.ums.main.vo.MenuVO;
+import kr.co.enders.ums.sys.vo.SysMenuVO;
 
 public interface MainMapper {
 	/**
@@ -19,10 +20,10 @@ public interface MainMapper {
 	public List<MenuVO> getTopMenuList(String uilang) throws Exception;
 
 	/**
-	 * 기본 실행 경로 조회
+	 * 메뉴 기본 정보 조회
 	 * @param menuId
 	 * @return
 	 * @throws Exception
 	 */
-	public String getBaseSourePath(String menuId) throws Exception;
+	public SysMenuVO getMenuBasicInfo(String menuId) throws Exception;
 }

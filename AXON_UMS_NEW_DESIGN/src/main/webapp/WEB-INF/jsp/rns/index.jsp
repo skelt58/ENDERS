@@ -7,6 +7,11 @@
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/inc/taglib.jsp" %>
+
+<form name="menuForm" action="<c:out value='${baseSourcePath}'/>">
+<input type="hidden" name="pMenuId" value="<c:out value='${NEO_P_MENU_ID}'/>"/>
+<input type="hidden" name="menuId" value="<c:out value='${NEO_MENU_ID}'/>"/>
+</form>
 <script type="text/javascript">
-document.location.href = "<c:url value='${baseSourcePath}'/>";
+document.menuForm.submit();
 </script>

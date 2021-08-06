@@ -17,7 +17,9 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import kr.co.enders.ums.main.service.MainService;
 import kr.co.enders.ums.main.vo.MenuVO;
+import kr.co.enders.ums.sys.vo.SysMenuVO;
 import kr.co.enders.util.PropertiesUtil;
+import kr.co.enders.util.StringUtil;
 
 
 public class CommonSessionInterceptor extends HandlerInterceptorAdapter {
@@ -39,7 +41,7 @@ public class CommonSessionInterceptor extends HandlerInterceptorAdapter {
 		HttpSession session = request.getSession();
 		
 		// 사용자 세션 체크
-		if(session.getAttribute("NEO_USER_ID") == null || "".equals((String)session.getAttribute("NEO_USER_ID")) || session.getAttribute("MENU_LVL1_LIST") == null) {
+		if(session.getAttribute("NEO_USER_ID") == null || "".equals((String)session.getAttribute("NEO_USER_ID"))) {
 			if(requestUri.indexOf("/index.ums") >= 0 || requestUri.indexOf("/service.ums") >= 0) {
 				response.sendRedirect(contextRoot + "/lgn/lgnP.ums");
 			} else {
@@ -57,7 +59,7 @@ public class CommonSessionInterceptor extends HandlerInterceptorAdapter {
 			String pMenuId = (String)request.getParameter("pMenuId");
 			String menuId = (String)request.getParameter("menuId");
 			if(pMenuId == null || "".equals(pMenuId)) {
-				pMenuId = (String)session.getAttribute("P_MENU_ID");
+				pMenuId = (String)session.getAttribute("NEO_P_MENU_ID");
 				if(pMenuId == null || "".equals(pMenuId)) {
 					if(requestUri.indexOf("/ems/") >= 0) {
 						pMenuId = properties.getProperty("MENU.EMS_INIT_P_MENU_ID");
@@ -69,7 +71,7 @@ public class CommonSessionInterceptor extends HandlerInterceptorAdapter {
 				}
 			}
 			if(menuId == null || "".equals(menuId)) {
-				menuId = (String)session.getAttribute("MENU_ID");
+				menuId = (String)session.getAttribute("NEO_MENU_ID");
 				if(menuId == null || "".equals(menuId)) {
 					if(requestUri.indexOf("/ems/") >= 0) {
 						menuId = properties.getProperty("MENU.EMS_INIT_MENU_ID");
@@ -80,8 +82,19 @@ public class CommonSessionInterceptor extends HandlerInterceptorAdapter {
 					}
 				}
 			}
-			session.setAttribute("P_MENU_ID", pMenuId);
-			session.setAttribute("MENU_ID", menuId);
+			session.setAttribute("NEO_P_MENU_ID", pMenuId);
+			session.setAttribute("NEO_MENU_ID", menuId);
+			
+			// 메뉴명 설정
+			if(!StringUtil.isNull(request.getParameter("pMenuId"))) {
+				SysMenuVO menuInfo = null;
+				try {
+					menuInfo = mainService.getMenuBasicInfo(menuId);
+				} catch(Exception e) {
+					logger.debug("mainService.getMenuBasicInfo error =" + e);
+				}
+				session.setAttribute("NEO_MENU_NM", menuInfo.getMenuNm());
+			}
 			
 			result = true;
 		}

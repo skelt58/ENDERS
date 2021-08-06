@@ -119,8 +119,8 @@ public class LoginController {
 				logger.error("loginService.getUserMenuLvl2List Error = " + e);
 			}
 			// 세션에 사용가능 메뉴 목록 저장
-			session.setAttribute("MENU_LVL1_LIST", menuLvl1List);
-			session.setAttribute("MENU_LVL2_LIST", menuLvl2List);
+			session.setAttribute("NEO_MENU_LVL1_LIST", menuLvl1List);
+			session.setAttribute("NEO_MENU_LVL2_LIST", menuLvl2List);
 			
 			// 로그인 이력 등록
 			LoginHistVO histVO = new LoginHistVO();

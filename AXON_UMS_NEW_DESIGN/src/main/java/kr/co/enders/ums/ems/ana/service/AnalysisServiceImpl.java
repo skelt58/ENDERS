@@ -89,4 +89,14 @@ public class AnalysisServiceImpl implements AnalysisService {
 		return analysisDAO.getJoinMailList(sendLogVO);
 	}
 
+	@Override
+	public RespLogVO getJoinSendResult(SendLogVO sendLogVO) throws Exception {
+		return analysisDAO.getJoinSendResult(sendLogVO);
+	}
+
+	@Override
+	public List<MailErrorVO> getJoinErrorList(SendLogVO sendLogVO) throws Exception {
+		return analysisDAO.getJoinErrorList(sendLogVO);
+	}
+
 }

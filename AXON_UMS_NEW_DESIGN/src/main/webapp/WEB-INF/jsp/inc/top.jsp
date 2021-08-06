@@ -9,6 +9,12 @@
 <%@ include file="/WEB-INF/jsp/inc/taglib.jsp" %>
 
 <script type="text/javascript">
+function goService() {
+	//if(confirm("로그아웃하시겠습니까?")) {
+		document.location.href = "<c:url value='/service.ums'/>";
+	//}
+}
+
 function goLogout() {
 	//if(confirm("로그아웃하시겠습니까?")) {
 		document.location.href = "<c:url value='/lgn/logout.ums'/>";
@@ -17,7 +23,7 @@ function goLogout() {
 </script>
 
 <div class="util">
-	<a href="javascript:;" class="btn-util item01">전체 서비스</a>
+	<a href="javascript:goService();" class="btn-util item01">전체 서비스</a>
 	<a href="javascript:;" class="btn-util item02">공통 설정</a>
 	<div class="user">
 		<div class="info">

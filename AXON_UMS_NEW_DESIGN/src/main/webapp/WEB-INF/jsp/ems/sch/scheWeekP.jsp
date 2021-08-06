@@ -25,7 +25,7 @@
 			<!-- cont-head// -->
 			<section class="cont-head">
 				<div class="title">
-					<h2>주간일정</h2>
+					<h2><c:out value='${NEO_MENU_NM}'/></h2>
 				</div>
 				
 				<!-- 공통 표시부// -->

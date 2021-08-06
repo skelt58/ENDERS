@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import kr.co.enders.ums.main.vo.MenuVO;
+import kr.co.enders.ums.sys.vo.SysMenuVO;
 
 @Repository
 public class MainDAO implements MainMapper {
@@ -24,8 +25,8 @@ public class MainDAO implements MainMapper {
 	}
 
 	@Override
-	public String getBaseSourePath(String menuId) throws Exception {
-		return sqlSessionEms.getMapper(MainMapper.class).getBaseSourePath(menuId);
+	public SysMenuVO getMenuBasicInfo(String menuId) throws Exception {
+		return sqlSessionEms.getMapper(MainMapper.class).getMenuBasicInfo(menuId);
 	}
 
 }

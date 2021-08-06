@@ -10,6 +10,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import kr.co.enders.ums.main.vo.MenuVO;
+import kr.co.enders.ums.sys.vo.SysMenuVO;
 
 @Service
 public interface MainService {
@@ -27,5 +28,5 @@ public interface MainService {
 	 * @return
 	 * @throws Exception
 	 */
-	public String getBaseSourePath(String menuId) throws Exception;
+	public SysMenuVO getMenuBasicInfo(String menuId) throws Exception;
 }

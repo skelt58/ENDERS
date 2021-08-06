@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import kr.co.enders.ums.main.service.MainService;
+import kr.co.enders.ums.sys.vo.SysMenuVO;
 import kr.co.enders.util.PropertiesUtil;
 
 @Controller
@@ -84,18 +85,18 @@ public class MainController {
 		// EMS 메인화면
 		String pMenuId = properties.getProperty("MENU.EMS_INIT_P_MENU_ID");
 		String menuId = properties.getProperty("MENU.EMS_INIT_MENU_ID");
-		session.setAttribute("P_MENU_ID", pMenuId);
-		session.setAttribute("MENU_ID", menuId);
+		session.setAttribute("NEO_P_MENU_ID", pMenuId);
+		session.setAttribute("NEO_MENU_ID", menuId);
 		
 		// 기본 접속 화면 설정
-		String sourcePath = "";
+		SysMenuVO menuInfo = null;
 		try {
-			sourcePath = mainService.getBaseSourePath(menuId);
+			menuInfo = mainService.getMenuBasicInfo(menuId);
 		} catch(Exception e) {
-			logger.error("mainService.getBaseSourePath error = " + e);
+			logger.error("mainService.getMenuBasicInfo error = " + e);
 		}
 		
-		model.addAttribute("baseSourcePath", sourcePath);
+		model.addAttribute("baseSourcePath", menuInfo.getSourcePath());
 			
 		return "ems/index";
 	}
@@ -115,18 +116,18 @@ public class MainController {
 		// RNS 메인화면
 		String pMenuId = properties.getProperty("MENU.RNS_INIT_P_MENU_ID");
 		String menuId = properties.getProperty("MENU.RNS_INIT_MENU_ID");
-		session.setAttribute("P_MENU_ID", pMenuId);
-		session.setAttribute("MENU_ID", menuId);
+		session.setAttribute("NEO_P_MENU_ID", pMenuId);
+		session.setAttribute("NEO_MENU_ID", menuId);
 		
 		// 기본 접속 화면 설정
-		String sourcePath = "";
+		SysMenuVO menuInfo = null;
 		try {
-			sourcePath = mainService.getBaseSourePath(menuId);
+			menuInfo = mainService.getMenuBasicInfo(menuId);
 		} catch(Exception e) {
-			logger.error("mainService.getBaseSourePath error = " + e);
+			logger.error("mainService.getMenuBasicInfo error = " + e);
 		}
 		
-		model.addAttribute("baseSourcePath", sourcePath);
+		model.addAttribute("baseSourcePath", menuInfo.getSourcePath());
 			
 		return "rns/index";
 	}

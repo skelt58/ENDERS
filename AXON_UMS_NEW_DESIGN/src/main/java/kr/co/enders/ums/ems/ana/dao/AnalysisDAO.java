@@ -87,5 +87,15 @@ public class AnalysisDAO implements AnalysisMapper {
 	public List<TaskVO> getJoinMailList(SendLogVO sendLogVO) throws Exception {
 		return sqlSessionEms.getMapper(AnalysisMapper.class).getJoinMailList(sendLogVO);
 	}
+
+	@Override
+	public RespLogVO getJoinSendResult(SendLogVO sendLogVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getJoinSendResult(sendLogVO);
+	}
+
+	@Override
+	public List<MailErrorVO> getJoinErrorList(SendLogVO sendLogVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getJoinErrorList(sendLogVO);
+	}
 	
 }

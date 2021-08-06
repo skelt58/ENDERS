@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import kr.co.enders.ums.main.dao.MainDAO;
 import kr.co.enders.ums.main.vo.MenuVO;
+import kr.co.enders.ums.sys.vo.SysMenuVO;
 
 @Service
 public class MainServiceImpl implements MainService {
@@ -24,8 +25,8 @@ public class MainServiceImpl implements MainService {
 	}
 
 	@Override
-	public String getBaseSourePath(String menuId) throws Exception {
-		return mainDAO.getBaseSourePath(menuId);
+	public SysMenuVO getMenuBasicInfo(String menuId) throws Exception {
+		return mainDAO.getMenuBasicInfo(menuId);
 	}
 
 }

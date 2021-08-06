@@ -653,8 +653,8 @@
 		   AND NEO_AR_SENDLOG.SUB_TASK_NO = NEO_SUBTASK.SUB_TASK_NO
 		   AND NEO_TASK.SEG_NO = NEO_SEGMENT.SEG_NO
 		   AND 
-				<foreach collection="mergeList" item="mergeKey" index="index"  open="(" close=")" separator=" OR ">
-					( NEO_AR_SENDLOG.TASK_NO = #{mergeKey.taskNo} AND NEO_AR_SENDLOG.SUB_TASK_NO =  #{mergeKey.subTaskNo} )
+				<foreach collection="joinList" item="joinKey" index="index"  open="(" close=")" separator=" OR ">
+					( NEO_AR_SENDLOG.TASK_NO = #{joinKey.taskNo} AND NEO_AR_SENDLOG.SUB_TASK_NO = #{joinKey.subTaskNo} )
 				</foreach>
 		 GROUP BY NEO_AR_SENDLOG.TASK_NO
 			 , NEO_AR_SENDLOG.SUB_TASK_NO
@@ -664,10 +664,48 @@
 		 ORDER BY NEO_AR_SENDLOG.TASK_NO DESC, NEO_AR_SENDLOG.SUB_TASK_NO DESC
 	</select>
 	
-	<select id="getJoinSendResult">
+	<select id="getJoinSendResult" parameterType="sendLogVO" resultType="respLogVO">
+		SELECT OPEN_CNT
+			 , BLOCK_CNT
+			 , VALID_CNT
+			 , CLICK_CNT
+		  FROM (
+				SELECT NVL(SUM((CASE WHEN BLOCKED_YN = 'N' THEN RESP_AR_AMT END)),0) AS OPEN_CNT
+					 , NVL(SUM((CASE WHEN BLOCKED_YN = 'Y' THEN RESP_AR_AMT END)),0) AS BLOCK_CNT
+				  FROM NEO_AR_RESPLOG
+				 WHERE 
+						<foreach collection="joinList" item="joinKey" index="index"  open="(" close=")" separator=" OR ">
+							( NEO_AR_RESPLOG.TASK_NO = #{joinKey.taskNo} AND NEO_AR_RESPLOG.SUB_TASK_NO = #{joinKey.subTaskNo} )
+						</foreach>
+				) A,
+				(
+				SELECT NVL(SUM(CLICK_AR_AMT),0) AS CLICK_CNT, NVL(SUM(VALID_AR_AMT),0) AS VALID_CNT
+				  FROM NEO_AR_LINKLOG
+				 WHERE 
+						<foreach collection="joinList" item="joinKey" index="index"  open="(" close=")" separator=" OR ">
+							( NEO_AR_LINKLOG.TASK_NO = #{joinKey.taskNo} AND NEO_AR_LINKLOG.SUB_TASK_NO = #{joinKey.subTaskNo} )
+						</foreach>
+				) C
 	</select>
 	
-	<select id="getJoinErrorList">
+	<select id="getJoinErrorList" parameterType="sendLogVO" resultType="mailErrorVO">
+		SELECT A.STEP1
+			 , A.STEP2
+			 , NVL(B.SEND_AR_AMT,0) AS CNT_STEP2
+			 , A.CD_DESC AS NM_STEP2
+		  FROM (
+				SELECT STEP1, STEP2, CD_DESC FROM NEO_RCODE WHERE KIND = '002' AND UILANG = #{uilang}
+				) A,
+				(
+				SELECT RCODE_STEP1, RCODE_STEP2, SUM(SEND_AR_AMT) AS SEND_AR_AMT FROM NEO_AR_SENDLOG
+				 WHERE SEND_RCODE != '000'
+				   AND 
+						<foreach collection="joinList" item="joinKey" index="index"  open="(" close=")" separator=" OR ">
+							( NEO_AR_SENDLOG.TASK_NO = #{joinKey.taskNo} AND NEO_AR_SENDLOG.SUB_TASK_NO = #{joinKey.subTaskNo} )
+						</foreach>
+				 GROUP BY RCODE_STEP1, RCODE_STEP2) B
+		 WHERE A.STEP1 = B.RCODE_STEP1(+) AND A.STEP2 = B.RCODE_STEP2(+)
+		 ORDER BY A.STEP1, A.STEP2
 	</select>
 
 </mapper>
