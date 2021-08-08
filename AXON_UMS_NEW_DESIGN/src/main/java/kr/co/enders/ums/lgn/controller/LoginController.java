@@ -104,23 +104,15 @@ public class LoginController {
 			}
 			
 			// 사용자 프로그램 사용권한 조회(데이터 등록 환경에 따라 쿼리 변동 가능성 있음)
-			// 1단계 메뉴
-			List<SysMenuVO> menuLvl1List = null;
+			// 사용자 메뉴
+			List<SysMenuVO> menuList = null;
 			try {
-				menuLvl1List = loginService.getUserMenuLvl1List(userVO.getUserId());
+				menuList = loginService.getUserMenuList(userVO.getUserId());
 			} catch(Exception e) {
-				logger.error("loginService.getUserMenuLvl1List Error = " + e);
-			}
-			// 2단계 메뉴
-			List<SysMenuVO> menuLvl2List = null;
-			try {
-				menuLvl2List = loginService.getUserMenuLvl2List(userVO.getUserId());
-			} catch(Exception e) {
-				logger.error("loginService.getUserMenuLvl2List Error = " + e);
+				logger.error("loginService.getUserMenuList Error = " + e);
 			}
 			// 세션에 사용가능 메뉴 목록 저장
-			session.setAttribute("NEO_MENU_LVL1_LIST", menuLvl1List);
-			session.setAttribute("NEO_MENU_LVL2_LIST", menuLvl2List);
+			session.setAttribute("NEO_MENU_LIST", menuList);
 			
 			// 로그인 이력 등록
 			LoginHistVO histVO = new LoginHistVO();

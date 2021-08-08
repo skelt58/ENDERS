@@ -38,18 +38,10 @@ public interface LoginMapper {
 	public void insertLoginHist(LoginHistVO histVO) throws Exception;
 	
 	/**
-	 * 사용자 권한 매핑 1단계 메뉴 조회
+	 * 사용자 권한 매핑 메뉴 목록 조회
 	 * @param userId
 	 * @return
 	 * @throws Exception
 	 */
-	public List<SysMenuVO> getUserMenuLvl1List(String userId) throws Exception;
-	
-	/**
-	 * 사용자 권한 매핑 1단계 메뉴 조회
-	 * @param userId
-	 * @return
-	 * @throws Exception
-	 */
-	public List<SysMenuVO> getUserMenuLvl2List(String userId) throws Exception;
+	public List<SysMenuVO> getUserMenuList(String userId) throws Exception;
 }

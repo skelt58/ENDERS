@@ -22,7 +22,7 @@
 	<ul>
 		<c:if test="${fn:length(NEO_MENU_LIST) > 0}">
 			<c:forEach var="lvl1" items="${NEO_MENU_LIST}">
-				<c:if test="${lvl1.menulvlVal == 1 && lvl1.serviceGb == 20}">
+				<c:if test="${lvl1.menulvlVal == 1 && lvl1.serviceGb == 99}">
 					<li<c:if test="${lvl1.menuId eq NEO_P_MENU_ID}"> class="active"</c:if>>
 						<a href="#" class="depth1"><span class="item0<c:out value='${lvl1.sortSno}'/>"><c:out value='${lvl1.menuNm}'/></span></a>
 						<div class="inner-menu">

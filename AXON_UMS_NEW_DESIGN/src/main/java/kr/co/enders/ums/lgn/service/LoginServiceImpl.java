@@ -38,13 +38,7 @@ public class LoginServiceImpl implements LoginService {
 	}
 
 	@Override
-	public List<SysMenuVO> getUserMenuLvl1List(String userId) throws Exception {
-		return loginDAO.getUserMenuLvl1List(userId);
+	public List<SysMenuVO> getUserMenuList(String userId) throws Exception {
+		return loginDAO.getUserMenuList(userId);
 	}
-
-	@Override
-	public List<SysMenuVO> getUserMenuLvl2List(String userId) throws Exception {
-		return loginDAO.getUserMenuLvl2List(userId);
-	}
-
 }

@@ -38,13 +38,7 @@ public class LoginDAO implements LoginMapper {
 	}
 
 	@Override
-	public List<SysMenuVO> getUserMenuLvl1List(String userId) throws Exception {
-		return sqlSessionEms.getMapper(LoginMapper.class).getUserMenuLvl1List(userId);
+	public List<SysMenuVO> getUserMenuList(String userId) throws Exception {
+		return sqlSessionEms.getMapper(LoginMapper.class).getUserMenuList(userId);
 	}
-
-	@Override
-	public List<SysMenuVO> getUserMenuLvl2List(String userId) throws Exception {
-		return sqlSessionEms.getMapper(LoginMapper.class).getUserMenuLvl2List(userId);
-	}
-
 }

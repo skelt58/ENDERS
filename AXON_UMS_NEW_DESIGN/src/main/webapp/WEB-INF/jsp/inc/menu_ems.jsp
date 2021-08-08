@@ -33,23 +33,21 @@ function runMenu(pMenuId, menuId, menuUrl) {
 <!-- 메뉴// -->
 <nav>
 	<ul>
-		<c:if test="${fn:length(NEO_MENU_LVL1_LIST) > 0}">
-			<c:forEach var="lvl1" items="${NEO_MENU_LVL1_LIST}">
-				<c:if test="${lvl1.serviceGb == 10}">
-				<li<c:if test="${lvl1.menuId eq NEO_P_MENU_ID}"> class="active"</c:if>>
-					<a href="#" class="depth1"><span class="item0<c:out value='${lvl1.sortSno}'/>"><c:out value='${lvl1.menuNm}'/></span></a>
-					<div class="inner-menu">
-						<c:if test="${fn:length(NEO_MENU_LVL2_LIST) > 0}">
-							<ul>
-								<c:forEach var="lvl2" items="${NEO_MENU_LVL2_LIST}">
-									<c:if test="${lvl1.menuId eq lvl2.parentmenuId}">
+		<c:if test="${fn:length(NEO_MENU_LIST) > 0}">
+			<c:forEach var="lvl1" items="${NEO_MENU_LIST}">
+				<c:if test="${lvl1.menulvlVal == 1 && lvl1.serviceGb == 10}">
+					<li<c:if test="${lvl1.menuId eq NEO_P_MENU_ID}"> class="active"</c:if>>
+						<a href="#" class="depth1"><span class="item0<c:out value='${lvl1.sortSno}'/>"><c:out value='${lvl1.menuNm}'/></span></a>
+						<div class="inner-menu">
+							<c:forEach var="lvl2" items="${NEO_MENU_LIST}">
+								<ul>
+									<c:if test="${lvl2.menulvlVal == 2 && lvl1.menuId eq lvl2.parentmenuId}">
 										<li<c:if test="${lvl2.menuId eq NEO_MENU_ID}"> class="active"</c:if>><a href="javascript:runMenu('<c:out value='${lvl1.menuId}'/>','<c:out value='${lvl2.menuId}'/>','<c:url value='${lvl2.sourcePath}'/>');"><c:out value='${lvl2.menuNm}'/></a></li>
 									</c:if>
-								</c:forEach>
-							</ul>
-						</c:if>
-					</div>
-				</li>
+								</ul>
+							</c:forEach>
+						</div>
+					</li>
 				</c:if>
 			</c:forEach>
 		</c:if>

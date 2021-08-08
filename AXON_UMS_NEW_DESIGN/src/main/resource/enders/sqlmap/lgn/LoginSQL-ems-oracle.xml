@@ -54,10 +54,13 @@
 		 ORDER BY PROG_NM ASC
 	</select>
 	
-	<select id="getUserMenuLvl1List" parameterType="string" resultType="sysMenuVO">
+	<select id="getUserMenuList" parameterType="string" resultType="sysMenuVO">
 		SELECT MENU_ID
 			 , MENU_NM
+			 , PARENTMENU_ID
+			 , SOURCE_PATH
 			 , SORT_SNO
+			 , MENULVL_VAL
 			 , SERVICE_GB
 		  FROM NEO_SYSMENU
 		 WHERE MENULVL_VAL = 1
@@ -69,7 +72,39 @@
 							   AND A.USE_YN = 'Y'
 							)
 		   AND USE_YN = 'Y'
-		 ORDER BY SORT_SNO
+        UNION ALL
+		SELECT A.MENU_ID
+			 , A.MENU_NM
+			 , A.PARENTMENU_ID
+			 , A.SOURCE_PATH
+			 , A.SERVICE_GB
+			 , A.MENULVL_VAL
+			 , A.SERVICE_GB
+		  FROM NEO_SYSMENU A, NEO_MENUUSERMAPP B
+		 WHERE A.MENU_ID = B.MENU_ID
+		   AND A.MENULVL_VAL = 2
+		   AND B.USER_ID = #{userId}
+		   AND A.USE_YN = 'Y'
+         ORDER BY PARENTMENU_ID, SORT_SNO
+	</select>
+	
+	<select id="getUserMenuLvl1List" parameterType="string" resultType="sysMenuVO">
+		SELECT MENU_ID
+			 , MENU_NM
+			 , NVL(PARENTMENU_ID, 'M0000000') PARENTMENU_ID
+			 , SOURCE_PATH
+			 , SORT_SNO
+			 , MENULVL_VAL
+		  FROM NEO_SYSMENU
+		 WHERE MENULVL_VAL = 1
+		   AND MENU_ID IN (
+							SELECT A.PARENTMENU_ID
+							  FROM NEO_SYSMENU A, NEO_MENUUSERMAPP B
+							 WHERE A.MENU_ID = B.MENU_ID
+							   AND B.USER_ID = #{userId}
+							   AND A.USE_YN = 'Y'
+							)
+		   AND USE_YN = 'Y'
 	</select>
 	
 	<select id="getUserMenuLvl2List" parameterType="string" resultType="sysMenuVO">
@@ -78,6 +113,7 @@
 			 , A.PARENTMENU_ID
 			 , A.SOURCE_PATH
 			 , A.SERVICE_GB
+			 , MENULVL_VAL
 		  FROM NEO_SYSMENU A, NEO_MENUUSERMAPP B
 		 WHERE A.MENU_ID = B.MENU_ID
 		   AND A.MENULVL_VAL = 2
