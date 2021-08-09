@@ -2,11 +2,132 @@
 	/**********************************************************
 	*	작성자 : 김상진
 	*	작성일시 : 2021.08.02
-	*	설명 : 정기메일분석 화면
+	*	설명 : 통계분석 정기메일분석 화면
 	**********************************************************/
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/inc/header.jsp" %>
+
+<style type="text/css">
+.tab {
+	background-color:#cccccc;
+}
+</style>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	// 예약일 시작일 설정
+	$("#searchStartDt").datepicker({
+		//showOn:"button",
+		minDate:"2021-01-01",
+		maxDate:$("#searchEndDt").val(),
+		onClose:function(selectedDate) {
+			$("#searchEndDt").datepicker("option", "minDate", selectedDate);
+		}
+	});
+	
+	// 예약일 종료일 설정
+	$("#searchEndDt").datepicker({
+		//showOn:"button",
+		minDate:$("#searchStartDt").val(),
+		onClose:function(selectedDate) {
+			$("#searchStartDt").datepicker("option", "maxDate", selectedDate);
+		}
+	});
+});
+
+//사용자그룹 선택시 사용자 목록 조회 
+function getUserList(deptNo) {
+	$.getJSON("<c:url value='/com/getUserList.json'/>?deptNo=" + deptNo, function(data) {
+		$("#searchUserId").children("option:not(:first)").remove();
+		$.each(data.userList, function(idx,item){
+			var option = new Option(item.userNm,item.userId);
+			$("#searchUserId").append(option);
+		});
+	});
+}
+
+//검색 버튼 클릭시
+function goSearch() {
+	if( $("#searchStartDt").val() > $("#searchEndDt").val() ) {
+		alert("<spring:message code='COMJSALT017'/>");		//검색 시 시작일은 종료일보다 클 수 없습니다.
+		return;
+	}
+	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/ana/taskListP.ums'/>").submit();
+}
+
+// 초기화 버튼 클릭시
+function goReset(obj) {
+	$("#searchTaskNm").val("");
+	$("#searchCampNo").val("0");
+	$("#searchDeptNo").val("0");
+	$("#searchUserId").val("");
+	//$("#searchForm")[0].reset();
+}
+
+//목록에서 전체선택 클릭시
+function goAll() {
+	$("#listForm input[name='taskNos']").each(function(idx,item){
+		$(item).prop("checked", $("#listForm input[name='isAll']").is(":checked"));
+	});
+}
+
+//탭 관련 변수
+var curTab = "";
+var curTaskNo = "";
+var curSubTaskNo = "";
+var curDmGrpCd = "";
+
+// 목록에서 메일명 클릭시
+function goOz(tabNm, target, taskNo,subTaskNo) {
+	curTaskNo = taskNo;
+	curSubTaskNo = subTaskNo;
+	goOzTab(tabNm, target);
+}
+
+// 탭 실행
+function goOzTab(tabNm, target) {
+	if(curTaskNo == "" || curSubTaskNo == "") {
+		alert("<spring:message code='ANAJSALT002'/>");		// 메일을 선택하세요.
+		return;
+	}
+
+	//탭을 보여주고 폼 초기화
+	if($("#tab").css("display") == "none") {
+		$("#tab").show();
+		$("#notab").hide();
+		$("#listForm")[0].reset();
+	}
+
+	//기존 클릭한 탭을 숨김
+	switch(curTab) {
+		case 'tab1' :	$("#click_tab1").hide(); $("#tab1").show(); break;
+		case 'tab2' :	$("#click_tab2").hide(); $("#tab2").show(); break;
+		case 'tab3' :	$("#click_tab3").hide(); $("#tab3").show(); break;
+		case 'tab4' :	$("#click_tab4").hide(); $("#tab4").show(); break;
+		case 'tab5' :	$("#click_tab5").hide(); $("#tab5").show(); break;
+		case 'tab6' :	$("#click_tab6").hide(); $("#tab6").show(); break;
+		case 'tab7' :	$("#click_tab7").hide(); $("#tab7").show(); break;
+	}
+
+	curTab = tabNm;		//현재 클릭한 탭 설정
+
+	//클릭한 탭을 보여줌
+	switch(tabNm) {
+		case 'tab1' :	$("#tab1").hide(); $("#click_tab1").show(); $("#saveNm").val( "mail_summ_" + curTaskNo + "_" + curSubTaskNo ); break;
+		case 'tab2' :	$("#tab2").hide(); $("#click_tab2").show(); $("#saveNm").val( "mail_error_" + curTaskNo + "_" + curSubTaskNo ); break;
+		case 'tab3' :	$("#tab3").hide(); $("#click_tab3").show(); $("#saveNm").val( "mail_domain" + curTaskNo + "_" + curSubTaskNo ); break;
+		case 'tab4' :	$("#tab4").hide(); $("#click_tab4").show(); $("#saveNm").val( "mail_send_" + curTaskNo + "_" + curSubTaskNo ); break;
+		case 'tab5' :	$("#tab5").hide(); $("#click_tab5").show(); $("#saveNm").val( "mail_resp_" + curTaskNo + "_" + curSubTaskNo ); break;
+		case 'tab6' :	$("#tab6").hide(); $("#click_tab6").show(); break;
+		case 'tab7' :	$("#tab7").hide(); $("#click_tab7").show(); break;
+	}
+
+	iFrmReport.location.href = target + "?taskNo=" + curTaskNo;
+}
+
+
+</script>
 
 <body>
 	<div id="wrap">
@@ -25,7 +146,7 @@
 			<!-- cont-head// -->
 			<section class="cont-head">
 				<div class="title">
-					<h2>정기메일분석</h2>
+					<h2><c:out value='${NEO_MENU_NM}'/></h2>
 				</div>
 				
 				<!-- 공통 표시부// -->
@@ -37,7 +158,6 @@
 
 			<!-- cont-body// -->
 			<section class="cont-body">
-
 
 
 
@@ -59,11 +179,11 @@
 			<form id="searchForm" name="searchForm" method="post">
 			<input type="hidden" id="page" name="page" value="<c:out value='${searchVO.page}'/>">
 			<input type="hidden" id="taskNo" name="taskNo" value="<c:out value='${searchVO.taskNo}'/>">
-			<table width="1000" border="0" cellspacing="1" cellpadding="0" class="table_line_outline">
+			<table width="1000" border="1" cellspacing="0" cellpadding="0" class="table_line_outline">
 				<tr>
 					<td width="10%" class="td_title"><spring:message code='ANATBLTL005'/></td><!-- 메일명 -->
 					<td width="22%" class="td_body">
-						<input type="text" style="border:1px solid #c0c0c0;"  name="searchTaskNm" class="input" style="width:195;" value="<c:out value='${searchVO.searchTaskNm}'/>">
+						<input type="text" style="border:1px solid #c0c0c0;" id="searchTaskNm" name="searchTaskNm" class="input" style="width:195;" value="<c:out value='${searchVO.searchTaskNm}'/>">
 					</td>
 					<td width="10%" class="td_title"><spring:message code='ANATBLTL006'/></td><!-- 캠페인 -->
 					<td width="22%" colspan=3 class="td_body">
@@ -78,7 +198,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td width="10%" class="td_title"><spring:message code='ANATBLLB001'/></td><!-- 등록일 -->
+					<td width="10%" class="td_title"><spring:message code='COMTBLTL002'/></td><!-- 등록일 -->
 					<td width="22%" class="td_body">
 						<fmt:parseDate var="startDt" value="${searchVO.searchStartDt}" pattern="yyyyMMdd"/>
 						<fmt:formatDate var="searchStartDt" value="${startDt}" pattern="yyyy-MM-dd"/> 
@@ -91,7 +211,7 @@
 					<td width="22%" class="td_body">
 						<!-- 관리자의 경우 전체 요청그룹을 전시하고 그 외의 경우에는 해당 그룹만 전시함 -->
 						<c:if test="${'Y' eq NEO_ADMIN_YN}">
-							<select name="searchDeptNo" style="width: 140px;" class="select" onchange="javascript:getUserList(this.value);">
+							<select id="searchDeptNo" name="searchDeptNo" style="width: 140px;" class="select" onchange="javascript:getUserList(this.value);">
 								<option value="0">:: <spring:message code='COMTBLLB004'/> ::</option><!-- 그룹 선택 -->
 								<c:if test="${fn:length(deptList) > 0}">
 									<c:forEach items="${deptList}" var="dept">
@@ -133,7 +253,7 @@
 				<tr>
 					<td align="right">
 						<input type="button" value="<spring:message code='COMBTN002'/>" class="btn_typeC" onClick="goSearch()"><!-- 검색 -->
-						<input type="button" value="<spring:message code='COMBTN003'/>" class="btn_style" onClick="goReset(this.form)"><!-- 초기화 -->
+						<input type="button" value="<spring:message code='COMBTN003'/>" class="btn_style" onClick="goReset()"><!-- 초기화 -->
 					</td>
 				</tr>
 				<tr>
@@ -152,7 +272,7 @@
 			
 			<!------------------------------------------	LIST	START	---------------------------------------------->
 			<form id="listForm" name="listForm" method="post">
-			<table width="1000" border="0" cellspacing="1" cellpadding="0" class="table_line_outline">
+			<table width="1000" border="1" cellspacing="0" cellpadding="0" class="table_line_outline">
 				<tr class="tr_head">
 					<td width="3%"><input type="checkbox" name="isAll" onclick='goAll()' style="border:0"></td>
 					<td width="10%"><spring:message code='ANATBLTL008'/></td><!-- 캠페인명 -->
@@ -163,25 +283,25 @@
 					<td width="10%"><spring:message code='ANATBLTL011'/></td><!-- 발송상태 -->
 					<td width="10%"><spring:message code='ANATBLTL001'/></td><!-- 메일별분석 -->
 				</tr>
-				<c:if test="${fn:length(mailList) > 0}">
-					<c:forEach items="${mailList}" var="mail">
+				<c:if test="${fn:length(taskList) > 0}">
+					<c:forEach items="${taskList}" var="mail">
 						<tr class="tr_body">
-							<td><input type="checkbox" name="taskNo" value="<c:out value='${mailInfo.taskNo}'/>" style="border:0"></td>
-							<td><c:out value='${mailInfo.campNm}'/></td>
-							<td><a href="javascript:goOz('tab1','/ana/taskSummP.jsp','<c:out value='${mailInfo.taskNo}'/>')"><c:out value='${mailInfo.taskNm}'/></a></td>
-							<td><c:out value='${mailInfo.segNm}'/></td>
-							<td><c:out value='${mailInfo.userNm}'/></td>
+							<td height="30"><input type="checkbox" name="taskNos" value="<c:out value='${mail.taskNo}'/>"></td>
+							<td><c:out value='${mail.campNm}'/></td>
+							<td><a href="javascript:goOz('tab1','<c:url value='/ems/ana/taskSummP.ums'/>','<c:out value='${mail.taskNo}'/>')"><c:out value='${mail.taskNm}'/></a></td>
+							<td><c:out value='${mail.segNm}'/></td>
+							<td><c:out value='${mail.userNm}'/></td>
 							<td>
-								<fmt:parseDate var="regDt" value="${mail.regDt}" pattern="yyyyMMddHHmm"/>
-								<fmt:formatDate var="mailRegDt" value="${regDt}" pattern="yyyy-MM-dd HH:mm"/>
+								<fmt:parseDate var="regDt" value="${mail.regDt}" pattern="yyyyMMddHHmmss"/>
+								<fmt:formatDate var="mailRegDt" value="${regDt}" pattern="yyyy-MM-dd"/>
 								<c:out value='${mailRegDt}'/>
 							</td>
-							<td><c:out value='${mailInfo.statusNm}'/></td>
-							<td><input type="button" value="<spring:message code='ANATBLTL001'/>" class="btn_style" onClick="goMail('<c:out value='${mailInfo.taskNo}'/>')"></td><!-- 메일별분석 -->
+							<td><c:out value='${mail.statusNm}'/></td>
+							<td><input type="button" value="<spring:message code='ANATBLTL001'/>" class="btn_style" onClick="goMail('<c:out value='${mail.taskNo}'/>')"></td><!-- 메일별분석 -->
 						</tr>
 					</c:forEach>
 				</c:if>
-				<c:set var="emptyCnt" value="${searchVO.rows - fn:length(mailList)}"/>
+				<c:set var="emptyCnt" value="${searchVO.rows - fn:length(taskList)}"/>
 				<c:if test="${emptyCnt > 0}">
 					<c:forEach var="i" begin="1" end="${emptyCnt}">
 						<tr class="tr_body">
@@ -233,18 +353,18 @@
 										<div id="click_tab1" style="display : none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr height="23">
-													<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="6"></td>
 													<td width="110" align="center" class="tab"><spring:message code='ANABTN003'/></td><!-- 결과요약 -->
-													<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
+													<td width="6"></td>
 												</tr>
 											</table>
 										</div>
-										<div id="tab1" style="display=">
+										<div id="tab1" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr height="23">
-													<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab1','/ana/taskSummP.jsp')" class="tab"><spring:message code='ANABTN003'/></a><!-- 결과요약 -->
-													<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
+													<td width="6"></td>
+													<td width="110" align="center"><a href="javascript:goOzTab('tab1','/ems/ana/taskSummP.ums')"><spring:message code='ANABTN003'/></a><!-- 결과요약 -->
+													<td width="6"></td>
 												</tr>
 											</table>
 										</div>
@@ -254,18 +374,18 @@
 										<div id="click_tab2" style="display : none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="6"></td>
 													<td width="110" align="center" class="tab"><spring:message code='ANABTN004'/></td><!-- 세부에러 -->
-													<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
+													<td width="6"></td>
 												</tr>
 											</table>
 										</div>
-										<div id="tab2" style="display=">
+										<div id="tab2" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab2','/ana/taskErrorP.jsp')" class="tab"><spring:message code='ANABTN004'/></a><!-- 세부에러 -->
-													<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
+													<td width="6"></td>
+													<td width="110" align="center"><a href="javascript:goOzTab('tab2','/ems/ana/taskErrorP.ums')"><spring:message code='ANABTN004'/></a><!-- 세부에러 -->
+													<td width="6"></td>
 												</tr>
 											</table>
 										</div>
@@ -275,18 +395,18 @@
 										<div id="click_tab3" style="display : none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="6"></td>
 													<td width="110" align="center" class="tab"><spring:message code='ANABTN005'/></td><!-- 도메인별 -->
-													<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
+													<td width="6"></td>
 												</tr>
 											</table>
 										</div>
-										<div id="tab3" style="display=">
+										<div id="tab3" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab3','/ana/taskDomainP.jsp')" class="tab"><spring:message code='ANABTN005'/></a><!-- 도메인별 -->
-													<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
+													<td width="6"></td>
+													<td width="110" align="center"><a href="javascript:goOzTab('tab3','/ems/ana/taskDomainP.ums')"><spring:message code='ANABTN005'/></a><!-- 도메인별 -->
+													<td width="6"></td>
 												</tr>
 											</table>
 										</div>
@@ -296,18 +416,18 @@
 										<div id="click_tab4" style="display : none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
-													<td width="110" align="center" background="/img/com/Content_tab_bgimage_r.gif" class="tab"><spring:message code='ANABTN006'/></td><!-- 발송시간별 -->
-													<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
+													<td width="6"></td>
+													<td width="110" align="center" class="tab"><spring:message code='ANABTN006'/></td><!-- 발송시간별 -->
+													<td width="6"></td>
 												</tr>
 											</table>
 										</div>
-										<div id="tab4" style="display=">
+										<div id="tab4" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab4','/ana/taskSendP.jsp')" class="tab"><spring:message code='ANABTN006'/></a><!-- 발송시간별 -->
-													<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
+													<td width="6"></td>
+													<td width="110" align="center"><a href="javascript:goOzTab('tab4','/ems/ana/taskSendP.ums')"><spring:message code='ANABTN006'/></a><!-- 발송시간별 -->
+													<td width="6"></td>
 												</tr>
 											</table>
 										</div>
@@ -317,18 +437,18 @@
 										<div id="click_tab5" style="display : none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after_r.gif" width="6" height="23"></td>
+													<td width="6"></td>
 													<td width="110" align="center" class="tab"><spring:message code='ANABTN007'/></td><!-- 응답시간별 -->
-													<td width="6"><img src="/img/com/Content_tab_back_r.gif" width="6" height="23"></td>
+													<td width="6"></td>
 												</tr>
 											</table>
 										</div>
-										<div id="tab5" style="display=">
+										<div id="tab5" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
-													<td width="6"><img src="/img/com/Content_tab_after.gif" width="6" height="23"></td>
-													<td width="110" align="center" background="/img/com/Content_tab_bgimage.gif"><a href="javascript:goOzTab('tab5','/ana/taskRespP.jsp')" class="tab"><spring:message code='ANABTN007'/></a><!-- 응답시간별 -->
-													<td width="6"><img src="/img/com/Content_tab_back.gif" width="6" height="23"></td>
+													<td width="6"></td>
+													<td width="110" align="center"><a href="javascript:goOzTab('tab5','/ems/ana/taskRespP.ums')"><spring:message code='ANABTN007'/></a><!-- 응답시간별 -->
+													<td width="6"></td>
 												</tr>
 											</table>
 										</div>
@@ -348,20 +468,15 @@
 					</td>
 				</tr>
 				<tr>
-					<td height=5 background="/img/com/Content_tab_bar.gif"><img src="/img/com/Content_tab_bar.gif" width="3" height="5"></td>
+					<td height=5></td>
 				</tr>
 				<tr>
 					<td>
-						<iframe name="iFrmReport" border='0' frameborder='1' scrolling='no' width='100%' height='1070'></iframe>
+						<iframe name="iFrmReport" border='0' frameborder='1' scrolling='no' width='100%' height='1100'></iframe>
 					</td>
 				</tr>
 			</table>
 			<!------------------------------------------	OZREPORT	END		------------------------------------------>
-
-
-			<form name="formFeport">
-			<input type="hidden" id="saveNm" name="saveNm" value="">
-			</form>
 
 
 

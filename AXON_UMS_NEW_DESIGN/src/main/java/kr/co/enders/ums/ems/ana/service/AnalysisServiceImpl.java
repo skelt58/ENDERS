@@ -93,10 +93,60 @@ public class AnalysisServiceImpl implements AnalysisService {
 	public RespLogVO getJoinSendResult(SendLogVO sendLogVO) throws Exception {
 		return analysisDAO.getJoinSendResult(sendLogVO);
 	}
-
+	
 	@Override
 	public List<MailErrorVO> getJoinErrorList(SendLogVO sendLogVO) throws Exception {
 		return analysisDAO.getJoinErrorList(sendLogVO);
+	}
+	
+	@Override
+	public List<TaskVO> getTaskList(TaskVO taskVO) throws Exception {
+		return analysisDAO.getTaskList(taskVO);
+	}
+
+	@Override
+	public TaskVO getTaskInfo(TaskVO taskVO) throws Exception {
+		return analysisDAO.getTaskInfo(taskVO);
+	}
+
+	@Override
+	public MailSummVO getTaskSummResult(TaskVO taskVO) throws Exception {
+		return analysisDAO.getTaskSummResult(taskVO);
+	}
+
+	@Override
+	public List<MailErrorVO> getTaskSummDetail(TaskVO taskVO) throws Exception {
+		return analysisDAO.getTaskSummDetail(taskVO);
+	}
+
+	@Override
+	public List<MailErrorVO> getTaskErrorList(TaskVO taskVO) throws Exception {
+		return analysisDAO.getTaskErrorList(taskVO);
+	}
+
+	@Override
+	public List<MailDomainVO> getTaskDomainList(TaskVO taskVO) throws Exception {
+		return analysisDAO.getTaskDomainList(taskVO);
+	}
+
+	@Override
+	public List<SendLogVO> getTaskSendHourList(TaskVO taskVO) throws Exception {
+		return analysisDAO.getTaskSendHourList(taskVO);
+	}
+
+	@Override
+	public SendLogVO getTaskSendHourSum(TaskVO taskVO) throws Exception {
+		return analysisDAO.getTaskSendHourSum(taskVO);
+	}
+
+	@Override
+	public List<RespLogVO> getTaskRespHourList(TaskVO taskVO) throws Exception {
+		return analysisDAO.getTaskRespHourList(taskVO);
+	}
+
+	@Override
+	public RespLogVO getTaskRespHourSum(TaskVO taskVO) throws Exception {
+		return analysisDAO.getTaskRespHourSum(taskVO);
 	}
 
 }
