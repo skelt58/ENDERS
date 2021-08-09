@@ -26,7 +26,7 @@ function goPUSH() {
 }
 
 function goSYS() {
-	alert("공통설정 화면으로 이동");
+	document.location.href = "<c:url value='/sys/index.ums'/>";
 }
 </script>
 
