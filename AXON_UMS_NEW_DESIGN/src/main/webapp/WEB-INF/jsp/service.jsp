@@ -85,7 +85,7 @@ function goSYS() {
 			</section>
 
 			 <footer class="ums-footer">
-				<p>copyright © Enders All Rights Reserved.</p> 
+				<p>copyright © Enders All Rights Reserved. test</p> 
 			</footer>
 		</div>
 		<!-- //service -->
