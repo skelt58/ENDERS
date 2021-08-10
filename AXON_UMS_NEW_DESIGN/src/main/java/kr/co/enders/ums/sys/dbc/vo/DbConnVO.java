@@ -2,8 +2,11 @@
  * 작성자 : 김상진
  * 작성일시 : 2021.07.12
  * 설명 : DB Connection VO
+ * 수정자 : 김준희
+ * 수정일시 : 2021.08.10
+ * 수정내역 : sys.vo -->sys.dbc.vo 
  */
-package kr.co.enders.ums.sys.vo;
+package kr.co.enders.ums.sys.dbc.vo;
 
 import kr.co.enders.ums.com.vo.CommonVO;
 
