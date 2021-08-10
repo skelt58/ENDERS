@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.enders.ums.sys.cod.dao.UserCodeMapper">	
+	<select id="getUserCodeGroupList" parameterType="userCodeGroupVO" resultType="userCodeGroupVO">
+		SELECT UILANG
+			 , CD_GRP
+			 , CD_GRP_NM
+			 , CD_GRP_NM_SHORT
+			 , '' AS UP_CD_GRP
+			 , '' AS UP_CD_GRP_NM
+			-- , FN_GET_UP_CODE (CD_GRP ,'Y',  #{uilang} )AS  UP_CD_GRP
+			 , USE_YN
+			 , SYS_YN
+		FROM NEO_CD_GRP  
+		WHERE UILANG = #{uilang}
+			<if test="searchCdGrp != null and searchCdGrp != ''">
+				AND UPPER(CD_GRP) LIKE '%' || #{searchCdGrp} || '%'
+			</if>
+			<if test="searchCdGrpNm != null and searchCdGrpNm != ''">
+				AND UPPER(CD_GRP_NM) LIKE '%' || #{searchCdGrpNm} || '%'
+			</if>
+		 ORDER BY CD_GRP, CD_GRP_NM
+	</select>
+	
+	<insert id="insertUserCodeGroupInfo" parameterType="userCodeGroupVO">
+		INSERT INTO NEO_CD_GRP
+		(
+			  UILANG
+			, CD_GRP
+			, CD_GRP_NM
+			, CD_GRP_NM_SHORT
+			, CD_GRP_DTL
+			, UP_CD_GRP
+			, USE_YN
+			, SYS_YN
+		)
+		VALUES
+		(
+			  #{uilang}
+			, #{cdGrp}
+			, #{cdGrpNm}
+			, #{cdGrpNmShort}
+			, #{cdGrpDtl}
+			, #{upCdGrp}
+			, #{useYn}
+			, #{sysYn}
+		)
+	</insert>
+	
+	<update id="updateUserCodeGroupInfo" parameterType="userCodeGroupVO">
+		UPDATE NEO_CD_GRP
+		SET
+			CD_GRP_NM   = #{cdGrpNm}
+			, CD_GRP_NM_SHORT  = #{cdGrpNmShort}
+			, CD_GRP_DTL  = #{cdGrpDtl}
+			, USE_YN  = #{useYn}
+		WHERE UILANG  = #{uilang}
+			AND CD_GRP  = #{cdGrp}
+	</update>
+	
+	<delete id="deleteUserCodeGroupInfo" parameterType="userCodeGroupVO">
+		DELETE FROM NEO_CD_GRP
+		 WHERE CD_GRP = #{cdGrp}
+		   AND  UILANG  = #{uilang}
+	</delete>
+	 
+	<!-- �ڵ� ��� ��ȸ  -->
+	<select id="getUserCodeList" parameterType="userCodeVO" resultType="userCodeVO">
+		SELECT A.UILANG
+			, A.CD_GRP
+			, A.CD
+			, A.CD_NM
+			, A.CD_DTL
+			, A.USE_YN
+			, B.CD_NM UILANG_NM
+			, '' UP_CD_NM 
+			--, FN_GET_CODE_NAME(UP_CD, '', #{uilang}) AS UP_CD_NM
+		FROM NEO_CD A
+			, (
+			SELECT CD, CD_NM
+			  FROM NEO_CD
+			 WHERE UILANG = #{uilang}
+			   AND CD_GRP = 'C025'
+			   AND USE_YN = 'Y') B 
+		 WHERE A.CD_GRP = #{cdGrp}
+		   AND A.UILANG = B.CD
+		 ORDER BY A.UILANG, A.CD 
+	</select>
+	
+	<insert id="insertUserCodeInfo" parameterType="userCodeVO">
+		INSERT INTO NEO_CD
+		(
+			  UILANG
+			, CD_GRP
+			, CD
+			, CD_NM
+			, USE_YN
+			, CD_DTL
+			, UP_CD
+		)
+		VALUES
+		(
+			  #{uilang}
+			, #{cdGrp}
+			, #{cd}
+			, #{cdNm}
+			, #{useYn}
+			, #{cdDtl}
+			, #{upCd}
+		)
+	</insert>
+	
+	<update id="updateUserCodeInfo" parameterType="userCodeVO">
+		UPDATE NEO_CD
+		   SET
+			   CD_NM   = #{cdNm}
+			 , USE_YN  = #{useYn}
+			 , CD_DTL  = #{cdDtl}
+		 WHERE UILANG  = #{uilang}
+		   AND CD_GRP  = #{cdGrp}
+		   AND CD      = #{cd}
+	</update>
+	
+	<delete id="deleteUserCodeInfo" parameterType="userCodeVO">
+		DELETE FROM NEO_CD
+		 WHERE CD_GRP = #{cdGrp}
+		   AND CD     = #{cd}
+	</delete>
+	
+</mapper>
