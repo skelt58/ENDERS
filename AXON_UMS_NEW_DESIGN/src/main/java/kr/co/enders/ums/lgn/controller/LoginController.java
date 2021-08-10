@@ -18,11 +18,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import kr.co.enders.ums.sys.vo.SysMenuVO;
-import kr.co.enders.ums.sys.vo.UserVO;
 import kr.co.enders.ums.lgn.service.LoginService;
 import kr.co.enders.ums.lgn.vo.LoginHistVO;
 import kr.co.enders.ums.lgn.vo.LoginVO;
+import kr.co.enders.ums.sys.acc.vo.SysMenuVO;
+import kr.co.enders.ums.sys.acc.vo.UserVO;
 import kr.co.enders.util.Code;
 import kr.co.enders.util.EncryptUtil;
 import kr.co.enders.util.StringUtil;

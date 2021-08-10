@@ -9,11 +9,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import kr.co.enders.ums.sys.vo.SysMenuVO;
-import kr.co.enders.ums.sys.vo.UserProgVO;
-import kr.co.enders.ums.sys.vo.UserVO;
 import kr.co.enders.ums.lgn.vo.LoginHistVO;
 import kr.co.enders.ums.lgn.vo.LoginVO;
+import kr.co.enders.ums.sys.acc.vo.SysMenuVO;
+import kr.co.enders.ums.sys.acc.vo.UserProgVO;
+import kr.co.enders.ums.sys.acc.vo.UserVO;
 
 @Service
 public interface LoginService {

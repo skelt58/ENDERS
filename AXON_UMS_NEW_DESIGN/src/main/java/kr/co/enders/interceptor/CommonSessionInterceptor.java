@@ -17,7 +17,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import kr.co.enders.ums.main.service.MainService;
 import kr.co.enders.ums.main.vo.MenuVO;
-import kr.co.enders.ums.sys.vo.SysMenuVO;
+import kr.co.enders.ums.sys.acc.vo.SysMenuVO;
 import kr.co.enders.util.PropertiesUtil;
 import kr.co.enders.util.StringUtil;
 

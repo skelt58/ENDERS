@@ -25,7 +25,7 @@ function goPUSH() {
 	alert("서비스 준비중입니다.");
 }
 
-function goSYS() {
+function goSYS() {	
 	document.location.href = "<c:url value='/sys/index.ums'/>";
 }
 </script>

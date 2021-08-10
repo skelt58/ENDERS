@@ -10,7 +10,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import kr.co.enders.ums.main.vo.MenuVO;
-import kr.co.enders.ums.sys.vo.SysMenuVO;
+import kr.co.enders.ums.sys.acc.vo.SysMenuVO;
 
 @Service
 public interface MainService {

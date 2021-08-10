@@ -34,11 +34,11 @@ import kr.co.enders.ums.ems.cam.vo.TaskVO;
 import kr.co.enders.ums.ems.seg.service.SegmentService;
 import kr.co.enders.ums.ems.seg.vo.SegmentMemberVO;
 import kr.co.enders.ums.ems.seg.vo.SegmentVO;
-import kr.co.enders.ums.sys.service.SystemService;
-import kr.co.enders.ums.sys.vo.DbConnVO;
-import kr.co.enders.ums.sys.vo.MetaColumnVO;
-import kr.co.enders.ums.sys.vo.MetaJoinVO;
-import kr.co.enders.ums.sys.vo.MetaTableVO;
+import kr.co.enders.ums.sys.dbc.service.DBConnService;
+import kr.co.enders.ums.sys.dbc.vo.DbConnVO;
+import kr.co.enders.ums.sys.dbc.vo.MetaColumnVO;
+import kr.co.enders.ums.sys.dbc.vo.MetaJoinVO;
+import kr.co.enders.ums.sys.dbc.vo.MetaTableVO;
 import kr.co.enders.util.Code;
 import kr.co.enders.util.DBUtil;
 import kr.co.enders.util.PageUtil;
@@ -57,7 +57,7 @@ public class SegmentController {
 	private CodeService codeService;
 	
 	@Autowired
-	private SystemService systemService;
+	private DBConnService dbConnService;
 	
 	@Autowired
 	private SegmentService segmentService;
@@ -584,9 +584,9 @@ public class SegmentController {
 		DbConnVO metaDbConn = new DbConnVO();
 		metaDbConn.setDbConnNo(dbConnNo);
 		try {
-			metaTableList = systemService.getMetaTableList(metaDbConn);
+			metaTableList = dbConnService.getMetaTableList(metaDbConn);
 		} catch(Exception e) {
-			logger.error("systemService.getMetaTableList error = " + e);
+			logger.error("dbConnService.getMetaTableList error = " + e);
 		}
 		
 		
@@ -600,9 +600,9 @@ public class SegmentController {
 		// 메타 조인 목록 조회
 		List<MetaJoinVO> metaJoinList = null;
 		try {
-			metaJoinList = systemService.getMetaJoinList(metaJoinVO);
+			metaJoinList = dbConnService.getMetaJoinList(metaJoinVO);
 		} catch(Exception e) {
-			logger.error("systemService.getMetaJoinList error = " + e);
+			logger.error("dbConnService.getMetaJoinList error = " + e);
 		}
 		
 		model.addAttribute("searchVO", searchVO);			// 검색 항목
@@ -692,9 +692,9 @@ public class SegmentController {
 		DbConnVO metaDbConn = new DbConnVO();
 		metaDbConn.setDbConnNo(dbConnNo);
 		try {
-			metaTableList = systemService.getMetaTableList(metaDbConn);
+			metaTableList = dbConnService.getMetaTableList(metaDbConn);
 		} catch(Exception e) {
-			logger.error("systemService.getMetaTableList error = " + e);
+			logger.error("dbConnService.getMetaTableList error = " + e);
 		}
 		
 		// 메타 조인 페이지 설정
@@ -707,9 +707,9 @@ public class SegmentController {
 		// 메타 조인 목록 조회
 		List<MetaJoinVO> metaJoinList = null;
 		try {
-			metaJoinList = systemService.getMetaJoinList(metaJoinVO);
+			metaJoinList = dbConnService.getMetaJoinList(metaJoinVO);
 		} catch(Exception e) {
-			logger.error("systemService.getMetaJoinList error = " + e);
+			logger.error("dbConnService.getMetaJoinList error = " + e);
 		}
 		
 		model.addAttribute("searchVO", searchVO);			// 검색 항목
@@ -745,17 +745,17 @@ public class SegmentController {
 		DbConnVO connVO = new DbConnVO();
 		connVO.setDbConnNo( columnVO.getDbConnNo());
 		try {
-			metaTableList = systemService.getMetaTableList(connVO);
+			metaTableList = dbConnService.getMetaTableList(connVO);
 		} catch(Exception e) {
-			logger.error("systemService.getMetaTableList error = " + e);
+			logger.error("dbConnService.getMetaTableList error = " + e);
 		}
 		
 		// 메타 컬럼 목록 조회
 		List<MetaColumnVO> metaColumnList = null;
 		try {
-			metaColumnList = systemService.getMetaColumnList(columnVO);
+			metaColumnList = dbConnService.getMetaColumnList(columnVO);
 		} catch(Exception e) {
-			logger.error("systemService.getMetaColumnList error = " + e);
+			logger.error("dbConnService.getMetaColumnList error = " + e);
 		}
 		
 		List<String> mergeCol = new ArrayList<String>();
@@ -797,9 +797,9 @@ public class SegmentController {
 			DbConnVO searchVO = new DbConnVO();
 			searchVO.setDbConnNo(segmentVO.getDbConnNo());
 			searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
-			dbConnInfo = systemService.getDbConnInfo(searchVO);
+			dbConnInfo = dbConnService.getDbConnInfo(searchVO);
 		} catch(Exception e) {
-			logger.error("systemService.getDbConnInfo error = " + e);
+			logger.error("dbConnService.getDbConnInfo error = " + e);
 		}
 		
 		// 대상자 수 조회
@@ -892,9 +892,9 @@ public class SegmentController {
 			DbConnVO searchVO = new DbConnVO();
 			searchVO.setDbConnNo(segmentVO.getDbConnNo());
 			searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
-			dbConnInfo = systemService.getDbConnInfo(searchVO);
+			dbConnInfo = dbConnService.getDbConnInfo(searchVO);
 		} catch(Exception e) {
-			logger.error("systemService.getDbConnInfo error = " + e);
+			logger.error("dbConnService.getDbConnInfo error = " + e);
 		}
 		
 		SegmentMemberVO memberVO = null;
@@ -1032,9 +1032,9 @@ public class SegmentController {
 		DbConnVO metaDbConn = new DbConnVO();
 		metaDbConn.setDbConnNo(dbConnNo);
 		try {
-			metaTableList = systemService.getMetaTableList(metaDbConn);
+			metaTableList = dbConnService.getMetaTableList(metaDbConn);
 		} catch(Exception e) {
-			logger.error("systemService.getMetaTableList error = " + e);
+			logger.error("dbConnService.getMetaTableList error = " + e);
 		}
 		
 		model.addAttribute("searchVO", searchVO);			// 검색 항목
@@ -1124,9 +1124,9 @@ public class SegmentController {
 		DbConnVO metaDbConn = new DbConnVO();
 		metaDbConn.setDbConnNo(dbConnNo);
 		try {
-			metaTableList = systemService.getMetaTableList(metaDbConn);
+			metaTableList = dbConnService.getMetaTableList(metaDbConn);
 		} catch(Exception e) {
-			logger.error("systemService.getMetaTableList error = " + e);
+			logger.error("dbConnService.getMetaTableList error = " + e);
 		}
 		
 		model.addAttribute("searchVO", searchVO);			// 검색 항목
@@ -1157,9 +1157,9 @@ public class SegmentController {
 		DbConnVO dbConnInfo = null;
 		try {
 			dbConnVO.setUilang((String)session.getAttribute("NEO_UILANG"));
-			dbConnInfo = systemService.getDbConnInfo(dbConnVO);
+			dbConnInfo = dbConnService.getDbConnInfo(dbConnVO);
 		} catch(Exception e) {
-			logger.error("systemService.getDbConnInfo error = " + e);
+			logger.error("dbConnService.getDbConnInfo error = " + e);
 		}
 		
 		// 실제 DB 테이블 목록 조회
@@ -1176,9 +1176,9 @@ public class SegmentController {
 		// 메타 테이블 목록 조회
 		List<MetaTableVO> metaTableList = null;
 		try {
-			metaTableList = systemService.getMetaTableList(dbConnVO);
+			metaTableList = dbConnService.getMetaTableList(dbConnVO);
 		} catch(Exception e) {
-			logger.error("systemService.getMetaTableList error = " + e);
+			logger.error("dbConnService.getMetaTableList error = " + e);
 		}
 		
 		model.addAttribute("realTableList", realTableList);	// 실제테이블 목록
@@ -1205,9 +1205,9 @@ public class SegmentController {
 		try {
 			dbConnInfo.setDbConnNo(metaColumnVO.getDbConnNo());
 			dbConnInfo.setUilang((String)session.getAttribute("NEO_UILANG"));
-			dbConnInfo = systemService.getDbConnInfo(dbConnInfo);
+			dbConnInfo = dbConnService.getDbConnInfo(dbConnInfo);
 		} catch(Exception e) {
-			logger.error("systemService.getDbConnInfo error = " + e);
+			logger.error("dbConnService.getDbConnInfo error = " + e);
 		}
 		
 		// 실제 DB 테이블 컬럼 목록 조회
@@ -1224,9 +1224,9 @@ public class SegmentController {
 		// 메타 컬럼 목록 조회
 		List<MetaColumnVO> metaColumnList = null;
 		try {
-			metaColumnList = systemService.getMetaColumnList(metaColumnVO);
+			metaColumnList = dbConnService.getMetaColumnList(metaColumnVO);
 		} catch(Exception e) {
-			logger.error("systemService.getMetaColumnList error = " + e);
+			logger.error("dbConnService.getMetaColumnList error = " + e);
 		}
 		
 		model.addAttribute("realColumnList", realColumnList);	// 실제컬럼 목록
@@ -1254,9 +1254,9 @@ public class SegmentController {
 		try {
 			dbConnInfo.setDbConnNo(segmentVO.getDbConnNo());
 			dbConnInfo.setUilang((String)session.getAttribute("NEO_UILANG"));
-			dbConnInfo = systemService.getDbConnInfo(dbConnInfo);
+			dbConnInfo = dbConnService.getDbConnInfo(dbConnInfo);
 		} catch(Exception e) {
-			logger.error("systemService.getDbConnInfo error = " + e);
+			logger.error("dbConnService.getDbConnInfo error = " + e);
 		}
 		
 		// 실제 DB 테이블 컬럼 목록 조회

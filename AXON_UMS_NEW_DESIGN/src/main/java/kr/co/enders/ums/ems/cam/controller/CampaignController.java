@@ -41,8 +41,8 @@ import kr.co.enders.ums.ems.seg.service.SegmentService;
 import kr.co.enders.ums.ems.seg.vo.SegmentVO;
 import kr.co.enders.ums.ems.tmp.service.TemplateService;
 import kr.co.enders.ums.ems.tmp.vo.TemplateVO;
-import kr.co.enders.ums.sys.service.SystemService;
-import kr.co.enders.ums.sys.vo.UserVO;
+import kr.co.enders.ums.sys.acc.service.AccountService;
+import kr.co.enders.ums.sys.acc.vo.UserVO;
 import kr.co.enders.util.Code;
 import kr.co.enders.util.PageUtil;
 import kr.co.enders.util.PropertiesUtil;
@@ -66,7 +66,7 @@ public class CampaignController {
 	private TemplateService templateService;
 	
 	@Autowired
-	private SystemService systemService;
+	private AccountService systemService;
 	
 	@Autowired
 	private PropertiesUtil properties;

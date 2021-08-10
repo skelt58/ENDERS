@@ -20,11 +20,14 @@ function goLogout() {
 		document.location.href = "<c:url value='/lgn/logout.ums'/>";
 	//}
 }
+function goSys() {	
+	document.location.href = "<c:url value='/sys/index.ums'/>";
+}
 </script>
 
 <div class="util">
 	<a href="javascript:goService();" class="btn-util item01">전체 서비스</a>
-	<a href="javascript:;" class="btn-util item02">공통 설정</a>
+	<a href="javascript:goSys();" class="btn-util item02">공통 설정</a>
 	<div class="user">
 		<div class="info">
 			<em><c:out value='${NEO_USER_NM}'/></em>

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import kr.co.enders.ums.ems.seg.dao.SegmentDAO;
 import kr.co.enders.ums.ems.seg.vo.SegmentVO;
-import kr.co.enders.ums.sys.vo.DbConnVO;
+import kr.co.enders.ums.sys.dbc.vo.DbConnVO;
 
 @Service
 public class SegmentServiceImpl implements SegmentService {

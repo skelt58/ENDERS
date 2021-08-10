@@ -8,7 +8,7 @@ package kr.co.enders.ums.main.dao;
 import java.util.List;
 
 import kr.co.enders.ums.main.vo.MenuVO;
-import kr.co.enders.ums.sys.vo.SysMenuVO;
+import kr.co.enders.ums.sys.acc.vo.SysMenuVO;
 
 public interface MainMapper {
 	/**

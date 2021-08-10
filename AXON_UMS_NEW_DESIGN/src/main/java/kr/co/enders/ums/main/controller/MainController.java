@@ -16,7 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import kr.co.enders.ums.main.service.MainService;
-import kr.co.enders.ums.sys.vo.SysMenuVO;
+import kr.co.enders.ums.sys.acc.vo.SysMenuVO;
 import kr.co.enders.util.PropertiesUtil;
 
 @Controller
@@ -130,5 +130,36 @@ public class MainController {
 		model.addAttribute("baseSourcePath", menuInfo.getSourcePath());
 			
 		return "rns/index";
+	}
+	
+	/**
+	 * 공통설정 메인화면
+	 * @param model
+	 * @param req
+	 * @param res
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/sys/index")
+	public String goSysMain(Model model, HttpServletRequest req, HttpServletResponse res, HttpSession session) {
+		logger.debug("## goSysMain Start.");
+		
+		// SYS 메인화면
+		String pMenuId = properties.getProperty("MENU.SYS_INIT_P_MENU_ID");
+		String menuId = properties.getProperty("MENU.SYS_INIT_MENU_ID");
+		session.setAttribute("NEO_P_MENU_ID", pMenuId);
+		session.setAttribute("NEO_MENU_ID", menuId);
+		
+		// 기본 접속 화면 설정
+		SysMenuVO menuInfo = null;
+		try {
+			menuInfo = mainService.getMenuBasicInfo(menuId);
+		} catch(Exception e) {
+			logger.error("mainService.getMenuBasicInfo error = " + e);
+		}
+		
+		model.addAttribute("baseSourcePath", menuInfo.getSourcePath());
+			
+		return "sys/index";
 	}
 }
