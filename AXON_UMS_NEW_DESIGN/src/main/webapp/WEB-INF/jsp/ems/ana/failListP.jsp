@@ -12,10 +12,15 @@
 function goExcel() {
 	$("#searchForm").attr("target","iFrmExcel").attr("action","<c:url value='/ems/ana/failExcelList.ums'/>").submit();
 }
+
+function goPageNum(page) {
+	$("#page").val(page);
+	$("#searchForm").attr("target","").attr("action","<c:url value='/ems/ana/failListP.ums'/>").submit();
+}
 </script>
 
 <form id="searchForm" name="searchForm" method="post">
-<input type="hidden" name="page" value="${sendLogVO.page}"/>
+<input type="hidden" id="page" name="page" value="${sendLogVO.page}"/>
 <input type="hidden" name="taskNo" value="<c:out value='${sendLogVO.taskNo}'/>">
 <input type="hidden" name="subTaskNo" value="<c:out value='${sendLogVO.subTaskNo}'/>">
 <input type="hidden" name="step1" value="<c:out value='${sendLogVO.step1}'/>">

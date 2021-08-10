@@ -2,7 +2,7 @@
 	/**********************************************************
 	*	작성자 : 김상진
 	*	작성일시 : 2021.08.02
-	*	설명 : 메일별분석 화면
+	*	설명 : 통계분석 메일별분석 화면
 	**********************************************************/
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -58,7 +58,11 @@ function goSearch() {
 
 // 초기화 버튼 클릭시
 function goReset(obj) {
-	$("#searchForm")[0].reset();
+	$("#searchTaskNm").val("");
+	$("#searchCampNo").val("0");
+	$("#searchDeptNo").val("0");
+	$("#searchUserId").val("");
+	//$("#searchForm")[0].reset();
 }
 
 // 목록에서 전체선택 클릭시
@@ -120,11 +124,6 @@ function goOzTab(tabNm, target) {
 		case 'tab6' :	$("#tab6").hide(); $("#click_tab6").show(); break;
 		case 'tab7' :	$("#tab7").hide(); $("#click_tab7").show(); break;
 	}
-
-
-	//고객분석 메뉴 처리
-	custBtnNone(this.curDmGrpCd);
-	$("#custMenu").hide();
 	
 /* 	var param ="taskNo=" + curTaskNo + "&subTaskNo=" + curSubTaskNo;
 	$.ajax({
@@ -141,24 +140,6 @@ function goOzTab(tabNm, target) {
 	});
  */	
 	iFrmReport.location.href = target + "?taskNo=" + curTaskNo + "&subTaskNo=" + curSubTaskNo;
-}
-
-function custBtnNone(curDmGrpCd) {
-	switch(curDmGrpCd) {
-		case '01' :	$("#click_age").hide(); $("#age").show(); break;
-		case '02' :	$("#click_wedding").hide(); $("#wedding").show(); break;
-		case '03' :	$("#click_gender").hide(); $("#gender").show(); break;
-		case '04' :	$("#click_zip").hide(); $("#zip").show(); break;
-		case '05' :	$("#click_job").hide(); $("#job").show(); break;
-		case '06' :	$("#click_regyr").hide(); $("#regyr").show(); break;
-		case '07' :	$("#click_regst").hide(); $("#regst").show(); break;
-		case '08' :	$("#click_phmk").hide(); $("#phmk").show(); break;
-		case '09' :	$("#click_cyonphmd").hide(); $("#cyonphmd").show(); break;
-		case '10' :	$("#click_wowphmd").hide(); $("#wowphmd").show(); break;
-		case '11' :	$("#click_telcom").hide(); $("#telcom").show(); break;
-		case '12' :	$("#click_bizty").hide(); $("#bizty").show(); break;
-		case '13' :	$("#click_mlvl").hide(); $("#mlvl").show(); break;
-	}
 }
 
 // 병합분석 클릭시
@@ -212,7 +193,7 @@ function goPageNum(page) {
 			<!-- cont-head// -->
 			<section class="cont-head">
 				<div class="title">
-					<h2>대제목 영역</h2>
+					<h2><c:out value='${NEO_MENU_NM}'/></h2>
 				</div>
 				
 				<!-- 공통 표시부// -->
@@ -247,7 +228,7 @@ function goPageNum(page) {
 				<tr>
 					<td width="10%" class="td_title"><spring:message code='ANATBLTL005'/></td><!-- 메일명 -->
 					<td width="22%" class="td_body">
-						<input type="text" style="border:1px solid #c0c0c0;"  name="searchTaskNm" class="input" style="width:195;" value="<c:out value='${searchVO.searchTaskNm}'/>">
+						<input type="text" style="border:1px solid #c0c0c0;" id="searchTaskNm" name="searchTaskNm" class="input" style="width:195;" value="<c:out value='${searchVO.searchTaskNm}'/>">
 					</td>
 					<td width="10%" class="td_title"><spring:message code='ANATBLTL006'/></td><!-- 캠페인 -->
 					<td width="22%" colspan=3 class="td_body">
@@ -275,7 +256,7 @@ function goPageNum(page) {
 					<td width="22%" class="td_body">
 						<!-- 관리자의 경우 전체 요청그룹을 전시하고 그 외의 경우에는 해당 그룹만 전시함 -->
 						<c:if test="${'Y' eq NEO_ADMIN_YN}">
-							<select name="searchDeptNo" style="width: 140px;" class="select" onchange="javascript:getUserList(this.value);">
+							<select id="searchDeptNo" name="searchDeptNo" style="width: 140px;" class="select" onchange="javascript:getUserList(this.value);">
 								<option value="0">:: <spring:message code='COMTBLLB004'/> ::</option><!-- 그룹 선택 -->
 								<c:if test="${fn:length(deptList) > 0}">
 									<c:forEach items="${deptList}" var="dept">
@@ -441,7 +422,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="tab1" style="display=">
+										<div id="tab1" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -464,7 +445,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="tab2" style="display=">
+										<div id="tab2" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -487,7 +468,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="tab3" style="display=">
+										<div id="tab3" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -510,7 +491,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="tab4" style="display=">
+										<div id="tab4" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -533,7 +514,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="tab5" style="display=">
+										<div id="tab5" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -556,7 +537,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="tab6" style="display=">
+										<div id="tab6" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -604,7 +585,7 @@ function goPageNum(page) {
 							<table width="100%" border="0" cellspacing="0" cellpadding="0">
 								<tr>
 									<td>
-										<div id="click_age" style="display=none">
+										<div id="click_age" style="display:none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -613,7 +594,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="age" style="display=">
+										<div id="age" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -624,7 +605,7 @@ function goPageNum(page) {
 										</div>
 									</td>
 									<td>
-										<div id="click_wedding" style="display=none">
+										<div id="click_wedding" style="display:none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -633,7 +614,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="wedding" style="display=">
+										<div id="wedding" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -644,7 +625,7 @@ function goPageNum(page) {
 										</div>
 									</td>
 									<td>
-										<div id="click_gender" style="display=none">
+										<div id="click_gender" style="display:none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -653,7 +634,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="gender" style="display=">
+										<div id="gender" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -664,7 +645,7 @@ function goPageNum(page) {
 										</div>
 									</td>
 									<td>
-										<div id="click_zip" style="display=none">
+										<div id="click_zip" style="display:none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -673,7 +654,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="zip" style="display=">
+										<div id="zip" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -684,7 +665,7 @@ function goPageNum(page) {
 										</div>
 									</td>
 									<td>
-										<div id="click_job" style="display=none">
+										<div id="click_job" style="display:none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -693,7 +674,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="job" style="display=">
+										<div id="job" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -704,7 +685,7 @@ function goPageNum(page) {
 										</div>
 									</td>
 									<td>
-										<div id="click_regyr" style="display=none">
+										<div id="click_regyr" style="display:none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -713,7 +694,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="regyr" style="display=">
+										<div id="regyr" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -724,7 +705,7 @@ function goPageNum(page) {
 										</div>
 									</td>
 									<td>
-										<div id="click_regst" style="display=none">
+										<div id="click_regst" style="display:none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -733,7 +714,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="regst" style="display=">
+										<div id="regst" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -744,7 +725,7 @@ function goPageNum(page) {
 										</div>
 									</td>
 									<td>
-										<div id="click_phmk" style="display=none">
+										<div id="click_phmk" style="display:none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -753,7 +734,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="phmk" style="display=">
+										<div id="phmk" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -764,7 +745,7 @@ function goPageNum(page) {
 										</div>
 									</td>
 									<td>
-										<div id="click_cyonphmd" style="display=none">
+										<div id="click_cyonphmd" style="display:none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -773,7 +754,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="cyonphmd" style="display=">
+										<div id="cyonphmd" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -784,7 +765,7 @@ function goPageNum(page) {
 										</div>
 									</td>
 									<td>
-										<div id="click_wowphmd" style="display=none">
+										<div id="click_wowphmd" style="display:none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -793,7 +774,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="wowphmd" style="display=">
+										<div id="wowphmd" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -804,7 +785,7 @@ function goPageNum(page) {
 										</div>
 									</td>
 									<td>
-										<div id="click_telcom" style="display=none">
+										<div id="click_telcom" style="display:none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -813,7 +794,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="telcom" style="display=">
+										<div id="telcom" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -824,7 +805,7 @@ function goPageNum(page) {
 										</div>
 									</td>
 									<td>
-										<div id="click_bizty" style="display=none">
+										<div id="click_bizty" style="display:none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -833,7 +814,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="bizty" style="display=">
+										<div id="bizty" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -844,7 +825,7 @@ function goPageNum(page) {
 										</div>
 									</td>
 									<td>
-										<div id="click_mlvl" style="display=none">
+										<div id="click_mlvl" style="display:none">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -853,7 +834,7 @@ function goPageNum(page) {
 												</tr>
 											</table>
 										</div>
-										<div id="mlvl" style="display=">
+										<div id="mlvl" style="display:">
 											<table width="100%" border="0" cellspacing="0" cellpadding="0">
 												<tr>
 													<td width="6"></td>
@@ -867,18 +848,12 @@ function goPageNum(page) {
 							</table>
 						</div>
 						<!-- <div id="divReportView" style="width:100%;height:1000px;overflow:auto;"></div> -->
-						<iframe name="iFrmReport" border='0' frameborder='1' scrolling='no' width='100%' height='1070'></iframe>
+						<iframe name="iFrmReport" border='0' frameborder='1' scrolling='no' width='100%' height='1100'></iframe>
 					</td>
 				</tr>
 			</table>
 			<!------------------------------------------	OZREPORT	END		------------------------------------------>
 			<!------------------------------------------------------------------------------------------------------------>
-
-			<form name="formReport">
-			<input type="hidden" id="saveNm" name="saveNm" value="">
-			</form>
-
-
 
 
 

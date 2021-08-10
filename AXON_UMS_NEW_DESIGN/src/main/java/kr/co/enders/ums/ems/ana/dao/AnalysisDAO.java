@@ -97,5 +97,55 @@ public class AnalysisDAO implements AnalysisMapper {
 	public List<MailErrorVO> getJoinErrorList(SendLogVO sendLogVO) throws Exception {
 		return sqlSessionEms.getMapper(AnalysisMapper.class).getJoinErrorList(sendLogVO);
 	}
+
+	@Override
+	public List<TaskVO> getTaskList(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getTaskList(taskVO);
+	}
+
+	@Override
+	public TaskVO getTaskInfo(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getTaskInfo(taskVO);
+	}
+
+	@Override
+	public MailSummVO getTaskSummResult(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getTaskSummResult(taskVO);
+	}
+
+	@Override
+	public List<MailErrorVO> getTaskSummDetail(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getTaskSummDetail(taskVO);
+	}
+
+	@Override
+	public List<MailErrorVO> getTaskErrorList(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getTaskErrorList(taskVO);
+	}
+
+	@Override
+	public List<MailDomainVO> getTaskDomainList(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getTaskDomainList(taskVO);
+	}
+
+	@Override
+	public List<SendLogVO> getTaskSendHourList(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getTaskSendHourList(taskVO);
+	}
+
+	@Override
+	public SendLogVO getTaskSendHourSum(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getTaskSendHourSum(taskVO);
+	}
+
+	@Override
+	public List<RespLogVO> getTaskRespHourList(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getTaskRespHourList(taskVO);
+	}
+
+	@Override
+	public RespLogVO getTaskRespHourSum(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getTaskRespHourSum(taskVO);
+	}
 	
 }

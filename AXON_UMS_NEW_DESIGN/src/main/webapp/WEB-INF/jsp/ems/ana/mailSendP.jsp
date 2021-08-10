@@ -2,7 +2,7 @@
 	/**********************************************************
 	*	작성자 : 김상진
 	*	작성일시 : 2021.08.04
-	*	설명 : 통계분석 발송시간별 화면
+	*	설명 : 통계분석 메일별분석 발송시간별 화면
 	**********************************************************/
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -119,7 +119,7 @@ function goPageNum(page) {
 			<td class="td_body" align="right">0%</td>
 		</tr>
 	</c:if>
-	<c:if test="${not empty sendSum}">
+	<c:if test="${not empty sendSum && pageUtil.totalPage == pageUtil.currPage}">
 		<tr>
 			<td class="td_body" align="center" colspan=2><spring:message code='ANATBLLB112'/></td><!-- 합계 -->
 			<td class="td_body" align="right">

@@ -164,17 +164,39 @@ function goSegList() {
 }
 </script>
 
-<div class="ex-layout">
-	<div class="gnb">
-		<!-- 상단메뉴화면 -->
-		<%@ include file="/WEB-INF/jsp/inc/menu.jsp" %>
-	</div>
-	<div class="main">
-		<div id="lnb" class="lnb"></div>
-		<div class="content">
-		
-			
-			<!-- 메인 컨텐츠 Start -->
+<body>
+	<div id="wrap">
+
+		<!-- lnb// -->
+		<div id="lnb">
+			<!-- LEFT MENU -->
+			<%@ include file="/WEB-INF/jsp/inc/menu_ems.jsp" %>
+			<!-- LEFT MENU -->
+		</div>
+		<!-- //lnb -->
+
+		<!-- content// -->
+		<div id="content">
+
+			<!-- cont-head// -->
+			<section class="cont-head">
+				<div class="title">
+					<h2><c:out value='${NEO_MENU_NM}'/></h2>
+				</div>
+				
+				<!-- 공통 표시부// -->
+				<%@ include file="/WEB-INF/jsp/inc/top.jsp" %>
+				<!-- //공통 표시부 -->
+				
+			</section>
+			<!-- //cont-head -->
+
+			<!-- cont-body// -->
+			<section class="cont-body">
+
+
+
+
 			<form id="searchForm" name="searchForm" method="post">
 			<input type="hidden" name="page" value="<c:out value='${searchVO.page}'/>">
 			<input type="hidden" name="searchSegNm" value="<c:out value='${searchVO.searchSegNm}'/>">
@@ -285,15 +307,17 @@ function goSegList() {
 			</form>
 
 
-			
-			<!-- 메인 컨텐츠 End -->
+
+
+			</section>
+			<!-- //cont-body -->
 			
 		</div>
+		<!-- // content -->
 	</div>
-	<div class="footer">
-		<%@ include file="/WEB-INF/jsp/inc/footer.jsp" %>
-	</div>
-</div>
 
+	<!-- 팝업// -->
+	<%@ include file="/WEB-INF/jsp/inc/popup.jsp" %>
+	<!-- //팝업 -->
 </body>
 </html>
