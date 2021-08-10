@@ -16,6 +16,7 @@ import kr.co.enders.ums.ems.ana.vo.MailErrorVO;
 import kr.co.enders.ums.ems.ana.vo.MailSummVO;
 import kr.co.enders.ums.ems.ana.vo.RespLogVO;
 import kr.co.enders.ums.ems.ana.vo.SendLogVO;
+import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
 
 @Repository
@@ -146,6 +147,21 @@ public class AnalysisDAO implements AnalysisMapper {
 	@Override
 	public RespLogVO getTaskRespHourSum(TaskVO taskVO) throws Exception {
 		return sqlSessionEms.getMapper(AnalysisMapper.class).getTaskRespHourSum(taskVO);
+	}
+
+	@Override
+	public CampaignVO getCampaignInfo(CampaignVO campaignVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getCampaignInfo(campaignVO);
+	}
+
+	@Override
+	public List<MailSummVO> getCampMailList(CampaignVO campaignVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getCampMailList(campaignVO);
+	}
+
+	@Override
+	public MailSummVO getCampMailTotal(CampaignVO campaignVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getCampMailTotal(campaignVO);
 	}
 	
 }

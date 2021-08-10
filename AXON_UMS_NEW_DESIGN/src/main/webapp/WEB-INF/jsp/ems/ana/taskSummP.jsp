@@ -540,17 +540,20 @@ function openError(step1, step2) {
 	</table>
 </c:if>
 
-<div id="errorDetailChart" style="width:1100px;height:300px;">
+<div id="errorDetailChart" style="width:1600px;height:300px;"></div>
 <script type="text/javascript">
 var chartDom = document.getElementById('errorDetailChart');
 var myChart = echarts.init(chartDom);
 var option;
 
 option = {
+	    tooltip: {
+	        trigger: 'item'
+	    },
 	    xAxis: [{
 	        type: 'category',
 	        axisLabel : {
-	        	rotate : 40
+	        	rotate : 0
 	        },
 	        data: ['Syntax', 'Web Agent', 'DB Agent', 'Mail Body', 'Domain', 'Network', 'CONNECT', 'HELO', 'MAIL FROM', 'RCPT TO', 'RESET', 'DATA', 'DOT', 'QUIT']
 	    }],
@@ -558,17 +561,29 @@ option = {
 	        type: 'value'
 	    },
 	    series: [{
-	        data: [<c:out value='${syntaxErrCnt}'/>, <c:out value='${webAgentErrCnt}'/>, <c:out value='${dbAgentErrCnt}'/>, <c:out value='${mailBodyErrCnt}'/>, 
-	        	<c:out value='${domainErrCnt}'/>, <c:out value='${networkErrCnt}'/>, <c:out value='${connectErrCnt}'/>, <c:out value='${heloErrCnt}'/>, 
-	        	<c:out value='${mailFromErrCnt}'/>, <c:out value='${rcptToErrCnt}'/>, <c:out value='${resetErrCnt}'/>, <c:out value='${dataErrCnt}'/>, 
-	        	<c:out value='${dotErrCnt}'/>, <c:out value='${quitErrCnt}'/>],
-	        type: 'bar'
-	    }]
+            name: '세부에러',
+	        type: 'bar',
+	        data: [
+	        	{ value: <c:out value='${syntaxErrCnt}'/>, itemStyle: {color:'#5470c6'} },
+	        	{ value: <c:out value='${webAgentErrCnt}'/>, itemStyle: {color:'#91cc75'} },
+	        	{ value: <c:out value='${dbAgentErrCnt}'/>, itemStyle: {color:'#fac858'} },
+	        	{ value: <c:out value='${mailBodyErrCnt}'/>, itemStyle: {color:'#ee6666'} },
+	        	{ value: <c:out value='${domainErrCnt}'/>, itemStyle: {color:'#73c0de'} },
+	        	{ value: <c:out value='${networkErrCnt}'/>, itemStyle: {color:'#3ba272'} },
+	        	{ value: <c:out value='${connectErrCnt}'/>, itemStyle: {color:'#fc8452'} },
+	        	{ value: <c:out value='${heloErrCnt}'/>, itemStyle: {color:'#9a60b4'} },
+	        	{ value: <c:out value='${mailFromErrCnt}'/>, itemStyle: {color:'#ea7ccc'} },
+	        	{ value: <c:out value='${rcptToErrCnt}'/>, itemStyle: {color:'#5470c6'} },
+	        	{ value: <c:out value='${resetErrCnt}'/>, itemStyle: {color:'#91cc75'} },
+	        	{ value: <c:out value='${dataErrCnt}'/>, itemStyle: {color:'#fac858'} },
+	        	{ value: <c:out value='${dotErrCnt}'/>, itemStyle: {color:'#ee6666'} },
+	        	{ value: <c:out value='${quitErrCnt}'/>, itemStyle: {color:'#73c0de'} }
+	        ]
+	    }],
 	};
 
 option && myChart.setOption(option);
 </script>
-</div>
 
 
 </body>

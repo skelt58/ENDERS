@@ -16,6 +16,7 @@ import kr.co.enders.ums.ems.ana.vo.MailErrorVO;
 import kr.co.enders.ums.ems.ana.vo.MailSummVO;
 import kr.co.enders.ums.ems.ana.vo.RespLogVO;
 import kr.co.enders.ums.ems.ana.vo.SendLogVO;
+import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
 
 @Service
@@ -147,6 +148,21 @@ public class AnalysisServiceImpl implements AnalysisService {
 	@Override
 	public RespLogVO getTaskRespHourSum(TaskVO taskVO) throws Exception {
 		return analysisDAO.getTaskRespHourSum(taskVO);
+	}
+
+	@Override
+	public CampaignVO getCampaignInfo(CampaignVO campaignVO) throws Exception {
+		return analysisDAO.getCampaignInfo(campaignVO);
+	}
+
+	@Override
+	public List<MailSummVO> getCampMailList(CampaignVO campaignVO) throws Exception {
+		return analysisDAO.getCampMailList(campaignVO);
+	}
+
+	@Override
+	public MailSummVO getCampMailTotal(CampaignVO campaignVO) throws Exception {
+		return analysisDAO.getCampMailTotal(campaignVO);
 	}
 
 }

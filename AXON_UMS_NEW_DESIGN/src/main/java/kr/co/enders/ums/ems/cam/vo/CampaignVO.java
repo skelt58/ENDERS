@@ -37,6 +37,7 @@ public class CampaignVO extends CommonVO {
 	//추가정보
 	private String uilang;			// 언어권
 	private String adminYn;			// 관리자여부
+	private String campNos;			// 캠페인번호멀티선택용
 	
 	public int getCampNo() {
 		return campNo;
@@ -187,5 +188,11 @@ public class CampaignVO extends CommonVO {
 	}
 	public void setAdminYn(String adminYn) {
 		this.adminYn = adminYn;
+	}
+	public String getCampNos() {
+		return campNos;
+	}
+	public void setCampNos(String campNos) {
+		this.campNos = campNos;
 	}
 }

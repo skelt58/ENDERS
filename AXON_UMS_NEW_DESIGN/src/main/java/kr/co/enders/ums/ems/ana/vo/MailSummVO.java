@@ -5,22 +5,32 @@
  */
 package kr.co.enders.ums.ems.ana.vo;
 
-public class MailSummVO {
+import kr.co.enders.ums.com.vo.CommonVO;
+
+public class MailSummVO extends CommonVO {
 	
-	private int taskNo;		// 주업무번호
-	private int subTaskNo;	// 보조업무번호
-	private int sendCnt;	// 대상수
-	private int succCnt;	// 성공수
-	private int failCnt;	// 실패수
-	private int openCnt;	// 오픈수
-	private int validCnt;	// 유효오픈수
-	private int clickCnt;	// 링크클릭수
-	private int blockCnt;	// 수신거부수
+	private int taskNo;			// 주업무번호
+	private String taskNm;		// 주업무명
+	private int subTaskNo;		// 보조업무번호
+	private int sendCnt;		// 대상수
+	private int succCnt;		// 성공수
+	private int failCnt;		// 실패수
+	private int openCnt;		// 오픈수
+	private int validCnt;		// 유효오픈수
+	private int clickCnt;		// 링크클릭수
+	private int blockCnt;		// 수신거부수
+	private String sendRepeat;	// 정기발송여부
 	public int getTaskNo() {
 		return taskNo;
 	}
 	public void setTaskNo(int taskNo) {
 		this.taskNo = taskNo;
+	}
+	public String getTaskNm() {
+		return taskNm;
+	}
+	public void setTaskNm(String taskNm) {
+		this.taskNm = taskNm;
 	}
 	public int getSubTaskNo() {
 		return subTaskNo;
@@ -69,5 +79,11 @@ public class MailSummVO {
 	}
 	public void setBlockCnt(int blockCnt) {
 		this.blockCnt = blockCnt;
+	}
+	public String getSendRepeat() {
+		return sendRepeat;
+	}
+	public void setSendRepeat(String sendRepeat) {
+		this.sendRepeat = sendRepeat;
 	}
 }

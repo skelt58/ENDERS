@@ -37,6 +37,7 @@ import kr.co.enders.ums.ems.ana.vo.MailErrorVO;
 import kr.co.enders.ums.ems.ana.vo.MailSummVO;
 import kr.co.enders.ums.ems.ana.vo.RespLogVO;
 import kr.co.enders.ums.ems.ana.vo.SendLogVO;
+import kr.co.enders.ums.ems.cam.service.CampaignService;
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
 import kr.co.enders.util.MessageUtil;
@@ -54,6 +55,9 @@ public class AnalysisController {
 	
 	@Autowired
 	private AnalysisService analysisService;
+	
+	@Autowired
+	private CampaignService campaignService;
 	
 	@Autowired
 	private PropertiesUtil properties;
@@ -90,12 +94,10 @@ public class AnalysisController {
 		}
 		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
 		searchVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
+		
 		// 페이지 설정
 		int page = StringUtil.setNullToInt(searchVO.getPage(), 1);
-		int rows = StringUtil.setNullToInt(searchVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE_ANA")));
 		searchVO.setPage(page);
-		searchVO.setRows(rows);
-		int totalCount = 0;
 
 		// 캠페인 목록 조회
 		List<CampaignVO> campList = null;
@@ -130,6 +132,50 @@ public class AnalysisController {
 			logger.error("codeService.getUserList error = " + e);
 		}
 		
+		model.addAttribute("searchVO", searchVO);	// 검색 항목
+		model.addAttribute("campList", campList);	// 캠페인 목록
+		model.addAttribute("deptList", deptList);	// 부서 목록
+		model.addAttribute("userList", userList);	// 사용자 목록
+		
+		return "ems/ana/mailListP";
+	}
+	
+	/**
+	 * 통계분석 메일별분석 메일 목록을 조회한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/mailList")
+	public String goMailList(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		// 검색 기본값 설정
+		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
+		} else {
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("-", ""));
+		}
+		if(StringUtil.isNull(searchVO.getSearchEndDt())) {
+			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
+		} else {
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("-", ""));
+		}
+		if(searchVO.getSearchDeptNo() == 0) {
+			if(!"Y".equals((String)session.getAttribute("NEO_ADMIN_YN"))) {
+				searchVO.setSearchDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+			}
+		}
+		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		searchVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
+		// 페이지 설정
+		int page = StringUtil.setNullToInt(searchVO.getPage(), 1);
+		int rows = StringUtil.setNullToInt(searchVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE_ANA")));
+		searchVO.setPage(page);
+		searchVO.setRows(rows);
+		int totalCount = 0;
+
 		// 메일 목록 조회
 		List<TaskVO> mailList = null;
 		try {
@@ -144,14 +190,10 @@ public class AnalysisController {
 		PageUtil pageUtil = new PageUtil();
 		pageUtil.init(request, searchVO.getPage(), totalCount, rows);
 		
-		model.addAttribute("searchVO", searchVO);	// 검색 항목
 		model.addAttribute("mailList", mailList);	// 메일 목록
-		model.addAttribute("campList", campList);	// 캠페인 목록
-		model.addAttribute("deptList", deptList);	// 부서 목록
-		model.addAttribute("userList", userList);	// 사용자 목록
 		model.addAttribute("pageUtil", pageUtil);	// 페이징
 		
-		return "ems/ana/mailListP";
+		return "ems/ana/mailList";
 	}
 	
 	/**
@@ -1050,11 +1092,226 @@ public class AnalysisController {
 		return "ems/ana/taskRespP";
 	}
 	
-	
+	/**
+	 * 통계분석 캠페인별분석 화면을 출력한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/campListP")
-	public String goCampListP(Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public String goCampListP(@ModelAttribute CampaignVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goCampListP searchCampNm  = " + searchVO.getSearchCampNm());
+		logger.debug("goCampListP searchCampTy  = " + searchVO.getSearchCampTy());
+		logger.debug("goCampListP searchStatus  = " + searchVO.getSearchStatus());
+		logger.debug("goCampListP searchDeptNo  = " + searchVO.getSearchDeptNo());
+		logger.debug("goCampListP searchUserId  = " + searchVO.getSearchUserId());
+		logger.debug("goCampListP searchStartDt = " + searchVO.getSearchStartDt());
+		logger.debug("goCampListP searchEndDt   = " + searchVO.getSearchEndDt());
+		
+		// 검색 기본값 설정
+		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
+		} else {
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("-", ""));
+		}
+		if(StringUtil.isNull(searchVO.getSearchEndDt())) {
+			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
+		} else {
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("-", ""));
+		}
+		if(searchVO.getSearchDeptNo() == 0) {
+			if(!"Y".equals((String)session.getAttribute("NEO_ADMIN_YN"))) {
+				searchVO.setSearchDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+			}
+		}
+		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		searchVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
+		
+		// 페이지 설정
+		int page = StringUtil.setNullToInt(searchVO.getPage(), 1);
+		searchVO.setPage(page);
+		
+		// 캠페인목적 목록
+		CodeVO campTy = new CodeVO();
+		campTy.setUilang((String)session.getAttribute("NEO_UILANG"));
+		campTy.setCdGrp("C004");
+		campTy.setUseYn("Y");
+		List<CodeVO> campTyList = null;
+		try {
+			campTyList = codeService.getCodeList(campTy);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList[C004] error = " + e);
+		}
+		
+		// 캠페인상태 목록
+		CodeVO status = new CodeVO();
+		status.setUilang((String)session.getAttribute("NEO_UILANG"));
+		status.setCdGrp("C014");
+		status.setUseYn("Y");
+		List<CodeVO> statusList = null;
+		try {
+			statusList = codeService.getCodeList(status);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList[C014] error = " + e);
+		}
+		
+		// 부서 목록 조회
+		CodeVO dept = new CodeVO();
+		dept.setStatus("000"); // 정상
+		List<CodeVO> deptList = null;
+		try {
+			deptList = codeService.getDeptList(dept);
+		} catch(Exception e) {
+			logger.error("codeService.getDeptList error = " + e);
+		}
+		
+		// 사용자 목록 조회
+		CodeVO user = new CodeVO();
+		user.setDeptNo(searchVO.getSearchDeptNo());
+		user.setStatus("000");
+		List<CodeVO> userList = null;
+		try {
+			userList = codeService.getUserList(user);
+		} catch(Exception e) {
+			logger.error("codeService.getUserList error = " + e);
+		}
+		
+		model.addAttribute("searchVO", searchVO);		// 검색항목
+		model.addAttribute("campTyList", campTyList);	// 캠페인목적
+		model.addAttribute("statusList", statusList);	// 캠페인상태
+		model.addAttribute("deptList", deptList);		// 부서
+		model.addAttribute("userList", userList);		// 사용자
 		
 		return "ems/ana/campListP";
+	}
+	
+	/**
+	 * 통계분석 캠페인별분석 화면에서 캠페인 목록 조회
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/campList")
+	public String goCampList(@ModelAttribute CampaignVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goCampList searchCampNm  = " + searchVO.getSearchCampNm());
+		logger.debug("goCampList searchCampTy  = " + searchVO.getSearchCampTy());
+		logger.debug("goCampList searchStatus  = " + searchVO.getSearchStatus());
+		logger.debug("goCampList searchDeptNo  = " + searchVO.getSearchDeptNo());
+		logger.debug("goCampList searchUserId  = " + searchVO.getSearchUserId());
+		logger.debug("goCampList searchStartDt = " + searchVO.getSearchStartDt());
+		logger.debug("goCampList searchEndDt   = " + searchVO.getSearchEndDt());
+		
+		// 검색 기본값 설정
+		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
+		} else {
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("-", ""));
+		}
+		if(StringUtil.isNull(searchVO.getSearchEndDt())) {
+			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
+		} else {
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("-", ""));
+		}
+		if(searchVO.getSearchDeptNo() == 0) {
+			if(!"Y".equals((String)session.getAttribute("NEO_ADMIN_YN"))) {
+				searchVO.setSearchDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+			}
+		}
+		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		searchVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
+		
+		// 페이지 설정
+		int page = StringUtil.setNullToInt(searchVO.getPage(), 1);
+		int rows = StringUtil.setNullToInt(searchVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE_ANA")));
+		searchVO.setPage(page);
+		searchVO.setRows(rows);
+		int totalCount = 0;
+
+		// 캠페인 목록 조회
+		List<CampaignVO> campaignList = null;
+		try {
+			campaignList = campaignService.getCampaignList(searchVO);
+		} catch(Exception e) {
+			logger.error("campaignService.getCampaignList error = " + e);
+		}
+		
+		if(campaignList != null && campaignList.size() > 0) {
+			totalCount = campaignList.get(0).getTotalCount();
+		}
+		PageUtil pageUtil = new PageUtil();
+		pageUtil.init(request, searchVO.getPage(), totalCount, rows);
+		
+		model.addAttribute("campaignList", campaignList);	// 캠페인
+		model.addAttribute("pageUtil", pageUtil);			// 페이징
+		
+		return "ems/ana/campList";
+	}
+	
+	/**
+	 * 통계분석 캠페인별분석 화면에서 캠페인 분석결과
+	 * @param campVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/campSummP")
+	public String goCampSummP(@ModelAttribute CampaignVO campVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goCampSummP campNo = " + campVO.getCampNo());
+		campVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		
+		// 캠페인 정보 조회
+		CampaignVO campInfo = null;
+		try {
+			campInfo = analysisService.getCampaignInfo(campVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getCampaignInfo error = " + e);
+		}
+		
+		// 페이지 설정
+		int page = StringUtil.setNullToInt(campVO.getPage(), 1);
+		int rows = StringUtil.setNullToInt(campVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE")));
+		campVO.setPage(page);
+		campVO.setRows(rows);
+		int totalCount = 0;
+
+		// 캠페인 메일 목록 조회
+		List<MailSummVO> mailList = null;
+		try {
+			mailList = analysisService.getCampMailList(campVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getCampMailList error = " + e);
+		}
+		
+		// 페이징 설정
+		if(mailList != null && mailList.size() > 0) {
+			totalCount = mailList.get(0).getTotalCount();
+		}
+		PageUtil pageUtil = new PageUtil();
+		pageUtil.init(request, campVO.getPage(), totalCount, rows);
+		
+		// 캠페인 메일 합계 조회
+		MailSummVO mailTotal = null;
+		try {
+			mailTotal = analysisService.getCampMailTotal(campVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getCampMailTotal error = " + e);
+		}
+		
+		model.addAttribute("campVO", campVO);			// 조건정보
+		model.addAttribute("campInfo", campInfo);		// 캠페인 정보
+		model.addAttribute("mailList", mailList);		// 캠페인 메일 목록
+		model.addAttribute("mailTotal", mailTotal);		// 캠페인 메일 합계
+		model.addAttribute("pageUtil", pageUtil);		// 페이징
+		
+		return "ems/ana/campSummP";
 	}
 	
 	
