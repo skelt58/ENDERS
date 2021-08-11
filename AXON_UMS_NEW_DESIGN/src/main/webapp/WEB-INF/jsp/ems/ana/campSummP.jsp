@@ -8,6 +8,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/inc/header.jsp" %>
 
+<script type="text/javascript">
+function openMail(taskNo) {
+	var url = "./mailInfoP.ums?taskNo=" + taskNo + "&subTaskNo=1";
+	var feature = "menubar=no, scrollbars=yes, toolbar=no, width=1000, height=500, top=0, left=0";
+	window.open(url, "", feature);
+}
+</script>
+
 <body>
 
 	<table width="700" border="1" cellspacing="0" cellpadding="0" class="table_line_outline">
@@ -66,8 +74,8 @@
 	<c:if test="${fn:length(mailList) > 0}">
 		<c:forEach items="${mailList}" var="mail">
 		<tr>
-			<td class="td_body" width=110 align="center" onClick="openMail('<c:out value='${mail.taskNo}'/>')" style="cursor:hand"><b><c:out value='${mail.taskNo}'/></b></td>
-			<td class="td_body" colspan=5 onClick="openMail('<c:out value='${mail.taskNo}'/>')" style="cursor:hand"><b><c:out value='${mail.taskNm}'/></b></td>
+			<td class="td_body" width=110 align="center" onClick="openMail('<c:out value='${mail.taskNo}'/>')" style="cursor:pointer;"><b><c:out value='${mail.taskNo}'/></b></td>
+			<td class="td_body" colspan=5 onClick="openMail('<c:out value='${mail.taskNo}'/>')" style="cursor:pointer;"><b><c:out value='${mail.taskNm}'/></b></td>
 		</tr>
 		<tr>
 			<td class="td_body" width=110 align="center"><spring:message code='ANATBLLB122'/></td><!-- 발송수 -->

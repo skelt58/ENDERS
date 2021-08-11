@@ -165,4 +165,34 @@ public class AnalysisServiceImpl implements AnalysisService {
 		return analysisDAO.getCampMailTotal(campaignVO);
 	}
 
+	@Override
+	public List<TaskVO> getJoinCampList(SendLogVO sendLogVO) throws Exception {
+		return analysisDAO.getJoinCampList(sendLogVO);
+	}
+
+	@Override
+	public RespLogVO getJoinSendResultCamp(SendLogVO sendLogVO) throws Exception {
+		return analysisDAO.getJoinSendResultCamp(sendLogVO);
+	}
+
+	@Override
+	public List<MailErrorVO> getJoinErrorListCamp(SendLogVO sendLogVO) throws Exception {
+		return analysisDAO.getJoinErrorListCamp(sendLogVO);
+	}
+
+	@Override
+	public List<TaskVO> getJoinTaskList(SendLogVO sendLogVO) throws Exception {
+		return analysisDAO.getJoinTaskList(sendLogVO);
+	}
+
+	@Override
+	public RespLogVO getJoinSendResultTask(SendLogVO sendLogVO) throws Exception {
+		return analysisDAO.getJoinSendResultTask(sendLogVO);
+	}
+
+	@Override
+	public List<MailErrorVO> getJoinErrorListTask(SendLogVO sendLogVO) throws Exception {
+		return analysisDAO.getJoinErrorListTask(sendLogVO);
+	}
+
 }

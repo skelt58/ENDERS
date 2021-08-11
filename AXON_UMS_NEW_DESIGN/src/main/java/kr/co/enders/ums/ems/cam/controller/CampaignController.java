@@ -95,12 +95,12 @@ public class CampaignController {
 		if(searchVO.getSearchStartDt() == null || "".equals(searchVO.getSearchStartDt())) {
 			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
 		} else {
-			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("-", ""));
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
 		}
 		if(searchVO.getSearchEndDt() == null || "".equals(searchVO.getSearchEndDt())) {
 			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
 		} else {
-			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("-", ""));
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
 		}
 		if(searchVO.getSearchStatus() == null || "".equals(searchVO.getSearchStatus())) searchVO.setSearchStatus("000");
 		if(searchVO.getSearchDeptNo() == 0) {
@@ -323,12 +323,12 @@ public class CampaignController {
 		if(searchVO.getSearchStartDt() == null || "".equals(searchVO.getSearchStartDt())) {
 			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
 		} else {
-			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("-", ""));
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
 		}
 		if(searchVO.getSearchEndDt() == null || "".equals(searchVO.getSearchEndDt())) {
 			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
 		} else {
-			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("-", ""));
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
 		}
 		if(searchVO.getSearchStatus() == null || "".equals(searchVO.getSearchStatus())) searchVO.setSearchStatus("000");
 		if(searchVO.getSearchDeptNo() == 0) {
@@ -420,8 +420,8 @@ public class CampaignController {
 		logger.debug("goMailList campNo           = " + searchVO.getCampNo());
 		
 		// 검색 기본값 설정
-		searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("-", ""));
-		searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("-", ""));
+		searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
+		searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
 		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
 		searchVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
 		List<String> workStatusList = new ArrayList<String>();
@@ -735,7 +735,7 @@ public class CampaignController {
 		if(StringUtil.isNull(taskVO.getSendYmd())) taskVO.setSendYmd("0000-00-00");									// 예약시간(예약일)
 		String sendHour = StringUtil.setTwoDigitsString(taskVO.getSendHour());										// 예약시간(시)
 		String sendMin = StringUtil.setTwoDigitsString(taskVO.getSendMin());										// 예약시간(분)
-		taskVO.setSendDt( taskVO.getSendYmd().replaceAll("-", "") + sendHour + sendMin );							// 예약일시
+		taskVO.setSendDt( taskVO.getSendYmd().replaceAll("\\.", "") + sendHour + sendMin );							// 예약일시
 		taskVO.setRespEndDt("999999999999");
 		if(StringUtil.isNull(taskVO.getIsSendTerm())) taskVO.setIsSendTerm("N");									// 정기발송체크여부
 		if(StringUtil.isNull(taskVO.getSendTermEndDt())) taskVO.setSendTermEndDt("0000-00-00");						// 정기발송종료일
@@ -745,7 +745,7 @@ public class CampaignController {
 		if(StringUtil.isNull(taskVO.getSendTestEm())) taskVO.setSendTestEm("");
 		if(StringUtil.isNull(taskVO.getComposerValue())) taskVO.setComposerValue("");								// 메일내용
 		if("Y".equals(taskVO.getIsSendTerm())) {
-			taskVO.setSendTermEndDt( taskVO.getSendTermEndDt().replaceAll("-", "") + "2359" );						// 정기발송종료일
+			taskVO.setSendTermEndDt( taskVO.getSendTermEndDt().replaceAll("\\.", "") + "2359" );						// 정기발송종료일
 			taskVO.setSendRepeat("001");
 		} else {
 			taskVO.setSendTermEndDt("");
@@ -1129,7 +1129,7 @@ public class CampaignController {
 		if(StringUtil.isNull(taskVO.getSendYmd())) taskVO.setSendYmd("0000-00-00");									// 예약시간(예약일)
 		String sendHour = StringUtil.setTwoDigitsString(taskVO.getSendHour());										// 예약시간(시)
 		String sendMin = StringUtil.setTwoDigitsString(taskVO.getSendMin());										// 예약시간(분)
-		taskVO.setSendDt( taskVO.getSendYmd().replaceAll("-", "") + sendHour + sendMin );							// 예약일시
+		taskVO.setSendDt( taskVO.getSendYmd().replaceAll("\\.", "") + sendHour + sendMin );							// 예약일시
 		taskVO.setRespEndDt("999999999999");
 		if(StringUtil.isNull(taskVO.getIsSendTerm())) taskVO.setIsSendTerm("N");									// 정기발송체크여부
 		if(StringUtil.isNull(taskVO.getSendTermEndDt())) taskVO.setSendTermEndDt("0000-00-00");						// 정기발송종료일
@@ -1139,7 +1139,7 @@ public class CampaignController {
 		if(StringUtil.isNull(taskVO.getSendTestEm())) taskVO.setSendTestEm("");
 		if(StringUtil.isNull(taskVO.getComposerValue())) taskVO.setComposerValue("");								// 메일내용
 		if("Y".equals(taskVO.getIsSendTerm())) {
-			taskVO.setSendTermEndDt( taskVO.getSendTermEndDt().replaceAll("-", "") + "2359" );						// 정기발송종료일
+			taskVO.setSendTermEndDt( taskVO.getSendTermEndDt().replaceAll("\\.", "") + "2359" );						// 정기발송종료일
 			taskVO.setSendRepeat("001");
 		} else {
 			taskVO.setSendTermEndDt("");
@@ -1735,7 +1735,7 @@ public class CampaignController {
 		if(StringUtil.isNull(taskVO.getSendYmd())) taskVO.setSendYmd("0000-00-00");									// 예약시간(예약일)
 		String sendHour = StringUtil.setTwoDigitsString(taskVO.getSendHour());										// 예약시간(시)
 		String sendMin = StringUtil.setTwoDigitsString(taskVO.getSendMin());										// 예약시간(분)
-		taskVO.setSendDt( taskVO.getSendYmd().replaceAll("-", "") + sendHour + sendMin );							// 예약일시
+		taskVO.setSendDt( taskVO.getSendYmd().replaceAll("\\.", "") + sendHour + sendMin );							// 예약일시
 		taskVO.setRespEndDt("999999999999");
 		if(StringUtil.isNull(taskVO.getIsSendTerm())) taskVO.setIsSendTerm("N");									// 정기발송체크여부
 		if(StringUtil.isNull(taskVO.getSendTermEndDt())) taskVO.setSendTermEndDt("0000-00-00");						// 정기발송종료일
@@ -1745,7 +1745,7 @@ public class CampaignController {
 		if(StringUtil.isNull(taskVO.getSendTestEm())) taskVO.setSendTestEm("");
 		if(StringUtil.isNull(taskVO.getComposerValue())) taskVO.setComposerValue("");								// 메일내용
 		if("Y".equals(taskVO.getIsSendTerm())) {
-			taskVO.setSendTermEndDt( taskVO.getSendTermEndDt().replaceAll("-", "") + "2359" );						// 정기발송종료일
+			taskVO.setSendTermEndDt( taskVO.getSendTermEndDt().replaceAll("\\.", "") + "2359" );						// 정기발송종료일
 			taskVO.setSendRepeat("001");
 		} else {
 			taskVO.setSendTermEndDt("");

@@ -1,5 +1,6 @@
 $(document).ready(function() {
 	// 예약일 시작일 설정
+	/*
 	$("#searchStartDt").datepicker({
 		//showOn:"button",
 		minDate:"2021-01-01",
@@ -17,6 +18,10 @@ $(document).ready(function() {
 			$("#searchStartDt").datepicker("option", "maxDate", selectedDate);
 		}
 	});
+	*/
+	$("#searchStartDt").datepicker();
+	$("#searchEndDt").datepicker();
+
 	
 	goSearch();
 });
@@ -75,6 +80,22 @@ function goOz(campNo, target) {
 	iFrmReport.location.href = target + "?campNo=" + campNo;
 }
 
+// 병합분석 클릭시
+function goJoin() {
+	var checkCnt = 0;
+	
+	$("#listForm input[name='campNos']").each(function(idx,item){
+		if($(item).is(":checked")) {
+			checkCnt++;
+		}
+	});
+
+    if(checkCnt < 2) {
+        alert("병합할 대상을 2개이상 선택하세요.");		// ANAJSALT001
+    } else {
+		$("#listForm").attr("target","iFrmReport").attr("action","./campJoinP.ums").submit();
+	}
+}
 
 
 // 페이징

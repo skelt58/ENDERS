@@ -86,11 +86,20 @@
 					<td width="10%" class="td_title"><spring:message code='CAMTBLTL016'/></td><!-- 예약일 -->
 					<td width="22%" class="td_body">
 						<fmt:parseDate var="startDt" value="${searchVO.searchStartDt}" pattern="yyyyMMdd"/>
-						<fmt:formatDate var="searchStartDt" value="${startDt}" pattern="yyyy-MM-dd"/> 
+						<fmt:formatDate var="searchStartDt" value="${startDt}" pattern="yyyy.MM.dd"/> 
 						<fmt:parseDate var="endDt" value="${searchVO.searchEndDt}" pattern="yyyyMMdd"/>
-						<fmt:formatDate var="searchEndDt" value="${endDt}" pattern="yyyy-MM-dd"/> 
-						<input type="text" id="searchStartDt"  name="searchStartDt" class="readonly_style" style="border:1px solid #c0c0c0;width:80px;" value="<c:out value='${searchStartDt}'/>" readonly> ~
-						<input type="text" id="searchEndDt"  name="searchEndDt" class="readonly_style" style="border:1px solid #c0c0c0;width:80px;" value="<c:out value='${searchEndDt}'/>" readonly>
+						<fmt:formatDate var="searchEndDt" value="${endDt}" pattern="yyyy.MM.dd"/>
+						<div class="datepickerrange fromDate">
+							<label>
+								<input type="text" id="searchStartDt" name="searchStartDt" value="<c:out value='${searchStartDt}'/>" readonly>
+							</label>
+						</div>
+						<span class="hyppen date"></span>
+						<div class="datepickerrange toDate">
+							<label>
+								<input type="text" id="searchEndDt"  name="searchEndDt" value="<c:out value='${searchEndDt}'/>" readonly>
+							</label>
+						</div>
 					</td>
 					<td width="10%" class="td_title"><spring:message code='COMTBLTL004'/></td><!-- 사용자그룹 -->
 					<td width="22%" class="td_body">

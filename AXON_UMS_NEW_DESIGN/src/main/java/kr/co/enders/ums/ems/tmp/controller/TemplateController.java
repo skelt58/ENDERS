@@ -70,12 +70,12 @@ public class TemplateController {
 		if(searchVO.getSearchStartDt() == null || "".equals(searchVO.getSearchStartDt())) {
 			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
 		} else {
-			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("-", ""));
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
 		}
 		if(searchVO.getSearchEndDt() == null || "".equals(searchVO.getSearchEndDt())) {
 			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
 		} else {
-			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("-", ""));
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
 		}
 		if(searchVO.getSearchStatus() == null || "".equals(searchVO.getSearchStatus())) searchVO.setSearchStatus("000");
 		if(searchVO.getSearchDeptNo() == 0) {

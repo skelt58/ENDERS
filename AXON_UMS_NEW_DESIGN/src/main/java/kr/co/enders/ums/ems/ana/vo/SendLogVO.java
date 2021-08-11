@@ -19,6 +19,7 @@ public class SendLogVO extends CommonVO {
 	private String domain;	// 도메인
 	
 	private int campNo;
+	private String campNm;
 	private String campty;
 	private String custDomain;
 	private String custEm;
@@ -56,8 +57,10 @@ public class SendLogVO extends CommonVO {
 	private String searchKind;
 	private String taskNos;
 	private String subTaskNos;
+	private String campNos;
 	private String uilang;
 	private List<HashMap<String, Integer>> joinList;
+	private List<Integer> campList;
 	
 	public int getTaskNo() {
 		return taskNo;
@@ -100,6 +103,12 @@ public class SendLogVO extends CommonVO {
 	}
 	public void setCampNo(int campNo) {
 		this.campNo = campNo;
+	}
+	public String getCampNm() {
+		return campNm;
+	}
+	public void setCampNm(String campNm) {
+		this.campNm = campNm;
 	}
 	public String getCampty() {
 		return campty;
@@ -316,5 +325,17 @@ public class SendLogVO extends CommonVO {
 	}
 	public void setJoinList(List<HashMap<String, Integer>> joinList) {
 		this.joinList = joinList;
+	}
+	public String getCampNos() {
+		return campNos;
+	}
+	public void setCampNos(String campNos) {
+		this.campNos = campNos;
+	}
+	public List<Integer> getCampList() {
+		return campList;
+	}
+	public void setCampList(List<Integer> campList) {
+		this.campList = campList;
 	}
 }

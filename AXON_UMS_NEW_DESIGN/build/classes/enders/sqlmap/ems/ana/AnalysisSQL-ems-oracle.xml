@@ -1064,6 +1064,71 @@
 				) Y
 	</select>
 	
+	<select id="getJoinTaskList" parameterType="sendLogVO" resultType="taskVO">
+		SELECT NEO_AR_SENDLOG.TASK_NO
+			 , NEO_TASK.TASK_NM
+			 , NEO_SEGMENT.SEG_NM
+			 , NVL(SUM(SEND_AR_AMT),0) AS TOT_CNT
+			 , NVL(SUM((CASE WHEN NEO_AR_SENDLOG.SEND_RCODE = '000' THEN SEND_AR_AMT END)),0) AS SUC_CNT
+		  FROM NEO_AR_SENDLOG
+			 , NEO_TASK
+			 , NEO_SEGMENT
+		 WHERE NEO_AR_SENDLOG.TASK_NO = NEO_TASK.TASK_NO
+		   AND NEO_TASK.SEG_NO = NEO_SEGMENT.SEG_NO
+		   AND 
+				<foreach collection="joinList" item="joinKey" index="index"  open="(" close=")" separator=" OR ">
+				NEO_AR_SENDLOG.TASK_NO = #{joinKey.taskNo}
+				</foreach>
+		 GROUP BY NEO_AR_SENDLOG.TASK_NO, NEO_TASK.TASK_NM, NEO_SEGMENT.SEG_NM
+		 ORDER BY NEO_AR_SENDLOG.TASK_NO DESC
+	</select>
+	
+	<select id="getJoinSendResultTask" parameterType="sendLogVO" resultType="respLogVO">
+		SELECT OPEN_CNT
+			 , BLOCK_CNT
+			 , VALID_CNT
+			 , CLICK_CNT
+		  FROM (
+				SELECT NVL(SUM((CASE WHEN BLOCKED_YN = 'N' THEN RESP_AR_AMT END)),0) AS OPEN_CNT,
+						NVL(SUM((CASE WHEN BLOCKED_YN = 'Y' THEN RESP_AR_AMT END)),0) AS BLOCK_CNT
+				  FROM NEO_AR_RESPLOG
+				 WHERE 
+						<foreach collection="joinList" item="joinKey" index="index"  open="(" close=")" separator=" OR ">
+						NEO_AR_RESPLOG.TASK_NO = #{joinKey.taskNo}
+						</foreach>
+				) A,
+				(
+				SELECT NVL(SUM(CLICK_AR_AMT),0) AS CLICK_CNT, NVL(SUM(VALID_AR_AMT),0) AS VALID_CNT
+				  FROM NEO_AR_LINKLOG
+				 WHERE 
+						<foreach collection="joinList" item="joinKey" index="index"  open="(" close=")" separator=" OR ">
+						NEO_AR_LINKLOG.TASK_NO = #{joinKey.taskNo}
+						</foreach>
+				) C
+	</select>
+	
+	<select id="getJoinErrorListTask" parameterType="sendLogVO" resultType="mailErrorVO">
+		SELECT A.STEP1
+			 , A.STEP2
+			 , NVL(B.SEND_AR_AMT,0) AS CNT_STEP2
+			 , A.CD_DESC AS NM_STEP2
+		  FROM (
+				SELECT STEP1, STEP2, CD_DESC FROM NEO_RCODE WHERE KIND = '002' AND UILANG = #{uilang}
+				) A,
+				(
+				SELECT RCODE_STEP1, RCODE_STEP2, SUM(SEND_AR_AMT) AS SEND_AR_AMT
+				  FROM NEO_AR_SENDLOG
+				 WHERE SEND_RCODE != '000'
+				   AND 
+						<foreach collection="joinList" item="joinKey" index="index"  open="(" close=")" separator=" OR ">
+						NEO_AR_SENDLOG.TASK_NO = #{joinKey.taskNo}
+						</foreach>
+				 GROUP BY RCODE_STEP1, RCODE_STEP2
+				) B
+		 WHERE A.STEP1 = B.RCODE_STEP1(+) AND A.STEP2 = B.RCODE_STEP2(+)
+		 ORDER BY A.STEP1, A.STEP2
+	</select>
+	
 	<select id="getCampaignInfo" parameterType="campaignVO" resultType="campaignVO">
 		SELECT A.CAMP_NM
 			 , A.REG_DT
@@ -1150,6 +1215,67 @@
 		 WHERE A.TASK_NO = B.TASK_NO(+)
 		   AND A.TASK_NO = D.TASK_NO(+)
 		   AND A.TASK_NO = E.TASK_NO
+	</select>
+	
+	<select id="getJoinCampList" parameterType="sendLogVO" resultType="taskVO">
+		SELECT NEO_AR_SENDLOG.CAMP_NO
+			 , NEO_CAMPAIGN.CAMP_NM
+			 , NVL(SUM(SEND_AR_AMT),0) AS TOT_CNT
+			 , NVL(SUM((CASE WHEN NEO_AR_SENDLOG.SEND_RCODE = '000' THEN SEND_AR_AMT END)),0) AS SUC_CNT
+		  FROM NEO_AR_SENDLOG
+			 , NEO_CAMPAIGN
+		 WHERE NEO_AR_SENDLOG.CAMP_NO = NEO_CAMPAIGN.CAMP_NO
+		   AND 
+				<foreach collection="campList" item="campNo" index="index"  open="(" close=")" separator=" OR ">
+				NEO_AR_SENDLOG.CAMP_NO = #{campNo}
+				</foreach>
+		 GROUP BY NEO_AR_SENDLOG.CAMP_NO, NEO_CAMPAIGN.CAMP_NM
+		 ORDER BY NEO_AR_SENDLOG.CAMP_NO DESC
+	</select>
+	
+	<select id="getJoinSendResultCamp" parameterType="sendLogVO" resultType="respLogVO">
+		SELECT OPEN_CNT
+			 , BLOCK_CNT
+			 , VALID_CNT
+			 , CLICK_CNT
+		  FROM (
+		  		SELECT NVL(SUM((CASE WHEN BLOCKED_YN = 'N' THEN RESP_AR_AMT END)),0) AS OPEN_CNT,
+						NVL(SUM((CASE WHEN BLOCKED_YN = 'Y' THEN RESP_AR_AMT END)),0) AS BLOCK_CNT
+				  FROM NEO_AR_RESPLOG
+				 WHERE 
+				 		<foreach collection="campList" item="campNo" index="index"  open="(" close=")" separator=" OR ">
+						NEO_AR_RESPLOG.CAMP_NO = #{campNo}
+						</foreach>
+				) A,
+				(
+				SELECT NVL(SUM(CLICK_AR_AMT),0) AS CLICK_CNT, NVL(SUM(VALID_AR_AMT),0) AS VALID_CNT
+				  FROM NEO_AR_LINKLOG
+				 WHERE 
+				 		<foreach collection="campList" item="campNo" index="index"  open="(" close=")" separator=" OR ">
+						NEO_AR_LINKLOG.CAMP_NO = #{campNo}
+						</foreach>
+				) C
+	</select>
+	
+	<select id="getJoinErrorListCamp" parameterType="sendLogVO" resultType="mailErrorVO">
+		SELECT A.STEP1
+			 , A.STEP2
+			 , NVL(B.SEND_AR_AMT,0) AS CNT_STEP2
+			 , A.CD_DESC AS NM_STEP2
+		  FROM (
+		  		SELECT STEP1, STEP2, CD_DESC FROM NEO_RCODE WHERE KIND = '002' AND UILANG = #{uilang}
+		  		) A,
+				(
+				SELECT RCODE_STEP1, RCODE_STEP2, SUM(SEND_AR_AMT) AS SEND_AR_AMT FROM NEO_AR_SENDLOG
+				 WHERE SEND_RCODE != '000'
+				   AND 
+				 		<foreach collection="campList" item="campNo" index="index"  open="(" close=")" separator=" OR ">
+						NEO_AR_SENDLOG.CAMP_NO = #{campNo}
+						</foreach>
+				 GROUP BY RCODE_STEP1, RCODE_STEP2
+				) B
+		 WHERE A.STEP1 = B.RCODE_STEP1(+) AND A.STEP2 = B.RCODE_STEP2(+)
+		 ORDER BY A.STEP1, A.STEP2
 	</select>
 
 </mapper>

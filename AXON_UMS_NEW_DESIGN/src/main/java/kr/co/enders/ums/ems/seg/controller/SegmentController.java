@@ -159,8 +159,8 @@ public class SegmentController {
 		// 발송대상(세그먼트) 목록 조회
 		SegmentVO search = searchVO;
 		search.setUilang((String)session.getAttribute("NEO_UILANG"));
-		search.setSearchStartDt(search.getSearchStartDt().replaceAll("-",""));
-		search.setSearchEndDt(search.getSearchEndDt().replaceAll("-", ""));
+		search.setSearchStartDt(search.getSearchStartDt().replaceAll("\\.",""));
+		search.setSearchEndDt(search.getSearchEndDt().replaceAll("\\.", ""));
 		List<SegmentVO> segmentList = null;
 		try {
 			segmentList = segmentService.getSegmentList(search);
@@ -1494,8 +1494,8 @@ public class SegmentController {
 		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
 		searchVO.setSearchStatus("000");
 		searchVO.setSearchWorkStatus("000,001,002,003");
-		searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("-", ""));
-		searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("-", ""));
+		searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
+		searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
 		List<String> workStatusList = new ArrayList<String>();
 		String[] workStatus = searchVO.getSearchWorkStatus().split(",");
 		for(int i=0;i<workStatus.length;i++) {

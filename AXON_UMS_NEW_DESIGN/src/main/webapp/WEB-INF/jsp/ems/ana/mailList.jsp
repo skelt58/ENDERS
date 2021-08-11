@@ -11,7 +11,9 @@
 <form id="listForm" name="listForm" method="post">
 <table width="1000" border="1" cellspacing="0" cellpadding="0" class="table_line_outline">
 	<tr class="tr_head">
-		<td width="3%" align="center"><input type="checkbox" name="isAll" onclick='goAll()' style="border:0"></td>
+		<td width="3%" align="center">
+			<label for="checkbox_all"><input type="checkbox" id="checkbox_all" name="isAll" onclick='goAll()'><span></span></label>
+		</td>
 		<td width="10%"><spring:message code='ANATBLTL008'/></td><!-- 캠페인명 -->
 		<td width="19%"><spring:message code='ANATBLTL005'/></td><!-- 메일명 -->
 		<td width="10%"><spring:message code='ANATBLTL009'/></td><!-- 단발/정기 -->
@@ -21,10 +23,10 @@
 		<td width="11%"><spring:message code='ANATBLTL011'/></td><!-- 발송상태 -->
 	</tr>
 	<c:if test="${fn:length(mailList) > 0}">
-		<c:forEach items="${mailList}" var="mail">
+		<c:forEach items="${mailList}" var="mail" varStatus="mailStatus">
 			<tr class="tr_body">
 				<td align="center">
-					<input type="checkbox" name="taskNos" value="<c:out value='${mail.taskNo}'/>" style="border:0">
+					<label for="checkbox_<c:out value='${mailStatus.count}'/>"><input type="checkbox" id="checkbox_<c:out value='${mailStatus.count}'/>" name="taskNos" value="<c:out value='${mail.taskNo}'/>"><span></span></label>
 					<input type="checkbox" name="subTaskNos" value="<c:out value='${mail.subTaskNo}'/>" style="display:none;">
 				</td>
 				<td><c:out value='${mail.campNm}'/></td>

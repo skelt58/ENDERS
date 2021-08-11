@@ -216,6 +216,30 @@ public interface AnalysisMapper {
 	public RespLogVO getTaskRespHourSum(TaskVO taskVO) throws Exception;
 	
 	/**
+	 * 정기메일분석 병합분석 메일 목록 조회
+	 * @param sendLogVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<TaskVO> getJoinTaskList(SendLogVO sendLogVO) throws Exception;
+	
+	/**
+	 * 정기메일분석 병합분석 발송결과 조회
+	 * @param sendLogVO
+	 * @return
+	 * @throws Exception
+	 */
+	public RespLogVO getJoinSendResultTask(SendLogVO sendLogVO) throws Exception;
+	
+	/**
+	 * 정기메일분석 병합분석 세부에러 목록 조회
+	 * @param sendLogVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<MailErrorVO> getJoinErrorListTask(SendLogVO sendLogVO) throws Exception;
+	
+	/**
 	 * 캠페인별분석 캠페인 정보 조회
 	 * @param campaignVO
 	 * @return
@@ -238,4 +262,28 @@ public interface AnalysisMapper {
 	 * @throws Exception
 	 */
 	public MailSummVO getCampMailTotal(CampaignVO campaignVO) throws Exception;
+	
+	/**
+	 * 캠페인별분석 병합분석 캠페인 목록 조회
+	 * @param sendLogVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<TaskVO> getJoinCampList(SendLogVO sendLogVO) throws Exception;
+	
+	/**
+	 * 캠페인별분석 병합분석 발송결과 조회
+	 * @param sendLogVO
+	 * @return
+	 * @throws Exception
+	 */
+	public RespLogVO getJoinSendResultCamp(SendLogVO sendLogVO) throws Exception;
+	
+	/**
+	 * 캠페인별분석 병합분석 세부에러 목록 조회
+	 * @param sendLogVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<MailErrorVO> getJoinErrorListCamp(SendLogVO sendLogVO) throws Exception;
 }

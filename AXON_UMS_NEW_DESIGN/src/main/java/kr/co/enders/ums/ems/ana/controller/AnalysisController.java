@@ -80,12 +80,12 @@ public class AnalysisController {
 		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
 			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
 		} else {
-			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("-", ""));
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
 		}
 		if(StringUtil.isNull(searchVO.getSearchEndDt())) {
 			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
 		} else {
-			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("-", ""));
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
 		}
 		if(searchVO.getSearchDeptNo() == 0) {
 			if(!"Y".equals((String)session.getAttribute("NEO_ADMIN_YN"))) {
@@ -155,12 +155,12 @@ public class AnalysisController {
 		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
 			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
 		} else {
-			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("-", ""));
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
 		}
 		if(StringUtil.isNull(searchVO.getSearchEndDt())) {
 			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
 		} else {
-			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("-", ""));
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
 		}
 		if(searchVO.getSearchDeptNo() == 0) {
 			if(!"Y".equals((String)session.getAttribute("NEO_ADMIN_YN"))) {
@@ -709,8 +709,8 @@ public class AnalysisController {
 	 */
 	@RequestMapping(value="/mailJoinP")
 	public String goMailJoinP(@ModelAttribute SendLogVO sendLogVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		logger.debug("goLogExcelList taskNos       = " + sendLogVO.getTaskNos());
-		logger.debug("goLogExcelList subTaskNos    = " + sendLogVO.getSubTaskNos());
+		logger.debug("goMailJoinP taskNos       = " + sendLogVO.getTaskNos());
+		logger.debug("goMailJoinP subTaskNos    = " + sendLogVO.getSubTaskNos());
 		sendLogVO.setUilang((String)session.getAttribute("NEO_UILANG"));
 		
 		String[] taskNo = sendLogVO.getTaskNos().split(",");
@@ -757,6 +757,26 @@ public class AnalysisController {
 	}
 	
 	/**
+	 * 메일별분석 병합분석에서 메일명 클릭하면 나오는 팝업화면(메일분석 탭)
+	 * @param taskVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/mailInfoP")
+	public String goMailInfoP(@ModelAttribute TaskVO taskVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goMailInfoP taskNo       = " + taskVO.getTaskNo());
+		logger.debug("goMailInfoP subTaskNo    = " + taskVO.getSubTaskNo());
+		
+		model.addAttribute("taskNo", taskVO.getTaskNo());			// TaskNo
+		model.addAttribute("subTaskNo", taskVO.getSubTaskNo());		// SubTaskNo
+		
+		return "ems/ana/mailInfoP";
+	}
+	
+	/**
 	 * 통계분석 정기메일분석 화면을 출력한다.
 	 * @param searchVO
 	 * @param model
@@ -771,12 +791,12 @@ public class AnalysisController {
 		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
 			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
 		} else {
-			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("-", ""));
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
 		}
 		if(StringUtil.isNull(searchVO.getSearchEndDt())) {
 			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
 		} else {
-			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("-", ""));
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
 		}
 		if(searchVO.getSearchDeptNo() == 0) {
 			if(!"Y".equals((String)session.getAttribute("NEO_ADMIN_YN"))) {
@@ -819,6 +839,44 @@ public class AnalysisController {
 			logger.error("codeService.getUserList error = " + e);
 		}
 		
+		model.addAttribute("searchVO", searchVO);	// 검색 항목
+		model.addAttribute("campList", campList);	// 캠페인 목록
+		model.addAttribute("deptList", deptList);	// 부서 목록
+		model.addAttribute("userList", userList);	// 사용자 목록
+
+		return "ems/ana/taskListP";
+	}
+	
+	/**
+	 * 통계분석 정기메일분석 메일 목록을 조회한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/taskList")
+	public String goTaskList(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		// 검색 기본값 설정
+		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
+		} else {
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
+		}
+		if(StringUtil.isNull(searchVO.getSearchEndDt())) {
+			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
+		} else {
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
+		}
+		if(searchVO.getSearchDeptNo() == 0) {
+			if(!"Y".equals((String)session.getAttribute("NEO_ADMIN_YN"))) {
+				searchVO.setSearchDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+			}
+		}
+		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		searchVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
+
 		// 페이지 설정
 		int page = StringUtil.setNullToInt(searchVO.getPage(), 1);
 		int rows = StringUtil.setNullToInt(searchVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE_ANA")));
@@ -842,12 +900,9 @@ public class AnalysisController {
 		
 		model.addAttribute("searchVO", searchVO);	// 검색 항목
 		model.addAttribute("taskList", taskList);	// 정기메일 목록
-		model.addAttribute("campList", campList);	// 캠페인 목록
-		model.addAttribute("deptList", deptList);	// 부서 목록
-		model.addAttribute("userList", userList);	// 사용자 목록
 		model.addAttribute("pageUtil", pageUtil);	// 페이징
 
-		return "ems/ana/taskListP";
+		return "ems/ana/taskList";
 	}
 	
 	/**
@@ -1093,6 +1148,79 @@ public class AnalysisController {
 	}
 	
 	/**
+	 * 메일별분석 병합분석 화면을 출력한다.
+	 * @param sendLogVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/taskJoinP")
+	public String goTaskJoinP(@ModelAttribute SendLogVO sendLogVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goTaskJoinP taskNos       = " + sendLogVO.getTaskNos());
+		sendLogVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		
+		String[] taskNo = sendLogVO.getTaskNos().split(",");
+		List<HashMap<String, Integer>> joinList = new ArrayList<HashMap<String, Integer>>();
+		for(int i=0;i<taskNo.length;i++) {
+			HashMap<String, Integer> key = new HashMap<String, Integer>();
+			key.put("taskNo", Integer.parseInt(taskNo[i]));
+			joinList.add(key);
+		}
+		sendLogVO.setJoinList(joinList);
+		
+		// 병합분석 메일정보 목록 조회
+		List<TaskVO> mailList = null;
+		try {
+			mailList = analysisService.getJoinTaskList(sendLogVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getJoinTaskList error = " + e);
+		}
+		
+		// 병합분석 발송결과 조회
+		RespLogVO respLog = null;
+		try {
+			respLog = analysisService.getJoinSendResultTask(sendLogVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getJoinSendResultTask error = " + e);
+		}
+		
+		// 병합분석 세부에러 목록 조회
+		List<MailErrorVO> errorList = null;
+		try {
+			errorList = analysisService.getJoinErrorListTask(sendLogVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getJoinErrorListTask error = " + e);
+		}
+		
+		model.addAttribute("sendLogVO", sendLogVO);		// 조건정보
+		model.addAttribute("mailList", mailList);		// 병합분석 메일정보 목록
+		model.addAttribute("respLog", respLog);			// 병합분석 발송결과
+		model.addAttribute("errorList", errorList);		// 병합분석 세부에러 목록
+		
+		return "ems/ana/taskJoinP";
+	}
+	
+	/**
+	 * 정기메일분석 병합분석에서 메일명 클릭하면 나오는 팝업화면(정기메일분석 탭)
+	 * @param taskVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/taskInfoP")
+	public String goTaskInfoP(@ModelAttribute TaskVO taskVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goTaskInfoP taskNo       = " + taskVO.getTaskNo());
+		
+		model.addAttribute("taskNo", taskVO.getTaskNo());			// TaskNo
+		
+		return "ems/ana/taskInfoP";
+	}
+	
+	/**
 	 * 통계분석 캠페인별분석 화면을 출력한다.
 	 * @param searchVO
 	 * @param model
@@ -1115,12 +1243,12 @@ public class AnalysisController {
 		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
 			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
 		} else {
-			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("-", ""));
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
 		}
 		if(StringUtil.isNull(searchVO.getSearchEndDt())) {
 			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
 		} else {
-			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("-", ""));
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
 		}
 		if(searchVO.getSearchDeptNo() == 0) {
 			if(!"Y".equals((String)session.getAttribute("NEO_ADMIN_YN"))) {
@@ -1211,12 +1339,12 @@ public class AnalysisController {
 		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
 			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
 		} else {
-			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("-", ""));
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
 		}
 		if(StringUtil.isNull(searchVO.getSearchEndDt())) {
 			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
 		} else {
-			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("-", ""));
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
 		}
 		if(searchVO.getSearchDeptNo() == 0) {
 			if(!"Y".equals((String)session.getAttribute("NEO_ADMIN_YN"))) {
@@ -1314,11 +1442,170 @@ public class AnalysisController {
 		return "ems/ana/campSummP";
 	}
 	
+	/**
+	 * 통계분석 캠페인별분석 병합분석화면을 출력한다.
+	 * @param campVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/campJoinP")
+	public String goCampJoinP(@ModelAttribute SendLogVO sendLogVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goCampJoinP campNos = " + sendLogVO.getCampNos());
+		sendLogVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		
+		String[] campNo = sendLogVO.getCampNos().split(",");
+		List<Integer> campList = new ArrayList<Integer>();
+		for(int i=0;i<campNo.length;i++) {
+			campList.add(Integer.parseInt(campNo[i]));
+		}
+		sendLogVO.setCampList(campList);
+		
+		// 병합분석 캠페인정보 목록 조회
+		List<TaskVO> campaignList = null;
+		try {
+			campaignList = analysisService.getJoinCampList(sendLogVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getJoinCampList error = " + e);
+		}
+		
+		// 병합분석 캠페인 발송결과 조회
+		RespLogVO respLog = null;
+		try {
+			respLog = analysisService.getJoinSendResultCamp(sendLogVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getJoinSendResultCamp error = " + e);
+		}
+		
+		// 병합분석 캠페인 세부에러 목록 조회
+		List<MailErrorVO> errorList = null;
+		try {
+			errorList = analysisService.getJoinErrorListCamp(sendLogVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getJoinErrorListCamp error = " + e);
+		}
+		
+		model.addAttribute("sendLogVO", sendLogVO);			// 조건정보
+		model.addAttribute("campaignList", campaignList);	// 병합분석 캠페인정보 목록
+		model.addAttribute("respLog", respLog);				// 병합분석 캠페인 발송결과
+		model.addAttribute("errorList", errorList);			// 병합분석 캠페인 세부에러 목록
+		
+		return "ems/ana/campJoinP";
+	}
 	
+	/**
+	 * 통계분석 누적분석 화면을 출력한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/summMainP")
-	public String goSummMainP(Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public String goSummMainP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		// 검색 기본값 설정
+		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
+		} else {
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
+		}
+		if(StringUtil.isNull(searchVO.getSearchEndDt())) {
+			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
+		} else {
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
+		}
+		if(searchVO.getSearchDeptNo() == 0) {
+			if(!"Y".equals((String)session.getAttribute("NEO_ADMIN_YN"))) {
+				searchVO.setSearchDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+			}
+		}
+		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		searchVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
+
+		// 캠페인 목록 조회
+		List<CampaignVO> campList = null;
+		CampaignVO camp = new CampaignVO();
+		camp.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
+		camp.setDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+		camp.setStatus("000");
+		try {
+			campList = codeService.getCampaignList(camp);
+		} catch(Exception e) {
+			logger.error("codeService.getCampaignList error = " + e);
+		}
+		
+		// 부서 목록 조회
+		CodeVO dept = new CodeVO();
+		dept.setStatus("000"); // 정상
+		List<CodeVO> deptList = null;
+		try {
+			deptList = codeService.getDeptList(dept);
+		} catch(Exception e) {
+			logger.error("codeService.getDeptList error = " + e);
+		}
+		
+		// 사용자 목록 조회
+		CodeVO user = new CodeVO();
+		user.setDeptNo(searchVO.getSearchDeptNo());
+		user.setStatus("000");
+		List<CodeVO> userList = null;
+		try {
+			userList = codeService.getUserList(user);
+		} catch(Exception e) {
+			logger.error("codeService.getUserList error = " + e);
+		}
+		
+		model.addAttribute("searchVO", searchVO);	// 검색 항목
+		model.addAttribute("campList", campList);	// 캠페인 목록
+		model.addAttribute("deptList", deptList);	// 부서 목록
+		model.addAttribute("userList", userList);	// 사용자 목록
 		
 		return "ems/ana/summMainP";
+	}
+	
+	@RequestMapping(value="/summMonthP")
+	public String goSummMonthP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		return "ems/ana/summMonthP";
+	}
+	
+	@RequestMapping(value="/summWeekP")
+	public String goSummWeekP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		return "ems/ana/summWeekP";
+	}
+	
+	@RequestMapping(value="/summDateP")
+	public String goSummDateP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		return "ems/ana/summDateP";
+	}
+	
+	@RequestMapping(value="/summDomainP")
+	public String goSummDomainP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		return "ems/ana/summDomainP";
+	}
+	
+	@RequestMapping(value="/summDeptP")
+	public String goSummDeptP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		return "ems/ana/summDeptP";
+	}
+	
+	@RequestMapping(value="/summUserP")
+	public String goSummUserP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		return "ems/ana/summUserP";
+	}
+	
+	@RequestMapping(value="/summCampP")
+	public String goSummCampP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		return "ems/ana/summCampP";
 	}
 	
 }

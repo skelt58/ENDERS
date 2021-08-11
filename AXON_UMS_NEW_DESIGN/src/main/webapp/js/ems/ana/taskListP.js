@@ -1,24 +1,4 @@
 $(document).ready(function() {
-	/*
-	// 예약일 시작일 설정
-	$("#searchStartDt").datepicker({
-		//showOn:"button",
-		minDate:"2021-01-01",
-		maxDate:$("#searchEndDt").val(),
-		onClose:function(selectedDate) {
-			$("#searchEndDt").datepicker("option", "minDate", selectedDate);
-		}
-	});
-	
-	// 예약일 종료일 설정
-	$("#searchEndDt").datepicker({
-		//showOn:"button",
-		minDate:$("#searchStartDt").val(),
-		onClose:function(selectedDate) {
-			$("#searchStartDt").datepicker("option", "maxDate", selectedDate);
-		}
-	});
-	*/
 	$("#searchStartDt").datepicker();
 	$("#searchEndDt").datepicker();
 	
@@ -36,7 +16,7 @@ function getUserList(deptNo) {
 	});
 }
 
-// 검색 버튼 클릭시
+//검색 버튼 클릭시
 function goSearch() {
 	if( $("#searchStartDt").val() > $("#searchEndDt").val() ) {
 		alert("검색 시 시작일은 종료일보다 클 수 없습니다.");		// <spring:message code='COMJSALT017'/>
@@ -46,10 +26,10 @@ function goSearch() {
 	var param = $("#searchForm").serialize();
 	$.ajax({
 		type : "GET",
-		url : "./mailList.ums?" + param,
+		url : "./taskList.ums?" + param,
 		dataType : "html",
 		success : function(pageHtml){
-			$("#divMailList").html(pageHtml);
+			$("#divTaskList").html(pageHtml);
 		},
 		error : function(){
 			alert("Error!!");
@@ -70,22 +50,44 @@ function goReset(obj) {
 function goAll() {
 	$("#listForm input[name='taskNos']").each(function(idx,item){
 		$(item).prop("checked", $("#listForm input[name='isAll']").is(":checked"));
-		$("#listForm input[name='subTaskNos']").eq(idx).prop("checked", $("#listForm input[name='isAll']").is(":checked"));
 	});
 }
 
-// 정기메일분석 클릭시
-function goTask() {
+// 메일별분석 클릭시 EVENT 구현
+function goMail(taskNo) {
 	$("#page").val("1");
 	$("#searchCampNo").val("0");
 	$("#searchTaskNm").val("");
 	$("#searchDeptNo").val("0");
 	$("#searchUserId").val("");
+	$("#taskNo").val(taskNo);
 	
-	$("#searchForm").attr("target","").attr("action","./taskListP.ums?pMenuId=M1004000&menuId=M1004002").submit();
+	$("#searchForm").attr("target","").attr("action","./mailListP.ums?pMenuId=M1004000&menuId=M1004001").submit();
 }
 
-// 탭 관련 변수
+// 병합분석 클릭시
+function goJoin() {
+	var checkCnt = 0;
+	
+	$("#listForm input[name='taskNos']").each(function(idx,item){
+		if($(item).is(":checked")) {
+			checkCnt++;
+		}
+	});
+	
+	if(checkCnt < 2) {
+		alert("병합할 대상을 2개이상 선택하세요.");		// ANAJSALT001
+	} else {
+		//탭을 숨김
+		$("#tab").hide();
+		$("#notab").show();
+		
+		$("#listForm").attr("target","iFrmReport").attr("action","./taskJoinP.ums").submit();
+	}
+}
+
+
+//탭 관련 변수
 var curTab = "";
 var curTaskNo = "";
 var curSubTaskNo = "";
@@ -101,7 +103,7 @@ function goOz(tabNm, target, taskNo,subTaskNo) {
 // 탭 실행
 function goOzTab(tabNm, target) {
 	if(curTaskNo == "" || curSubTaskNo == "") {
-		alert("메일을 선택하세요.");		// <spring:message code='ANAJSALT002'/>
+		alert("메일을 선택하세요.");		// ANAJSALT002
 		return;
 	}
 
@@ -127,56 +129,14 @@ function goOzTab(tabNm, target) {
 
 	//클릭한 탭을 보여줌
 	switch(tabNm) {
-		case 'tab1' :	$("#tab1").hide(); $("#click_tab1").show(); $("#saveNm").val( "mail_summ_" + curTaskNo + "_" + curSubTaskNo ); break;
-		case 'tab2' :	$("#tab2").hide(); $("#click_tab2").show(); $("#saveNm").val( "mail_error_" + curTaskNo + "_" + curSubTaskNo ); break;
-		case 'tab3' :	$("#tab3").hide(); $("#click_tab3").show(); $("#saveNm").val( "mail_domain" + curTaskNo + "_" + curSubTaskNo ); break;
-		case 'tab4' :	$("#tab4").hide(); $("#click_tab4").show(); $("#saveNm").val( "mail_send_" + curTaskNo + "_" + curSubTaskNo ); break;
-		case 'tab5' :	$("#tab5").hide(); $("#click_tab5").show(); $("#saveNm").val( "mail_resp_" + curTaskNo + "_" + curSubTaskNo ); break;
+		case 'tab1' :	$("#tab1").hide(); $("#click_tab1").show(); break;
+		case 'tab2' :	$("#tab2").hide(); $("#click_tab2").show(); break;
+		case 'tab3' :	$("#tab3").hide(); $("#click_tab3").show(); break;
+		case 'tab4' :	$("#tab4").hide(); $("#click_tab4").show(); break;
+		case 'tab5' :	$("#tab5").hide(); $("#click_tab5").show(); break;
 		case 'tab6' :	$("#tab6").hide(); $("#click_tab6").show(); break;
 		case 'tab7' :	$("#tab7").hide(); $("#click_tab7").show(); break;
 	}
-	
-	iFrmReport.location.href = target + "?taskNo=" + curTaskNo + "&subTaskNo=" + curSubTaskNo;
-}
 
-// 병합분석 클릭시
-function goJoin() {
-	var checkCnt = 0;
-	
-	$("#listForm input[name='taskNos']").each(function(idx,item){
-		if($(item).is(":checked")) {
-			$("#listForm input[name='subTaskNos']").eq(idx).prop("checked", true);
-			checkCnt++;
-		} else {
-			$("#listForm input[name='subTaskNos']").eq(idx).prop("checked", false);
-		}
-	});
-	
-	if(checkCnt < 2) {
-        alert("병합할 대상을 2개이상 선택하세요.");		// <spring:message code='ANAJSALT001'/>
-    } else {
-		//탭을 숨김
-		$("#tab").hide();
-		$("#notab").show();
-		
-		$("#listForm").attr("target","iFrmReport").attr("action","./mailJoinP.ums").submit();
-	}
-}
-
-
-// 페이징
-function goPageNum(page) {
-	$("#page").val(page);
-	var param = $("#searchForm").serialize();
-	$.ajax({
-		type : "GET",
-		url : "./mailList.ums?" + param,
-		dataType : "html",
-		success : function(pageHtml){
-			$("#divMailList").html(pageHtml);
-		},
-		error : function(){
-			alert("Error!!");
-		}
-	});
+	iFrmReport.location.href = target + "?taskNo=" + curTaskNo;
 }

@@ -163,5 +163,36 @@ public class AnalysisDAO implements AnalysisMapper {
 	public MailSummVO getCampMailTotal(CampaignVO campaignVO) throws Exception {
 		return sqlSessionEms.getMapper(AnalysisMapper.class).getCampMailTotal(campaignVO);
 	}
+
+	@Override
+	public List<TaskVO> getJoinCampList(SendLogVO sendLogVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getJoinCampList(sendLogVO);
+	}
+
+	@Override
+	public RespLogVO getJoinSendResultCamp(SendLogVO sendLogVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getJoinSendResultCamp(sendLogVO);
+	}
+
+	@Override
+	public List<MailErrorVO> getJoinErrorListCamp(SendLogVO sendLogVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getJoinErrorListCamp(sendLogVO);
+	}
+
+	@Override
+	public List<TaskVO> getJoinTaskList(SendLogVO sendLogVO) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getJoinTaskList(sendLogVO);
+	}
+
+	@Override
+	public RespLogVO getJoinSendResultTask(SendLogVO sendLogVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getJoinSendResultTask(sendLogVO);
+	}
+
+	@Override
+	public List<MailErrorVO> getJoinErrorListTask(SendLogVO sendLogVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getJoinErrorListTask(sendLogVO);
+	}
 	
 }

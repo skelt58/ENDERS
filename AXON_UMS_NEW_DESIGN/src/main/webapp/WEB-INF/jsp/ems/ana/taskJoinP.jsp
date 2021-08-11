@@ -1,8 +1,8 @@
 <%--
 	/**********************************************************
 	*	작성자 : 김상진
-	*	작성일시 : 2021.08.05
-	*	설명 : 메일별분석 병합분석 화면
+	*	작성일시 : 2021.08.11
+	*	설명 : 정기메일분석 병합분석 화면
 	**********************************************************/
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -10,17 +10,16 @@
 
 <script type="text/javascript">
 function openMail(taskNo) {
-	var url = "./mailInfoP.ums?taskNo=" + taskNo + "&subTaskNo=1";
+	var url = "./taskInfoP.ums?taskNo=" + taskNo;
 	var feature = "menubar=no, scrollbars=yes, toolbar=no, width=1000, height=500, top=0, left=0";
 	window.open(url, "", feature);
 }
 </script>
 
 <body>
-
 <table width="700" border="1" cellspacing="0" cellpadding="0" class="table_line_outline">
 	<tr class="tr_head">
-		<td class="title_report" height=30><spring:message code='ANATBLTL151'/></td><!-- 메일 병합분석 -->
+		<td class="title_report" height=30>정기메일 병합분석</td>
 	</tr>
 </table>
 
@@ -31,15 +30,14 @@ function openMail(taskNo) {
 		<td class="td_line" colspan=6></td>
 	</tr>
 	<tr class="tr_head">
-		<td colspan=6 align=left><b><spring:message code='ANATBLTL152'/></b></td><!-- 메일 리스트 -->
+		<td colspan=6 align=left><b>메일 리스트</b></td>
 	</tr>
 	<tr align="center">
-		<td class="td_body" width=70><spring:message code='ANATBLLB142'/></td><!-- 번호 -->
-		<td class="td_body" width=240><spring:message code='ANATBLLB143'/></td><!-- 메일명 -->
-		<td class="td_body" width=120><spring:message code='ANATBLLB144'/></td><!-- 예약일자 -->
-		<td class="td_body" width=90><spring:message code='ANATBLLB106'/></td><!-- 대상수 -->
-		<td class="td_body" width=90><spring:message code='ANATBLLB011'/></td><!-- 성공수 -->
-		<td class="td_body" width=90><spring:message code='ANATBLLB010'/></td><!-- 실패수 -->
+		<td class="td_body" width=70>번호</td>
+		<td class="td_body" width=330>메일명</td>
+		<td class="td_body" width=100>대상수</td>
+		<td class="td_body" width=100>성공수</td>
+		<td class="td_body" width=100>실패수</td>
 	</tr>
 	<c:set var="totSendCnt" value="${0}"/>
 	<c:set var="totSuccCnt" value="${0}"/>
@@ -52,11 +50,6 @@ function openMail(taskNo) {
 			<tr>
 				<td class="td_body" align="center" onClick="openMail('<c:out value='${mail.taskNo}'/>')" style="cursor:pointer;"><c:out value='${mail.taskNo}'/></td>
 				<td class="td_body" onClick="openMail('<c:out value='${mail.taskNo}'/>')" style="cursor:pointer;"><c:out value='${mail.taskNm}'/></td>
-				<td class="td_body" align="center">
-					<fmt:parseDate var="mailSendDt" value="${mail.sendDt}" pattern="yyyyMMddHHmm"/>
-					<fmt:formatDate var="sendDt" value="${mailSendDt}" pattern="yyyy-MM-dd HH:mm"/>
-					<c:out value='${sendDt}'/>
-				</td>
 				<td class="td_body" align="right"><c:out value='${mail.totCnt}'/></td>
 				<td class="td_body" align="right"><c:out value='${mail.sucCnt}'/></td>
 				<td class="td_body" align="right"><c:out value='${mail.totCnt - mail.sucCnt}'/></td>
@@ -64,7 +57,7 @@ function openMail(taskNo) {
 		</c:forEach>
 	</c:if>
 	<tr>
-		<td class="td_body" colspan=3 align="center"><spring:message code='ANATBLLB112'/></td><!-- 합계 -->
+		<td class="td_body" colspan=2 align="center">합계</td>
 		<td class="td_body" align="right">
 			<fmt:formatNumber var="totSendCntNum" type="number" value="${totSendCnt}" /><c:out value="${totSendCntNum}"/>
 		</td>
@@ -84,12 +77,12 @@ function openMail(taskNo) {
 			<td class="td_line" colspan=3></td>
 		</tr>
 		<tr class="tr_head">
-			<td colspan=3 align="left"><b><spring:message code='ANATBLTL103'/></b></td><!-- 발송결과 -->
+			<td colspan=3 align="left"><b>발송결과</b></td><!-- 발송결과 -->
 		</tr>
 		<tr>
-			<td class="td_title" width=85><spring:message code='ANATBLLB106'/></td><!-- 대상수 -->
-			<td class="td_title" width=85><spring:message code='ANATBLLB011'/></td><!-- 성공수 -->
-			<td class="td_title" width=85><spring:message code='ANATBLLB010'/></td><!-- 실패수 -->
+			<td class="td_title" width=85>대상수</td>
+			<td class="td_title" width=85>성공수</td>
+			<td class="td_title" width=85>실패수</td>
 		</tr>
 		<tr>
 			<td class="td_body" rowspan=2 align="right">
@@ -119,18 +112,18 @@ function openMail(taskNo) {
 			<td class="td_line" colspan=6></td>
 		</tr>
 		<tr class="tr_head">
-			<td colspan=6 align="left"><b><spring:message code='ANATBLTL104'/></b></td><!-- 반응결과 -->
+			<td colspan=6 align="left"><b>반응결과</b></td>
 		</tr>
 		<tr>
 			<td class="td_title" width=70>&nbsp;</td>
-			<td class="td_title" width=80><spring:message code='ANATBLLB011'/></td><!-- 성공수 -->
-			<td class="td_title" width=70><spring:message code='ANATBLLB012'/></td><!-- 오픈수 -->
-			<td class="td_title" width=70><spring:message code='ANATBLLB013'/></td><!-- 유효오픈수 -->
-			<td class="td_title" width=70><spring:message code='ANATBLLB014'/></td><!-- 링크클릭수 -->
-			<td class="td_title" width=70><spring:message code='ANATBLLB015'/></td><!-- 수신거부 -->
+			<td class="td_title" width=80>성공수</td>
+			<td class="td_title" width=70>오픈수</td>
+			<td class="td_title" width=70>유효오픈수</td>
+			<td class="td_title" width=70>링크클릭수</td>
+			<td class="td_title" width=70>수신거부</td>
 		</tr>
 		<tr>
-			<td class="td_body"><spring:message code='ANATBLLB109'/></td><!-- 반응수 -->
+			<td class="td_body">반응수</td>
 			<td class="td_body" rowspan=2 align="right">
 				<fmt:formatNumber var="totSuccCntNum" type="number" value="${totSuccCnt}" /><c:out value="${totSuccCntNum}"/>
 			</td>
@@ -148,7 +141,7 @@ function openMail(taskNo) {
 			</td>
 		</tr>
 		<tr>
-			<td class="td_body"><spring:message code='ANATBLLB110'/></td><!-- 성공대비 -->
+			<td class="td_body">성공대비</td>
 			<td class="td_body" align="right">
 				<fmt:formatNumber var="openPer" type="percent" value="${totSuccCnt == 0 ? 0 : respLog.openCnt / totSuccCnt}" /><c:out value='${openPer}'/>
 			</td>

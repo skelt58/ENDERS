@@ -9,9 +9,11 @@
 <%@ include file="/WEB-INF/jsp/inc/taglib.jsp" %>
 
 <form id="listForm" name="listForm" method="post">
-<table width="1000" border="1" cellspacing="0" cellpadding="0" class="table_line_outline">
+<table width="1000" border="1" cellspacing="0" cellpadding="0">
 	<tr class="tr_head">
-		<td width="3%" align="center"><input type="checkbox" name="isAll" onclick='goAll()' style="border:0"></td>
+		<td width="3%" align="center">
+			<label for="checkbox_all"><input type="checkbox" id="checkbox_all" name="isAll" onclick='goAll()'><span></span></label>
+		</td>
 		<td width="19%"><spring:message code='ANATBLTL008'/></td><!-- 캠페인명 -->
 		<td width="13%"><spring:message code='CAMTBLTL008'/></td><!-- 캠페인목적 -->
 		<td width="13%"><spring:message code='COMTBLTL001'/></td><!-- 상태 -->
@@ -21,9 +23,11 @@
 		<td width="13%"><spring:message code='COMTBLTL002'/></td><!-- 등록일 -->
 	</tr>
 	<c:if test="${fn:length(campaignList) > 0}">
-		<c:forEach items="${campaignList}" var="campaign">
+		<c:forEach items="${campaignList}" var="campaign" varStatus="campStatus">
 			<tr class="tr_body">
-				<td align="center"><input type="checkbox" name="campNos" value="<c:out value='${campaign.campNo}'/>" style="border:0"></td>
+				<td align="center">
+					<label for="checkbox_<c:out value='${campStatus.count}'/>"><input type="checkbox" id="checkbox_<c:out value='${campStatus.count}'/>" name="campNos" value="<c:out value='${campaign.campNo}'/>"><span></span></label>
+				</td>
 				<td><a href="javascript:goOz('<c:out value='${campaign.campNo}'/>','<c:url value='/ems/ana/campSummP.ums'/>')"><c:out value='${campaign.campNm}'/></a></td>
 				<td><c:out value='${campaign.campTyNm}'/></td>
 				<td><c:out value='${campaign.statusNm}'/></td>
