@@ -8,7 +8,9 @@
  */
 package kr.co.enders.ums.sys.cod.vo;
 
-public class UserCodeVO {
+import kr.co.enders.ums.com.vo.CommonVO;
+
+public class UserCodeVO extends CommonVO {
 	private String cdGrp;		// 코드그룹
 	private String cdGrpNm;		// 코드그룹명
 	private String cd;			// 코드
@@ -16,9 +18,15 @@ public class UserCodeVO {
 	private String uilang;		// 언어권
 	private String uilangNm;	// 언어권명
 	private String cdDtl;		// 코드설명
+	private String cdNmShort;	// 코드약어
 	private String useYn;		// 사용여부
 	private String upCd;		// 상위코드
 	private String upCdNm;		// 상위코드명
+	
+	// 검색
+	private String searchCdGrpNm;	// 코드그룹명 검색
+	private String searchCdGrp;		// 코드그룹 검색
+	private String searchUiLang;	// 언어 검색
 	
 	public String getCdGrp() {
 		return cdGrp;
@@ -62,6 +70,12 @@ public class UserCodeVO {
 	public void setCdDtl(String cdDtl) {
 		this.cdDtl = cdDtl;
 	}
+	public String getCdNmShort() {
+		return cdNmShort;
+	}
+	public void setCdNmShort(String cdNmShort) {
+		this.cdNmShort = cdNmShort;
+	}
 	public String getUseYn() {
 		return useYn;
 	}
@@ -79,5 +93,23 @@ public class UserCodeVO {
 	}
 	public void setUpCdNm(String upCdNm) {
 		this.upCdNm = upCdNm;
+	}
+	public String getSearchCdGrpNm() {
+		return searchCdGrpNm;
+	}
+	public void setSearchCdGrpNm(String searchCdGrpNm) {
+		this.searchCdGrpNm = searchCdGrpNm;
+	}
+	public String getSearchCdGrp() {
+		return searchCdGrp;
+	}
+	public void setSearchCdGrp(String searchCdGrp) {
+		this.searchCdGrp = searchCdGrp;
+	}
+	public String getSearchUiLang() {
+		return searchUiLang;
+	}
+	public void setSearchUiLang(String searchUiLang) {
+		this.searchUiLang = searchUiLang;
 	}
 }

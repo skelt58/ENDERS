@@ -1,21 +1,28 @@
 /*
  * 작성자 : 김준희
  * 작성일시 : 2021.08.10
- * 설명 :  사용자에 의한 코드그룹 관리 VO
+ * 설명 :  사용자에 의한 코드그룹 관리 VO  
  */
 package kr.co.enders.ums.sys.cod.vo;
 
-public class UserCodeGroupVO {
+import kr.co.enders.ums.com.vo.CommonVO;
+
+public class UserCodeGroupVO extends CommonVO {
 	private String cdGrp;		// 코드그룹
 	private String cdGrpNm;		// 코드그룹명
-	private String uilang;		// 언어권
+	private String uilang;			// 언어권	
 	private String uilangNm;	// 언어권명
 	private String cdGrpDtl;	// 코드그룹설명
 	private String cdGrpNmShort;// 코드그룹약어
 	private String useYn;		// 사용여부
-	private String sysYn;		// 시스테ㅐㅁ여부
+	private String sysYn;		// 시스템 코드 여부
 	private String upCdGrp;		// 상위코드그룹
 	private String upCdGrpNm;	// 상위코드그룹명
+	
+	// 검색
+	private String searchCdGrpNm;	// 코드그룹명 검색
+	private String searchCdGrp;		// 코드그룹 검색
+	private String searchUiLang;	// 언어 검색
 	
 	public String getCdGrp() {
 		return cdGrp;
@@ -77,5 +84,22 @@ public class UserCodeGroupVO {
 	public void setUpCdGrpNm(String upCdGrpNm) {
 		this.upCdGrpNm = upCdGrpNm;
 	}
-	 
+	public String getSearchCdGrpNm() {
+		return searchCdGrpNm;
+	}
+	public void setSearchCdGrpNm(String searchCdGrpNm) {
+		this.searchCdGrpNm = searchCdGrpNm;
+	}
+	public String getSearchCdGrp() {
+		return searchCdGrp;
+	}
+	public void setSearchCdGrp(String searchCdGrp) {
+		this.searchCdGrp = searchCdGrp;
+	}
+	public String getSearchUiLang() {
+		return searchUiLang;
+	}
+	public void setSearchUiLang(String searchUiLang) {
+		this.searchUiLang = searchUiLang;
+	}
 }
