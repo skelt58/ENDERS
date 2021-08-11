@@ -25,13 +25,14 @@
 <link rel="shortcut icon" href="<c:url value='/img/favicon.ico'/>" type="image/x-icon">
 <link rel="icon" href="<c:url value='/img/favicon.ico'/>" type="image/x-icon">
 <link rel="stylesheet" href="<c:url value='/css/reset.css'/>">
-<link rel="stylesheet" href="<c:url value='/css/jquery-ui.css'/>">
+<link rel="stylesheet" href="<c:url value='/css/jquery_library.css'/>">
 <link rel="stylesheet" href="<c:url value='/css/common.css'/>">
 <link rel="stylesheet" href="<c:url value='/css/style.css'/>">
 <link rel="stylesheet" href="<c:url value='/css/style_ems.css'/>">
 <script type="text/javascript" src="<c:url value='/js/jquery-2.1.1.min.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/js/jquery-ui.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/js/jquery_library.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/common.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/js/ums.common.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/ems.js'/>"></script>
 
 </head>
