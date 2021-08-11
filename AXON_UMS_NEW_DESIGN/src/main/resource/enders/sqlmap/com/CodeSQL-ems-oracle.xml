@@ -25,7 +25,15 @@
 		  FROM NEO_CD_GRP
 		 WHERE CD_GRP = #{cdGrp}
 		   AND UILANG = #{uilang}
-
+	</select>
+	
+	<!-- 코드 그룹 목록 조회 -->
+	<select id="getCodeGrpList" parameterType="codeGrpVO" resultType="codeGrpVO">
+		SELECT CD_GRP
+			 , CD_GRP_NM
+		  FROM NEO_CD_GRP
+		 WHERE UILANG = #{uilang}
+		 ORDER BY CD_GRP
 	</select>
 	
 	<select id="getTimezoneList" parameterType="codeVO" resultType="codeVO">

@@ -3,27 +3,47 @@
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.co.enders.ums.sys.cod.dao.UserCodeMapper">	
+
 	<select id="getUserCodeGroupList" parameterType="userCodeGroupVO" resultType="userCodeGroupVO">
+		SELECT *
+		  FROM (	
+				SELECT UILANG
+					 , CD_GRP
+					 , CD_GRP_NM
+					 , NVL(CD_GRP_NM_SHORT, '') AS CD_GRP_NM_SHORT
+					 , (SELECT CD_GRP FROM NEO_CD_GRP WHERE A.UP_CD_GRP = CD_GRP AND A.UILANG = UILANG) AS UP_CD_GRP
+					 , (SELECT CD_GRP_NM FROM NEO_CD_GRP WHERE A.UP_CD_GRP = CD_GRP AND A.UILANG = UILANG) AS UP_CD_GRP_NM
+					 , USE_YN
+					 , NVL(SYS_YN, 'N') AS SYS_YN
+					 , ROW_NUMBER() OVER (ORDER BY CD_GRP, CD_GRP_NM) SEQ
+					 , COUNT(1) OVER() TOTAL_COUNT				 
+				  FROM NEO_CD_GRP A
+				 WHERE UILANG = #{uilang}
+				   <if test="searchCdGrp != null and searchCdGrp != ''">
+				   AND UPPER(CD_GRP) LIKE '%' || #{searchCdGrp} || '%'
+				   </if>
+				   <if test="searchCdGrpNm != null and searchCdGrpNm != ''">
+				   AND UPPER(CD_GRP_NM) LIKE '%' || #{searchCdGrpNm} || '%'
+				   </if>
+			
+				)
+		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
+	</select>
+	
+	<select id="getUserCodeGroupInfo" parameterType="userCodeGroupVO" resultType="userCodeGroupVO">
 		SELECT UILANG
 			 , CD_GRP
 			 , CD_GRP_NM
-			 , CD_GRP_NM_SHORT
-			 , '' AS UP_CD_GRP
-			 , '' AS UP_CD_GRP_NM
-			-- , FN_GET_UP_CODE (CD_GRP ,'Y',  #{uilang} )AS  UP_CD_GRP
+			 , NVL(CD_GRP_NM_SHORT, '') AS CD_GRP_NM_SHORT
+			 , (SELECT CD_GRP FROM NEO_CD_GRP WHERE A.UP_CD_GRP = CD_GRP AND A.UILANG = UILANG) AS UP_CD_GRP
+			 , (SELECT CD_GRP_NM FROM NEO_CD_GRP WHERE A.UP_CD_GRP = CD_GRP AND A.UILANG = UILANG) AS UP_CD_GRP_NM
 			 , USE_YN
-			 , SYS_YN
-		FROM NEO_CD_GRP  
-		WHERE UILANG = #{uilang}
-			<if test="searchCdGrp != null and searchCdGrp != ''">
-				AND UPPER(CD_GRP) LIKE '%' || #{searchCdGrp} || '%'
-			</if>
-			<if test="searchCdGrpNm != null and searchCdGrpNm != ''">
-				AND UPPER(CD_GRP_NM) LIKE '%' || #{searchCdGrpNm} || '%'
-			</if>
-		 ORDER BY CD_GRP, CD_GRP_NM
+			 , NVL(SYS_YN, 'N') AS SYS_YN
+		  FROM NEO_CD_GRP A
+		 WHERE UILANG = #{uilang}
+		   AND UPPER(CD_GRP) = #{cdGrp}
 	</select>
-	
+		
 	<insert id="insertUserCodeGroupInfo" parameterType="userCodeGroupVO">
 		INSERT INTO NEO_CD_GRP
 		(
@@ -51,44 +71,76 @@
 	
 	<update id="updateUserCodeGroupInfo" parameterType="userCodeGroupVO">
 		UPDATE NEO_CD_GRP
-		SET
-			CD_GRP_NM   = #{cdGrpNm}
-			, CD_GRP_NM_SHORT  = #{cdGrpNmShort}
-			, CD_GRP_DTL  = #{cdGrpDtl}
-			, USE_YN  = #{useYn}
-		WHERE UILANG  = #{uilang}
-			AND CD_GRP  = #{cdGrp}
+		   SET CD_GRP_NM = #{cdGrpNm}
+			 , CD_GRP_NM_SHORT = #{cdGrpNmShort}
+			 , CD_GRP_DTL = #{cdGrpDtl}
+			 , UP_CD_GRP = #{upCdGrp}
+			 , USE_YN = #{useYn}
+		 WHERE UILANG = #{uilang}
+		   AND CD_GRP = #{cdGrp}
 	</update>
 	
 	<delete id="deleteUserCodeGroupInfo" parameterType="userCodeGroupVO">
 		DELETE FROM NEO_CD_GRP
 		 WHERE CD_GRP = #{cdGrp}
-		   AND  UILANG  = #{uilang}
+		   AND UILANG = #{uilang}
 	</delete>
 	 
-	<!-- �ڵ� ��� ��ȸ  -->
 	<select id="getUserCodeList" parameterType="userCodeVO" resultType="userCodeVO">
-		SELECT A.UILANG
-			, A.CD_GRP
-			, A.CD
-			, A.CD_NM
-			, A.CD_DTL
-			, A.USE_YN
-			, B.CD_NM UILANG_NM
-			, '' UP_CD_NM 
-			--, FN_GET_CODE_NAME(UP_CD, '', #{uilang}) AS UP_CD_NM
-		FROM NEO_CD A
-			, (
-			SELECT CD, CD_NM
-			  FROM NEO_CD
-			 WHERE UILANG = #{uilang}
-			   AND CD_GRP = 'C025'
-			   AND USE_YN = 'Y') B 
-		 WHERE A.CD_GRP = #{cdGrp}
-		   AND A.UILANG = B.CD
-		 ORDER BY A.UILANG, A.CD 
+		SELECT *
+		  FROM (	
+				SELECT A.UILANG
+					 , A.CD
+					 , A.CD_NM
+					 , B.CD_GRP
+					 , B.CD_GRP_NM
+					 , NVL(CD_NM_SHORT, '') AS CD_NM_SHORT
+					 , '' AS UP_CD
+					 , '' AS UP_CD_NM
+					 --, (SELECT CD FROM NEO_CD WHERE A.UP_CD = CD AND A.UILANG = UILANG) AS UP_CD
+					 --, (SELECT CD_NM FROM NEO_CD WHERE A.UP_CD = CD AND A.UILANG = UILANG) AS UP_CD_NM
+					 , NVL(CD_DTL, '') AS CD_DTL
+					 , USE_YN
+					 , ROW_NUMBER() OVER (ORDER BY A.CD_GRP, A.CD, A.CD_NM) SEQ
+					 , COUNT(1) OVER() TOTAL_COUNT
+				  FROM NEO_CD A, NEO_CD_GRP B
+				 WHERE A.UILANG = #{uilang}
+				   AND A.CD_GRP = B.CD_GRP
+				   AND A.UILANG = B.UILANG
+				   <if test="searchCdGrp != null and searchCdGrp != ''">
+				   AND UPPER(A.CD_GRP) LIKE '%' || #{searchCdGrp} || '%'
+				   </if>				   
+				   <if test="searchCd != null and searchCd != ''">
+				   AND UPPER(A.CD) LIKE '%' || #{searchCd} || '%'
+				   </if>
+				   <if test="searchCdNm != null and searchCdNm != ''">
+				   AND UPPER(A.CD_NM) LIKE '%' || #{searchCdNm} || '%'
+				   </if>
+				)
+		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
 	</select>
 	
+	<select id="getUserCodeInfo" parameterType="userCodeVO" resultType="userCodeVO">
+				SELECT A.UILANG
+					 , A.CD
+					 , A.CD_NM
+					 , B.CD_GRP
+					 , B.CD_GRP_NM
+					 , NVL(CD_NM_SHORT, '') AS CD_NM_SHORT
+					 , '' AS UP_CD
+					 , '' AS UP_CD_NM
+					 --, (SELECT CD FROM NEO_CD WHERE A.UP_CD = CD AND A.UILANG = UILANG) AS UP_CD
+					 --, (SELECT CD_NM FROM NEO_CD WHERE A.UP_CD = CD AND A.UILANG = UILANG) AS UP_CD_NM
+					 , NVL(CD_DTL, '') AS CD_DTL
+					 , USE_YN
+				  FROM NEO_CD A, NEO_CD_GRP B
+				 WHERE A.UILANG = #{uilang}
+				   AND A.CD_GRP = B.CD_GRP
+				   AND A.UILANG = B.UILANG
+				   AND UPPER(A.CD_GRP) =  #{searchCdGrp}
+				   AND UPPER(A.CD) = #{searchCd}
+	</select>
+		
 	<insert id="insertUserCodeInfo" parameterType="userCodeVO">
 		INSERT INTO NEO_CD
 		(
@@ -96,9 +148,10 @@
 			, CD_GRP
 			, CD
 			, CD_NM
-			, USE_YN
+			, CD_NM_SHORT
 			, CD_DTL
-			, UP_CD
+			, UP_CD			
+			, USE_YN
 		)
 		VALUES
 		(
@@ -106,18 +159,18 @@
 			, #{cdGrp}
 			, #{cd}
 			, #{cdNm}
-			, #{useYn}
+			, #{cdNmShort}
 			, #{cdDtl}
 			, #{upCd}
+			, #{useYn}
 		)
 	</insert>
-	
 	<update id="updateUserCodeInfo" parameterType="userCodeVO">
 		UPDATE NEO_CD
-		   SET
-			   CD_NM   = #{cdNm}
-			 , USE_YN  = #{useYn}
+		   SET CD_NM   = #{cdNm}
+			 , CD_NM_SHORT = #{cdNmShort}
 			 , CD_DTL  = #{cdDtl}
+			 , USE_YN  = #{useYn}
 		 WHERE UILANG  = #{uilang}
 		   AND CD_GRP  = #{cdGrp}
 		   AND CD      = #{cd}

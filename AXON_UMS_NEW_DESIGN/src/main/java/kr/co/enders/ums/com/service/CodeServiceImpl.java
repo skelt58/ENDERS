@@ -29,6 +29,11 @@ public class CodeServiceImpl implements CodeService {
 	public CodeGroupVO getCodeGrpInfo(CodeGroupVO codeGroupVO) throws Exception {
 		return codeDAO.getCodeGrpInfo(codeGroupVO);
 	}
+	
+	@Override
+	public List<CodeVO> getCodeGrpList(CodeVO codeVO) throws Exception {
+		return codeDAO.getCodeGrpList(codeVO);
+	}	
 
 	@Override
 	public List<CodeVO> getTimezoneList(CodeVO code) throws Exception {

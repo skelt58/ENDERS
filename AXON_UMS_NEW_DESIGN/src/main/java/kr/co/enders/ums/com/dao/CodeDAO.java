@@ -31,6 +31,11 @@ public class CodeDAO implements CodeMapper {
 	}
 
 	@Override
+	public List<CodeVO> getCodeGrpList(CodeVO codeVO) throws Exception {
+		return sqlSessionEms.getMapper(CodeMapper.class).getCodeGrpList(codeVO);
+	}
+	
+	@Override
 	public List<CodeVO> getTimezoneList(CodeVO codeVO) throws Exception {
 		return sqlSessionEms.getMapper(CodeMapper.class).getTimezoneList(codeVO);
 	}

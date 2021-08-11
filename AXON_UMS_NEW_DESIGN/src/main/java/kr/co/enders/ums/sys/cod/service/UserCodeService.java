@@ -21,12 +21,61 @@ import kr.co.enders.ums.sys.cod.vo.UserCodeGroupVO;
 public interface UserCodeService {
 
 	/**
+	 * 사용자 코드 그룹 목록 조회
+	 * @param userCodeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<UserCodeGroupVO> getUserCodeGroupList(UserCodeGroupVO userCodeGroupVO) throws Exception;
+	
+	/**
+	 * 사용자 코드 그룹 정보 조회
+	 * @param userCodeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	public UserCodeGroupVO getUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception;
+		
+	/**
+	 * 사용자 코드 그룹 등록
+	 * @param userCodeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	@Transactional(value="transactionManagerEms")
+	public int insertUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception;
+	
+	/**
+	 * 사용자 코드 그룹 수정
+	 * @param userCodeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception;
+	
+	/**
+	 * 사용자 코드 그룹 삭제
+	 * @param userCodeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int deleteUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception;
+	
+	/**
 	 * 사용자 코드 목록 조회
 	 * @param userCodeVO
 	 * @return
 	 * @throws Exception
 	 */
 	public List<UserCodeVO> getUserCodeList(UserCodeVO userCodeVO) throws Exception;
+	
+	/**
+	 * 사용자 코드 정보 조회
+	 * @param userCodeVO
+	 * @return
+	 * @throws Exception
+	 */
+	public UserCodeVO getUserCodeInfo(UserCodeVO userCodeVO) throws Exception;
 	
 	/**
 	 * 사용자 코드 등록

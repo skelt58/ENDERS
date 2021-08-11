@@ -6,6 +6,9 @@
  * 수정일시 : 2021.08.10
  * 수정내역 : 패키지명수정 및 sys관련 분리에 의한 소스 변경  kr.co.enders.ums.sys.dao ==> kr.co.enders.ums.sys.cod.dao
  *                계정관리외의 항목제거 
+ * 수정자 : 김준희
+ * 수정일시 : 2021.08.11
+ * 수정내역 : 코드그룹 관리 기능 추가                 
  */
 package kr.co.enders.ums.sys.cod.dao;
 
@@ -15,8 +18,50 @@ import kr.co.enders.ums.sys.cod.vo.UserCodeVO;
 import kr.co.enders.ums.sys.cod.vo.UserCodeGroupVO;
 
 public interface UserCodeMapper {
+	
+	
 	/**
-	 * 캠페인 목적(사용자 코드) 목록 조회
+	 * 코드그릅 목록 조회
+	 * @param userCodeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<UserCodeGroupVO> getUserCodeGroupList(UserCodeGroupVO userCodeGroupVO) throws Exception;
+	
+	/**
+	 * 코드그릅 정보 조회
+	 * @param userCodeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	public UserCodeGroupVO getUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception;
+	
+	/**
+	 * 코드그릅 등록
+	 * @param userCodeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int insertUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception;
+	
+	/**
+	 * 코드그릅 수정
+	 * @param userCodeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int updateUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception;
+	
+	/**
+	 * 코드그릅 삭제
+	 * @param userCodeVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int deleteUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception;
+
+	/**
+	 * 코드 목록 조회
 	 * @param userCodeVO
 	 * @return
 	 * @throws Exception
@@ -24,7 +69,15 @@ public interface UserCodeMapper {
 	public List<UserCodeVO> getUserCodeList(UserCodeVO userCodeVO) throws Exception;
 	
 	/**
-	 * 캠페인 목적(사용자 코드) 등록
+	 * 코드 정보 조회
+	 * @param userCodeVO
+	 * @return
+	 * @throws Exception
+	 */
+	public UserCodeVO getUserCodeInfo(UserCodeVO userCodeVO) throws Exception;	
+	
+	/**
+	 * 코드 등록
 	 * @param userCodeVO
 	 * @return
 	 * @throws Exception
@@ -32,7 +85,7 @@ public interface UserCodeMapper {
 	public int insertUserCodeInfo(UserCodeVO userCodeVO) throws Exception;
 	
 	/**
-	 * 캠페인 목적(사용자 코드) 수정
+	 * 코드 수정
 	 * @param userCodeVO
 	 * @return
 	 * @throws Exception
@@ -40,7 +93,7 @@ public interface UserCodeMapper {
 	public int updateUserCodeInfo(UserCodeVO userCodeVO) throws Exception;
 	
 	/**
-	 * 캠페인 목적(사용자 코드) 삭제
+	 * 코드삭제
 	 * @param userCodeVO
 	 * @return
 	 * @throws Exception
