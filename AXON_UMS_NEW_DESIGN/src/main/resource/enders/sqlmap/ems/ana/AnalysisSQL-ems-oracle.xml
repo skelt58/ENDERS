@@ -166,7 +166,7 @@
 							 WHERE TASK_NO = #{taskNo}
 							   AND SEND_RCODE != '000'
 							   <if test="subTaskNo != 0">
-							   AND SUB_TASK_NO = ${subTaskNo}
+							   AND SUB_TASK_NO = #{subTaskNo}
 							   </if>
 							   <if test="step1 != null and step1 != ''">
 							   AND RCODE_STEP1 = #{step1}
@@ -188,7 +188,7 @@
 							 WHERE TASK_NO = #{taskNo}
 							   AND SEND_RCODE != '000'
 							   <if test="subTaskNo != 0">
-							   AND SUB_TASK_NO = ${subTaskNo}
+							   AND SUB_TASK_NO = #{subTaskNo}
 							   </if>
 							   <if test="step1 != null and step1 != ''">
 							   AND RCODE_STEP1 = #{step1}
@@ -1062,6 +1062,94 @@
 						   AND AA.USER_ID = BB.USER_ID
 						) YY
 				) Y
+	</select>
+	
+	<select id="getCampaignInfo" parameterType="campaignVO" resultType="campaignVO">
+		SELECT A.CAMP_NM
+			 , A.REG_DT
+			 , B.DEPT_NM
+			 , C.USER_NM
+			 , D.CD_NM AS CAMP_TY
+		  FROM NEO_CAMPAIGN A, NEO_DEPT B, NEO_USER C,
+				(SELECT CD, CD_NM FROM NEO_CD WHERE CD_GRP = 'C004' AND UILANG = #{uilang}) D
+		 WHERE A.CAMP_NO = #{campNo}
+		   AND A.DEPT_NO = B.DEPT_NO
+		   AND A.USER_ID = C.USER_ID
+		   AND A.CAMP_TY = D.CD
+	</select>
+	
+	<select id="getCampMailList" parameterType="campaignVO" resultType="mailSummVO">
+		SELECT *
+		  FROM (
+				SELECT A.TASK_NO
+					 , NVL(SEND_CNT,0) AS SEND_CNT
+					 , NVL(SUCC_CNT,0) AS SUCC_CNT
+					 , NVL(OPEN_CNT,0) AS OPEN_CNT
+					 , NVL(VALID_CNT,0) AS VALID_CNT
+					 , NVL(CLICK_CNT,0) AS CLICK_CNT
+					 , NVL(BLOCK_CNT,0) AS BLOCK_CNT
+					 , NVL(E.SEND_REPEAT,'000') AS SEND_REPEAT
+					 , E.TASK_NM
+		             , ROW_NUMBER() OVER (ORDER BY A.TASK_NO DESC) SEQ
+		             , COUNT(1) OVER() TOTAL_COUNT
+				  FROM (
+						SELECT TASK_NO, NVL(SUM(SEND_AR_AMT),0) SEND_CNT,
+								NVL(SUM(CASE WHEN SEND_RCODE = '000' THEN SEND_AR_AMT ELSE 0 END),0) SUCC_CNT
+						  FROM NEO_AR_SENDLOG
+						 WHERE CAMP_NO = #{campNo}
+						 GROUP BY TASK_NO
+						) A,
+						(
+						SELECT TASK_NO, NVL(SUM(RESP_AR_AMT),0) OPEN_CNT,
+								NVL(SUM(CASE WHEN BLOCKED_YN = 'Y' THEN RESP_AR_AMT ELSE 0 END),0) BLOCK_CNT
+						  FROM NEO_AR_RESPLOG
+						 WHERE CAMP_NO = #{campNo}
+						 GROUP BY TASK_NO
+						) B,
+						(
+						SELECT TASK_NO, NVL(SUM(CLICK_AR_AMT),0) CLICK_CNT, NVL(SUM(VALID_AR_AMT),0) VALID_CNT
+						  FROM NEO_AR_LINKLOG
+						 WHERE CAMP_NO = #{campNo}
+						 GROUP BY TASK_NO
+						) D,
+						NEO_TASK E
+				 WHERE A.TASK_NO = B.TASK_NO(+)
+				   AND A.TASK_NO = D.TASK_NO(+)
+				   AND A.TASK_NO = E.TASK_NO
+				)
+		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
+	</select>
+	
+	<select id="getCampMailTotal" parameterType="campaignVO" resultType="mailSummVO">
+		SELECT SUM(SEND_CNT) AS SEND_CNT
+			 , SUM(SUCC_CNT) AS SUCC_CNT
+			 , SUM(OPEN_CNT) AS OPEN_CNT
+			 , SUM(VALID_CNT) AS VALID_CNT
+			 , SUM(CLICK_CNT) AS CLICK_CNT
+			 , SUM(BLOCK_CNT) AS BLOCK_CNT
+		  FROM (
+		  		SELECT TASK_NO, NVL(SUM(SEND_AR_AMT),0) SEND_CNT,
+						NVL(SUM(CASE WHEN SEND_RCODE = '000' THEN SEND_AR_AMT ELSE 0 END),0) SUCC_CNT
+				  FROM NEO_AR_SENDLOG
+				 WHERE CAMP_NO = #{campNo}
+				 GROUP BY TASK_NO
+				) A,
+				(
+				SELECT TASK_NO, NVL(SUM(RESP_AR_AMT),0) OPEN_CNT,
+						NVL(SUM(CASE WHEN BLOCKED_YN = 'Y' THEN RESP_AR_AMT ELSE 0 END),0) BLOCK_CNT
+				  FROM NEO_AR_RESPLOG
+				 WHERE CAMP_NO = #{campNo}
+				 GROUP BY TASK_NO
+				) B,
+				(
+				SELECT TASK_NO, NVL(SUM(CLICK_AR_AMT),0) CLICK_CNT, NVL(SUM(VALID_AR_AMT),0) VALID_CNT
+				  FROM NEO_AR_LINKLOG
+				 WHERE CAMP_NO = #{campNo}
+				 GROUP BY TASK_NO) D,
+				NEO_TASK E
+		 WHERE A.TASK_NO = B.TASK_NO(+)
+		   AND A.TASK_NO = D.TASK_NO(+)
+		   AND A.TASK_NO = E.TASK_NO
 	</select>
 
 </mapper>

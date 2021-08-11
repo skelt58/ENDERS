@@ -130,14 +130,14 @@ var fn = (function() {
 
 		//popupOpen
 		popupOpen : function(obj){
-			$(obj).show();
+			$(obj).addClass("open");
 			$("body").addClass("ov-hidden");
-			fn.popupHeight();
+			//fn.popupHeight();
 		},
 
 		//popupClose
 		popupClose : function(obj){
-			$(obj).hide();
+			$(obj).removeClass("open");
 			$("body").removeClass("ov-hidden");
 		},
 
@@ -146,13 +146,17 @@ var fn = (function() {
 			//popup
 			$(".poplayer").each(function(){
 				var popupH = $(this).find(".inner").outerHeight(),
-						contentH = $(this).find(".cont").outerHeight(),
-						headerH = $(this).find("header").outerHeight();
+					contentH = $(this).find(".cont").outerHeight(),
+					headerH = $(this).find("header").outerHeight();
+					console.log(popupH + " // " + contentH + " // " + headerH);
 
 				
 				if( popupH < contentH ){	// 팝업틀의 높이보다 팝업내 content 높이가 더 크다면
 					var contheight = popupH - headerH;
 					$(this).find(".cont").outerHeight(contheight);
+					console.log("popupH < contentH");
+				}else{
+					console.log("noe");
 				}
 
 				if (!(popupH % 2) == 0) { // 팝업틀의 높이가 홀수라면 흐린현상으로 짝수로 잡아준다.(transform 사용)

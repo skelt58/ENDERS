@@ -8,6 +8,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/inc/header.jsp" %>
 
+<script type="text/javascript" src="<c:url value='/js/echarts.min.js'/>"></script>
 <script type="text/javascript">
 function goPageNum(page) {
 	$("#page").val(page);
@@ -146,7 +147,77 @@ function goPageNum(page) {
 		<td align="center" height=25>${pageUtil.pageHtml}</td>
 	</tr>
 </table>
+<div id="sendTimeChart" style="width:1300px;height:400px;"></div>
+<script type="text/javascript">
+var chartDom = document.getElementById('sendTimeChart');
+var myChart = echarts.init(chartDom);
+var option;
 
+option = {
+	    tooltip: {
+	        trigger: 'item'
+	    },
+	    legend: {
+	    	orient: 'horizontal',
+	    	left: 'center',
+	    	bottom: 10,
+	        data: ['발송수', '성공수', '실패수']
+	    },
+	    xAxis: [{
+	        type: 'category',
+	        data: [
+	        	<c:if test="${fn:length(sendList) > 0}">
+	    			<c:forEach items="${sendList}" var="send" varStatus="sendStatus">
+	    				<fmt:parseDate var="sendTime" value="${send.sendTime}" pattern="yyyyMMddHH"/>
+						<fmt:formatDate var="sendTime" value="${sendTime}" pattern="yyyy-MM-dd HH"/>
+						<c:if test="${sendStatus.index>0}">,</c:if>'<c:out value='${sendTime}'/><spring:message code='ANATBLLB016'/>'
+		    		</c:forEach>
+		    	</c:if>
+	        ]
+	    }],
+	    yAxis: {
+	        type: 'value'
+	    },
+	    series: [
+	    	{
+	            name: '발송수',
+		        type: 'bar',
+	            barGap: 0,
+		        data: [
+		        	<c:if test="${fn:length(sendList) > 0}">
+	    			<c:forEach items="${sendList}" var="send" varStatus="sendStatus">
+	    			<c:if test='${sendStatus.index>0}'>, </c:if><c:out value='${send.sendCnt}'/>
+	    			</c:forEach>
+	    			</c:if>
+	    		]
+	        },
+	        {
+	            name: '성공수',
+		        type: 'bar',
+		        data: [
+		        	<c:if test="${fn:length(sendList) > 0}">
+	    			<c:forEach items="${sendList}" var="send" varStatus="sendStatus">
+	    			<c:if test='${sendStatus.index>0}'>, </c:if><c:out value='${send.succCnt}'/>
+	    			</c:forEach>
+	    			</c:if>
+		        ]
+	        },
+	        {
+	            name: '실패수',
+		        type: 'bar',
+		        data: [
+		        	<c:if test="${fn:length(sendList) > 0}">
+	    			<c:forEach items="${sendList}" var="send" varStatus="sendStatus">
+	    			<c:if test='${sendStatus.index>0}'>, </c:if><c:out value='${send.sendCnt - send.succCnt}'/>
+	    			</c:forEach>
+	    			</c:if>
+		        ]
+	        }
+	    ]
+	};
+
+option && myChart.setOption(option);
+</script>
 
 </body>
 </html>

@@ -14,6 +14,7 @@ import kr.co.enders.ums.ems.ana.vo.MailErrorVO;
 import kr.co.enders.ums.ems.ana.vo.MailSummVO;
 import kr.co.enders.ums.ems.ana.vo.RespLogVO;
 import kr.co.enders.ums.ems.ana.vo.SendLogVO;
+import kr.co.enders.ums.ems.cam.vo.CampaignVO;
 import kr.co.enders.ums.ems.cam.vo.TaskVO;
 
 @Service
@@ -218,4 +219,28 @@ public interface AnalysisService {
 	 * @throws Exception
 	 */
 	public RespLogVO getTaskRespHourSum(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 캠페인별분석 캠페인 정보 조회
+	 * @param campaignVO
+	 * @return
+	 * @throws Exception
+	 */
+	public CampaignVO getCampaignInfo(CampaignVO campaignVO) throws Exception;
+	
+	/**
+	 * 캠페인별분석 캠페인 메일 목록 조회
+	 * @param campaignVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<MailSummVO> getCampMailList(CampaignVO campaignVO) throws Exception;
+	
+	/**
+	 * 캠페인별분석 캠페인 메일 합계 조회
+	 * @param campaignVO
+	 * @return
+	 * @throws Exception
+	 */
+	public MailSummVO getCampMailTotal(CampaignVO campaignVO) throws Exception;
 }

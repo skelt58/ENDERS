@@ -10,15 +10,11 @@
 
 <script type="text/javascript">
 function goService() {
-	//if(confirm("로그아웃하시겠습니까?")) {
-		document.location.href = "<c:url value='/service.ums'/>";
-	//}
+	document.location.href = "<c:url value='/service.ums'/>";
 }
 
 function goLogout() {
-	//if(confirm("로그아웃하시겠습니까?")) {
-		document.location.href = "<c:url value='/lgn/logout.ums'/>";
-	//}
+	document.location.href = "<c:url value='/lgn/logout.ums'/>";
 }
 function goSys() {	
 	document.location.href = "<c:url value='/sys/index.ums'/>";

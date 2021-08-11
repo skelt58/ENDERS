@@ -10,7 +10,6 @@
 
 <script type="text/javascript" src="<c:url value='/js/echarts.min.js'/>"></script>
 <script type="text/javascript">
-
 //에러 확인 팝업창
 function openError(step1, step2) {
 	var url = "<c:url value='/ems/ana/failListP.ums'/>?taskNo=<c:out value='${taskVO.taskNo}'/>&subTaskNo=<c:out value='${taskVO.subTaskNo}'/>";
@@ -18,7 +17,6 @@ function openError(step1, step2) {
 	var feature = "menubar=no, scrollbars=no, toolbar=no, width=800, height=500, top=0, left=0";
 	window.open(url, "", feature);
 }
-
 </script>
 
 <table width="700" border="1" cellspacing="0" cellpadding="0" class="table_line_outline">
@@ -115,7 +113,7 @@ function openError(step1, step2) {
 					</tr>
 					<tr>
 						<td colspan="3">
-							<div id="sendResultChart" style="width:350px;height:300px;">
+							<div id="sendResultChart" style="width:460px;height:300px;">
 							<script type="text/javascript">
 							var chartDom = document.getElementById('sendResultChart');
 							var myChart = echarts.init(chartDom);
@@ -126,13 +124,15 @@ function openError(step1, step2) {
 							        trigger: 'item'
 							    },
 							    legend: {
-							    	orient: 'horizontal'
+							    	orient: 'horizontal',
+							    	left: 'center',
+							    	bottom: 10
 							    },
 							    series: [
 							        {
 							            name: '발송결과',
 							            type: 'pie',
-							            radius: '70%',
+							            radius: '60%',
 							            data: [
 							                {value: <c:out value='${sendResult.succCnt}'/>, name: '성공수'},
 							                {value: <c:out value='${sendResult.failCnt}'/>, name: '실패수'}
@@ -243,7 +243,7 @@ function openError(step1, step2) {
 					</tr>
 					<tr>
 						<td colspan="6">
-							<div id="respResultChart" style="width:700px;height:280px;">
+							<div id="respResultChart" style="width:740px;height:279px;">
 							<script type="text/javascript">
 							var chartDom = document.getElementById('respResultChart');
 							var myChart = echarts.init(chartDom);
@@ -258,12 +258,17 @@ function openError(step1, step2) {
 								        type: 'value'
 								    },
 								    series: [{
-								        data: [<c:out value='${sendResult.succCnt}'/>, <c:out value='${sendResult.openCnt}'/>, <c:out value='${sendResult.validCnt}'/>, 
-								        	<c:out value='${sendResult.clickCnt}'/>, <c:out value='${sendResult.blockCnt}'/>],
-								        type: 'bar'
+							            name: '반응결과',
+								        type: 'bar',
+								        data: [
+								        	{ value: <c:out value='${sendResult.succCnt}'/>, itemStyle: {color:'#5470c6'} },
+								        	{ value: <c:out value='${sendResult.openCnt}'/>, itemStyle: {color:'#91cc75'} },
+								        	{ value: <c:out value='${sendResult.validCnt}'/>, itemStyle: {color:'#fac858'} },
+								        	{ value: <c:out value='${sendResult.clickCnt}'/>, itemStyle: {color:'#ee6666'} },
+								        	{ value: <c:out value='${sendResult.blockCnt}'/>, itemStyle: {color:'#73c0de'} }
+								        ]
 								    }]
 								};
-							
 							option && myChart.setOption(option);
 							</script>
 							</div>
@@ -540,17 +545,20 @@ function openError(step1, step2) {
 	</table>
 </c:if>
 
-<div id="errorDetailChart" style="width:1100px;height:300px;">
+<div id="errorDetailChart" style="width:1600px;height:300px;"></div>
 <script type="text/javascript">
 var chartDom = document.getElementById('errorDetailChart');
 var myChart = echarts.init(chartDom);
 var option;
 
 option = {
+	    tooltip: {
+	        trigger: 'item'
+	    },
 	    xAxis: [{
 	        type: 'category',
 	        axisLabel : {
-	        	rotate : 40
+	        	rotate : 0
 	        },
 	        data: ['Syntax', 'Web Agent', 'DB Agent', 'Mail Body', 'Domain', 'Network', 'CONNECT', 'HELO', 'MAIL FROM', 'RCPT TO', 'RESET', 'DATA', 'DOT', 'QUIT']
 	    }],
@@ -558,17 +566,29 @@ option = {
 	        type: 'value'
 	    },
 	    series: [{
-	        data: [<c:out value='${syntaxErrCnt}'/>, <c:out value='${webAgentErrCnt}'/>, <c:out value='${dbAgentErrCnt}'/>, <c:out value='${mailBodyErrCnt}'/>, 
-	        	<c:out value='${domainErrCnt}'/>, <c:out value='${networkErrCnt}'/>, <c:out value='${connectErrCnt}'/>, <c:out value='${heloErrCnt}'/>, 
-	        	<c:out value='${mailFromErrCnt}'/>, <c:out value='${rcptToErrCnt}'/>, <c:out value='${resetErrCnt}'/>, <c:out value='${dataErrCnt}'/>, 
-	        	<c:out value='${dotErrCnt}'/>, <c:out value='${quitErrCnt}'/>],
-	        type: 'bar'
-	    }]
+            name: '세부에러',
+	        type: 'bar',
+	        data: [
+	        	{ value: <c:out value='${syntaxErrCnt}'/>, itemStyle: {color:'#5470c6'} },
+	        	{ value: <c:out value='${webAgentErrCnt}'/>, itemStyle: {color:'#91cc75'} },
+	        	{ value: <c:out value='${dbAgentErrCnt}'/>, itemStyle: {color:'#fac858'} },
+	        	{ value: <c:out value='${mailBodyErrCnt}'/>, itemStyle: {color:'#ee6666'} },
+	        	{ value: <c:out value='${domainErrCnt}'/>, itemStyle: {color:'#73c0de'} },
+	        	{ value: <c:out value='${networkErrCnt}'/>, itemStyle: {color:'#3ba272'} },
+	        	{ value: <c:out value='${connectErrCnt}'/>, itemStyle: {color:'#fc8452'} },
+	        	{ value: <c:out value='${heloErrCnt}'/>, itemStyle: {color:'#9a60b4'} },
+	        	{ value: <c:out value='${mailFromErrCnt}'/>, itemStyle: {color:'#ea7ccc'} },
+	        	{ value: <c:out value='${rcptToErrCnt}'/>, itemStyle: {color:'#5470c6'} },
+	        	{ value: <c:out value='${resetErrCnt}'/>, itemStyle: {color:'#91cc75'} },
+	        	{ value: <c:out value='${dataErrCnt}'/>, itemStyle: {color:'#fac858'} },
+	        	{ value: <c:out value='${dotErrCnt}'/>, itemStyle: {color:'#ee6666'} },
+	        	{ value: <c:out value='${quitErrCnt}'/>, itemStyle: {color:'#73c0de'} }
+	        ]
+	    }],
 	};
 
 option && myChart.setOption(option);
 </script>
-</div>
 
 
 </body>

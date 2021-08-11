@@ -7,22 +7,6 @@
  * --------------------------------
 */
 
-
-
-/* float 해제 content:'';display:block;clear:both; */
-/* display, float, position, top, left, right, bottom, width, height, margin, padding, background, 
-color, font-family, font-size, font-weight, text-align, border, border-radius, vertical, line-height, opacity, 
-overflow, box-sizing, z-index, transition, transform */
-
-/* 
-font weight
-200 light
-400 regular
-500 medium
-600 bold
-*/
-
-
 /* login */
 #login {position:relative;width:100%;min-width:1180px;max-width:1920px;height:100%;background:url('../img/common/login_bg.png') no-repeat center bottom;}
 #login .login-inner {position:absolute;top:40%;left:50%;width:580px;margin-top:-300px;margin-left:-290px;text-align:center;}
@@ -77,3 +61,13 @@ font weight
 .popmailsend .list-wrap li p {margin-top:6px;font-size:15px;color:#666;line-height:24px;}
 .popmailsend .list-wrap a {width:90px;height:35px;margin-top:30px;background:#fff;color:#666;text-align:center;line-height:33px;border:1px solid #e1e1e1;border-radius:6px;transition:all .4s;}
 .popmailsend .list-wrap a:hover {background:#5668F0;color:#fff;border-color:#5668F0;}
+
+/* popup : 웹 에이전트 등록 */
+.popregisteragent .cont p {margin-bottom:20px;}
+
+/* popup : AXon push */
+.popservicepush .inner{max-width:400px;text-align:center;}
+.popservicepush .cont strong {display:block;padding-top:130px;padding-bottom:5px;background:#fff url('../img/common/icon_push_default.png') no-repeat 50% 0;color:#111;font-size:24px;font-weight:600;}
+.popservicepush .cont span {color:#666;font-size:15px;}
+.popservicepush .cont p {margin-top:30px;margin-bottom:20px;color:#666;font-size:15px;}
+.popservicepush .cont .btn{margin-left:0;}
