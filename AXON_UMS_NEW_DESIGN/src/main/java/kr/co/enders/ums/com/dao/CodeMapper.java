@@ -29,6 +29,14 @@ public interface CodeMapper {
 	public CodeGroupVO getCodeGrpInfo(CodeGroupVO codeGroupVO) throws Exception;
 	
 	/**
+	 * 코드그룹 정보 조회
+	 * @param codeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<CodeVO> getCodeGrpList(CodeVO codeVO) throws Exception;
+	
+	/**
 	 * 타임존 목록 조회
 	 * @param codeVO
 	 * @return
