@@ -36,6 +36,21 @@ public class UserCodeDAO implements UserCodeMapper {
 	public UserCodeGroupVO getUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception {
 		return sqlSessionEms.getMapper(UserCodeMapper.class).getUserCodeGroupInfo(userCodeGroupVO);
 	}
+	
+	@Override
+	public int getCodeCountUnderCodeGroup(UserCodeGroupVO userCodeGroupVO) throws Exception {
+		return sqlSessionEms.getMapper(UserCodeMapper.class).getCodeCountUnderCodeGroup(userCodeGroupVO);
+	}
+	
+	@Override
+	public int getCodeGroupCountByCodeGroup(UserCodeGroupVO userCodeGroupVO) throws Exception {
+		return sqlSessionEms.getMapper(UserCodeMapper.class).getCodeGroupCountByCodeGroup(userCodeGroupVO);
+	}
+	
+	@Override
+	public int getCodeGroupCountByCodeGroupNm(UserCodeGroupVO userCodeGroupVO) throws Exception {
+		return sqlSessionEms.getMapper(UserCodeMapper.class).getCodeGroupCountByCodeGroupNm(userCodeGroupVO);
+	}
 
 	@Override
 	public int insertUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception {
@@ -62,6 +77,17 @@ public class UserCodeDAO implements UserCodeMapper {
 	public UserCodeVO getUserCodeInfo(UserCodeVO userCodeVO) throws Exception {
 		return sqlSessionEms.getMapper(UserCodeMapper.class).getUserCodeInfo(userCodeVO);
 	}	
+	
+	@Override
+	public int getCodeCountByCode(UserCodeVO userCodeVO) throws Exception {
+		return sqlSessionEms.getMapper(UserCodeMapper.class).getCodeCountByCode(userCodeVO);
+	}
+	
+	@Override
+	public int getCodeCountByCodeNm(UserCodeVO userCodeVO) throws Exception {
+		return sqlSessionEms.getMapper(UserCodeMapper.class).getCodeCountByCodeNm(userCodeVO);
+	}
+	
 	@Override
 	public int insertUserCodeInfo(UserCodeVO userCodeVO) throws Exception {
 		return sqlSessionEms.getMapper(UserCodeMapper.class).insertUserCodeInfo(userCodeVO);
@@ -76,5 +102,4 @@ public class UserCodeDAO implements UserCodeMapper {
 	public int deleteUserCodeInfo(UserCodeVO userCodeVO) throws Exception {
 		return sqlSessionEms.getMapper(UserCodeMapper.class).deleteUserCodeInfo(userCodeVO);
 	}
-
 }

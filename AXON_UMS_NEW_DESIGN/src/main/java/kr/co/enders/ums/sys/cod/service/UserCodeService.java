@@ -35,7 +35,7 @@ public interface UserCodeService {
 	 * @throws Exception
 	 */
 	public UserCodeGroupVO getUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception;
-		
+
 	/**
 	 * 사용자 코드 그룹 등록
 	 * @param userCodeGroupVO

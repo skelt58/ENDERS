@@ -37,6 +37,30 @@ public interface UserCodeMapper {
 	public UserCodeGroupVO getUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception;
 	
 	/**
+	 * 코드그룹에 속해있는 코드갯수
+	 * @param userCodeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int getCodeCountUnderCodeGroup(UserCodeGroupVO userCodeGroupVO) throws Exception;
+	
+	/**
+	 * 코드그룹 동일한 코드 그룹 갯수
+	 * @param userCodeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int getCodeGroupCountByCodeGroup(UserCodeGroupVO userCodeGroupVO) throws Exception;
+	
+	/**
+	 * 코드그룹명 동일한 코드 그룹 갯수
+	 * @param userCodeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int getCodeGroupCountByCodeGroupNm(UserCodeGroupVO userCodeGroupVO) throws Exception;
+	
+	/**
 	 * 코드그릅 등록
 	 * @param userCodeGroupVO
 	 * @return
@@ -75,6 +99,23 @@ public interface UserCodeMapper {
 	 * @throws Exception
 	 */
 	public UserCodeVO getUserCodeInfo(UserCodeVO userCodeVO) throws Exception;	
+	
+	
+	/**
+	 * 코드 동일한 코드 그룹 갯수
+	 * @param userCodeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int getCodeCountByCode(UserCodeVO userCodeVO) throws Exception;
+	
+	/**
+	 * 코드명 동일한 코드 그룹 갯수
+	 * @param userCodeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	public int getCodeCountByCodeNm(UserCodeVO userCodeVO) throws Exception;
 	
 	/**
 	 * 코드 등록

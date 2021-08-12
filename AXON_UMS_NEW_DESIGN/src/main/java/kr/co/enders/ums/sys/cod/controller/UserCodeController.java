@@ -9,8 +9,6 @@
  */
 package kr.co.enders.ums.sys.cod.controller;
 
-import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,16 +24,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
  
-import kr.co.enders.ums.com.service.CodeService;
-import kr.co.enders.ums.com.vo.CodeGroupVO;
+import kr.co.enders.ums.com.service.CodeService; 
 import kr.co.enders.ums.com.vo.CodeVO;
 import kr.co.enders.ums.sys.cod.service.UserCodeService;
 import kr.co.enders.ums.sys.cod.vo.UserCodeGroupVO;
-import kr.co.enders.ums.sys.cod.vo.UserCodeVO;
-import kr.co.enders.util.Code;
-import kr.co.enders.util.PageUtil;
-import kr.co.enders.util.DBUtil;
-import kr.co.enders.util.EncryptUtil;
+import kr.co.enders.ums.sys.cod.vo.UserCodeVO; 
+import kr.co.enders.util.MessageUtil;
+import kr.co.enders.util.PageUtil;  
 import kr.co.enders.util.PropertiesUtil;
 import kr.co.enders.util.StringUtil;
 
@@ -54,7 +49,7 @@ public class UserCodeController {
 	private PropertiesUtil properties; 
 
 	/**
-	 * 코드 그룹 목록 조회
+	 * 코드 그룹 목록 화면을 출력한다
 	 * @param searchVO
 	 * @param model
 	 * @param request
@@ -63,15 +58,67 @@ public class UserCodeController {
 	 * @return
 	 */
 	@RequestMapping(value="/userCodeGroupListP")
+	public String goUserCodeGroupListP(@ModelAttribute UserCodeGroupVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goUserCodeGroupList searchUserCodeGroupNm = " + searchVO.getSearchCdGrpNm());
+		logger.debug("goUserCodeGroupList searchUserCodeGroup = " + searchVO.getSearchCdGrp());
+	
+		searchVO.setSearchUiLang((String)session.getAttribute("NEO_UILANG"));		
+		logger.debug("goUserCodeGroupList searchUserCodeGroup = " + searchVO.getSearchUiLang());
+		
+		// 페이지 설정
+		int page = StringUtil.setNullToInt(searchVO.getPage(), 1);		
+		searchVO.setPage(page);		
+		
+		// 코드그룹목록(코드성) 조회
+		CodeVO cdGrp = new CodeVO();
+		cdGrp.setUilang(searchVO.getSearchUiLang());
+		List<CodeVO> cdGrpList = null;
+		try {
+			cdGrpList = codeService.getCodeGrpList(cdGrp);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeGrpList error = " + e);
+		}
+		
+		// 캠페인목적 목록
+		CodeVO uiLang = new CodeVO();
+		uiLang.setUilang(searchVO.getSearchUiLang());
+		uiLang.setCdGrp("C025");
+		uiLang.setUseYn("Y");
+		List<CodeVO> uiLangList = null;
+		try {
+			uiLangList = codeService.getCodeList(uiLang);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList[C004] error = " + e);
+		}
+		
+		
+		model.addAttribute("searchVO", searchVO);			// 검색 항목
+		model.addAttribute("cdGrpList", cdGrpList);			// 코드그룹 검색 조건 항목
+		model.addAttribute("uiLangList", uiLangList);			// 코드그룹 검색 조건 항목
+		
+		return "sys/cod/userCodeGroupListP";
+	}
+	
+	/**
+	 * 코드 그룹 목록을 출력한다
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/userCodeGroupList")
 	public String goUserCodeGroupList(@ModelAttribute UserCodeGroupVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("goUserCodeGroupList searchUserCodeGroupNm = " + searchVO.getSearchCdGrpNm());
 		logger.debug("goUserCodeGroupList searchUserCodeGroup = " + searchVO.getSearchCdGrp());
 	
-		searchVO.setSearchUiLang((String)session.getAttribute("NEO_UILANG"));
-
+		searchVO.setSearchUiLang((String)session.getAttribute("NEO_UILANG"));		
+		logger.debug("goUserCodeGroupList searchUserCodeGroup = " + searchVO.getSearchUiLang());
+		
 		// 페이지 설정
 		int page = StringUtil.setNullToInt(searchVO.getPage(), 1);
-		int rows = StringUtil.setNullToInt(searchVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE")));
+		int rows = StringUtil.setNullToInt(searchVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE_COD")));
 		searchVO.setPage(page);
 		searchVO.setRows(rows);
 		int totalCount = 0;
@@ -83,28 +130,18 @@ public class UserCodeController {
 		} catch(Exception e) {
 			logger.error("UserCodeService.getCodeGroupInfo error = " + e);
 		}
-	 
-		// 코드그룹목록(코드성) 조회
-		CodeVO cdGrp = new CodeVO();
-		cdGrp.setUilang(searchVO.getSearchUiLang());
-		List<CodeVO> cdGrpList = null;
-		try {
-			cdGrpList = codeService.getCodeGrpList(cdGrp);
-		} catch(Exception e) {
-			logger.error("codeService.getCodeGrpList error = " + e);
-		}
 		
 		if(userCodeGroupList != null && userCodeGroupList.size() > 0) {
 			totalCount = userCodeGroupList.get(0).getTotalCount();
 		}
+		
 		PageUtil pageUtil = new PageUtil();
-		pageUtil.init(request, searchVO.getPage(), totalCount, rows);
+		pageUtil.init(request, searchVO.getPage(), totalCount, rows);		
+				
+		model.addAttribute("userCodeGroupList", userCodeGroupList);// 코드그룹 목록
+		model.addAttribute("pageUtil", pageUtil);	// 페이징
 		
-		model.addAttribute("searchVO", searchVO);			// 검색 항목
-		model.addAttribute("userCodeGroupList", userCodeGroupList);	// 코드그룹 내역 목록
-		model.addAttribute("cdGrpList", cdGrpList);			// 코드그룹 검색 조건 항목 
-		
-		return "ems/sys/cod/userCodeGroupListP";
+		return "sys/cod/userCodeGroupList";
 	}
 	
 	/**
@@ -148,12 +185,16 @@ public class UserCodeController {
 	public ModelAndView insertUserCodeGroupInfo(@ModelAttribute UserCodeGroupVO userCodeGroupVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("insertUserCodeGroupInfo cdGrp = " + userCodeGroupVO.getCdGrp());		
 		logger.debug("insertUserCodeGroupInfo cdGrpNm = " + userCodeGroupVO.getCdGrpNm());
-		logger.debug("insertUserCodeGroupInfo cdGrpNmShort = " + userCodeGroupVO.getCdGrpNmShort());
 		logger.debug("insertUserCodeGroupInfo cdGrpDtl = " + userCodeGroupVO.getCdGrpDtl());		
 		logger.debug("insertUserCodeGroupInfo upCd = " + userCodeGroupVO.getUpCdGrp());
+		logger.debug("insertUserCodeGroupInfo sysYn = " + userCodeGroupVO.getSysYn());
 		logger.debug("insertUserCodeGroupInfo useYn = " + userCodeGroupVO.getUseYn());
+						
+		//userCodeGroupVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		//테스트 용임 테스트 화면이라 세션없어서 이따위가..왜 삽질을 한것일까 우어어어..도대체 아아아아아악!
+		userCodeGroupVO.setUilang("000");
 		
-		userCodeGroupVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		logger.debug("insertUserCodeGroupInfo Uilang = " + userCodeGroupVO.getUilang());
 		
 		int result = 0;
 		try {
@@ -185,10 +226,20 @@ public class UserCodeController {
 	 */
 	@RequestMapping(value="/userCodeGroupUpdate")
 	public ModelAndView updateCodeGroupInfo(@ModelAttribute UserCodeGroupVO userCodeGroupVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("updateCodeGroupInfo cdGrp      = " + userCodeGroupVO.getCdGrp());
 		logger.debug("updateCodeGroupInfo cdGrpNm      = " + userCodeGroupVO.getCdGrpNm());
-		logger.debug("updateCodeGroupInfo cdGrpNmShort = " + userCodeGroupVO.getCdGrpNmShort());
 		logger.debug("updateCodeGroupInfo cdGrpDtl     = " + userCodeGroupVO.getCdGrpDtl());
+		logger.debug("updateCodeGroupInfo upCd 			= " + userCodeGroupVO.getUpCdGrp());
+		logger.debug("updateCodeGroupInfo sysYn        = " + userCodeGroupVO.getSysYn());
 		logger.debug("updateCodeGroupInfo useYn        = " + userCodeGroupVO.getUseYn());
+		 	 
+						
+		//userCodeGroupVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		//테스트 용임 테스트 화면이라 세션없어서 이따위가..왜 삽질을 한것일까 우어어어..도대체 아아아아아악! 와 씨 구와중에 add에 걸고 있었네 미친거아냐!!! 죽자!!
+		userCodeGroupVO.setUilang("000");
+		
+		logger.debug("updateCodeGroupInfo Uilang = " + userCodeGroupVO.getUilang());
+		
 		
 		int result = 0;
 		try {
@@ -220,7 +271,12 @@ public class UserCodeController {
 	 */		
 	@RequestMapping(value="/userCodeGroupDelete")
 	public ModelAndView deleteUserCodeGroupInfo(@ModelAttribute UserCodeGroupVO userCodeGroupVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		logger.debug("deleteUserCodeGroupInfo cdGrp      = " + userCodeGroupVO.getCdGrp());		
+		logger.debug("deleteUserCodeGroupInfo cdGrp      = " + userCodeGroupVO.getCdGrp());
+		//userCodeGroupVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		//테스트 용임 테스트 화면이라 세션없어서 이따위가..왜 삽질을 한것일까 우어어어..도대체 아아아아아악! 와 씨 구와중에 add에 걸고 있었네 미친거아냐!!! 죽자!!
+		userCodeGroupVO.setUilang("000");
+		
+		logger.debug("updateCodeGroupInfo Uilang = " + userCodeGroupVO.getUilang());		
 		
 		int result = 0;
 		try {
@@ -242,7 +298,7 @@ public class UserCodeController {
 	}
 	
 	/**
-	 * 코드 그룹 목록 조회
+	 * 코드 관리 화면을 출력한다
 	 * @param searchVO
 	 * @param model
 	 * @param request
@@ -251,6 +307,42 @@ public class UserCodeController {
 	 * @return
 	 */
 	@RequestMapping(value="/userCodeListP")
+	public String goUserCodeListP(@ModelAttribute UserCodeVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goUserCodeList searchUserCodeGroupNm = " + searchVO.getSearchCdGrpNm());
+		logger.debug("goUserCodeList searchUserCodeGroup = " + searchVO.getSearchCdGrp());
+	
+		searchVO.setSearchUiLang((String)session.getAttribute("NEO_UILANG"));
+
+		// 페이지 설정
+		int page = StringUtil.setNullToInt(searchVO.getPage(), 1);		
+		searchVO.setPage(page);
+ 
+		// 코드그룹목록(코드성) 조회
+		CodeVO cdGrp = new CodeVO();
+		cdGrp.setUilang(searchVO.getSearchUiLang());
+		List<CodeVO> cdGrpList = null;
+		try {
+			cdGrpList = codeService.getCodeGrpList(cdGrp);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeGrpList error = " + e);
+		}
+		
+		model.addAttribute("searchVO", searchVO);			// 검색 항목		
+		model.addAttribute("cdGrpList", cdGrpList);			// 코드그룹 검색 조건 항목 
+		
+		return "ems/sys/cod/userCodeGroupListP";
+	}
+	
+	/**
+	 * 코드 그룹 목록을 조회한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/userCodeList")
 	public String goUserCodeList(@ModelAttribute UserCodeVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("goUserCodeList searchUserCodeGroupNm = " + searchVO.getSearchCdGrpNm());
 		logger.debug("goUserCodeList searchUserCodeGroup = " + searchVO.getSearchCdGrp());
@@ -271,28 +363,18 @@ public class UserCodeController {
 		} catch(Exception e) {
 			logger.error("UserCodeService.getCodeInfo error = " + e);
 		}
-	 
-		// 코드그룹목록(코드성) 조회
-		CodeVO cdGrp = new CodeVO();
-		cdGrp.setUilang(searchVO.getSearchUiLang());
-		List<CodeVO> cdGrpList = null;
-		try {
-			cdGrpList = codeService.getCodeGrpList(cdGrp);
-		} catch(Exception e) {
-			logger.error("codeService.getCodeGrpList error = " + e);
-		}
-		
+	 		
 		if(userCodeList != null && userCodeList.size() > 0) {
 			totalCount = userCodeList.get(0).getTotalCount();
 		}
 		PageUtil pageUtil = new PageUtil();
 		pageUtil.init(request, searchVO.getPage(), totalCount, rows);
 		
-		model.addAttribute("searchVO", searchVO);			// 검색 항목
-		model.addAttribute("userCodeList", userCodeList);	// 코드그룹 내역 목록
-		model.addAttribute("cdGrpList", cdGrpList);			// 코드그룹 검색 조건 항목 
 		
-		return "ems/sys/cod/userCodeGroupListP";
+		model.addAttribute("userCodeList", userCodeList);	// 코드그룹 내역 목록
+		model.addAttribute("pageUtil", pageUtil);	// 페이징
+		
+		return "ems/sys/cod/userCodeList";
 	}
 	
 	/**
@@ -336,7 +418,6 @@ public class UserCodeController {
 		logger.debug("insertUserCodeInfo cd = " + userCodeVO.getCd());		
 		logger.debug("insertUserCodeInfo cdGrp = " + userCodeVO.getCdGrp());
 		logger.debug("insertUserCodeInfo cdNm = " + userCodeVO.getCdNm());
-		logger.debug("insertUserCodeInfo cdNmShort = " + userCodeVO.getCdNmShort());
 		logger.debug("insertUserCodeInfo upCd = " + userCodeVO.getUpCd());
 		logger.debug("insertUserCodeInfo cdDtl = " + userCodeVO.getCdDtl());		
 		logger.debug("insertUserCodeInfo useYn = " + userCodeVO.getUseYn());
@@ -374,7 +455,6 @@ public class UserCodeController {
 	@RequestMapping(value="/userCodeUpdate")
 	public ModelAndView updateCodeInfo(@ModelAttribute UserCodeVO userCodeVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("updateCodeInfo cdNm      = " + userCodeVO.getCdNm());
-		logger.debug("updateCodeInfo cdNmShort = " + userCodeVO.getCdNmShort());
 		logger.debug("updateCodeInfo cdDtl     = " + userCodeVO.getCdDtl());
 		logger.debug("updateCodeInfo useYn     = " + userCodeVO.getUseYn());
 		

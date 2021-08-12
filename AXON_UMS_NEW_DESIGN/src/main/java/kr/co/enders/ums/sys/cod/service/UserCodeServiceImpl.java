@@ -43,19 +43,26 @@ public class UserCodeServiceImpl implements UserCodeService {
 		String[] uilang = userCodeGroupVO.getUilang().split(",");
 		String[] cdGrpNm = userCodeGroupVO.getCdGrpNm().split(",");
 		String[] cdGrpDtl = userCodeGroupVO.getCdGrpDtl().split(",");
-		String[] cdGrpNmShort = userCodeGroupVO.getCdGrpNmShort().split(",");
 		
 		for(int i=0;i<uilang.length;i++) {
 			UserCodeGroupVO codeGruop = new UserCodeGroupVO();
 			codeGruop.setUilang(uilang[i]);
 			codeGruop.setCdGrp(userCodeGroupVO.getCdGrp());			
 			codeGruop.setCdGrpNm(cdGrpNm[i].trim());
-			codeGruop.setCdGrpNmShort(cdGrpNmShort[i].trim());
 			codeGruop.setCdGrpDtl(cdGrpDtl[i].trim());
 			codeGruop.setUpCdGrp(userCodeGroupVO.getUpCdGrp());
 			codeGruop.setUseYn(userCodeGroupVO.getUseYn());
 			codeGruop.setSysYn(userCodeGroupVO.getSysYn());			
-			result += userCodeDAO.insertUserCodeGroupInfo(codeGruop);
+			//동일한 코드 또는 이름 있는지 확인. 존재시 오류 
+			if (userCodeDAO.getCodeGroupCountByCodeGroup(codeGruop) > 0 ) {
+				return -111; 
+			}
+			else if (userCodeDAO.getCodeGroupCountByCodeGroupNm(codeGruop) > 0 ) {
+				return -112; 
+			}
+			else {
+				result += userCodeDAO.insertUserCodeGroupInfo(codeGruop);
+			}
 		}
 		return result;
 	}
@@ -67,14 +74,19 @@ public class UserCodeServiceImpl implements UserCodeService {
 
 	@Override
 	public int deleteUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception {
-		return userCodeDAO.deleteUserCodeGroupInfo(userCodeGroupVO);
+		if (userCodeDAO.getCodeCountUnderCodeGroup(userCodeGroupVO) > 0 ) {
+			return -444; 
+		}
+		else {
+			return userCodeDAO.deleteUserCodeGroupInfo(userCodeGroupVO);
+		}		
 	}
 	
 	@Override
 	public List<UserCodeVO> getUserCodeList(UserCodeVO userCodeVO) throws Exception {
 		return userCodeDAO.getUserCodeList(userCodeVO);
 	}
- 
+	
 	@Override
 	public UserCodeVO getUserCodeInfo(UserCodeVO userCodeVO) throws Exception {
 		return userCodeDAO.getUserCodeInfo(userCodeVO);
@@ -86,24 +98,40 @@ public class UserCodeServiceImpl implements UserCodeService {
 		String[] uilang = userCodeVO.getUilang().split(",");
 		String[] cdNm = userCodeVO.getCdNm().split(",");
 		String[] cdDtl = userCodeVO.getCdDtl().split(",");
-		String[] cdNmShort = userCodeVO.getCdNmShort().split(",");
 		for(int i=0;i<uilang.length;i++) {
 			UserCodeVO code = new UserCodeVO();
 			code.setUilang(uilang[i]);
 			code.setCdGrp(userCodeVO.getCdGrp());
 			code.setCd(userCodeVO.getCd());
 			code.setCdNm(cdNm[i].trim());
-			code.setCdNmShort(cdNmShort[i].trim());
 			code.setCdDtl(cdDtl[i].trim());
-			code.setUseYn(userCodeVO.getUseYn());			
-			result += userCodeDAO.insertUserCodeInfo(code);
+			code.setUseYn(userCodeVO.getUseYn());
+			//동일한 코드 또는 이름 있는지 확인. 존재시 오류 
+			if (userCodeDAO.getCodeCountByCode(code) > 0 ) {
+				return -11; 
+			}
+			else if (userCodeDAO.getCodeCountByCodeNm(code) > 0 ) {
+				return -12; 
+			}
+			else {
+				result += userCodeDAO.insertUserCodeInfo(code);
+			}
 		}
 		return result;
 	}
 
 	@Override
 	public int updateUserCodeInfo(UserCodeVO userCodeVO) throws Exception {
-		return userCodeDAO.updateUserCodeInfo(userCodeVO);
+		//동일한 코드 또는 동일한 이름 있는지 확인 
+		if (userCodeDAO.getCodeCountByCode(userCodeVO) > 0 ) {
+			return -21; 
+		}
+		else if (userCodeDAO.getCodeCountByCodeNm(userCodeVO) > 0 ) {
+			return -22; 
+		}
+		else {
+			return userCodeDAO.updateUserCodeInfo(userCodeVO);
+		}		
 	}
 
 	@Override

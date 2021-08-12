@@ -18,7 +18,6 @@ public class UserCodeVO extends CommonVO {
 	private String uilang;		// 언어권
 	private String uilangNm;	// 언어권명
 	private String cdDtl;		// 코드설명
-	private String cdNmShort;	// 코드약어
 	private String useYn;		// 사용여부
 	private String upCd;		// 상위코드
 	private String upCdNm;		// 상위코드명
@@ -69,12 +68,6 @@ public class UserCodeVO extends CommonVO {
 	}
 	public void setCdDtl(String cdDtl) {
 		this.cdDtl = cdDtl;
-	}
-	public String getCdNmShort() {
-		return cdNmShort;
-	}
-	public void setCdNmShort(String cdNmShort) {
-		this.cdNmShort = cdNmShort;
 	}
 	public String getUseYn() {
 		return useYn;

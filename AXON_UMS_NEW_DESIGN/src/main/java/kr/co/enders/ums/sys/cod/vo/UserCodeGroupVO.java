@@ -13,11 +13,10 @@ public class UserCodeGroupVO extends CommonVO {
 	private String uilang;			// 언어권	
 	private String uilangNm;	// 언어권명
 	private String cdGrpDtl;	// 코드그룹설명
-	private String cdGrpNmShort;// 코드그룹약어
 	private String useYn;		// 사용여부
 	private String sysYn;		// 시스템 코드 여부
 	private String upCdGrp;		// 상위코드그룹
-	private String upCdGrpNm;	// 상위코드그룹명
+	private String upCdGrpNm;	// 상위코드그룹명 
 	
 	// 검색
 	private String searchCdGrpNm;	// 코드그룹명 검색
@@ -53,12 +52,6 @@ public class UserCodeGroupVO extends CommonVO {
 	}
 	public void setCdGrpDtl(String cdGrpDtl) {
 		this.cdGrpDtl = cdGrpDtl;
-	}
-	public String getCdGrpNmShort() {
-		return cdGrpNmShort;
-	}
-	public void setCdGrpNmShort(String cdGrpNmShort) {
-		this.cdGrpNmShort = cdGrpNmShort;
 	}
 	public String getUseYn() {
 		return useYn;
