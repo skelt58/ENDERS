@@ -30,7 +30,7 @@
 	<!-- 코드 그룹 목록 조회 -->
 	<select id="getCodeGrpList" parameterType="codeVO" resultType="codeVO">
 		SELECT CD_GRP CD
-			 , CD_GRP_NM CD_NM
+			 , CD_GRP CD_NM
 		  FROM NEO_CD_GRP
 		 WHERE UILANG = #{uilang}
 		 ORDER BY CD_GRP
