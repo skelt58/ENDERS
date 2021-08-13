@@ -14,6 +14,7 @@ import kr.co.enders.ums.ems.ana.dao.AnalysisDAO;
 import kr.co.enders.ums.ems.ana.vo.MailDomainVO;
 import kr.co.enders.ums.ems.ana.vo.MailErrorVO;
 import kr.co.enders.ums.ems.ana.vo.MailSummVO;
+import kr.co.enders.ums.ems.ana.vo.PeriodSummVO;
 import kr.co.enders.ums.ems.ana.vo.RespLogVO;
 import kr.co.enders.ums.ems.ana.vo.SendLogVO;
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
@@ -103,6 +104,11 @@ public class AnalysisServiceImpl implements AnalysisService {
 	@Override
 	public List<TaskVO> getTaskList(TaskVO taskVO) throws Exception {
 		return analysisDAO.getTaskList(taskVO);
+	}
+	
+	@Override
+	public List<TaskVO> getTaskStepList(TaskVO taskVO) throws Exception {
+		return analysisDAO.getTaskStepList(taskVO);
 	}
 
 	@Override
@@ -195,4 +201,39 @@ public class AnalysisServiceImpl implements AnalysisService {
 		return analysisDAO.getJoinErrorListTask(sendLogVO);
 	}
 
+	@Override
+	public List<PeriodSummVO> getPeriodSummMonthList(PeriodSummVO periodSummVO) throws Exception {
+		return analysisDAO.getPeriodSummMonthList(periodSummVO);
+	}
+
+	@Override
+	public List<PeriodSummVO> getPeriodSummWeekList(PeriodSummVO periodSummVO) throws Exception {
+		return analysisDAO.getPeriodSummWeekList(periodSummVO);
+	}
+
+	@Override
+	public List<PeriodSummVO> getPeriodSummDateList(PeriodSummVO periodSummVO) throws Exception {
+		return analysisDAO.getPeriodSummDateList(periodSummVO);
+	}
+
+	@Override
+	public List<PeriodSummVO> getPeriodSummDomainList(PeriodSummVO periodSummVO) throws Exception {
+		return analysisDAO.getPeriodSummDomainList(periodSummVO);
+	}
+
+	@Override
+	public List<PeriodSummVO> getPeriodSummDeptList(PeriodSummVO periodSummVO) throws Exception {
+		return analysisDAO.getPeriodSummDeptList(periodSummVO);
+	}
+
+	@Override
+	public List<PeriodSummVO> getPeriodSummUserList(PeriodSummVO periodSummVO) throws Exception {
+		return analysisDAO.getPeriodSummUserList(periodSummVO);
+	}
+
+	@Override
+	public List<PeriodSummVO> getPeriodSummCampList(PeriodSummVO periodSummVO) throws Exception {
+		return analysisDAO.getPeriodSummCampList(periodSummVO);
+	}
+	
 }

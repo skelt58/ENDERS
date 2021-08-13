@@ -38,7 +38,7 @@
 					<c:out value='${mailRegDt}'/>
 				</td>
 				<td><c:out value='${mail.statusNm}'/></td>
-				<td><input type="button" value="<spring:message code='ANATBLTL001'/>" class="btn_style" onClick="goMail('<c:out value='${mail.taskNo}'/>')"></td><!-- 메일별분석 -->
+				<td><input type="button" value="<spring:message code='ANATBLTL001'/>" class="btn_style" onClick="goTaskStep('<c:out value='${mail.taskNo}'/>')"></td><!-- 메일별분석 -->
 			</tr>
 		</c:forEach>
 	</c:if>

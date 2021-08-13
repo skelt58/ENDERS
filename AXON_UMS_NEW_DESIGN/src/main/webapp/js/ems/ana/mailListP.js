@@ -1,28 +1,5 @@
 $(document).ready(function() {
-	/*
-	// 예약일 시작일 설정
-	$("#searchStartDt").datepicker({
-		//showOn:"button",
-		minDate:"2021-01-01",
-		maxDate:$("#searchEndDt").val(),
-		onClose:function(selectedDate) {
-			$("#searchEndDt").datepicker("option", "minDate", selectedDate);
-		}
-	});
-	
-	// 예약일 종료일 설정
-	$("#searchEndDt").datepicker({
-		//showOn:"button",
-		minDate:$("#searchStartDt").val(),
-		onClose:function(selectedDate) {
-			$("#searchStartDt").datepicker("option", "maxDate", selectedDate);
-		}
-	});
-	*/
-	$("#searchStartDt").datepicker();
-	$("#searchEndDt").datepicker();
-	
-	goSearch();
+	goSearch("1");
 });
 
 //사용자그룹 선택시 사용자 목록 조회 
@@ -37,12 +14,13 @@ function getUserList(deptNo) {
 }
 
 // 검색 버튼 클릭시
-function goSearch() {
+function goSearch(pageNum) {
 	if( $("#searchStartDt").val() > $("#searchEndDt").val() ) {
-		alert("검색 시 시작일은 종료일보다 클 수 없습니다.");		// <spring:message code='COMJSALT017'/>
+		alert("검색 시 시작일은 종료일보다 클 수 없습니다.");		// COMJSALT017
 		return;
 	}
 	
+	$("#searchForm input[name='page']").val(pageNum);
 	var param = $("#searchForm").serialize();
 	$.ajax({
 		type : "GET",
@@ -101,7 +79,7 @@ function goOz(tabNm, target, taskNo,subTaskNo) {
 // 탭 실행
 function goOzTab(tabNm, target) {
 	if(curTaskNo == "" || curSubTaskNo == "") {
-		alert("메일을 선택하세요.");		// <spring:message code='ANAJSALT002'/>
+		alert("메일을 선택하세요.");		// ANAJSALT002
 		return;
 	}
 
@@ -153,7 +131,7 @@ function goJoin() {
 	});
 	
 	if(checkCnt < 2) {
-        alert("병합할 대상을 2개이상 선택하세요.");		// <spring:message code='ANAJSALT001'/>
+        alert("병합할 대상을 2개이상 선택하세요.");		// ANAJSALT001
     } else {
 		//탭을 숨김
 		$("#tab").hide();
@@ -163,20 +141,7 @@ function goJoin() {
 	}
 }
 
-
 // 페이징
-function goPageNum(page) {
-	$("#page").val(page);
-	var param = $("#searchForm").serialize();
-	$.ajax({
-		type : "GET",
-		url : "./mailList.ums?" + param,
-		dataType : "html",
-		success : function(pageHtml){
-			$("#divMailList").html(pageHtml);
-		},
-		error : function(){
-			alert("Error!!");
-		}
-	});
+function goPageNum(pageNum) {
+	goSearch(pageNum);
 }

@@ -27,7 +27,7 @@
 			<!-- cont-head// -->
 			<section class="cont-head">
 				<div class="title">
-					<h2><c:out value="${NEO_MENU_NM}"/></h2>
+					<h2>캠페인별분석</h2>
 				</div>
 				
 				<!-- 공통 표시부// -->
@@ -155,7 +155,7 @@
 		</tr>
 		<tr>
 			<td align="right">
-				<input type="button" value="<spring:message code='COMBTN002'/>" class="btn_typeC" onClick="goSearch()"><!-- 검색 -->
+				<input type="button" value="<spring:message code='COMBTN002'/>" class="btn_typeC" onClick="goSearch('1')"><!-- 검색 -->
 				<input type="button" value="<spring:message code='COMBTN003'/>" class="btn_style" onClick="goReset()"><!-- 초기화 -->
 			</td>
 		</tr>

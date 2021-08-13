@@ -35,6 +35,7 @@ import kr.co.enders.ums.ems.ana.service.AnalysisService;
 import kr.co.enders.ums.ems.ana.vo.MailDomainVO;
 import kr.co.enders.ums.ems.ana.vo.MailErrorVO;
 import kr.co.enders.ums.ems.ana.vo.MailSummVO;
+import kr.co.enders.ums.ems.ana.vo.PeriodSummVO;
 import kr.co.enders.ums.ems.ana.vo.RespLogVO;
 import kr.co.enders.ums.ems.ana.vo.SendLogVO;
 import kr.co.enders.ums.ems.cam.service.CampaignService;
@@ -78,7 +79,7 @@ public class AnalysisController {
 	public String goMailListP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		// 검색 기본값 설정
 		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
-			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyy")+"0101");
 		} else {
 			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
 		}
@@ -153,7 +154,7 @@ public class AnalysisController {
 	public String goMailList(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		// 검색 기본값 설정
 		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
-			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyy")+"0101");
 		} else {
 			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
 		}
@@ -789,7 +790,7 @@ public class AnalysisController {
 	public String goTaskListP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		// 검색 기본값 설정
 		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
-			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyy")+"0101");
 		} else {
 			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
 		}
@@ -860,7 +861,7 @@ public class AnalysisController {
 	public String goTaskList(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		// 검색 기본값 설정
 		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
-			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyy")+"0101");
 		} else {
 			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
 		}
@@ -903,6 +904,137 @@ public class AnalysisController {
 		model.addAttribute("pageUtil", pageUtil);	// 페이징
 
 		return "ems/ana/taskList";
+	}
+	
+	/**
+	 * 통계분석 정기메일분석 차수별 분석 화면을 출력한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/taskStepListP")
+	public String goTaskStepListP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		// 검색 기본값 설정
+		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyy")+"0101");
+		} else {
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
+		}
+		if(StringUtil.isNull(searchVO.getSearchEndDt())) {
+			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
+		} else {
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
+		}
+		if(searchVO.getSearchDeptNo() == 0) {
+			if(!"Y".equals((String)session.getAttribute("NEO_ADMIN_YN"))) {
+				searchVO.setSearchDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+			}
+		}
+		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		searchVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
+		
+		// 페이지 설정
+		int page = StringUtil.setNullToInt(searchVO.getPage(), 1);
+		searchVO.setPage(page);
+
+		// 캠페인 목록 조회
+		List<CampaignVO> campList = null;
+		CampaignVO camp = new CampaignVO();
+		camp.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
+		camp.setDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+		camp.setStatus("000");
+		try {
+			campList = codeService.getCampaignList(camp);
+		} catch(Exception e) {
+			logger.error("codeService.getCampaignList error = " + e);
+		}
+		
+		// 부서 목록 조회
+		CodeVO dept = new CodeVO();
+		dept.setStatus("000"); // 정상
+		List<CodeVO> deptList = null;
+		try {
+			deptList = codeService.getDeptList(dept);
+		} catch(Exception e) {
+			logger.error("codeService.getDeptList error = " + e);
+		}
+		
+		// 사용자 목록 조회
+		CodeVO user = new CodeVO();
+		user.setDeptNo(searchVO.getSearchDeptNo());
+		user.setStatus("000");
+		List<CodeVO> userList = null;
+		try {
+			userList = codeService.getUserList(user);
+		} catch(Exception e) {
+			logger.error("codeService.getUserList error = " + e);
+		}
+		
+		model.addAttribute("searchVO", searchVO);	// 검색 항목
+		model.addAttribute("campList", campList);	// 캠페인 목록
+		model.addAttribute("deptList", deptList);	// 부서 목록
+		model.addAttribute("userList", userList);	// 사용자 목록
+		
+		return "ems/ana/taskStepListP";
+	}
+	
+	/**
+	 * 통계분석 정기메일분석 차수별 목록 조회
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/taskStepList")
+	public String goTaskStepList(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		// 검색 기본값 설정
+		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyy")+"0101");
+		} else {
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
+		}
+		if(StringUtil.isNull(searchVO.getSearchEndDt())) {
+			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
+		} else {
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
+		}
+		if(searchVO.getSearchDeptNo() == 0) {
+			if(!"Y".equals((String)session.getAttribute("NEO_ADMIN_YN"))) {
+				searchVO.setSearchDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+			}
+		}
+		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		searchVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
+		// 페이지 설정
+		int page = StringUtil.setNullToInt(searchVO.getPage(), 1);
+		int rows = StringUtil.setNullToInt(searchVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE_ANA")));
+		searchVO.setPage(page);
+		searchVO.setRows(rows);
+		int totalCount = 0;
+
+		// 메일 목록 조회
+		List<TaskVO> mailList = null;
+		try {
+			mailList = analysisService.getTaskStepList(searchVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getTaskStepList error = " + e);
+		}
+		
+		if(mailList != null && mailList.size() > 0) {
+			totalCount = mailList.get(0).getTotalCount();
+		}
+		PageUtil pageUtil = new PageUtil();
+		pageUtil.init(request, searchVO.getPage(), totalCount, rows);
+		
+		model.addAttribute("mailList", mailList);	// 메일 목록
+		model.addAttribute("pageUtil", pageUtil);	// 페이징
+		
+		return "ems/ana/taskStepList";
 	}
 	
 	/**
@@ -1241,7 +1373,7 @@ public class AnalysisController {
 		
 		// 검색 기본값 설정
 		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
-			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyy")+"0101");
 		} else {
 			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
 		}
@@ -1337,7 +1469,7 @@ public class AnalysisController {
 		
 		// 검색 기본값 설정
 		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
-			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyy")+"0101");
 		} else {
 			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
 		}
@@ -1496,7 +1628,7 @@ public class AnalysisController {
 	}
 	
 	/**
-	 * 통계분석 누적분석 화면을 출력한다.
+	 * 통계분석 기간별누적분석 화면을 출력한다.
 	 * @param searchVO
 	 * @param model
 	 * @param request
@@ -1505,10 +1637,10 @@ public class AnalysisController {
 	 * @return
 	 */
 	@RequestMapping(value="/summMainP")
-	public String goSummMainP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public String goSummMainP(@ModelAttribute PeriodSummVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		// 검색 기본값 설정
 		if(StringUtil.isNull(searchVO.getSearchStartDt())) {
-			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyy")+"0101");
 		} else {
 			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
 		}
@@ -1522,8 +1654,6 @@ public class AnalysisController {
 				searchVO.setSearchDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
 			}
 		}
-		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
-		searchVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
 
 		// 캠페인 목록 조회
 		List<CampaignVO> campList = null;
@@ -1549,7 +1679,7 @@ public class AnalysisController {
 		
 		// 사용자 목록 조회
 		CodeVO user = new CodeVO();
-		user.setDeptNo(searchVO.getSearchDeptNo());
+		user.setDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
 		user.setStatus("000");
 		List<CodeVO> userList = null;
 		try {
@@ -1566,44 +1696,231 @@ public class AnalysisController {
 		return "ems/ana/summMainP";
 	}
 	
+	/**
+	 * 기간별누적분석 월별탭 화면을 출력한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/summMonthP")
-	public String goSummMonthP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public String goSummMonthP(@ModelAttribute PeriodSummVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goSummMonthP searchCampNo = " + searchVO.getSearchCampNo());
+		logger.debug("goSummMonthP searchCampNm = " + searchVO.getSearchCampNm());
+		logger.debug("goSummMonthP searchDeptNo = " + searchVO.getSearchDeptNo());
+		logger.debug("goSummMonthP searchDeptNm = " + searchVO.getSearchDeptNm());
+		logger.debug("goSummMonthP searchUserId = " + searchVO.getSearchUserId());
+		logger.debug("goSummMonthP searchUserNm = " + searchVO.getSearchUserNm());
+		
+		if(StringUtil.isNull(searchVO.getSearchCampNm())) searchVO.setSearchCampNm("모든 캠페인");
+		if(StringUtil.isNull(searchVO.getSearchDeptNm())) searchVO.setSearchDeptNm("모든 그룹");
+		if(StringUtil.isNull(searchVO.getSearchUserNm())) searchVO.setSearchUserNm("모든 사용자");
+		searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
+		searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
+		
+		// 월별 데이터 조회
+		List<PeriodSummVO> monthList = null;
+		try {
+			monthList = analysisService.getPeriodSummMonthList(searchVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getPeriodSummMonthList error = " + e);
+		}
+		
+		model.addAttribute("searchVO", searchVO);		// 검색항목
+		model.addAttribute("monthList", monthList);		// 월별데이터
 		
 		return "ems/ana/summMonthP";
 	}
 	
+	/**
+	 * 기간별누적분석 요일별탭 화면을 출력한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/summWeekP")
-	public String goSummWeekP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public String goSummWeekP(@ModelAttribute PeriodSummVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		if(StringUtil.isNull(searchVO.getSearchCampNm())) searchVO.setSearchCampNm("모든 캠페인");
+		if(StringUtil.isNull(searchVO.getSearchDeptNm())) searchVO.setSearchDeptNm("모든 그룹");
+		if(StringUtil.isNull(searchVO.getSearchUserNm())) searchVO.setSearchUserNm("모든 사용자");
+		searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
+		searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
+		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		
+		// 요일별 데이터 조회
+		List<PeriodSummVO> weekList = null;
+		try {
+			weekList = analysisService.getPeriodSummWeekList(searchVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getPeriodSummWeekList error = " + e);
+		}
+		
+		model.addAttribute("searchVO", searchVO);		// 검색항목
+		model.addAttribute("weekList", weekList);		// 요일별데이터
+
 		
 		return "ems/ana/summWeekP";
 	}
 	
+	/**
+	 * 기간별누적분석 일자별탭 화면을 출력한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/summDateP")
-	public String goSummDateP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public String goSummDateP(@ModelAttribute PeriodSummVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		if(StringUtil.isNull(searchVO.getSearchCampNm())) searchVO.setSearchCampNm("모든 캠페인");
+		if(StringUtil.isNull(searchVO.getSearchDeptNm())) searchVO.setSearchDeptNm("모든 그룹");
+		if(StringUtil.isNull(searchVO.getSearchUserNm())) searchVO.setSearchUserNm("모든 사용자");
+		searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
+		searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
+		
+		// 일자별 데이터 조회
+		List<PeriodSummVO> dateList = null;
+		try {
+			dateList = analysisService.getPeriodSummDateList(searchVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getPeriodSummDateList error = " + e);
+		}
+		
+		model.addAttribute("searchVO", searchVO);		// 검색항목
+		model.addAttribute("dateList", dateList);		// 일자별데이터
 		
 		return "ems/ana/summDateP";
 	}
 	
+	/**
+	 * 기간별누적분석 도메인별탭 화면을 출력한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/summDomainP")
-	public String goSummDomainP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public String goSummDomainP(@ModelAttribute PeriodSummVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		
+		if(StringUtil.isNull(searchVO.getSearchCampNm())) searchVO.setSearchCampNm("모든 캠페인");
+		if(StringUtil.isNull(searchVO.getSearchDeptNm())) searchVO.setSearchDeptNm("모든 그룹");
+		if(StringUtil.isNull(searchVO.getSearchUserNm())) searchVO.setSearchUserNm("모든 사용자");
+		searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
+		searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
+		
+		// 도메인별 데이터 조회
+		List<PeriodSummVO> domainList = null;
+		try {
+			domainList = analysisService.getPeriodSummDomainList(searchVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getPeriodSummDomainList error = " + e);
+		}
+		
+		model.addAttribute("searchVO", searchVO);		// 검색항목
+		model.addAttribute("domainList", domainList);	// 도메인별데이터
 		
 		return "ems/ana/summDomainP";
 	}
 	
+	/**
+	 * 기간별누적분석 그룹(부서)별탭 화면을 출력한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/summDeptP")
-	public String goSummDeptP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public String goSummDeptP(@ModelAttribute PeriodSummVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		if(StringUtil.isNull(searchVO.getSearchCampNm())) searchVO.setSearchCampNm("모든 캠페인");
+		if(StringUtil.isNull(searchVO.getSearchDeptNm())) searchVO.setSearchDeptNm("모든 그룹");
+		if(StringUtil.isNull(searchVO.getSearchUserNm())) searchVO.setSearchUserNm("모든 사용자");
+		searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
+		searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
+		
+		// 그룹(부서)별 데이터 조회
+		List<PeriodSummVO> deptList = null;
+		try {
+			deptList = analysisService.getPeriodSummDeptList(searchVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getPeriodSummDeptList error = " + e);
+		}
+		
+		model.addAttribute("searchVO", searchVO);	// 검색항목
+		model.addAttribute("deptList", deptList);	// 그룹(부서)별데이터
 		
 		return "ems/ana/summDeptP";
 	}
 	
+	/**
+	 * 기간별누적분석 사용자별탭 화면을 출력한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/summUserP")
-	public String goSummUserP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public String goSummUserP(@ModelAttribute PeriodSummVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		if(StringUtil.isNull(searchVO.getSearchCampNm())) searchVO.setSearchCampNm("모든 캠페인");
+		if(StringUtil.isNull(searchVO.getSearchDeptNm())) searchVO.setSearchDeptNm("모든 그룹");
+		if(StringUtil.isNull(searchVO.getSearchUserNm())) searchVO.setSearchUserNm("모든 사용자");
+		searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
+		searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
+		
+		// 사용자별 데이터 조회
+		List<PeriodSummVO> userList = null;
+		try {
+			userList = analysisService.getPeriodSummUserList(searchVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getPeriodSummUserList error = " + e);
+		}
+		
+		model.addAttribute("searchVO", searchVO);	// 검색항목
+		model.addAttribute("userList", userList);	// 사용자별데이터
 		
 		return "ems/ana/summUserP";
 	}
 	
+	/**
+	 * 기간별누적분석 캠페인별탭 화면을 출력한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value="/summCampP")
-	public String goSummCampP(@ModelAttribute TaskVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public String goSummCampP(@ModelAttribute PeriodSummVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		if(StringUtil.isNull(searchVO.getSearchCampNm())) searchVO.setSearchCampNm("모든 캠페인");
+		if(StringUtil.isNull(searchVO.getSearchDeptNm())) searchVO.setSearchDeptNm("모든 그룹");
+		if(StringUtil.isNull(searchVO.getSearchUserNm())) searchVO.setSearchUserNm("모든 사용자");
+		searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
+		searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
+		
+		// 캠페인별 데이터 조회
+		List<PeriodSummVO> campList = null;
+		try {
+			campList = analysisService.getPeriodSummCampList(searchVO);
+		} catch(Exception e) {
+			logger.error("analysisService.getPeriodSummCampList error = " + e);
+		}
+		
+		model.addAttribute("searchVO", searchVO);	// 검색항목
+		model.addAttribute("campList", campList);	// 캠페인별데이터
 		
 		return "ems/ana/summCampP";
 	}

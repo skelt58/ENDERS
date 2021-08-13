@@ -47,6 +47,7 @@
 				   AND B.CHANNEL = F.CD
 				   AND B.SEND_REPEAT = G.CD
 				   AND A.WORK_STATUS = H.CD
+				   AND B.SEND_REPEAT = '000'	<!-- 일회성 메일 제한 -->
 				   <if test="searchTaskNm != null and searchTaskNm != ''">
 				   AND UPPER(B.TASK_NM) LIKE '%' || #{searchTaskNm} || '%'
 				   </if>
@@ -769,6 +770,78 @@
 		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
 	</select>
 	
+		<select id="getTaskStepList" parameterType="taskVO" resultType="taskVO">
+		SELECT *
+		  FROM (
+				SELECT A.SUB_TASK_NO
+					 , A.SEND_DT
+					 , A.END_DT
+					 , A.WORK_STATUS
+					 , B.TASK_NO
+					 , B.TASK_NM
+					 , B.CHANNEL
+					 , B.SEND_REPEAT
+					 , B.STATUS
+					 , B.SEG_NO
+					 , B.SEND_TERM_END_DT
+					 , B.SEND_TERM_LOOP
+					 , B.REG_DT
+					 , B.CONT_FL_PATH
+					 , B.SURVEYNO
+					 , C.SEG_NM
+					 , D.USER_NM
+					 , E.CAMP_NM
+					 , F.CD_NM CHANNEL_NM
+					 , G.CD_NM SEND_REPEAT_NM
+					 , H.CD_NM STATUS_NM
+					 , ROW_NUMBER() OVER (ORDER BY A.SEND_DT DESC, A.TASK_NO DESC, A.SUB_TASK_NO DESC) SEQ
+					 , COUNT(1) OVER() TOTAL_COUNT
+				  FROM NEO_SUBTASK A
+					 , NEO_TASK B
+					 , NEO_SEGMENT C
+					 , NEO_USER D
+					 , NEO_CAMPAIGN E
+					 , (SELECT CD, CD_NM FROM NEO_CD WHERE CD_GRP = 'C002' AND UILANG = '000') F
+					 , (SELECT CD, CD_NM FROM NEO_CD WHERE CD_GRP = 'C017' AND UILANG = '000') G
+					 , (SELECT CD, CD_NM FROM NEO_CD WHERE CD_GRP = 'C034' AND UILANG = '000') H
+				 WHERE A.SEND_TEST_YN != 'Y'
+				   AND A.WORK_STATUS IN ('002','003')
+				   AND A.TASK_NO = B.TASK_NO
+				   AND B.SEG_NO = C.SEG_NO
+				   AND B.USER_ID = D.USER_ID
+				   AND B.CAMP_NO = E.CAMP_NO
+				   AND B.CHANNEL = F.CD
+				   AND B.SEND_REPEAT = G.CD
+				   AND A.WORK_STATUS = H.CD
+				   AND B.SEND_REPEAT = '001'	<!-- 정기메일 메일 제한 -->
+				   <if test="searchTaskNm != null and searchTaskNm != ''">
+				   AND UPPER(B.TASK_NM) LIKE '%' || #{searchTaskNm} || '%'
+				   </if>
+				   <if test='adminYn == "N"'>
+				   AND B.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND B.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND B.USER_ID = #{searchUserId}
+				   </if>
+				   <if test="searchCampNo != 0">
+				   AND B.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchStartDt != null and searchStartDt != ''">
+				   AND A.SEND_DT &gt;= #{searchStartDt} || '000000'
+				   </if>
+				   <if test="searchEndDt != null and searchEndDt != ''">
+				   AND A.SEND_DT &lt; #{searchEndDt} ||'240000'
+				   </if>
+				   <if test="taskNo != 0">
+				   AND B.TASK_NO = #{taskNo}
+				   </if>
+				)
+		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
+	</select>
+	
 	<select id="getTaskInfo" parameterType="taskVO" resultType="taskVO">
 		SELECT A.TASK_NM
 			 , B.CAMP_NM
@@ -931,56 +1004,6 @@
 	</select>
 	
 	<select id="getTaskRespHourList" parameterType="taskVO" resultType="respLogVO">
-	<!--
-		SELECT *
-		  FROM (
-				SELECT RESP_TIME
-					 , SUCC_CNT
-					 , OPEN_CNT
-					 , CLICK_CNT
-					 , VALID_CNT
-					 , BLOCK_CNT
-		             , ROW_NUMBER() OVER (ORDER BY Y.RESP_TIME) SEQ
-		             , COUNT(1) OVER() TOTAL_COUNT
-				  FROM (
-						SELECT NVL(SUM(SEND_AR_AMT),0) AS SUCC_CNT FROM NEO_AR_SENDLOG
-						 WHERE TASK_NO = #{taskNo}
-						   AND SUB_TASK_NO = #{subTaskNo}
-						   AND SEND_RCODE = '000'
-						) X,
-						(
-						SELECT RESP_TIME, NVL(SUM(OPEN_CNT),0) AS OPEN_CNT, NVL(SUM(CLICK_CNT),0) AS CLICK_CNT, NVL(SUM(VALID_CNT),0) AS VALID_CNT, NVL(SUM(BLOCK_CNT),0) AS BLOCK_CNT
-						  FROM (
-								SELECT TO_CHAR((TO_DATE(AA.OPEN_DT,'YYYYMMDDHH24MISS') + (BB.TZ_TERM/60)/24), 'YYYYMMDDHH24') RESP_TIME
-									 , NVL(SUM(AA.RESP_AR_AMT),0) AS OPEN_CNT, 0 AS CLICK_CNT, 0 AS VALID_CNT
-									 , NVL(SUM(CASE WHEN AA.BLOCKED_YN = 'Y' THEN AA.RESP_AR_AMT ELSE 0 END),0) AS BLOCK_CNT
-								  FROM NEO_AR_RESPLOG AA,
-										(
-										SELECT USER_ID, TZ_TERM FROM NEO_USER A, NEO_TIMEZONE B
-										 WHERE A.TZ_CD = B.TZ_CD
-										) BB
-								 WHERE AA.TASK_NO = #{taskNo}
-								   AND AA.SUB_TASK_NO = #{subTaskNo}
-								   AND AA.USER_ID = BB.USER_ID
-								 GROUP BY TO_CHAR((TO_DATE(AA.OPEN_DT,'YYYYMMDDHH24MISS') + (BB.TZ_TERM/60)/24), 'YYYYMMDDHH24')
-								 UNION ALL
-								SELECT TO_CHAR((TO_DATE(AA.CLICK_DT,'YYYYMMDDHH24MISS') + (BB.TZ_TERM/60)/24), 'YYYYMMDDHH24') RESP_TIME
-									 , 0 AS OPEN_CNT, NVL(SUM(AA.CLICK_AR_AMT),0) AS CLICK_CNT, NVL(SUM(AA.VALID_AR_AMT),0) AS VALID_CNT, 0 AS BLOCK_CNT
-								  FROM NEO_AR_LINKLOG AA,
-										(
-										SELECT USER_ID, TZ_TERM FROM NEO_USER A, NEO_TIMEZONE B
-										 WHERE A.TZ_CD = B.TZ_CD
-										) BB
-								 WHERE AA.TASK_NO = #{taskNo}
-								   AND AA.SUB_TASK_NO = #{subTaskNo}
-								   AND AA.USER_ID = BB.USER_ID
-								 GROUP BY TO_CHAR((TO_DATE(AA.CLICK_DT,'YYYYMMDDHH24MISS') + (BB.TZ_TERM/60)/24), 'YYYYMMDDHH24')
-								)
-						GROUP BY RESP_TIME
-					) Y
-				)
-		 WHERE SEQ BETWEEN (#{page}-1)*#{rows}+1 AND #{page}*#{rows}
-	-->
 		SELECT *
 		  FROM (
 				SELECT RESP_TIME
@@ -1276,6 +1299,428 @@
 				) B
 		 WHERE A.STEP1 = B.RCODE_STEP1(+) AND A.STEP2 = B.RCODE_STEP2(+)
 		 ORDER BY A.STEP1, A.STEP2
+	</select>
+	
+	<select id="getPeriodSummMonthList" parameterType="periodSummVO" resultType="periodSummVO">
+		SELECT AA.YMD
+			 , SEND_CNT
+			 , NVL(SUCC_CNT,0) SUCC_CNT
+			 , NVL(OPEN_CNT,0) OPEN_CNT
+			 , NVL(VALID_CNT,0) VALID_CNT
+			 , NVL(CLICK_CNT,0) CLICK_CNT
+			 , NVL(BLOCK_CNT,0) BLOCK_CNT
+		  FROM (
+		  		SELECT TO_CHAR((TO_DATE(A.SEND_DT,'YYYYMMDDHH24MISS') + (C.TZ_TERM/60)/24), 'YYYYMM') YMD,
+						NVL(SUM(SEND_AR_AMT),0) SEND_CNT, NVL(SUM(CASE WHEN SEND_RCODE = '000' THEN SEND_AR_AMT ELSE 0 END),0) SUCC_CNT
+				  FROM NEO_AR_SENDLOG A, NEO_USER B, NEO_TIMEZONE C
+				 WHERE A.USER_ID = B.USER_ID AND B.TZ_CD = C.TZ_CD
+				   AND A.SEND_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.SEND_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY TO_CHAR((TO_DATE(A.SEND_DT,'YYYYMMDDHH24MISS') + (C.TZ_TERM/60)/24), 'YYYYMM')
+				) AA,
+				(
+				SELECT TO_CHAR((TO_DATE(A.OPEN_DT,'YYYYMMDDHH24MISS') + (C.TZ_TERM/60)/24), 'YYYYMM') YMD,
+						NVL(SUM(RESP_AR_AMT),0) OPEN_CNT, NVL(SUM(CASE WHEN BLOCKED_YN = 'Y' THEN RESP_AR_AMT ELSE 0 END),0) BLOCK_CNT
+				  FROM NEO_AR_RESPLOG A, NEO_USER B, NEO_TIMEZONE C
+				 WHERE A.USER_ID = B.USER_ID AND B.TZ_CD = C.TZ_CD
+				   AND A.OPEN_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.OPEN_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY TO_CHAR((TO_DATE(A.OPEN_DT,'YYYYMMDDHH24MISS') + (C.TZ_TERM/60)/24), 'YYYYMM')
+				) BB,
+				(
+				SELECT TO_CHAR((TO_DATE(A.CLICK_DT,'YYYYMMDDHH24MISS') + (C.TZ_TERM/60)/24), 'YYYYMM') YMD,
+						NVL(SUM(CLICK_AR_AMT),0) CLICK_CNT, NVL(SUM(VALID_AR_AMT),0) VALID_CNT
+				  FROM NEO_AR_LINKLOG A, NEO_USER B, NEO_TIMEZONE C
+				 WHERE A.USER_ID = B.USER_ID AND B.TZ_CD = C.TZ_CD
+				   AND A.CLICK_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.CLICK_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY TO_CHAR((TO_DATE(A.CLICK_DT,'YYYYMMDDHH24MISS') + (C.TZ_TERM/60)/24), 'YYYYMM')
+				) DD
+		 WHERE AA.YMD = BB.YMD(+)
+		   AND AA.YMD = DD.YMD(+)
+		  ORDER BY AA.YMD
+	</select>
+	
+	<select id="getPeriodSummWeekList" parameterType="periodSummVO" resultType="periodSummVO">
+		SELECT EE.WEEK_NM AS WEEK_NM
+			 , NVL(SEND_CNT,0) SEND_CNT
+			 , NVL(SUCC_CNT,0) SUCC_CNT
+			 , NVL(OPEN_CNT,0) OPEN_CNT
+			 , NVL(VALID_CNT,0) VALID_CNT
+			 , NVL(CLICK_CNT,0) CLICK_CNT
+			 , NVL(BLOCK_CNT,0) BLOCK_CNT
+		  FROM (
+				SELECT CD, CD_NM AS WEEK_NM FROM NEO_CD
+				 WHERE CD_GRP = 'C005' AND UILANG = #{uilang}
+				) EE,
+				(
+				SELECT DAYOFWEEK, NVL(SUM(SEND_AR_AMT),0) SEND_CNT,
+						NVL(SUM(CASE WHEN SEND_RCODE = '000' THEN SEND_AR_AMT ELSE 0 END),0) SUCC_CNT
+				  FROM NEO_AR_SENDLOG A
+				 WHERE A.SEND_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.SEND_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY DAYOFWEEK
+				) AA,
+				(
+				SELECT DAYOFWEEK, NVL(SUM(RESP_AR_AMT),0) OPEN_CNT,
+						NVL(SUM(CASE WHEN BLOCKED_YN = 'Y' THEN RESP_AR_AMT ELSE 0 END),0) BLOCK_CNT
+				  FROM NEO_AR_RESPLOG A
+				 WHERE A.OPEN_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.OPEN_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY DAYOFWEEK
+				) BB,
+				(
+				SELECT DAYOFWEEK, NVL(SUM(CLICK_AR_AMT),0) CLICK_CNT, NVL(SUM(VALID_AR_AMT),0) VALID_CNT
+				  FROM NEO_AR_LINKLOG A
+				 WHERE A.CLICK_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.CLICK_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY DAYOFWEEK
+				) DD
+		 WHERE EE.CD = AA.DAYOFWEEK(+)
+		   AND EE.CD = BB.DAYOFWEEK(+)
+		   AND EE.CD = DD.DAYOFWEEK(+)
+		 ORDER BY EE.CD
+	</select>
+	
+	<select id="getPeriodSummDateList" parameterType="periodSummVO" resultType="periodSummVO">
+		SELECT AA.YMD
+			 , SEND_CNT
+			 , NVL(SUCC_CNT,0) SUCC_CNT
+			 , NVL(OPEN_CNT,0) OPEN_CNT
+			 , NVL(VALID_CNT,0) VALID_CNT
+			 , NVL(CLICK_CNT,0) CLICK_CNT
+			 , NVL(BLOCK_CNT,0) BLOCK_CNT
+		  FROM (
+				SELECT TO_CHAR((TO_DATE(A.SEND_DT,'YYYYMMDDHH24MISS') + (C.TZ_TERM/60)/24), 'YYYYMMDD') YMD,
+						NVL(SUM(SEND_AR_AMT),0) SEND_CNT, NVL(SUM(CASE WHEN SEND_RCODE = '000' THEN SEND_AR_AMT ELSE 0 END),0) SUCC_CNT
+				  FROM NEO_AR_SENDLOG A, NEO_USER B, NEO_TIMEZONE C
+				 WHERE A.USER_ID = B.USER_ID AND B.TZ_CD = C.TZ_CD
+				   AND A.SEND_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.SEND_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY TO_CHAR((TO_DATE(A.SEND_DT,'YYYYMMDDHH24MISS') + (C.TZ_TERM/60)/24), 'YYYYMMDD')
+				) AA,
+				(
+				SELECT TO_CHAR((TO_DATE(A.OPEN_DT,'YYYYMMDDHH24MISS') + (C.TZ_TERM/60)/24), 'YYYYMMDD') YMD,
+						NVL(SUM(RESP_AR_AMT),0) OPEN_CNT, NVL(SUM(CASE WHEN BLOCKED_YN = 'Y' THEN RESP_AR_AMT ELSE 0 END),0) BLOCK_CNT
+				  FROM NEO_AR_RESPLOG A, NEO_USER B, NEO_TIMEZONE C
+				 WHERE A.USER_ID = B.USER_ID AND B.TZ_CD = C.TZ_CD
+				   AND A.OPEN_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.OPEN_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY TO_CHAR((TO_DATE(A.OPEN_DT,'YYYYMMDDHH24MISS') + (C.TZ_TERM/60)/24), 'YYYYMMDD')
+				) BB,
+				(
+				SELECT TO_CHAR((TO_DATE(A.CLICK_DT,'YYYYMMDDHH24MISS') + (C.TZ_TERM/60)/24), 'YYYYMMDD') YMD,
+						NVL(SUM(CLICK_AR_AMT),0) CLICK_CNT, NVL(SUM(VALID_AR_AMT),0) VALID_CNT
+				  FROM NEO_AR_LINKLOG A, NEO_USER B, NEO_TIMEZONE C
+				 WHERE A.USER_ID = B.USER_ID AND B.TZ_CD = C.TZ_CD
+				   AND A.CLICK_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.CLICK_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY TO_CHAR((TO_DATE(A.CLICK_DT,'YYYYMMDDHH24MISS') + (C.TZ_TERM/60)/24), 'YYYYMMDD')
+				) DD
+		 WHERE AA.YMD = BB.YMD(+)
+		   AND AA.YMD = DD.YMD(+)
+		 ORDER BY AA.YMD
+	</select>
+	
+	<select id="getPeriodSummDomainList" parameterType="periodSummVO" resultType="periodSummVO">
+		SELECT DOMAIN_NM
+			 , SEND_CNT
+			 , SUCC_CNT
+			 , ERR_CNT
+		  FROM (
+				SELECT CUST_DOMAIN DOMAIN_NM
+					 , SUM(SEND_AR_AMT) SEND_CNT
+					 , SUM(CASE WHEN SEND_RCODE = '000' THEN SEND_AR_AMT ELSE 0 END) AS SUCC_CNT
+					 , SUM(CASE WHEN (SEND_RCODE != '000' AND RCODE_STEP1 = '002') THEN SEND_AR_AMT ELSE 0 END) AS ERR_CNT
+				  FROM NEO_AR_DOMAINLOG A, NEO_TASK B
+				 WHERE A.TASK_NO = B.TASK_NO
+				   AND A.SEND_DAY||'0000' &gt;= #{searchStartDt} || '0000'
+				   AND A.SEND_DAY||'0000' &lt; #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND B.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND B.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND B.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY CUST_DOMAIN
+				 ORDER BY SUM(SEND_AR_AMT) DESC
+				)
+		 WHERE ROWNUM &lt;= 20
+	</select>
+	
+	<select id="getPeriodSummDeptList" parameterType="periodSummVO" resultType="periodSummVO">
+		SELECT EE.DEPT_NM AS DEPT_NM
+			 , SEND_CNT, NVL(SUCC_CNT,0) SUCC_CNT
+			 , NVL(OPEN_CNT,0) OPEN_CNT
+			 , NVL(VALID_CNT,0) VALID_CNT
+			 , NVL(CLICK_CNT,0) CLICK_CNT
+			 , NVL(BLOCK_CNT,0) BLOCK_CNT
+		  FROM (
+				SELECT DEPT_NO, NVL(SUM(SEND_AR_AMT),0) SEND_CNT
+					 , NVL(SUM(CASE WHEN SEND_RCODE = '000' THEN SEND_AR_AMT ELSE 0 END),0) SUCC_CNT
+				  FROM NEO_AR_SENDLOG A
+				 WHERE A.SEND_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.SEND_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY DEPT_NO
+				) AA,
+				(
+				SELECT DEPT_NO, NVL(SUM(RESP_AR_AMT),0) OPEN_CNT
+					 , NVL(SUM(CASE WHEN BLOCKED_YN = 'Y' THEN RESP_AR_AMT ELSE 0 END),0) BLOCK_CNT
+				  FROM NEO_AR_RESPLOG A
+				 WHERE A.OPEN_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.OPEN_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY DEPT_NO
+				) BB,
+				(
+				SELECT DEPT_NO, NVL(SUM(CLICK_AR_AMT),0) CLICK_CNT, NVL(SUM(VALID_AR_AMT),0) VALID_CNT
+				  FROM NEO_AR_LINKLOG A
+				 WHERE A.CLICK_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.CLICK_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY DEPT_NO
+				) DD,
+				NEO_DEPT EE
+		 WHERE AA.DEPT_NO = BB.DEPT_NO(+)
+		   AND AA.DEPT_NO = DD.DEPT_NO(+)
+		   AND AA.DEPT_NO = EE.DEPT_NO(+)
+	</select>
+	
+	<select id="getPeriodSummUserList" parameterType="periodSummVO" resultType="periodSummVO">
+		SELECT EE.USER_NM AS USER_NM
+			 , SEND_CNT
+			 , NVL(SUCC_CNT,0) SUCC_CNT
+			 , NVL(OPEN_CNT,0) OPEN_CNT
+			 , NVL(VALID_CNT,0) VALID_CNT
+			 , NVL(CLICK_CNT,0) CLICK_CNT
+			 , NVL(BLOCK_CNT,0) BLOCK_CNT
+		  FROM (
+				SELECT USER_ID, NVL(SUM(SEND_AR_AMT),0) SEND_CNT
+					 , NVL(SUM(CASE WHEN SEND_RCODE = '000' THEN SEND_AR_AMT ELSE 0 END),0) SUCC_CNT
+				  FROM NEO_AR_SENDLOG A
+				 WHERE A.SEND_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.SEND_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY USER_ID
+				) AA,
+				(
+				SELECT USER_ID, NVL(SUM(RESP_AR_AMT),0) OPEN_CNT
+					 , NVL(SUM(CASE WHEN BLOCKED_YN = 'Y' THEN RESP_AR_AMT ELSE 0 END),0) BLOCK_CNT
+				  FROM NEO_AR_RESPLOG A
+				 WHERE A.OPEN_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.OPEN_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY USER_ID
+				) BB,
+				(
+				SELECT USER_ID, NVL(SUM(CLICK_AR_AMT),0) CLICK_CNT, NVL(SUM(VALID_AR_AMT),0) VALID_CNT
+				  FROM NEO_AR_LINKLOG A
+				 WHERE A.CLICK_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.CLICK_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY USER_ID
+				) DD,
+				NEO_USER EE
+		 WHERE AA.USER_ID = BB.USER_ID(+)
+		   AND AA.USER_ID = DD.USER_ID(+)
+		   AND AA.USER_ID = EE.USER_ID(+)
+	</select>
+	
+	<select id="getPeriodSummCampList" parameterType="periodSummVO" resultType="periodSummVO">
+		SELECT EE.CAMP_NM AS CAMP_NM
+			 , SEND_CNT
+			 , NVL(SUCC_CNT,0) SUCC_CNT
+			 , NVL(OPEN_CNT,0) OPEN_CNT
+			 , NVL(VALID_CNT,0) VALID_CNT
+			 , NVL(CLICK_CNT,0) CLICK_CNT
+			 , NVL(BLOCK_CNT,0) BLOCK_CNT
+		  FROM (
+				SELECT CAMP_NO, NVL(SUM(SEND_AR_AMT),0) SEND_CNT
+					 , NVL(SUM(CASE WHEN SEND_RCODE = '000' THEN SEND_AR_AMT ELSE 0 END),0) SUCC_CNT
+				  FROM NEO_AR_SENDLOG A
+				 WHERE A.SEND_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.SEND_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY CAMP_NO
+				) AA,
+				(
+				SELECT CAMP_NO, NVL(SUM(RESP_AR_AMT),0) OPEN_CNT
+					 , NVL(SUM(CASE WHEN BLOCKED_YN = 'Y' THEN RESP_AR_AMT ELSE 0 END),0) BLOCK_CNT
+				  FROM NEO_AR_RESPLOG A
+				 WHERE A.OPEN_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.OPEN_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY CAMP_NO
+				) BB,
+				(
+				SELECT CAMP_NO, NVL(SUM(CLICK_AR_AMT),0) CLICK_CNT, NVL(SUM(VALID_AR_AMT),0) VALID_CNT
+				  FROM NEO_AR_LINKLOG A
+				 WHERE A.CLICK_DT &gt;= #{searchStartDt} || '0000'
+				   AND A.CLICK_DT &lt;= #{searchEndDt} || '2400'
+				   <if test="searchCampNo != null and searchCampNo != ''">
+				   AND A.CAMP_NO = #{searchCampNo}
+				   </if>
+				   <if test="searchDeptNo != 0">
+				   AND A.DEPT_NO = #{searchDeptNo}
+				   </if>
+				   <if test="searchUserId != null and searchUserId != ''">
+				   AND A.USER_ID = #{searchUserId}
+				   </if>
+				 GROUP BY CAMP_NO
+				) DD,
+				NEO_CAMPAIGN EE
+		 WHERE AA.CAMP_NO = BB.CAMP_NO(+)
+		   AND AA.CAMP_NO = DD.CAMP_NO(+)
+		   AND AA.CAMP_NO = EE.CAMP_NO(+)
 	</select>
 
 </mapper>

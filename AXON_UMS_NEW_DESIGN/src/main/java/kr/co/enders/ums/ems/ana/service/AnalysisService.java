@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import kr.co.enders.ums.ems.ana.vo.MailDomainVO;
 import kr.co.enders.ums.ems.ana.vo.MailErrorVO;
 import kr.co.enders.ums.ems.ana.vo.MailSummVO;
+import kr.co.enders.ums.ems.ana.vo.PeriodSummVO;
 import kr.co.enders.ums.ems.ana.vo.RespLogVO;
 import kr.co.enders.ums.ems.ana.vo.SendLogVO;
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
@@ -147,6 +148,14 @@ public interface AnalysisService {
 	 * @throws Exception
 	 */
 	public List<TaskVO> getTaskList(TaskVO taskVO) throws Exception;
+	
+	/**
+	 * 정기메일분석 정기메일 차수별 목록 조회
+	 * @param taskVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<TaskVO> getTaskStepList(TaskVO taskVO) throws Exception;
 	
 	/**
 	 * 정기메일분석 메일 정보 조회
@@ -291,4 +300,60 @@ public interface AnalysisService {
 	 * @throws Exception
 	 */
 	public List<MailErrorVO> getJoinErrorListCamp(SendLogVO sendLogVO) throws Exception;
+	
+	/**
+	 * 기간별누적분석 월별 데이터 조회
+	 * @param periodSummVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<PeriodSummVO> getPeriodSummMonthList(PeriodSummVO periodSummVO) throws Exception;
+	
+	/**
+	 * 기간별누적분석 요일별 데이터 조회
+	 * @param periodSummVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<PeriodSummVO> getPeriodSummWeekList(PeriodSummVO periodSummVO) throws Exception;
+	
+	/**
+	 * 기간별누적분석 일자별 데이터 조회
+	 * @param periodSummVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<PeriodSummVO> getPeriodSummDateList(PeriodSummVO periodSummVO) throws Exception;
+	
+	/**
+	 * 기간별누적분석 도메인별 데이터 조회
+	 * @param periodSummVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<PeriodSummVO> getPeriodSummDomainList(PeriodSummVO periodSummVO) throws Exception;
+	
+	/**
+	 * 기간별누적분석 그룹(부서)별 데이터 조회
+	 * @param periodSummVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<PeriodSummVO> getPeriodSummDeptList(PeriodSummVO periodSummVO) throws Exception;
+	
+	/**
+	 * 기간별누적분석 사용자별 데이터 조회
+	 * @param periodSummVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<PeriodSummVO> getPeriodSummUserList(PeriodSummVO periodSummVO) throws Exception;
+	
+	/**
+	 * 기간별누적분석 캠페인별 데이터 조회
+	 * @param periodSummVO
+	 * @return
+	 * @throws Exception
+	 */
+	public List<PeriodSummVO> getPeriodSummCampList(PeriodSummVO periodSummVO) throws Exception;
 }

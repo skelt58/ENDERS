@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import kr.co.enders.ums.ems.ana.vo.MailDomainVO;
 import kr.co.enders.ums.ems.ana.vo.MailErrorVO;
 import kr.co.enders.ums.ems.ana.vo.MailSummVO;
+import kr.co.enders.ums.ems.ana.vo.PeriodSummVO;
 import kr.co.enders.ums.ems.ana.vo.RespLogVO;
 import kr.co.enders.ums.ems.ana.vo.SendLogVO;
 import kr.co.enders.ums.ems.cam.vo.CampaignVO;
@@ -103,6 +104,11 @@ public class AnalysisDAO implements AnalysisMapper {
 	public List<TaskVO> getTaskList(TaskVO taskVO) throws Exception {
 		return sqlSessionEms.getMapper(AnalysisMapper.class).getTaskList(taskVO);
 	}
+	
+	@Override
+	public List<TaskVO> getTaskStepList(TaskVO taskVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getTaskStepList(taskVO);
+	}
 
 	@Override
 	public TaskVO getTaskInfo(TaskVO taskVO) throws Exception {
@@ -181,7 +187,6 @@ public class AnalysisDAO implements AnalysisMapper {
 
 	@Override
 	public List<TaskVO> getJoinTaskList(SendLogVO sendLogVO) throws Exception {
-		// TODO Auto-generated method stub
 		return sqlSessionEms.getMapper(AnalysisMapper.class).getJoinTaskList(sendLogVO);
 	}
 
@@ -193,6 +198,41 @@ public class AnalysisDAO implements AnalysisMapper {
 	@Override
 	public List<MailErrorVO> getJoinErrorListTask(SendLogVO sendLogVO) throws Exception {
 		return sqlSessionEms.getMapper(AnalysisMapper.class).getJoinErrorListTask(sendLogVO);
+	}
+
+	@Override
+	public List<PeriodSummVO> getPeriodSummMonthList(PeriodSummVO periodSummVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getPeriodSummMonthList(periodSummVO);
+	}
+
+	@Override
+	public List<PeriodSummVO> getPeriodSummWeekList(PeriodSummVO periodSummVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getPeriodSummWeekList(periodSummVO);
+	}
+
+	@Override
+	public List<PeriodSummVO> getPeriodSummDateList(PeriodSummVO periodSummVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getPeriodSummDateList(periodSummVO);
+	}
+
+	@Override
+	public List<PeriodSummVO> getPeriodSummDomainList(PeriodSummVO periodSummVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getPeriodSummDomainList(periodSummVO);
+	}
+
+	@Override
+	public List<PeriodSummVO> getPeriodSummDeptList(PeriodSummVO periodSummVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getPeriodSummDeptList(periodSummVO);
+	}
+
+	@Override
+	public List<PeriodSummVO> getPeriodSummUserList(PeriodSummVO periodSummVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getPeriodSummUserList(periodSummVO);
+	}
+
+	@Override
+	public List<PeriodSummVO> getPeriodSummCampList(PeriodSummVO periodSummVO) throws Exception {
+		return sqlSessionEms.getMapper(AnalysisMapper.class).getPeriodSummCampList(periodSummVO);
 	}
 	
 }

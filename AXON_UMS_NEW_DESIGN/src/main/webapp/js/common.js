@@ -11,128 +11,79 @@ var fn = (function() {
 	return {
 		//공통
 		common : function(){
-			//select
-			fn.select(".select");
-			fn.selectInit();
+			//fileupload
+			fn.fileupload();
 		},
 
-		//select
-		select : function(obj){
-			var obj = $(obj);
-			obj.each(function(i, select){
-				if ( !$(this).find("div").hasClass("dropdown") ){
-					if ( $(this).find("select").is(":disabled") ){
-						$(this).addClass("disabled");
-					}
-					$(this).append('<div class="dropdown" tabindex="0"><span class="current"></span><div class="list"><ul></ul></div></div>');
-					var dropdown = $(this).find(".dropdown");
-					var options = $(this).find("select").find("option");
-					var selected = $(this).find("select").find("option:selected");
-					//var disabled = $(this).find("select").find("option:disabled");
-					dropdown.find(".current").html(selected.text());
-					options.each(function(j, o){
-						var btn = $(o).data("btn") || "";//재입고 알림버튼
-						var stock = $(o).data("stock") || "";//남은 수량
-						var price = $(o).data("price") || "";//가격
+		//input[type="file"]
+		fileupload : function(){
+			var fileTarget = $("input[type='file']"),
+				filevalue,
+				filename; // 파일명
 
-						if ( $(o).attr("class") == "select-ti" ){
-							dropdown.find("ul").append('<li class="option select-ti" data-value="' + $(o).val() + '"><span>' + $(o).text() + '</span></li>');
-						} else if ( btn ){
-							dropdown.find("ul").append('<li class="option soldout' + ($(o).is(':selected') ? ' selected' :'')  + ($(o).is(':disabled') ? ' disabled' :'') + '" data-value="' + $(o).val() + '"><span>' + $(o).text() + '</span>' + btn + '</li>');
-						} else {
-							if ( stock && price ){
-								dropdown.find("ul").append('<li class="option pro' + ($(o).is(':selected') ? ' selected' :'')  + ($(o).is(':disabled') ? ' disabled' :'') + '" data-value="' + $(o).val() + '"><span>' + $(o).text() + '</span>' + price + '' + stock + '</li>');
-							} else if ( price ){
-								dropdown.find("ul").append('<li class="option pro' + ($(o).is(':selected') ? ' selected' :'')  + ($(o).is(':disabled') ? ' disabled' :'') + '" data-value="' + $(o).val() + '"><span>' + $(o).text() + '</span>' + price +'</li>');
-							} else {
-								dropdown.find("ul").append('<li class="option' + ($(o).is(':selected') ? ' selected' :'')  + ($(o).is(':disabled') ? ' disabled' :'') + '" data-value="' + $(o).val() + '"><span>' + $(o).text() + '</span></li>');
-							}
-						}
-					});
+			fileTarget.on("change", function(obj){ // 값이 변경되면
+				filevalue = $(this).val().split("\\");
+				filename = filevalue[filevalue.length-1]; // 파일명
+				var error = $(obj).closest(".filebox").siblings(".list-star");
+
+				$(this).siblings(".upload-name").val(filename);
+
+				// 파일 형식 체크
+				if(filename.substring(filename.lastIndexOf(".")+1,filename.length).search("html") == -1){
+					if(error.hasClass("hide")){
+						error.removeClass("hide");
+					}
+				}else {
+					error.addClass("hide");
+
 				}
+				
+			});
+
+			// 삭제기능
+			$(document).on("click",".filebox .inputfile ~ .btn.fullblack",function(){
+				$(this).addClass("hide");
+				$(this).siblings(".btn.fullblue").removeClass("hide");
+				$(this).closest(".filebox").siblings(".list-star").addClass("hide");
+				$(this).siblings(".inputfile").find("input[type='text']").val("");
+				$(this).siblings(".inputfile").find(".filesize").text("");
 			});
 		},
+		
+		fileCheck : function(obj){
+			var filevalue = $(obj).val().split("\\"),
+				filedir = filevalue[filevalue.length-1], // 파일명
+				error = $(obj).closest(".filebox").siblings(".list-star"),
+				filesize = $(obj).siblings(".filesize");
 
-		//select init
-		selectInit : function(){
-			$("select").change(function(){
-				$(this).addClass("active");
-			});
+			// 파일 형식 체크
+			if(filedir.substring(filedir.lastIndexOf(".")+1,filedir.length).search("html") == -1){
+				if(error.hasClass("hide")){
+					error.removeClass("hide");
+				}
+			}else {
+				error.addClass("hide");
+			}
 
-			//Open/close
-			$(document).on("click", ".dropdown", function(event){
-				$(".dropdown").not($(this)).removeClass("open");
-				$(this).toggleClass("open");
-				if ($(this).hasClass("open")){
-					$(this).find(".option").attr("tabindex", 0);
-					$(this).find(".selected").focus();
-				}else{
-					$(this).find(".option").removeAttr("tabindex");
-					$(this).focus();
-				}
-			});
-			//Close when clicking outside
-			$(document).on("click", function(event){
-				if ($(event.target).closest(".dropdown").length === 0){
-					$(".dropdown").removeClass("open");
-					$(".dropdown .option").removeAttr("tabindex");
-				}
-				event.stopPropagation();
-			});
-			//Option click
-			$(document).on("click", ".dropdown .option", function(event){
-				if ( !$(this).hasClass("disabled") ){
-					$(this).closest(".list").find(".selected").removeClass("selected");
-					$(this).addClass("selected");
-					var text = $(this).data("display-text") || $(this).html();
-					$(this).closest(".dropdown").addClass("active");
-					$(this).closest(".dropdown").find(".current").html(text);
-					$(this).closest(".dropdown").prev("select").val($(this).data("value")).trigger("change");
-				}
-			});
-			//Keyboard events
-			$(document).on("keydown", ".dropdown", function(event){
-				var focused_option = $($(this).find(".list .option:focus")[0] || $(this).find(".list .option.selected")[0]);
-				//Space or Enter
-				if (event.keyCode == 32 || event.keyCode == 13){
-					if ($(this).hasClass("open")){
-						focused_option.trigger("click");
-					}else{
-						$(this).trigger("click");
-					}
-					return false;
-				//Down
-				}else if (event.keyCode == 40){
-					if (!$(this).hasClass("open")){
-						$(this).trigger("click");
-					} else{
-						focused_option.next().focus();
-					}
-					return false;
-				//Up
-				}else if (event.keyCode == 38){
-					if (!$(this).hasClass("open")){
-						$(this).trigger("click");
-					}else{
-						var focused_option = $($(this).find(".list .option:focus")[0] || $(this).find(".list .option.selected")[0]);
-						focused_option.prev().focus();
-					}
-					return false;
-				//Esc
-				}else if (event.keyCode == 27){
-					if ($(this).hasClass("open")){
-						$(this).trigger("click");
-					}
-					return false;
-				}
-			});
+			// 용량 체크
+			if($(obj).val() != ""){
+				var fileSize = obj.files[0].size;
+				$(obj).closest(".inputfile").siblings(".btn.fullblack").removeClass("hide");
+				$(obj).closest(".inputfile").siblings(".btn.fullblue").addClass("hide");
+			}
+			var s = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'],
+				e = Math.floor(Math.log(fileSize) / Math.log(1024));
+			filesize.text((fileSize / Math.pow(1024, e)).toFixed(2) + " " + s[e]);
+			return (fileSize / Math.pow(1024, e)).toFixed(2) + " " + s[e];
 		},
 
 		//popupOpen
 		popupOpen : function(obj){
 			$(obj).addClass("open");
 			$("body").addClass("ov-hidden");
-			//fn.popupHeight();
+			setTimeout(function(){	//일정시간 뒤(로딩) 팝업 높이제어
+				fn.popupHeight();
+			}, 100);
 		},
 
 		//popupClose
@@ -148,21 +99,15 @@ var fn = (function() {
 				var popupH = $(this).find(".inner").outerHeight(),
 					contentH = $(this).find(".cont").outerHeight(),
 					headerH = $(this).find("header").outerHeight();
-					console.log(popupH + " // " + contentH + " // " + headerH);
-
-				
+			
 				if( popupH < contentH ){	// 팝업틀의 높이보다 팝업내 content 높이가 더 크다면
 					var contheight = popupH - headerH;
 					$(this).find(".cont").outerHeight(contheight);
-					console.log("popupH < contentH");
-				}else{
-					console.log("noe");
 				}
 
 				if (!(popupH % 2) == 0) { // 팝업틀의 높이가 홀수라면 흐린현상으로 짝수로 잡아준다.(transform 사용)
-					popupH -= 1;	// 홀수이면 -1해서 짝수로 높이 잡아주기.
+					popupH += 1;	// 홀수이면 +1해서 짝수로 높이 잡아주기.
 					$(this).find(".inner").outerHeight(popupH);
-					$(this).find(".inner").css("max-height","none");
 				}
 			});
 		}
@@ -171,7 +116,7 @@ var fn = (function() {
 
 $(document).ready(function(){
 	// lnb 메뉴
-	$("#lnb .depth1").on("click", function(){
+	$(document).on("click", "#lnb .depth1", function(){
 		if($(this).closest("li").hasClass("active")){
 			$(this).siblings(".inner-menu").slideUp();
 			$(this).closest("li").removeClass("active");
@@ -181,13 +126,13 @@ $(document).ready(function(){
 			$(this).closest("li").addClass("active").siblings().removeClass("active");
 		}
 	});
-	$("#lnb .inner-menu a").on("click", function(){
+	$(document).on("click", "#lnb .inner-menu a", function(){
 		$("#lnb .inner-menu li").removeClass("active");
 		$(this).closest("li").addClass("active");
 	});
 
 	//cont-head util user
-	$(".cont-head .util .info button").on("click", function(){
+	$(document).on("click", ".cont-head .util .info button", function(){
 		if($(this).closest(".user").hasClass("open")){
 			$(this).closest(".user").removeClass("open");
 			$(this).text("열기");
@@ -204,11 +149,17 @@ $(document).ready(function(){
 		event.stopPropagation();
 	});
 
-	//input[type="file"]
-	var fileTarget = $("input[type='file']"); 
-	fileTarget.on("change", function(){ // 값이 변경되면
-		$filename = $(this).val();
-		$(this).siblings(".upload-name").val($filename);
+	//toggle
+	$(document).on("click", ".toggle .btn-toggle", function(){
+		if($(this).closest("li").hasClass("open")){
+			$(this).closest("li").removeClass("open");
+		}else{
+			$(this).closest("li").addClass("open").siblings().removeClass("open");
+		}
+	});
+	$(document).on("click", ".toggle .depth2 button", function(){
+		$(".toggle .depth2 li").removeClass("active");
+		$(this).closest("li").addClass("active");
 	});
 
 	//datepicker
@@ -271,15 +222,15 @@ $(document).ready(function(){
 	});
 
 	/*
-	//selectbox
-	$(document).on("click", ".selectbox", function(event){
-		$(".selectbox").not($(this)).removeClass("open");
+	//select
+	$(document).on("click", ".select", function(event){
+		$(".select").not($(this)).removeClass("open");
 		$(this).toggleClass("open");
 	});
 	//Close when clicking outside
 	$(document).on("click", function(event){
-		if ($(event.target).closest(".selectbox").length === 0){
-			$(".selectbox").removeClass("open");
+		if ($(event.target).closest(".select").length === 0){
+			$(".select").removeClass("open");
 		}
 		event.stopPropagation();
 	});

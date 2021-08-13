@@ -1,4 +1,4 @@
-//사용자그룹 선택시 사용자 목록 조회 
+// 사용자그룹 선택시 사용자 목록 조회 
 function getUserList(deptNo) {
 	$.getJSON("../../com/getUserList.json?deptNo=" + deptNo, function(data) {
 		$("#searchUserId").children("option:not(:first)").remove();
@@ -9,8 +9,35 @@ function getUserList(deptNo) {
 	});
 }
 
+// 검색버튼 클릭시
+function goOz() {
+	var errstr = "";
+	var errflag = false;
+	if($("#searchStartDt").val() == "") {
+		errstr += "[기간]";	// COMTBLTL006
+		errflag = true;
+	}
+	if($("#searchEndDt").val() == "") {
+		errstr += "[기간]";	// COMTBLTL006
+		errflag = true;
+	}
+	if(errflag) {
+		alert("다음 정보를 확인하세요.\n" + errstr);		// COMJSALT016
+		return errflag;
+	}
+	if( $("#searchStartDt").val() > $("#searchEndDt").val()) {
+		alert("검색 시 시작일은 종료일보다 클 수 없습니다.");		// COMJSALT017
+		return;
+	}
+	if(curTab) {
+		goOzTab(curTab, curTarget);
+	} else {
+		goOzTab('tab7','./summMonthP.ums');
+	}
+}
+
 // 초기화 클릭시
-function goReset(obj) {
+function goReset() {
 	$("#searchForm")[0].reset();
 }
 
@@ -44,36 +71,14 @@ function goOzTab(tabNm, target) {
 		case 'tab6' :	$("#click_tab6").show(); $("#tab6").hide(); break;
 		case 'tab7' :	$("#click_tab7").show(); $("#tab7").hide(); break;
 	}
+	
+	$("#searchCampNm").val($("#searchCampNo option:selected").text());
+	$("#searchDeptNm").val($("#searchDeptNo option:selected").text());
+	$("#searchUserNm").val($("#searchUserId option:selected").text());
+	
+	if($("#searchCampNo option").eq(0).is(":selected")) $("#searchCampNm").val("");
+	if($("#searchDeptNo option").eq(0).is(":selected")) $("#searchDeptNm").val("");
+	if($("#searchUserId option").eq(0).is(":selected")) $("#searchUserNm").val("");
 
 	$("#searchForm").attr("target","iFrmReport").attr("action", target).submit();
-}
-
-//검색버튼 클릭시 EVENT 구현
-function goOz() {
-	var obj = document.search_form;
-	var p_stdt = obj.p_stdt.value;
-	var p_eddt = obj.p_eddt.value;
-	var errstr = "";
-	var errflag = false;
-	if(p_stdt == "") {
-		errstr += "[<%=tbltl_term%>]";
-		errflag = true;
-	}
-	if(p_eddt == "") {
-		errstr += "[<%=tbltl_term%>]";
-		errflag = true;
-	}
-	if(errflag) {
-		alert("<%=jsalt_msg%>\n" + errstr);
-		return errflag;
-	}
-	if( p_stdt > p_eddt) {
-		alert("<%=jsalt_cal%>");
-		return;
-	}
-	if(this.cur_tab) {
-		goOzTab(this.cur_tab,this.cur_target);
-	} else {
-		goOzTab('tab7','/ana/summMonthP.jsp');
-	}
 }

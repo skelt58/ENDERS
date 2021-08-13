@@ -1,29 +1,5 @@
 $(document).ready(function() {
-	// 예약일 시작일 설정
-	/*
-	$("#searchStartDt").datepicker({
-		//showOn:"button",
-		minDate:"2021-01-01",
-		maxDate:$("#searchEndDt").val(),
-		onClose:function(selectedDate) {
-			$("#searchEndDt").datepicker("option", "minDate", selectedDate);
-		}
-	});
-	
-	// 예약일 종료일 설정
-	$("#searchEndDt").datepicker({
-		//showOn:"button",
-		minDate:$("#searchStartDt").val(),
-		onClose:function(selectedDate) {
-			$("#searchStartDt").datepicker("option", "maxDate", selectedDate);
-		}
-	});
-	*/
-	$("#searchStartDt").datepicker();
-	$("#searchEndDt").datepicker();
-
-	
-	goSearch();
+	goSearch("1");
 });
 
 //사용자그룹 선택시 사용자 목록 조회 
@@ -38,12 +14,13 @@ function getUserList(deptNo) {
 }
 
 // 검색 버튼 클릭시
-function goSearch() {
+function goSearch(pageNum) {
 	if( $("#searchStartDt").val() > $("#searchEndDt").val() ) {
-		alert("검색 시 시작일은 종료일보다 클 수 없습니다.");		// <spring:message code='COMJSALT017'/>
+		alert("검색 시 시작일은 종료일보다 클 수 없습니다.");		// COMJSALT017
 		return;
 	}
 	
+	$("#searchForm input[name='page']").val(pageNum);
 	var param = $("#searchForm").serialize();
 	$.ajax({
 		type : "GET",
@@ -99,19 +76,6 @@ function goJoin() {
 
 
 // 페이징
-function goPageNum(page) {
-	$("#page").val(page);
-	var param = $("#searchForm").serialize();
-	$.ajax({
-		type : "GET",
-		url : "./campList.ums?" + param,
-		dataType : "html",
-		success : function(pageHtml){
-			$("#divCampList").html(pageHtml);
-		},
-		error : function(){
-			alert("Error!!");
-		}
-	});
-	//$("#searchForm").attr("target","").attr("action","./mailListP.ums").submit();
+function goPageNum(pageNum) {
+	goSearch(pageNum);
 }

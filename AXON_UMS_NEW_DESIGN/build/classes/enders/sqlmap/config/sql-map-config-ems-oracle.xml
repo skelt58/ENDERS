@@ -60,6 +60,7 @@
 		<typeAlias alias="mailDomainVO"		type="kr.co.enders.ums.ems.ana.vo.MailDomainVO" />
 		<typeAlias alias="sendLogVO"		type="kr.co.enders.ums.ems.ana.vo.SendLogVO" />
 		<typeAlias alias="respLogVO"		type="kr.co.enders.ums.ems.ana.vo.RespLogVO" />
+		<typeAlias alias="periodSummVO"		type="kr.co.enders.ums.ems.ana.vo.PeriodSummVO" />
 		
 	</typeAliases>
 

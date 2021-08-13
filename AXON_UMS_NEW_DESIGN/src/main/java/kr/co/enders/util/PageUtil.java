@@ -23,15 +23,15 @@ public class PageUtil {
 	private int nextPage = 0;           // 다음페이지 번호
 	private String pageHtml = "";       // Page별 기능을 처리할 Html
 	
-	private String header = "<span>";
-	private String footer = "</span>";
-	private String frmName = "frmBody";
+	private String header = "";
+	private String footer = "";
+	private String frmName = "";
 	private String submitFunc = "goPageNum";
 	private String firstMark = "처음"; //"<img src='../../images/common/btn_prev_02.gif' border='0' align='absmiddle' class='m01'>";
-	private String preMark   = "이전"; //"<img src='../../images/common/btn_prev_01.gif' border='0' align='absmiddle' class='m02'>";
-	private String nextMark  = "다음"; //"<img src='../../images/common/btn_next_01.gif' border='0' align='absmiddle' class='m03'>";
+	private String preMark   = "<button type='button' class='prev' disabled onclick>이전</button>"; //"<img src='../../images/common/btn_prev_01.gif' border='0' align='absmiddle' class='m02'>";
+	private String nextMark  = "<button type='button' class='next' disabled onclick>다음</button>"; //"<img src='../../images/common/btn_next_01.gif' border='0' align='absmiddle' class='m03'>";
 	private String lastMark  = "마지막"; //"<img src='../../images/common/btn_next_02.gif' border='0' align='absmiddle' class='m04'>";
-	private String pageSeperate = " | "; //"<span class='pageBar'>|</span>"; // 페이지 번호 사이의 구분자
+	private String pageSeperate = " "; //"<span class='pageBar'>|</span>"; // 페이지 번호 사이의 구분자
 
 	/**
 	 * 페이징에 필요한 변수들의 값을 설정한다.
@@ -71,7 +71,7 @@ public class PageUtil {
 	 * @return String
 	 */
 	private String getOnePageHtml(){
-		return firstMark + " " + preMark + " <b>1</b> " + nextMark + " " + lastMark;
+		return preMark.replaceAll("onclick", "") + " <button type='button' class='active'>1</button> " + nextMark.replaceAll("onclick", "");
 	}
 
 	/**
@@ -99,12 +99,12 @@ public class PageUtil {
 	 */
 	private String getLinkedStr(String str, int linkNum){
 		if(currPage == linkNum){
-			return str;
+			return "<button type='button' class='active'>" + str + "</button>";
 		}
 		if(firstMark.equals(str) || preMark.equals(str) || nextMark.equals(str) || lastMark.equals(str)) {
-			str = "<a href='javascript:"+ submitFunc +"("+ linkNum +")'>" + str +"</a>";
+			str = str.replaceAll("onclick", "onclick='" + submitFunc + "(" + linkNum + ");'").replaceAll("disabled", "");
 		} else {
-			str = "<a href='javascript:"+ submitFunc +"("+ linkNum +")'>" + str +"</a>";
+			str = "<button type='button' onclick='"+ submitFunc +"("+ linkNum +");'>" + str +"</button>";
 		}
 
 		return str;
@@ -137,14 +137,12 @@ public class PageUtil {
 	public String getPageHtml() {
 
 		if (totalRow == 0) {
-			return this.getOnePageHtml()+ this.getSubmitScript();
+			return this.getOnePageHtml();
 		}
-
-		pageHtml = getLinkedStr(firstMark, 1) + " ";
 
 		// 이전 페이지 추가
 		if (startPage < pageNumsPerScreen) {
-			pageHtml += preMark + " ";
+			pageHtml += preMark.replaceAll(" onclick", "") + " ";
 		} else {
 			prevPage = startPage - 1;
 			pageHtml += getLinkedStr(preMark, prevPage) + " ";
@@ -154,9 +152,9 @@ public class PageUtil {
 		for (int i = startPage; i <= endPage; i++) {
 			// 현재 페이지 인지 확인
 			if (i == currPage) {
-				pageHtml += "<b>"+ i +"</b>";
+				pageHtml += "<button type='button' class='active'>"+ i +"</button>";
 			} else {
-				pageHtml += getLinkedStr(i+"" , i) + " ";
+				pageHtml += getLinkedStr(i + "" , i) + " ";
 			}
 			if(i<endPage) {
 				pageHtml += pageSeperate + " ";
@@ -167,13 +165,11 @@ public class PageUtil {
 
 		// 다음 페이지 추가
 		if (endPage >= totalPage) {
-			pageHtml += nextMark + " ";
+			pageHtml += nextMark.replaceAll(" onclick", "") + " ";
 		} else {
 			nextPage = endPage + 1;
 			pageHtml += getLinkedStr(nextMark, nextPage) + " ";
 		}
-
-		pageHtml += getLinkedStr(lastMark, totalPage);
 
 		if(submitFunc.equals("goSubmit")){
 			pageHtml += this.getSubmitScript();

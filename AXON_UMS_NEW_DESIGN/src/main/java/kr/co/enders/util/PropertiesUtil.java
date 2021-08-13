@@ -18,10 +18,10 @@ public class PropertiesUtil {
 	}
 	
 	public String getProperty(String key){
-		return msa.getMessage(key);
+		return msa.getMessage(key).trim();
 	}
 	
 	public String getProperty(String key, Object[] objs){
-		return msa.getMessage(key, objs, Locale.getDefault());
+		return msa.getMessage(key, objs, Locale.getDefault()).trim();
 	}
 }

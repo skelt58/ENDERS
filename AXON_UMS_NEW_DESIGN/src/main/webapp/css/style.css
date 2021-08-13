@@ -29,11 +29,13 @@
 
 /* service-list */
 .service-list:after{content:'';display:block;clear:both;}
-.service-list li{position:relative;float:left;width:240px;height:300px;margin-right:30px;text-align:center;border-radius:20px;box-shadow:0px 3px 20px rgba(0,0,0,.1); overflow: hidden;transition:all .4s;}
+.service-list li{position:relative;float:left;width:240px;height:300px;margin-right:30px;text-align:center;border-radius:20px;}
 .service-list li:last-child{margin-right:0;}
-.service-list li a{display:block;width:100%;height:300px;padding-top:178px;}
+.service-list li a{display:block;height:300px;padding-top:178px;border-radius:20px;box-shadow:0px 3px 20px rgba(0,0,0,.1);transition:all .4s;}
 .service-list li a strong{display:block;margin-bottom:6px; color:#111; font-size:24px;font-weight:600;}
 .service-list li a p{color:#666; font-size: 15px;}
+.service-list li label {position: absolute; bottom:-30px;left:32px;}
+.service-list li label span {margin-right:0;}
 
 /* service-list :: background color, image */
 .service-list li:nth-child(1) a{background:#fff url('../img/common/icon_ems_default.png') no-repeat center 40px;}
@@ -42,13 +44,36 @@
 .service-list li:nth-child(4) a{background:#fff url('../img/common/icon_push_default.png') no-repeat center 40px;}
 
 /* service-list :: 마우스오버 시 background color, image */
-.service-list li:hover {margin-top:-15px; transition:all .4s;}
+.service-list li a:hover{margin-top:-15px; transition:all .4s;}
 .service-list li:nth-child(1):hover a{background:#5668F0 url('../img/common/icon_ems_hover.png') no-repeat center 40px;}
 .service-list li:nth-child(2):hover a{background:#AF00EE url('../img/common/icon_rns_hover.png') no-repeat center 40px;}
 .service-list li:nth-child(3):hover a{background:#1EC89A url('../img/common/icon_sms_hover.png') no-repeat center 40px;}
 .service-list li:nth-child(4):hover a{background:#FFA246 url('../img/common/icon_push_hover.png') no-repeat center 40px;}
 .service-list li:hover a strong{color:#fff;}
 .service-list li:hover a p{color:#fff;}
+
+/* 단기/정기 메일발송 정보수정 */
+.editdefault-wrap li:nth-last-child(3) .filebox .label,
+.editregular-wrap li:nth-last-child(3) .filebox .label{width:calc(100% - 102px);}
+
+/* 이메일 탬플릿/캠페인 등록, 정보수정 공통 */
+.manage-wrap textarea{min-height:120px;}
+.manage-wrap .graybox .list-area > ul:nth-child(2) .list-item {font-size:14px;} 
+
+/* 메일발송결재 */
+.approvebox::after {content:'';display:block;clear:both;}
+.approvebox > div {float:right;width:470px; margin-bottom:30px;text-align:center;border-radius:10px;box-shadow:0px 3px 10px rgba(141,141,141,0.16);overflow:hidden;}
+.approvebox th {padding:10px 0;background:#F2F2F2;color:#666;font-size:13px;font-weight:400;}
+.approvebox td {height:90px;}
+.approvebox td button:first-child {margin-right:10px;}
+.approvebox strong:not(.txt-gray) {display:block;color:#111;font-size:16px;}
+.approvebox .txt-gray {color:#888 !important;font-size:16px;font-weight:400;}
+
+.approvemail-wrap .graybox .table-area tr:nth-child(4) td:nth-child(2) .btn{margin-left:20px;}
+.approvemail-wrap .graybox .table-area .inline-txt {display:inline-block;line-height:40px;}
+.approvemail-wrap .graybox .table-area td {padding:0;}
+.approvemail-wrap .graybox .table-area .select {vertical-align: bottom;}
+
 
 /* popup : EMS 신규 메일 발송 */
 .popmailsend .inner {max-width:620px;}
@@ -62,12 +87,46 @@
 .popmailsend .list-wrap a {width:90px;height:35px;margin-top:30px;background:#fff;color:#666;text-align:center;line-height:33px;border:1px solid #e1e1e1;border-radius:6px;transition:all .4s;}
 .popmailsend .list-wrap a:hover {background:#5668F0;color:#fff;border-color:#5668F0;}
 
+/* popup : 수신자그룹 조회 사유등록 */
+.popcheckreceiver .select .dropdown .list{max-height:110px;}
+
 /* popup : 웹 에이전트 등록 */
-.popregisteragent .cont p {margin-bottom:20px;}
+.popregisteragent .cont p{display:inline-block;margin-bottom:20px;}
+.popregisteragent .cont label {margin-left:100px;}
+.popregisteragent .cont label span {margin-right:0;}
 
 /* popup : AXon push */
 .popservicepush .inner{max-width:400px;text-align:center;}
-.popservicepush .cont strong {display:block;padding-top:130px;padding-bottom:5px;background:#fff url('../img/common/icon_push_default.png') no-repeat 50% 0;color:#111;font-size:24px;font-weight:600;}
-.popservicepush .cont span {color:#666;font-size:15px;}
-.popservicepush .cont p {margin-top:30px;margin-bottom:20px;color:#666;font-size:15px;}
-.popservicepush .cont .btn{margin-left:0;}
+.popservicepush .cont strong{display:block;padding-top:130px;padding-bottom:5px;background:#fff url('../img/common/icon_push_default.png') no-repeat 50% 0;color:#111;font-size:24px;font-weight:600;}
+.popservicepush .cont span{color:#666;font-size:15px;}
+.popservicepush .cont p{margin-top:30px;margin-bottom:20px;color:#666;font-size:15px;}
+.popservicepush .cont .btn{margin-left:0; transition:all .4s;}
+.popservicepush .cont .btn:hover {background:#5668F0;color:#fff;border:1px solid #5668F0;}
+
+/* popup : 테스트메일 발송 */
+.poptestsend .graybox:not(:first-child){margin-top:30px;}
+.poptestsend .graybox .title-area{padding:5px 10px 5px 20px;}
+.poptestsend .graybox .title-area:after{content:'';display:block;clear:both;}
+.poptestsend .graybox .title-area .h3-title{margin-top:6px;}
+
+/* popup : 수신자그룹 미리보기 */
+.poppreviewreceiver .table-area tr:nth-child(3) td{padding:6px 0;}
+.poppreviewreceiver .table-area tr:last-child td{padding-right:10px;}
+.poppreviewreceiver .table-area button{padding:0 22px;}
+
+/* pop : 환경설정 */
+.popsetting .select {max-width:205px;}
+.popsetting .graybox .table-area td {padding:15px 10px;}
+.popsetting .select .dropdown .list{max-height:110px;}
+
+/* popup : 반려사유 */
+.popreturnreason .graybox .table-area th {background:#f2f2f2;}
+.popreturnreason .graybox .table-area td {padding:15px 20px;}
+
+/* popup : 반려 사유등록 */
+.popcheckreturn .select .dropdown .list{max-height:110px;}
+
+/* popup : 탬플릿 미리보기 */
+.poppreviewtemplate .graybox .table-area th {background:#f2f2f2;}
+.poppreviewtemplate .graybox .table-area td {padding:15px 20px;}
+.poppreviewtemplate .previewbox:empty:before {content:'미리보기 영역';display:block;height:360px;margin-top:20px;padding-top:180px;background:#f9f9f9; font-size:18px;text-align:center;border-radius: 10px;border:1px solid #F1F1F1;box-shadow: 0px 3px 10px rgba(141,141,141,0.16);}

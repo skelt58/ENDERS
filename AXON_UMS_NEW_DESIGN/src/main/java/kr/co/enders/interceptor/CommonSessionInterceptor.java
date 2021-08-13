@@ -5,8 +5,6 @@
  */
 package kr.co.enders.interceptor;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -15,18 +13,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import kr.co.enders.ums.main.service.MainService;
-import kr.co.enders.ums.main.vo.MenuVO;
-import kr.co.enders.ums.sys.acc.vo.SysMenuVO;
 import kr.co.enders.util.PropertiesUtil;
-import kr.co.enders.util.StringUtil;
-
 
 public class CommonSessionInterceptor extends HandlerInterceptorAdapter {
 	private Logger logger = Logger.getLogger(this.getClass());
-	
-	@Autowired
-	private MainService mainService;
 	
 	@Autowired
 	private PropertiesUtil properties;
@@ -84,17 +74,6 @@ public class CommonSessionInterceptor extends HandlerInterceptorAdapter {
 			}
 			session.setAttribute("NEO_P_MENU_ID", pMenuId);
 			session.setAttribute("NEO_MENU_ID", menuId);
-			
-			// 메뉴명 설정
-			if(!StringUtil.isNull(request.getParameter("pMenuId"))) {
-				SysMenuVO menuInfo = null;
-				try {
-					menuInfo = mainService.getMenuBasicInfo(menuId);
-				} catch(Exception e) {
-					logger.debug("mainService.getMenuBasicInfo error =" + e);
-				}
-				session.setAttribute("NEO_MENU_NM", menuInfo.getMenuNm());
-			}
 			
 			result = true;
 		}

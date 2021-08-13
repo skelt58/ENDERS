@@ -107,7 +107,7 @@ function goPageNum(page) {
     </tr>
     <tr height="20">
         <td align=left class="td_title"><spring:message code='SEGTBLTL006'/></td><!-- 테스트결과 -->
-        <td height="23" class="td_body"><c:out value="${totCnt}"/></td>
+        <td height="23" class="td_body"><c:out value="${segmentVO.totCnt}"/></td>
     </tr>
     <tr height="20">
         <td align=left class="td_title"><spring:message code='SEGTBLTL030'/></td><!-- 회원 정보 -->

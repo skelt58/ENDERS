@@ -1,7 +1,7 @@
 <%--
 	/**********************************************************
 	*	작성자 : 김상진
-	*	작성일시 : 2021.08.02
+	*	작성일시 : 2021.08.11
 	*	설명 : 누적분석 화면
 	**********************************************************/
 --%>
@@ -33,7 +33,7 @@
 			<!-- cont-head// -->
 			<section class="cont-head">
 				<div class="title">
-					<h2><c:out value="${NEO_MENU_NM}"/></h2>
+					<h2>기간별누적분석</h2>
 				</div>
 				
 				<!-- 공통 표시부// -->
@@ -65,6 +65,9 @@
 
 	<!------------------------------------------	SEARCH	START	---------------------------------------------->
 	<form id="searchForm" name="searchForm" method="post">
+	<input type="hidden" id="searchCampNm" name="searchCampNm" value=""/>
+	<input type="hidden" id="searchDeptNm" name="searchDeptNm" value=""/>
+	<input type="hidden" id="searchUserNm" name="searchUserNm" value=""/>
 	<table width="1000" border="0" cellspacing="1" cellpadding="0" class="table_line_outline">
 		<tr>
 			<td width="10%" class="td_title">캠페인</td>
@@ -106,7 +109,7 @@
 						<option value="0">:: 그룹 선택 ::</option><!-- 그룹 선택 -->
 						<c:if test="${fn:length(deptList) > 0}">
 							<c:forEach items="${deptList}" var="dept">
-								<option value="<c:out value='${dept.deptNo}'/>"<c:if test="${dept.deptNo == searchVO.searchDeptNo}"> selected</c:if>><c:out value='${dept.deptNm}'/></option>
+								<option value="<c:out value='${dept.deptNo}'/>"<c:if test="${dept.deptNo == NEO_DEPT_NO}"> selected</c:if>><c:out value='${dept.deptNm}'/></option>
 							</c:forEach>
 						</c:if>
 					</select>
@@ -127,7 +130,7 @@
 					<option value=''>:: 사용자 선택 ::</option>
 					<c:if test="${fn:length(userList) > 0}">
 						<c:forEach items="${userList}" var="user">
-							<option value="<c:out value='${user.userId}'/>"<c:if test="${user.userId eq searchVO.searchUserId}"> selected</c:if>><c:out value='${user.userNm}'/></option>
+							<option value="<c:out value='${user.userId}'/>"<c:if test="${user.userId eq NEO_USER_ID}"> selected</c:if>><c:out value='${user.userNm}'/></option>
 						</c:forEach>
 					</c:if>
 				</select>
@@ -144,7 +147,7 @@
 		<tr>
 			<td align="right">
 				<input type="button" value="검색" class="btn_typeC" onClick="goOz()">
-					<input type="button" value="초기화" class="btn_style" onClick="goReset(this.form)">
+					<input type="button" value="초기화" class="btn_style" onClick="goReset()">
 			</td>
 		</tr>
 				<tr>

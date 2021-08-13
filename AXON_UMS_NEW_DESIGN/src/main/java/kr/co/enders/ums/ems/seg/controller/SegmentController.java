@@ -86,13 +86,14 @@ public class SegmentController {
 		
 		// 검색 기본값 설정
 		if(searchVO.getSearchStartDt() == null || "".equals(searchVO.getSearchStartDt())) {
-			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyy-MM-dd"));
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyy")+"0101");
+		} else {
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
 		}
 		if(searchVO.getSearchEndDt() == null || "".equals(searchVO.getSearchEndDt())) {
-			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyy-MM-dd"));
-		}
-		if(searchVO.getSearchStatus() == null || "".equals(searchVO.getSearchStatus())) {
-			searchVO.setSearchStatus("000");	// 정상
+			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
+		} else {
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
 		}
 		if(searchVO.getSearchDeptNo() == 0) {
 			if("Y".equals((String)session.getAttribute("NEO_ADMIN_YN"))) {
@@ -101,7 +102,6 @@ public class SegmentController {
 				searchVO.setSearchDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
 			}
 		}
-		
 		
 		// 세그먼트 생성 유형 코드 조회
 		CodeVO createTy = new CodeVO();
@@ -148,7 +148,53 @@ public class SegmentController {
 			logger.error("codeService.getUserList error = " + e);
 		}
 		
+		model.addAttribute("searchVO", searchVO);			// 검색항목
+		model.addAttribute("createTyList", createTyList);	// 세그먼트 생성 유형
+		model.addAttribute("statusList", statusList);		// 발송그룹상태
+		model.addAttribute("deptList", deptList);			// 부서번호
+		model.addAttribute("userList", userList);			// 사용자
 		
+		return "ems/seg/segMainP";
+	}
+	
+	/**
+	 * 발송대상(세그먼트)관리 목록 조회
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/segList")
+	public String goSegList(@ModelAttribute SegmentVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("segList searchSegNm = " + searchVO.getSearchSegNm());
+		logger.debug("segList searchCreateTy = " + searchVO.getSearchCreateTy());
+		logger.debug("segList searchStatus = " + searchVO.getSearchStatus());
+		logger.debug("segList searchStartDt = " + searchVO.getSearchStartDt());
+		logger.debug("segList searchEndDt = " + searchVO.getSearchEndDt());
+		logger.debug("segList searchDeptNo = " + searchVO.getSearchDeptNo());
+		logger.debug("segList searchUserId = " + searchVO.getSearchUserId());
+		
+		// 검색 기본값 설정
+		if(searchVO.getSearchStartDt() == null || "".equals(searchVO.getSearchStartDt())) {
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyy")+"0101");
+		} else {
+			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
+		}
+		if(searchVO.getSearchEndDt() == null || "".equals(searchVO.getSearchEndDt())) {
+			searchVO.setSearchEndDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyyMMdd"));
+		} else {
+			searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
+		}
+		if(searchVO.getSearchDeptNo() == 0) {
+			if("Y".equals((String)session.getAttribute("NEO_ADMIN_YN"))) {
+				searchVO.setSearchDeptNo(0);
+			} else {
+				searchVO.setSearchDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+			}
+		}
+				
 		// 페이지 설정
 		int page = StringUtil.setNullToInt(searchVO.getPage(), 1);
 		int rows = StringUtil.setNullToInt(searchVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE")));
@@ -175,15 +221,11 @@ public class SegmentController {
 		pageUtil.init(request, searchVO.getPage(), totalCount, rows);
 
 		model.addAttribute("searchVO", searchVO);			// 검색항목
-		model.addAttribute("createTyList", createTyList);	// 세그먼트 생성 유형
-		model.addAttribute("statusList", statusList);		// 발송그룹상태
-		model.addAttribute("deptList", deptList);			// 부서번호
-		model.addAttribute("userList", userList);			// 사용자
 		model.addAttribute("segmentList", segmentList);		// 발송대상(세그먼트) 목록
 		model.addAttribute("pageUtil", pageUtil);			// 페이징
 		model.addAttribute("uploadPath", properties.getProperty("FILE.UPLOAD_PATH"));	// 업로드경로
 		
-		return "ems/seg/segMainP";
+		return "ems/seg/segList";
 	}
 	
 	/**

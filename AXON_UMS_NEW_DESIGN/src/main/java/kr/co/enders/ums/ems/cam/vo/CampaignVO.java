@@ -23,7 +23,9 @@ public class CampaignVO extends CommonVO {
 	private String regNm;		// 등록자명
 	private String regDt;		// 등록일자
 	private String upId;		// 수정자
+	private String upNm;		// 수정자명
 	private String upDt;		// 수정일자
+	private String eaiCampNo;	// EAI캠페인번호
 	
 	// 검색
 	private String searchCampNm;	// 캠페인명 검색
@@ -35,6 +37,7 @@ public class CampaignVO extends CommonVO {
 	private String searchUserId;	// 사용자 검색
 	
 	//추가정보
+	private int campMailCnt;		// 캠페인발송메일수
 	private String uilang;			// 언어권
 	private String adminYn;			// 관리자여부
 	private String campNos;			// 캠페인번호멀티선택용
@@ -176,6 +179,24 @@ public class CampaignVO extends CommonVO {
 	}
 	public void setUpDt(String upDt) {
 		this.upDt = upDt;
+	}
+	public String getUpNm() {
+		return upNm;
+	}
+	public void setUpNm(String upNm) {
+		this.upNm = upNm;
+	}
+	public String getEaiCampNo() {
+		return eaiCampNo;
+	}
+	public void setEaiCampNo(String eaiCampNo) {
+		this.eaiCampNo = eaiCampNo;
+	}
+	public int getCampMailCnt() {
+		return campMailCnt;
+	}
+	public void setCampMailCnt(int campMailCnt) {
+		this.campMailCnt = campMailCnt;
 	}
 	public String getUilang() {
 		return uilang;

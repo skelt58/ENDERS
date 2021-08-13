@@ -1,8 +1,5 @@
 $(document).ready(function() {
-	$("#searchStartDt").datepicker();
-	$("#searchEndDt").datepicker();
-	
-	goSearch();
+	goSearch("1");
 });
 
 //사용자그룹 선택시 사용자 목록 조회 
@@ -17,12 +14,13 @@ function getUserList(deptNo) {
 }
 
 //검색 버튼 클릭시
-function goSearch() {
+function goSearch(pageNum) {
 	if( $("#searchStartDt").val() > $("#searchEndDt").val() ) {
 		alert("검색 시 시작일은 종료일보다 클 수 없습니다.");		// <spring:message code='COMJSALT017'/>
 		return;
 	}
 	
+	$("#searchForm input[name='page']").val(pageNum);
 	var param = $("#searchForm").serialize();
 	$.ajax({
 		type : "GET",
@@ -39,11 +37,11 @@ function goSearch() {
 
 // 초기화 버튼 클릭시
 function goReset(obj) {
-	$("#searchTaskNm").val("");
-	$("#searchCampNo").val("0");
-	$("#searchDeptNo").val("0");
-	$("#searchUserId").val("");
-	//$("#searchForm")[0].reset();
+	//$("#searchTaskNm").val("");
+	//$("#searchCampNo").val("0");
+	//$("#searchDeptNo").val("0");
+	//$("#searchUserId").val("");
+	$("#searchForm")[0].reset();
 }
 
 // 목록에서 전체선택 클릭시
@@ -54,7 +52,7 @@ function goAll() {
 }
 
 // 메일별분석 클릭시 EVENT 구현
-function goMail(taskNo) {
+function goTaskStep(taskNo) {
 	$("#page").val("1");
 	$("#searchCampNo").val("0");
 	$("#searchTaskNm").val("");
@@ -62,7 +60,7 @@ function goMail(taskNo) {
 	$("#searchUserId").val("");
 	$("#taskNo").val(taskNo);
 	
-	$("#searchForm").attr("target","").attr("action","./mailListP.ums?pMenuId=M1004000&menuId=M1004001").submit();
+	$("#searchForm").attr("target","").attr("action","./taskStepListP.ums").submit();
 }
 
 // 병합분석 클릭시
@@ -139,4 +137,9 @@ function goOzTab(tabNm, target) {
 	}
 
 	iFrmReport.location.href = target + "?taskNo=" + curTaskNo;
+}
+
+// 페이징
+function goPageNum(pageNum) {
+	goSearch(pageNum);
 }

@@ -58,17 +58,17 @@ public class TemplateController {
 	 * @return
 	 */
 	@RequestMapping(value="/tempListP")
-	public String goTemplateList(@ModelAttribute TemplateVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		logger.debug("goTemplateList searchTempNm  = " + searchVO.getSearchTempNm());
-		logger.debug("goTemplateList searchStatus  = " + searchVO.getSearchStatus());
-		logger.debug("goTemplateList searchStartDt = " + searchVO.getSearchStartDt());
-		logger.debug("goTemplateList searchEndDt   = " + searchVO.getSearchEndDt());
-		logger.debug("goTemplateList searchDeptNo  = " + searchVO.getSearchDeptNo());
-		logger.debug("goTemplateList searchUserId  = " + searchVO.getSearchUserId());
+	public String goTemplateListP(@ModelAttribute TemplateVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goTemplateListP searchTempNm  = " + searchVO.getSearchTempNm());
+		logger.debug("goTemplateListP searchStatus  = " + searchVO.getSearchStatus());
+		logger.debug("goTemplateListP searchStartDt = " + searchVO.getSearchStartDt());
+		logger.debug("goTemplateListP searchEndDt   = " + searchVO.getSearchEndDt());
+		logger.debug("goTemplateListP searchDeptNo  = " + searchVO.getSearchDeptNo());
+		logger.debug("goTemplateListP searchUserId  = " + searchVO.getSearchUserId());
 		
 		// 검색 기본값 설정
 		if(searchVO.getSearchStartDt() == null || "".equals(searchVO.getSearchStartDt())) {
-			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(-1, "M", "yyyyMMdd"));
+			searchVO.setSearchStartDt(StringUtil.getCalcDateFromCurr(0, "D", "yyyy")+"0101");
 		} else {
 			searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
 		}
@@ -88,21 +88,6 @@ public class TemplateController {
 		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
 		searchVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
 		
-		// 페이지 설정
-		int page = StringUtil.setNullToInt(searchVO.getPage(), 1);
-		int rows = StringUtil.setNullToInt(searchVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE_TEMP")));
-		searchVO.setPage(page);
-		searchVO.setRows(rows);
-		int totalCount = 0;
-		
-		// 템플릿 목록 조회
-		List<TemplateVO> templateList = null;
-		try {
-			templateList = templateService.getTemplateList(searchVO);
-		} catch(Exception e) {
-			logger.error("templateService.getTemplateList error = " + e);
-		}
-
 		// 템플릿상태 목록
 		CodeVO status = new CodeVO();
 		status.setUilang((String)session.getAttribute("NEO_UILANG"));
@@ -136,21 +121,72 @@ public class TemplateController {
 			logger.error("codeService.getUserList error = " + e);
 		}
 		
+		model.addAttribute("searchVO", searchVO);			// 검색 항목
+		model.addAttribute("statusList", statusList);		// 템플릿상태 목록
+		model.addAttribute("deptList", deptList);			// 부서 목록
+		model.addAttribute("userList", userList);			// 사용자 목록
+		
+		return "ems/tmp/tempListP";
+	}
+	
+	/**
+	 * 템플릿 목록을 조회한다.
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/tempList")
+	public String goTemplateList(@ModelAttribute TemplateVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goTemplateList searchTempNm  = " + searchVO.getSearchTempNm());
+		logger.debug("goTemplateList searchStatus  = " + searchVO.getSearchStatus());
+		logger.debug("goTemplateList searchStartDt = " + searchVO.getSearchStartDt());
+		logger.debug("goTemplateList searchEndDt   = " + searchVO.getSearchEndDt());
+		logger.debug("goTemplateList searchDeptNo  = " + searchVO.getSearchDeptNo());
+		logger.debug("goTemplateList searchUserId  = " + searchVO.getSearchUserId());
+		
+		searchVO.setSearchStartDt(searchVO.getSearchStartDt().replaceAll("\\.", ""));
+		searchVO.setSearchEndDt(searchVO.getSearchEndDt().replaceAll("\\.", ""));
+		if(searchVO.getSearchStatus() == null || "".equals(searchVO.getSearchStatus())) searchVO.setSearchStatus("000");
+		if(searchVO.getSearchDeptNo() == 0) {
+			if("Y".equals((String)session.getAttribute("NEO_ADMIN_YN"))) {
+				searchVO.setSearchDeptNo(0);
+			} else {
+				searchVO.setSearchDeptNo((int)session.getAttribute("NEO_DEPT_NO"));
+			}
+		}
+		searchVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		searchVO.setAdminYn((String)session.getAttribute("NEO_ADMIN_YN"));
+		
+		// 페이지 설정
+		int page = StringUtil.setNullToInt(searchVO.getPage(), 1);
+		int rows = StringUtil.setNullToInt(searchVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE")));
+		searchVO.setPage(page);
+		searchVO.setRows(rows);
+		int totalCount = 0;
+		
+		// 템플릿 목록 조회
+		List<TemplateVO> templateList = null;
+		try {
+			templateList = templateService.getTemplateList(searchVO);
+		} catch(Exception e) {
+			logger.error("templateService.getTemplateList error = " + e);
+		}
+
+		
 		if(templateList != null && templateList.size() > 0) {
 			totalCount = templateList.get(0).getTotalCount();
 		}
 		PageUtil pageUtil = new PageUtil();
 		pageUtil.init(request, searchVO.getPage(), totalCount, rows);
 
-		
 		model.addAttribute("searchVO", searchVO);			// 검색 항목
 		model.addAttribute("templateList", templateList);	// 템플릿 목록
-		model.addAttribute("statusList", statusList);		// 템플릿상태 목록
-		model.addAttribute("deptList", deptList);			// 부서 목록
-		model.addAttribute("userList", userList);			// 사용자 목록
 		model.addAttribute("pageUtil", pageUtil);			// 페이징
 		
-		return "ems/tmp/tempListP";
+		return "ems/tmp/tempList";
 	}
 	
 	/**
