@@ -79,7 +79,7 @@ public class UserCodeController {
 			logger.error("codeService.getCodeGrpList error = " + e);
 		}
 		
-		// 캠페인목적 목록
+		// 언어코드 목록
 		CodeVO uiLang = new CodeVO();
 		uiLang.setUilang(searchVO.getSearchUiLang());
 		uiLang.setCdGrp("C025");
@@ -88,13 +88,12 @@ public class UserCodeController {
 		try {
 			uiLangList = codeService.getCodeList(uiLang);
 		} catch(Exception e) {
-			logger.error("codeService.getCodeList[C004] error = " + e);
+			logger.error("codeService.getCodeList[C025] error = " + e);
 		}
-		
-		
+  
 		model.addAttribute("searchVO", searchVO);			// 검색 항목
 		model.addAttribute("cdGrpList", cdGrpList);			// 코드그룹 검색 조건 항목
-		model.addAttribute("uiLangList", uiLangList);			// 코드그룹 검색 조건 항목
+		model.addAttribute("uiLangList", uiLangList);		// 언어 항목		
 		
 		return "sys/cod/userCodeGroupListP";
 	}
@@ -193,6 +192,13 @@ public class UserCodeController {
 		//userCodeGroupVO.setUilang((String)session.getAttribute("NEO_UILANG"));
 		//테스트 용임 테스트 화면이라 세션없어서 이따위가..왜 삽질을 한것일까 우어어어..도대체 아아아아아악!
 		userCodeGroupVO.setUilang("000");
+		//기본값 설정 (SYS_YN, USE_YN) 
+		if(userCodeGroupVO.getSysYn() == null || "".equals((String)userCodeGroupVO.getSysYn())) {
+			userCodeGroupVO.setSysYn("N");
+		}
+		if(userCodeGroupVO.getUseYn() == null || "".equals((String)userCodeGroupVO.getUseYn())) {
+			userCodeGroupVO.setUseYn("N");
+		}
 		
 		logger.debug("insertUserCodeGroupInfo Uilang = " + userCodeGroupVO.getUilang());
 		
@@ -236,10 +242,16 @@ public class UserCodeController {
 						
 		//userCodeGroupVO.setUilang((String)session.getAttribute("NEO_UILANG"));
 		//테스트 용임 테스트 화면이라 세션없어서 이따위가..왜 삽질을 한것일까 우어어어..도대체 아아아아아악! 와 씨 구와중에 add에 걸고 있었네 미친거아냐!!! 죽자!!
-		userCodeGroupVO.setUilang("000");
-		
+		userCodeGroupVO.setUilang("000");		
 		logger.debug("updateCodeGroupInfo Uilang = " + userCodeGroupVO.getUilang());
 		
+		//기본값 설정 (SYS_YN, USE_YN) 
+		if(userCodeGroupVO.getSysYn() == null || "".equals((String)userCodeGroupVO.getSysYn())) {
+			userCodeGroupVO.setSysYn("N");
+		}
+		if(userCodeGroupVO.getUseYn() == null || "".equals((String)userCodeGroupVO.getUseYn())) {
+			userCodeGroupVO.setUseYn("N");
+		}
 		
 		int result = 0;
 		try {

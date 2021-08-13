@@ -62,7 +62,7 @@
 					<tr>
 						<td width="10%" class="td_title">분류코드</td>
 						<td width="22%" class="td_body">
-							<select id="searchCdGrp" name="searchCdGrp" style="width: 140px;" class="select" onchange="chageCdGrpSelect()">
+							<select id="searchCdGrp" name="searchCdGrp" style="width: 140px;" class="select" onchange="changeCdGrpSelect()">
 								<option value=''>:: 선택 ::</option>
 								<c:if test="${fn:length(cdGrpList) > 0}">
 									<c:forEach items="#{cdGrpList}" var="cdGrp">
@@ -161,11 +161,19 @@
 						<tr>
 							<td class="td_title">시스템코드</td>
 							<td colspan=3 class="td_body">
-								<input type="checkbox" id="sysYn" name="sysYn" value="N">
+								<select id="sysYn" name="sysYn" class="select wBig">
+									<option value=''>:::::::::: 선택 ::::::::::</option><!-- 목적 선택 -->
+									<option value="Y">예</option>
+									<option value="N">아니오</option>
+								</select>
 							</td>
 							<td class="td_title">사용여부</td>
 							<td colspan=3 class="td_body">
-								<input type="checkbox" id="useYn" name="useYn" value="Y">
+								<select id="useYn" name="useYn" class="select wBig">
+									<option value=''>:::::::::: 선택 ::::::::::</option><!-- 목적 선택 -->
+									<option value="Y">예</option>
+									<option value="N">아니오</option>
+								</select>		
 							</td>
 						</tr>
 					</table>

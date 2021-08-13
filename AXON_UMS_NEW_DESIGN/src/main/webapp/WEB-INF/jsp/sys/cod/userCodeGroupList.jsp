@@ -12,7 +12,7 @@
 <table width="1000" border="1" cellspacing="0" cellpadding="0">
 	<tr class="tr_head">
 		<td align="center" width="5%">NO</td>
-		<td align="center" width="10%"><input type="checkbox" id="userCodeGrouupAllChk" name="userCodeGrouupAllChk"></td>
+		<td align="center" width="10%"><input type="checkbox" id="userCodeGrouupAllChk" name="userCodeGrouupAllChk" onclick='selectAll(this)'></td>
 		<td align="center" width="10%">분류코드</td>
 		<td align="left"width="15%">분류명</td>
 		<td align="left"width="15%">상위코드</td>
