@@ -93,7 +93,7 @@ public class UserCodeController {
   
 		model.addAttribute("searchVO", searchVO);			// 검색 항목
 		model.addAttribute("cdGrpList", cdGrpList);			// 코드그룹 검색 조건 항목
-		model.addAttribute("uiLangList", uiLangList);		// 언어 항목		
+		model.addAttribute("uiLangList", uiLangList);		// 언어 항목
 		
 		return "sys/cod/userCodeGroupListP";
 	}
@@ -189,9 +189,12 @@ public class UserCodeController {
 		logger.debug("insertUserCodeGroupInfo sysYn = " + userCodeGroupVO.getSysYn());
 		logger.debug("insertUserCodeGroupInfo useYn = " + userCodeGroupVO.getUseYn());
 						
-		//userCodeGroupVO.setUilang((String)session.getAttribute("NEO_UILANG"));
-		//테스트 용임 테스트 화면이라 세션없어서 이따위가..왜 삽질을 한것일까 우어어어..도대체 아아아아아악!
-		userCodeGroupVO.setUilang("000");
+		userCodeGroupVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		
+		if ( userCodeGroupVO.getUilang() == null || "".equals((String)userCodeGroupVO.getUilang())) {
+			userCodeGroupVO.setUilang("000");
+		}
+		
 		//기본값 설정 (SYS_YN, USE_YN) 
 		if(userCodeGroupVO.getSysYn() == null || "".equals((String)userCodeGroupVO.getSysYn())) {
 			userCodeGroupVO.setSysYn("N");
@@ -239,11 +242,10 @@ public class UserCodeController {
 		logger.debug("updateCodeGroupInfo sysYn        = " + userCodeGroupVO.getSysYn());
 		logger.debug("updateCodeGroupInfo useYn        = " + userCodeGroupVO.getUseYn());
 		 	 
-						
-		//userCodeGroupVO.setUilang((String)session.getAttribute("NEO_UILANG"));
-		//테스트 용임 테스트 화면이라 세션없어서 이따위가..왜 삽질을 한것일까 우어어어..도대체 아아아아아악! 와 씨 구와중에 add에 걸고 있었네 미친거아냐!!! 죽자!!
-		userCodeGroupVO.setUilang("000");		
-		logger.debug("updateCodeGroupInfo Uilang = " + userCodeGroupVO.getUilang());
+		userCodeGroupVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		if ( userCodeGroupVO.getUilang() == null || "".equals((String)userCodeGroupVO.getUilang())) {
+			userCodeGroupVO.setUilang("000");
+		}
 		
 		//기본값 설정 (SYS_YN, USE_YN) 
 		if(userCodeGroupVO.getSysYn() == null || "".equals((String)userCodeGroupVO.getSysYn())) {
@@ -284,9 +286,11 @@ public class UserCodeController {
 	@RequestMapping(value="/userCodeGroupDelete")
 	public ModelAndView deleteUserCodeGroupInfo(@ModelAttribute UserCodeGroupVO userCodeGroupVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("deleteUserCodeGroupInfo cdGrp      = " + userCodeGroupVO.getCdGrp());
-		//userCodeGroupVO.setUilang((String)session.getAttribute("NEO_UILANG"));
-		//테스트 용임 테스트 화면이라 세션없어서 이따위가..왜 삽질을 한것일까 우어어어..도대체 아아아아아악! 와 씨 구와중에 add에 걸고 있었네 미친거아냐!!! 죽자!!
-		userCodeGroupVO.setUilang("000");
+		
+		userCodeGroupVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		if ( userCodeGroupVO.getUilang() == null || "".equals((String)userCodeGroupVO.getUilang())) {
+			userCodeGroupVO.setUilang("000");
+		}
 		
 		logger.debug("updateCodeGroupInfo Uilang = " + userCodeGroupVO.getUilang());		
 		
@@ -324,10 +328,14 @@ public class UserCodeController {
 		logger.debug("goUserCodeList searchUserCodeGroup = " + searchVO.getSearchCdGrp());
 	
 		searchVO.setSearchUiLang((String)session.getAttribute("NEO_UILANG"));
-
+		
+		if ( searchVO.getUilang() == null || "".equals((String)searchVO.getUilang())) {
+			searchVO.setUilang("000");
+		}
+		
 		// 페이지 설정
 		int page = StringUtil.setNullToInt(searchVO.getPage(), 1);		
-		searchVO.setPage(page);
+		searchVO.setPage(page);		
  
 		// 코드그룹목록(코드성) 조회
 		CodeVO cdGrp = new CodeVO();
@@ -339,14 +347,26 @@ public class UserCodeController {
 			logger.error("codeService.getCodeGrpList error = " + e);
 		}
 		
-		model.addAttribute("searchVO", searchVO);			// 검색 항목		
-		model.addAttribute("cdGrpList", cdGrpList);			// 코드그룹 검색 조건 항목 
+		// 언어코드 목록
+		CodeVO uiLang = new CodeVO();
+		uiLang.setUilang(searchVO.getSearchUiLang());
+		uiLang.setCdGrp("C025");
+		uiLang.setUseYn("Y");
+		List<CodeVO> uiLangList = null;
+		try {
+			uiLangList = codeService.getCodeList(uiLang);
+		} catch(Exception e) {
+			logger.error("codeService.getCodeList[C025] error = " + e);
+		}
 		
-		return "ems/sys/cod/userCodeGroupListP";
+		model.addAttribute("searchVO", searchVO);			// 검색 항목		
+		model.addAttribute("cdGrpList", cdGrpList);			// 분류코드 검색 조건 항목 
+		model.addAttribute("uiLangList", uiLangList);		// 언어 항목
+		return "sys/cod/userCodeListP";
 	}
 	
 	/**
-	 * 코드 그룹 목록을 조회한다.
+	 * 코드 목록을 조회한다.
 	 * @param searchVO
 	 * @param model
 	 * @param request
@@ -361,9 +381,13 @@ public class UserCodeController {
 	
 		searchVO.setSearchUiLang((String)session.getAttribute("NEO_UILANG"));
 
+		if ( searchVO.getUilang() == null || "".equals((String)searchVO.getUilang())) {
+			searchVO.setUilang("000");
+		}
+		
 		// 페이지 설정
 		int page = StringUtil.setNullToInt(searchVO.getPage(), 1);
-		int rows = StringUtil.setNullToInt(searchVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE")));
+		int rows = StringUtil.setNullToInt(searchVO.getRows(), Integer.parseInt(properties.getProperty("LIST.ROW_PER_PAGE_COD")));
 		searchVO.setPage(page);
 		searchVO.setRows(rows);
 		int totalCount = 0;
@@ -386,7 +410,7 @@ public class UserCodeController {
 		model.addAttribute("userCodeList", userCodeList);	// 코드그룹 내역 목록
 		model.addAttribute("pageUtil", pageUtil);	// 페이징
 		
-		return "ems/sys/cod/userCodeList";
+		return "sys/cod/userCodeList";
 	}
 	
 	/**
@@ -400,7 +424,7 @@ public class UserCodeController {
 	 */
 	@RequestMapping(value="/userCodeInfo")
 	public ModelAndView getUserCodeInfo(@ModelAttribute UserCodeVO userCodeVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		logger.debug("getUserCodeGroupInfo codeGroup      = " + userCodeVO.getSearchCdGrp());
+		logger.debug("getUserCodeInfo code      = " + userCodeVO.getCd());
 		
 		userCodeVO.setUilang((String)session.getAttribute("NEO_UILANG"));
 		try {
@@ -411,11 +435,64 @@ public class UserCodeController {
 		
 		// jsonView 생성
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		map.put("userCodeGroup", userCodeVO);
+		map.put("userCode", userCodeVO);
 		ModelAndView modelAndView = new ModelAndView("jsonView", map);
 		
 		return modelAndView;
-	}	
+	}
+	
+	/**
+	 * 코드그룹에 연관된 상위코드의 코드목록 조회
+	 * @param searchVO
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/userCodeListByCodeGroup")
+	public ModelAndView goUserCodeListByCodeGroup(@ModelAttribute UserCodeVO searchVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		logger.debug("goUserCodeList searchUserCodeGroup = " + searchVO.getSearchCdGrp());
+	
+		searchVO.setSearchUiLang((String)session.getAttribute("NEO_UILANG"));
+		
+		if ( searchVO.getUilang() == null || "".equals((String)searchVO.getUilang())) {
+			searchVO.setUilang("000");
+		}
+			
+		//상위 코드 조회 
+		String targetUpCdGrp = "";
+		try {
+			targetUpCdGrp = userCodeService.getUserCodeGroupUpCdGrp(searchVO);
+		} catch(Exception e) {
+			logger.error("userCodeService.getUserCodeGroupUpCdGrp error = " + e);
+		}
+		
+		List<CodeVO> upCdGrpList = null;
+		
+		if (targetUpCdGrp != null || !"".equals(targetUpCdGrp)){
+			// 코드그룹목록(코드성) 조회
+			CodeVO upCdGrp = new CodeVO();
+			upCdGrp.setUilang(searchVO.getSearchUiLang());
+			upCdGrp.setCdGrp( targetUpCdGrp);
+			upCdGrp.setUseYn("Y");
+			try {
+				upCdGrpList = codeService.getCodeList(upCdGrp);
+			} catch(Exception e) {
+				logger.error("codeService.getCodeGrpList error = " + e);
+			}
+		}
+		
+		model.addAttribute("searchVO", searchVO);			// 검색 항목		
+		model.addAttribute("upCdGrpList", upCdGrpList);			// 분류코드 검색 조건 항목 		
+		// jsonView 생성
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("upCdGrpList", upCdGrpList);
+
+		ModelAndView modelAndView = new ModelAndView("jsonView", map);
+		return modelAndView;
+	}
+	
 	/**
 	 * 코드 정보 추가
 	 * @param userCodeGroupVO
@@ -427,14 +504,22 @@ public class UserCodeController {
 	 */	
 	@RequestMapping(value="/userCodeAdd")
 	public ModelAndView insertUserCodeInfo(@ModelAttribute UserCodeVO userCodeVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		logger.debug("insertUserCodeInfo cd = " + userCodeVO.getCd());		
+		logger.debug("insertUserCodeInfo cd = " + userCodeVO.getCd());
+		logger.debug("insertUserCodeInfo cdNm = " + userCodeVO.getCdNm());		
 		logger.debug("insertUserCodeInfo cdGrp = " + userCodeVO.getCdGrp());
-		logger.debug("insertUserCodeInfo cdNm = " + userCodeVO.getCdNm());
 		logger.debug("insertUserCodeInfo upCd = " + userCodeVO.getUpCd());
 		logger.debug("insertUserCodeInfo cdDtl = " + userCodeVO.getCdDtl());		
 		logger.debug("insertUserCodeInfo useYn = " + userCodeVO.getUseYn());
 		
 		userCodeVO.setUilang((String)session.getAttribute("NEO_UILANG"));
+		
+		if ( userCodeVO.getUilang() == null || "".equals((String)userCodeVO.getUilang())) {
+			userCodeVO.setUilang("000");
+		}
+		
+		if(userCodeVO.getUseYn() == null || "".equals((String)userCodeVO.getUseYn())) {
+			userCodeVO.setUseYn("N");
+		}
 		
 		int result = 0;
 		try {
@@ -468,7 +553,16 @@ public class UserCodeController {
 	public ModelAndView updateCodeInfo(@ModelAttribute UserCodeVO userCodeVO, Model model, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("updateCodeInfo cdNm      = " + userCodeVO.getCdNm());
 		logger.debug("updateCodeInfo cdDtl     = " + userCodeVO.getCdDtl());
+		logger.debug("updateCodeInfo upCd      = " + userCodeVO.getUpCd());
 		logger.debug("updateCodeInfo useYn     = " + userCodeVO.getUseYn());
+		
+		if ( userCodeVO.getUilang() == null || "".equals((String)userCodeVO.getUilang())) {
+			userCodeVO.setUilang("000");
+		}
+		
+		if(userCodeVO.getUseYn() == null || "".equals((String)userCodeVO.getUseYn())) {
+			userCodeVO.setUseYn("N");
+		}
 		
 		int result = 0;
 		try {
@@ -503,6 +597,10 @@ public class UserCodeController {
 		logger.debug("deleteUserCodeGroupInfo cdGrp      = " + userCodeVO.getCdGrp());		
 		logger.debug("deleteUserCodeGroupInfo cd      = " + userCodeVO.getCd());
 		
+		if ( userCodeVO.getUilang() == null || "".equals((String)userCodeVO.getUilang())) {
+			userCodeVO.setUilang("000");
+		}
+		
 		int result = 0;
 		try {
 			result = userCodeService.deleteUserCodeInfo(userCodeVO);
@@ -521,5 +619,6 @@ public class UserCodeController {
 		
 		return modelAndView;
 	}
+
 
 }

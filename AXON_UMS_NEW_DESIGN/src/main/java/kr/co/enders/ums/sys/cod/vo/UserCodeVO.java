@@ -19,13 +19,14 @@ public class UserCodeVO extends CommonVO {
 	private String uilangNm;	// 언어권명
 	private String cdDtl;		// 코드설명
 	private String useYn;		// 사용여부
+	private String sysYn;		// 시스템여부
 	private String upCd;		// 상위코드
 	private String upCdNm;		// 상위코드명
 	
 	// 검색
 	private String searchCdGrpNm;	// 코드그룹명 검색
-	private String searchCdGrp;		// 코드그룹 검색
-	private String searchUiLang;	// 언어 검색
+	private String searchCdGrp;	// 코드그룹 검색
+	private String searchUiLang;// 언어 검색
 	
 	public String getCdGrp() {
 		return cdGrp;
@@ -75,6 +76,12 @@ public class UserCodeVO extends CommonVO {
 	public void setUseYn(String useYn) {
 		this.useYn = useYn;
 	}
+	public String getSysYn() {
+		return sysYn;
+	}
+	public void setSysYn(String sysYn) {
+		this.sysYn = sysYn;
+	}
 	public String getUpCd() {
 		return upCd;
 	}
@@ -105,4 +112,5 @@ public class UserCodeVO extends CommonVO {
 	public void setSearchUiLang(String searchUiLang) {
 		this.searchUiLang = searchUiLang;
 	}
+  
 }

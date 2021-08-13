@@ -36,7 +36,7 @@ public class UserCodeServiceImpl implements UserCodeService {
 	public UserCodeGroupVO getUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception {
 		return userCodeDAO.getUserCodeGroupInfo(userCodeGroupVO);
 	}
- 
+	 
 	@Override
 	public int insertUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception {
 		int result = 0;
@@ -73,13 +73,12 @@ public class UserCodeServiceImpl implements UserCodeService {
 	}
 
 	@Override
-	public int deleteUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception {
-		if (userCodeDAO.getCodeCountUnderCodeGroup(userCodeGroupVO) > 0 ) {
-			return -444; 
-		}
-		else {
-			return userCodeDAO.deleteUserCodeGroupInfo(userCodeGroupVO);
-		}		
+	public int deleteUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception {		
+		/*
+		 * if (userCodeDAO.getCodeCountUnderCodeGroup(userCodeGroupVO) > 0 ) { return
+		 * -444; } else { return userCodeDAO.deleteUserCodeGroupInfo(userCodeGroupVO); }
+		 */
+		return userCodeDAO.deleteUserCodeGroupInfo(userCodeGroupVO);
 	}
 	
 	@Override
@@ -90,6 +89,11 @@ public class UserCodeServiceImpl implements UserCodeService {
 	@Override
 	public UserCodeVO getUserCodeInfo(UserCodeVO userCodeVO) throws Exception {
 		return userCodeDAO.getUserCodeInfo(userCodeVO);
+	}
+	
+	@Override
+	public String getUserCodeGroupUpCdGrp(UserCodeVO userCodeGroupVO) throws Exception {
+		return userCodeDAO.getUserCodeGroupUpCdGrp(userCodeGroupVO);
 	}
 	
 	@Override

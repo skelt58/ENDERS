@@ -26,10 +26,10 @@
 				<td align="center">${userCodeGroupStatus.count}</td>			
 				<td align="center">
 					<c:if test="${userCodeGroup.sysYn eq 'Y'}">
-						<input type="checkbox" id="userCodeGrouupDelYn" name="userCodeGrouupDelYn" disabled="disabled">
+						<input type="checkbox" name="userCodeGroupDelYn" disabled="disabled">
 					</c:if> 
 					<c:if test="${userCodeGroup.sysYn eq 'N'}">
-						<input type="checkbox" id="userCodeGrouupDelYn" name="userCodeGrouupDelYn">
+						<input type="checkbox" name="userCodeGroupDelYn">
 					</c:if> 							
 				</td>					
 				<td align="center">

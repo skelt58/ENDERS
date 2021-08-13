@@ -37,6 +37,14 @@ public interface UserCodeMapper {
 	public UserCodeGroupVO getUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception;
 	
 	/**
+	 * 코드그룹에 연관된 상위코드의 코드목록 조회
+	 * @param userCodeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	public String getUserCodeGroupUpCdGrp(UserCodeVO userCodeGroupVO) throws Exception;
+	
+	/**
 	 * 코드그룹에 속해있는 코드갯수
 	 * @param userCodeGroupVO
 	 * @return

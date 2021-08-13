@@ -35,7 +35,7 @@ public interface UserCodeService {
 	 * @throws Exception
 	 */
 	public UserCodeGroupVO getUserCodeGroupInfo(UserCodeGroupVO userCodeGroupVO) throws Exception;
-
+	
 	/**
 	 * 사용자 코드 그룹 등록
 	 * @param userCodeGroupVO
@@ -78,6 +78,14 @@ public interface UserCodeService {
 	public UserCodeVO getUserCodeInfo(UserCodeVO userCodeVO) throws Exception;
 	
 	/**
+	 * 사용자 코드 그룹의 상위코드그룹조회
+	 * @param userCodeGroupVO
+	 * @return
+	 * @throws Exception
+	 */
+	public String getUserCodeGroupUpCdGrp(UserCodeVO userCodeGroupVO) throws Exception;
+	
+	/**
 	 * 사용자 코드 등록
 	 * @param userCodeVO
 	 * @return
@@ -101,4 +109,5 @@ public interface UserCodeService {
 	 * @throws Exception
 	 */
 	public int deleteUserCodeInfo(UserCodeVO userCodeVO) throws Exception;
+	
 }

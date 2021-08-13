@@ -79,6 +79,11 @@ public class UserCodeDAO implements UserCodeMapper {
 	}	
 	
 	@Override
+	public String getUserCodeGroupUpCdGrp(UserCodeVO userCodeGroupVO) throws Exception {
+		return sqlSessionEms.getMapper(UserCodeMapper.class).getUserCodeGroupUpCdGrp(userCodeGroupVO);
+	}	
+	
+	@Override
 	public int getCodeCountByCode(UserCodeVO userCodeVO) throws Exception {
 		return sqlSessionEms.getMapper(UserCodeMapper.class).getCodeCountByCode(userCodeVO);
 	}

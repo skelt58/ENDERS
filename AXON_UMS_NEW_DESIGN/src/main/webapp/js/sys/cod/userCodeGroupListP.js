@@ -59,7 +59,7 @@ function goReset() {
 	$("#searchCdGrp").find('option:first').attr('selected', 'selected');
 	$("#searchCdGrpNm").val("");
 
-    var checkboxes = document.getElementsByName('userCodeGrouupDelYn');
+    var checkboxes = document.getElementsByName('userCodeGroupDelYn');
     for (var checkbox of checkboxes) {
         checkbox.checked = false;
     }
@@ -124,18 +124,13 @@ function goUpdate() {
 //삭제 EVENT 구현
 function goDelete() {
 	
-	var checkboxs = $("input[name=userCodeGrouupDelYn]:checked");
+	var checkboxs = $("input[name=userCodeGroupDelYn]:checked");
 	
 	if(checkboxs.length < 1 ){
 		alert("삭제할 분류코드를 선택해주세요");
 		return;
 	}
-	
-	var total = checkboxs.length;
 	 
-	var success = 0;
-	var fail = 0; 
-	
 	checkboxs.each(function(i) {
 		var rowData = new Array();
 		var tr = checkboxs.parent().parent().eq(i);
@@ -145,21 +140,25 @@ function goDelete() {
 		
 		$.getJSON("/sys/cod/userCodeGroupDelete.json?cdGrp=" + cdGrp, function(data) {
 			if(data) {
-		 		alert("삭제에 성공 하였습니다");		// 등록 성공
-				$("#page").val("1");
-				$("#searchForm").attr("target","").attr("action","/sys/cod/userCodeGroupListP.ums").submit();
+				if( i == checkboxs.length -1 ) {
+			 		alert("삭제에 성공 하였습니다");		// 등록 성공					
+					$("#page").val("1");
+					$("#searchForm").attr("target","").attr("action","/sys/cod/userCodeGroupListP.ums").submit();
+				}
 			} else {
-			alert("Error!!");
+				alert("Error!!");
 			}
-		});
+		}); 
 	});
+	
+
 }
  
 // 입력 폼 검사
 function checkForm() {
 	var errstr = "";
 	var errflag = false;
-	if($("#cdGrp").val() == "" || $("#cdGrp").val().length != 4 ) {
+	if($("#cdGrp").val() == "" ) {
 		errstr += "[코드그룹]";
 		errflag = true;
 	}
@@ -175,6 +174,19 @@ function checkForm() {
 	if(errflag) {
 		alert("<spring:message code='COMJSALT016'/>\n" + errstr);		// 다음 정보를 확인하세요.
 	}
+	
+	if($.byteString($(userCodeGroupInfoForm.cdGrpNm).val()) > 60 ) {
+		alert("분류명은 60byte를 넘을 수 없습니다.");
+		$(userCodeGroupInfoForm.cdGrpNm).focus();
+		$(userCodeGroupInfoForm.cdGrpNm).select();
+		errflag = true;
+	}
+	if($.byteString($(userCodeGroupInfoForm.cdGrpDtl).val()) > 100 ) {
+		alert("분류설명은 100byte를 넘을 수 없습니다.");
+		$(userCodeGroupInfoForm.cdGrpDtl).focus();
+		$(userCodeGroupInfoForm.cdGrpDtl).select();
+		errflag = true;
+	} 
 	return errflag;
 }
 
@@ -199,13 +211,11 @@ function changeCdGrpSelect() {
 }  
 
 function selectAll(selectAll)  {
-	
-	var checkboxes = document.getElementsByName('userCodeGrouupDelYn');
-	for (var checkbox of checkboxes) {
-		if( !$('#checkbox').is('disabled') ){
-	    	checkbox.checked = selectAll.checked;
+	$("#listForm input[name='userCodeGroupDelYn']").each(function(idx,item){
+		if( $(item).is(":disabled") == false) {
+			$(item).prop("checked",selectAll.checked);
 		}
-	} 
+	});
 } 
 
 // 페이징
