@@ -24,7 +24,7 @@ public interface AnalysisMapper {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<TaskVO> getMailList(TaskVO taskVO) throws Exception;
+	public List<TaskVO> getMailList(TaskVO taskVO) throws Exception; 
 	
 	/**
 	 * 메일별분석 메일 정보 조회
@@ -351,5 +351,4 @@ public interface AnalysisMapper {
 	 * @throws Exception
 	 */
 	public List<PeriodSummVO> getPeriodSummCampList(PeriodSummVO periodSummVO) throws Exception;
-	
 }
